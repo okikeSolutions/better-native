@@ -1,0 +1,6 @@
+{
+  "extends": "./library.json",
+  "compilerOptions": {
+    "types": ["node"]
+  }
+}

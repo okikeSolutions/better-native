@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "deny",
+    "suspicious": "deny",
+    "perf": "deny"
+  },
+  "rules": {
+    "no-underscore-dangle": ["error", { "allow": ["_tag"] }]
+  },
+  "overrides": [
+    {
+      "files": ["packages/cli/src/generator/*.ts"],
+      "rules": {
+        "unicorn/no-array-sort": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "vendor/**",
+    "node_modules/**",
+    "**/dist/**",
+    "**/.expo/**",
+    "coverage/**",
+    "packages/catalog/src/generated/**",
+    "packages/network/src/generated/**"
+  ]
+}

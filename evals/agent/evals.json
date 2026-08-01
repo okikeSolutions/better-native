@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "method": {
+    "control": "Expo SDK 57 plus Effect v4 without effect-expo guidance or enforcement",
+    "treatment": "The same task with effect-expo packages, AGENTS.md, and effect-expo check",
+    "metrics": [
+      "firstAttemptVerification",
+      "architecturalViolations",
+      "repairAfterDiagnostic",
+      "toolCalls",
+      "humanCorrections"
+    ]
+  },
+  "cases": [
+    {
+      "id": "raw-expo-import",
+      "kind": "static-policy-fixture",
+      "fixture": "cases/raw-expo-import/input.ts",
+      "expectedDiagnosticCodes": ["EFFECT_EXPO_RAW_CAPABILITY_IMPORT"]
+    },
+    {
+      "id": "internal-import",
+      "kind": "static-policy-fixture",
+      "fixture": "cases/internal-import/input.ts",
+      "expectedDiagnosticCodes": ["EFFECT_EXPO_INTERNAL_IMPORT"]
+    },
+    {
+      "id": "unmanaged-runtime",
+      "kind": "static-policy-fixture",
+      "fixture": "cases/unmanaged-runtime/input.ts",
+      "expectedDiagnosticCodes": ["EFFECT_EXPO_UNMANAGED_RUNTIME"]
+    },
+    {
+      "id": "testing-import",
+      "kind": "static-policy-fixture",
+      "fixture": "cases/testing-import/input.ts",
+      "expectedDiagnosticCodes": ["EFFECT_EXPO_TESTING_IMPORT"]
+    },
+    {
+      "id": "generated-drift",
+      "kind": "agent-task",
+      "fixture": "cases/generated-drift/task.md",
+      "expectedDiagnosticCodes": ["EFFECT_EXPO_GENERATED_DRIFT"]
+    },
+    {
+      "id": "listener-scope",
+      "kind": "agent-task",
+      "fixture": "cases/listener-scope/task.md",
+      "expectedTests": ["removes the native listener when the stream scope closes"]
+    }
+  ]
+}

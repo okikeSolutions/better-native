@@ -1,0 +1,23 @@
+{
+  "name": "@effect-expo/cli",
+  "version": "0.0.0",
+  "private": true,
+  "bin": {
+    "effect-expo": "./src/bin.ts"
+  },
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@effect-expo/catalog": "workspace:*",
+    "@effect-expo/core": "workspace:*",
+    "@effect/platform-node": "4.0.0-beta.102",
+    "effect": "4.0.0-beta.102",
+    "ioredis": "^5.7.0",
+    "typescript": "6.0.3"
+  },
+  "devDependencies": {
+    "@effect-expo/typescript-config": "workspace:*"
+  }
+}

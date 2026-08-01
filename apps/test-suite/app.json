@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "Effect Expo Test Suite",
+    "slug": "effect-expo-test-suite",
+    "scheme": "effect-expo-tests",
+    "version": "0.0.0",
+    "orientation": "default",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "plugins": ["expo-router"],
+    "ios": {
+      "bundleIdentifier": "dev.effectexpo.tests"
+    },
+    "android": {
+      "package": "dev.effectexpo.tests"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    }
+  }
+}

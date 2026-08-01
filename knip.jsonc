@@ -1,0 +1,18 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  "workspaces": {
+    ".": {
+      // Vendored upstream repositories are research inputs, not this workspace's code.
+      "project": ["*.{js,mjs,cjs,ts,mts,cts}"],
+      // Override Vitest's broad default __mocks__ glob so research submodules stay out.
+      "vitest": {
+        "entry": ["packages/*/test/**/*.test.ts"]
+      }
+    },
+    "apps/test-suite": {
+      "project": ["app/**/*.tsx", "src/**/*.ts", "src/**/*.tsx"],
+      // Expo's evaluated config injects these bundled plugins; the app does not import them.
+      "ignoreDependencies": ["expo-updates", "expo-system-ui"]
+    }
+  }
+}

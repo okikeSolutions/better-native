@@ -1,0 +1,4 @@
+{
+  "extends": "@effect-expo/typescript-config/library",
+  "include": ["src/**/*.ts"]
+}

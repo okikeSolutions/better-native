@@ -1,0 +1,28 @@
+{
+  "name": "@effect-expo/network",
+  "version": "0.0.0",
+  "private": true,
+  "homepage": "https://github.com/okikeSolutions/effect-expo",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./conformance": "./src/conformance/NetworkConformance.ts",
+    "./testing": "./src/testing/NetworkTest.ts"
+  },
+  "scripts": {
+    "docs": "docgen",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@effect-expo/typescript-config": "workspace:*",
+    "expo": "57.0.9",
+    "expo-network": "57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.2"
+  },
+  "peerDependencies": {
+    "effect": "4.0.0-beta.102",
+    "expo": "^57.0.0",
+    "expo-network": "^57.0.0"
+  }
+}

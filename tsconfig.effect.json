@@ -1,0 +1,15 @@
+{
+  "extends": "@effect-expo/typescript-config/library",
+  "compilerOptions": {
+    "types": ["node", "vitest/globals"]
+  },
+  "include": [
+    "apps/*/app/**/*.ts",
+    "apps/*/app/**/*.tsx",
+    "apps/*/src/**/*.ts",
+    "apps/*/src/**/*.tsx",
+    "packages/*/src/**/*.ts",
+    "packages/*/test/**/*.ts",
+    "vitest.config.ts"
+  ]
+}
