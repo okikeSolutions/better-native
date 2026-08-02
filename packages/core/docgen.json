@@ -1,6 +1,0 @@
-{
-  "$schema": "../../node_modules/@effect/docgen/schema.json",
-  "srcLink": "https://github.com/okikeSolutions/effect-expo/tree/main/packages/core/src/",
-  "outDir": "../../.artifacts/api-docs/core",
-  "enforceDescriptions": true
-}
