@@ -16,12 +16,12 @@
   <circle cx="970" cy="325" r="285" fill="#8bff6f" fill-opacity=".05"/>
 
   <rect x="64" y="54" width="44" height="44" rx="12" fill="#84f968"/>
-  <text x="86" y="83" fill="#0d180f" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" text-anchor="middle">E/</text>
-  <text x="122" y="82" fill="#f0f7ed" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="-1">better-native</text>
+  <text x="86" y="82" fill="#0d180f" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" text-anchor="middle">BN</text>
+  <text x="122" y="82" fill="#f0f7ed" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="-1">Better Native</text>
 
   <text x="64" y="201" fill="#f5faf3" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="700" letter-spacing="-4">Reliable Expo APIs,</text>
   <text x="64" y="273" fill="#84f968" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="700" letter-spacing="-4">by construction.</text>
-  <text x="66" y="326" fill="#b7c3b6" font-family="Arial, Helvetica, sans-serif" font-size="22">Effect-native APIs for Expo, built on a compatibility-first foundation.</text>
+  <text x="66" y="326" fill="#b7c3b6" font-family="Arial, Helvetica, sans-serif" font-size="22">Typed native APIs for Expo, built on a compatibility-first foundation.</text>
 
   <g font-family="Menlo, Monaco, monospace" font-size="12" letter-spacing="1.6">
     <text x="66" y="385" fill="#829382">PINNED RUNTIME</text>
@@ -54,7 +54,7 @@
     <rect x="91" y="28" width="78" height="18" rx="9" fill="#151817"/>
     <text x="39" y="77" fill="#b7c3b6" font-family="Menlo, Monaco, monospace" font-size="10">9:41</text>
     <text x="203" y="77" fill="#b7c3b6" font-family="Menlo, Monaco, monospace" font-size="10">5G</text>
-    <text x="38" y="124" fill="#f2f7ef" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700">Effect Mobile</text>
+    <text x="38" y="124" fill="#f2f7ef" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700">Better Native</text>
     <text x="38" y="146" fill="#97a397" font-family="Menlo, Monaco, monospace" font-size="9" letter-spacing="1.4">NATIVE TRACE</text>
     <circle cx="130" cy="270" r="72" fill="#090d0a" stroke="#39433a"/>
     <circle cx="130" cy="270" r="28" fill="none" stroke="#84f968" stroke-width="6"/>
