@@ -63,6 +63,10 @@ describe("hosted compatibility workflow", () => {
       )
       assert.match(workflow, /cron: "0 3 \* \* 1"/)
       assert.match(workflow, /^  detect-platform-changes:$/m)
+      assert.match(
+        workflow,
+        /detect-platform-changes:[\s\S]*?steps:[\s\S]*?uses: actions\/checkout@[\s\S]*?uses: \.\/\.github\/actions\/detect-compatibility-change/,
+      )
       assert.match(workflow, /^  web-baseline:$/m)
       assert.match(workflow, /^  web-pair:$/m)
       assert.match(workflow, /^  web-compare:$/m)

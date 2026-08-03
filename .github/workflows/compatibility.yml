@@ -36,6 +36,10 @@ jobs:
       ios: ${{ steps.compatibility.outputs.should_run_ios }}
       android: ${{ steps.compatibility.outputs.should_run_android }}
     steps:
+      # A local composite action cannot be resolved until this checkout has made
+      # its action.yml available. Pinned Expo uses the same bootstrap step.
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Detect build-relevant platform changes
         id: compatibility
         uses: ./.github/actions/detect-compatibility-change
