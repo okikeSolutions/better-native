@@ -24,7 +24,7 @@ export class PlatformDriverError extends Data.TaggedError("PlatformDriverError")
     | "install"
     | "reset"
     | "launch"
-    | "deep-link"
+    | "maestro"
     | "liveness"
     | "logs"
     | "result"
@@ -41,7 +41,11 @@ export interface Service {
   ) => Effect.Effect<void, PlatformDriverError>
   readonly reset: (device: NativeDevice) => Effect.Effect<void, PlatformDriverError>
   readonly launch: (device: NativeDevice) => Effect.Effect<NativeLaunch, PlatformDriverError>
-  readonly openUrl: (device: NativeDevice, url: string) => Effect.Effect<void, PlatformDriverError>
+  readonly runMaestroFlow: (
+    device: NativeDevice,
+    flowPath: string,
+    timeoutMillis: number,
+  ) => Effect.Effect<ReadonlyArray<ProcessObservation>, PlatformDriverError>
   readonly isAlive: (device: NativeDevice) => Effect.Effect<boolean, PlatformDriverError>
   readonly grantPermissions: (device: NativeDevice) => Effect.Effect<void, PlatformDriverError>
   readonly logs: (
@@ -286,23 +290,32 @@ export const layer: Layer.Layer<PlatformDrivers, never, ProcessSupervisor> = Lay
           }),
         )
       },
-      openUrl: (device, url) => {
-        const args =
-          device.platform === "ios"
-            ? ["openurl", device.id, url]
-            : [
-                "shell",
-                "am",
-                "start",
-                "-W",
-                "-a",
-                "android.intent.action.VIEW",
-                "-d",
-                url,
-                device.applicationId,
-              ]
-        return invoke("deep-link", device, args).pipe(Effect.asVoid)
-      },
+      runMaestroFlow: (device, flowPath, timeoutMillis) =>
+        processes
+          .run({
+            command: "maestro",
+            args: ["test", flowPath],
+            timeoutMillis,
+            terminationGraceMillis: 5_000,
+          })
+          .pipe(
+            Effect.flatMap((flowResult) =>
+              flowResult.exitCode === 0
+                ? Effect.succeed(flowResult.observations)
+                : Effect.fail(
+                    new PlatformDriverError({
+                      operation: "maestro",
+                      device,
+                      cause: `maestro flow exited ${flowResult.exitCode}: ${output(flowResult)}`,
+                    }),
+                  ),
+            ),
+            Effect.mapError((cause) =>
+              cause instanceof PlatformDriverError
+                ? cause
+                : new PlatformDriverError({ operation: "maestro", device, cause }),
+            ),
+          ),
       isAlive,
       logs,
       result,

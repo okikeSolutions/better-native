@@ -20,7 +20,7 @@ runs:
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ runner.temp }}/.ccache
-        key: ${{ runner.os }}-ccache-${{ steps.xcode-version.outputs.hash }}-${{ hashFiles('vendor/expo/pnpm-lock.yaml', 'vendor/expo/packages/**/*.c', 'vendor/expo/packages/**/*.cpp', 'vendor/expo/packages/**/*.h', 'vendor/expo/packages/**/*.m', 'vendor/expo/packages/**/*.mm') }}
+        key: ${{ runner.os }}-ccache-${{ steps.xcode-version.outputs.hash }}-${{ hashFiles('compatibility/upstreams.json', 'apps/compatibility-suite/**', 'packages/metro/**') }}
         restore-keys: ${{ runner.os }}-ccache-${{ steps.xcode-version.outputs.hash }}-
 
     - name: Restore ccache for Android
@@ -28,8 +28,8 @@ runs:
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ runner.temp }}/.ccache
-        key: ${{ runner.os }}-ccache-${{ hashFiles('vendor/expo/pnpm-lock.yaml') }}-${{ hashFiles('vendor/expo/packages/**/*.c', 'vendor/expo/packages/**/*.cpp', 'vendor/expo/packages/**/*.h', 'vendor/expo/packages/**/build.gradle', 'vendor/expo/packages/**/build.gradle.kts', 'vendor/expo/packages/**/settings.gradle', 'vendor/expo/packages/**/settings.gradle.kts') }}
-        restore-keys: ${{ runner.os }}-ccache-${{ hashFiles('vendor/expo/pnpm-lock.yaml') }}-
+        key: ${{ runner.os }}-ccache-${{ hashFiles('compatibility/upstreams.json', 'apps/compatibility-suite/**', 'packages/metro/**') }}
+        restore-keys: ${{ runner.os }}-ccache-
 
     - name: Restore Gradle cache
       if: inputs.platform == 'android'
@@ -47,5 +47,5 @@ runs:
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ env.REACT_NATIVE_DOWNLOADS_DIR }}
-        key: gradle-downloads-${{ hashFiles('vendor/expo/pnpm-lock.yaml') }}
+        key: gradle-downloads-${{ hashFiles('compatibility/upstreams.json', 'apps/compatibility-suite/**') }}
         restore-keys: gradle-downloads-

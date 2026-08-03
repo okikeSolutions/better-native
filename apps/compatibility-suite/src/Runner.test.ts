@@ -4,13 +4,13 @@ import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
 import { CompatibilityConfiguration } from "./Configuration.ts"
 import { configureUpstreamSelection, metadata, registry, type RegistryEntry } from "./Registry.ts"
-import { make, RunPlanError, type CaseResult } from "./Runner.ts"
+import { make, RunSelectionError, type CaseResult } from "./Runner.ts"
 
 const tools = { setPortalChild: () => undefined, cleanupPortal: () => Promise.resolve() }
-const plan = (caseIds: ReadonlyArray<string>) => ({
+const selection = (sourceId: string) => ({
   schemaVersion: 1,
   runId: "test-run",
-  caseIds,
+  sourceId,
 })
 
 const configuration = Layer.succeed(
@@ -41,12 +41,30 @@ describe("compatibility runner", () => {
   it.effect("executes Expo Jasmine cases under their stable catalog IDs", () => {
     const arithmeticCase = basic.caseIds.find((caseId) => caseId.includes("2 + 2 is 4?"))
     if (arithmeticCase === undefined) throw new Error("Basic arithmetic case is missing")
-    return make([basic])
-      .run(plan([arithmeticCase]), tools)
+    // Registry loaders use a Metro-only alias for the external Expo checkout. The runner unit
+    // test verifies the stable catalog contract with a deterministic module; Metro integration
+    // tests exercise that alias against the real Expo source.
+    const source: RegistryEntry = {
+      ...basic,
+      load: () => ({
+        name: "Basic",
+        test: (jasmine: {
+          describe: (name: string, body: () => void) => void
+          it: (name: string, body: () => void) => void
+          expect: (value: unknown) => { toBe: (expected: unknown) => void }
+        }) => {
+          jasmine.describe("Basic", () => {
+            jasmine.it("2 + 2 is 4?", () => jasmine.expect(2 + 2).toBe(4))
+          })
+        },
+      }),
+    }
+    return make([source])
+      .run(selection(basic.sourceId), tools)
       .pipe(
         Effect.provide(configuration),
         Effect.map((summary) => {
-          const result = summary.results[0]
+          const result = summary.results.find(({ caseId }) => caseId === arithmeticCase)
           assert.isDefined(result)
           assert.deepEqual(summary.runtimeDiscoveredCaseIds, [])
           assert.strictEqual(result.caseId, arithmeticCase)
@@ -55,16 +73,15 @@ describe("compatibility runner", () => {
       )
   })
 
-  it.effect("rejects malformed, duplicate and unknown run plans", () =>
+  it.effect("rejects malformed and unknown source selections", () =>
     Effect.gen(function* () {
       const runner = make([basic])
       for (const input of [
-        { schemaVersion: 1, runId: "", caseIds: [] },
-        plan([basicCase, basicCase]),
-        plan(["missing#case"]),
+        { schemaVersion: 1, runId: "", sourceId: basic.sourceId },
+        selection("missing#source"),
       ]) {
-        const error = yield* runner.decodeRunPlan(input).pipe(Effect.flip)
-        assert.instanceOf(error, RunPlanError)
+        const error = yield* runner.decodeRunSelection(input).pipe(Effect.flip)
+        assert.instanceOf(error, RunSelectionError)
       }
     }),
   )
@@ -77,7 +94,7 @@ describe("compatibility runner", () => {
       },
     }
     return make([source])
-      .run(plan([basicCase]), tools)
+      .run(selection(source.sourceId), tools)
       .pipe(
         Effect.provide(configuration),
         Effect.map((summary) => {
@@ -110,7 +127,7 @@ describe("compatibility runner", () => {
       }),
     }
     return make([source])
-      .run(plan([basicCase]), tools)
+      .run(selection(source.sourceId), tools)
       .pipe(
         Effect.provide(configuration),
         Effect.map((summary) => {
@@ -149,13 +166,19 @@ describe("compatibility runner", () => {
         }),
       }
       return make([source])
-        .run(plan([second]), tools)
+        .run(selection(source.sourceId), tools)
         .pipe(
           Effect.provide(configuration),
           Effect.map((summary) => {
-            assert.strictEqual(summary.results.length, 1)
-            assert.strictEqual(summary.results[0]?.caseId, second)
-            assert.strictEqual(summary.results[0]?.outcome._tag, "passed")
+            assert.strictEqual(summary.results.length, 2)
+            assert.strictEqual(
+              summary.results.find(({ caseId }) => caseId === first)?.outcome._tag,
+              "failed",
+            )
+            assert.strictEqual(
+              summary.results.find(({ caseId }) => caseId === second)?.outcome._tag,
+              "passed",
+            )
           }),
         )
     },
@@ -181,7 +204,7 @@ describe("compatibility runner", () => {
       }),
     }
     return make([source])
-      .run(plan([basic.caseIds.find((caseId) => caseId.includes("2 + 2 is 4?"))!]), tools)
+      .run(selection(source.sourceId), tools)
       .pipe(
         Effect.provide(configuration),
         Effect.map((summary) => {

@@ -4,6 +4,7 @@ import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
 import {
   RegistryMetadata,
+  type ExecutionUnit,
   type CorpusSnapshot,
   type RegistryMetadata as RegistryMetadataType,
   type SurfaceSnapshot,
@@ -17,6 +18,19 @@ import * as RunnerPlans from "./RunnerPlans.ts"
 
 const platforms = ["web", "ios", "android"] as const
 type Platform = (typeof platforms)[number]
+
+const executionRunner = (platform: Platform): ExecutionUnit["runner"] =>
+  platform === "web" ? "web-app" : "native-app"
+
+const unitId = (platform: Platform, sourceId: TestSourceId): string => {
+  let hash = 2166136261
+  for (const character of sourceId) {
+    hash ^= character.charCodeAt(0)
+    hash = Math.imul(hash, 16777619)
+  }
+  const stem = sourceId.replace(/[^A-Za-z0-9._-]/g, "_").slice(0, 72)
+  return `${platform}-${stem}-${(hash >>> 0).toString(16)}`
+}
 
 export const ReplacementManifest = Schema.Struct({
   schemaVersion: Schema.Literal(1),
@@ -108,17 +122,20 @@ export const runnableSourceIds = (
   return selected.toSorted()
 }
 
-export const runnableCaseIds = (
+/**
+ * Produces source-sized app work. The unit IDs are safe evidence-path segments;
+ * source IDs remain unmodified so the app can resolve them from its static registry.
+ */
+export const appExecutionUnits = (
   metadata: RegistryMetadataType,
   platform: Platform,
-  sourceIds: ReadonlyArray<TestSourceId> = runnableSourceIds(metadata, platform),
-): ReadonlyArray<TestCaseId> => {
-  const selected = new Set(sourceIds)
-  return metadata.sources
-    .filter(({ sourceId }) => selected.has(sourceId))
-    .flatMap(({ caseIds }) => caseIds)
-    .toSorted()
-}
+): ReadonlyArray<ExecutionUnit> =>
+  runnableSourceIds(metadata, platform).map((sourceId) => ({
+    id: unitId(platform, sourceId),
+    runner: executionRunner(platform),
+    platform,
+    sourceId,
+  }))
 
 export const loadMetadata = Effect.fn("AppRegistry.loadMetadata")(function* () {
   const repository = yield* ExpoRepository
@@ -154,7 +171,35 @@ const registration = (source: TestSource, appRunnable: boolean) => {
   return isEager(source) ? ("eager" as const) : ("lazy" as const)
 }
 
-const expoTestModule = (source: TestSource): string => `../../../../vendor/expo/${source.path}`
+const execution = (
+  source: TestSource,
+  appRunnable: boolean,
+): RegistryMetadataType["sources"][number]["execution"] => {
+  if (appRunnable) return "native-app"
+  if (source.executability === "non-executable") return "unsupported"
+  switch (source.runner) {
+    case "jest":
+    case "node-test":
+    case "bun-test":
+    case "playwright":
+    case "detox":
+      return "javascript-runner"
+    case "xctest":
+      return "xctest"
+    case "gradle-unit":
+    case "gradle-instrumentation":
+      return "gradle"
+    case "maestro":
+      return "native-app"
+    case "workflow":
+      return "build"
+    case "expo-jasmine":
+      return "unsupported"
+  }
+  return "unsupported"
+}
+
+const expoTestModule = (source: TestSource): string => `@better-native/expo-source/${source.path}`
 
 const specifierOf = (entry: SurfaceSnapshot["exports"][number]) =>
   entry.subpath === "." ? entry.package : `${entry.package}/${entry.subpath.slice(2)}`
@@ -174,7 +219,7 @@ const upstreamSelectionSource = (): string =>
     "",
     "// Kept in an app-only module: invoking the pinned function preserves its",
     "// platform, Expo Go, device-farm, WebGL, optional-module and eager-load gates.",
-    'const upstream: unknown = require("../../../../vendor/expo/apps/test-suite/TestModules")',
+    'const upstream: unknown = require("@better-native/expo-source/apps/test-suite/TestModules")',
     'const getter: unknown = typeof upstream === "object" && upstream !== null',
     '  ? Reflect.get(upstream, "getTestModules")',
     "  : undefined",
@@ -310,6 +355,7 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
         path: source.path,
         caseIds: casesBySource.get(source.id) ?? [],
         runner: source.runner,
+        execution: execution(source, appRunnable),
         platforms: source.platforms,
         executability: source.executability,
         registration: registration(source, appRunnable),
@@ -351,6 +397,7 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
         "    readonly path: string",
         "    readonly caseIds: ReadonlyArray<string>",
         "    readonly runner: string",
+        '    readonly execution: "native-app" | "web-app" | "javascript-runner" | "xctest" | "gradle" | "build" | "unsupported"',
         "    readonly platforms: ReadonlyArray<string>",
         "    readonly executability: string",
         '    readonly registration: "eager" | "lazy" | "external"',

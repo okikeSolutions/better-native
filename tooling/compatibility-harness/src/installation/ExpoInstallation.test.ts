@@ -16,6 +16,14 @@ describe("ExpoInstallation", () => {
       "not-declared",
     )
     assert.strictEqual(
+      ExpoInstallation.statusOf({
+        ...base,
+        declaredVersion: undefined,
+        requiresDeclaration: false,
+      }),
+      "valid",
+    )
+    assert.strictEqual(
       ExpoInstallation.statusOf({ ...base, installedVersion: "56.0.0" }),
       "version-mismatch",
     )

@@ -1,0 +1,19 @@
+name: Setup external Expo source
+description: Check out the pinned Expo source only for compatibility jobs that require its internal test corpus
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout pinned Expo source
+      shell: bash
+      run: |
+        set -euo pipefail
+        readonly revision="$(jq -r '.expo.revision' compatibility/upstreams.json)"
+        readonly source_root="${RUNNER_TEMP:?}/expo"
+        git init --quiet "$source_root"
+        git -C "$source_root" remote add origin https://github.com/expo/expo.git
+        git -C "$source_root" fetch --depth=1 origin "$revision"
+        git -C "$source_root" checkout --quiet --detach FETCH_HEAD
+        actual_revision="$(git -C "$source_root" rev-parse HEAD)"
+        test "$actual_revision" = "$revision"
+        echo "EXPO_SOURCE_ROOT=$source_root" >> "$GITHUB_ENV"

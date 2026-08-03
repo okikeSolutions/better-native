@@ -15,10 +15,10 @@ describe("RunnerPlanExecution", () => {
       RunnerPlanExecution.expandTemplate(
         "{repositoryRoot}/out/{runId}:{expoRoot}",
         "/repository",
-        "/repository/vendor/expo",
+        "/external/expo",
         "run-1",
       ),
-      "/repository/out/run-1:/repository/vendor/expo",
+      "/repository/out/run-1:/external/expo",
     )
   })
 

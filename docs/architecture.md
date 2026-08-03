@@ -16,7 +16,7 @@ Candidate mode changes selected JavaScript resolution through Metro. It does not
 
 ## Authoritative target
 
-The exact revision in `vendor/expo` is the authoritative Expo target. Its package manifests, exports, source behavior, tests, native registration, and build tooling define the compatibility contract even when a registry package reports the same semantic version.
+The exact revision in the external Expo source checkout (`../expo` by default, or `EXPO_SOURCE_ROOT`) is the authoritative research target. Its package manifests, exports, source behavior, tests, native registration, and build tooling define the compatibility contract even when a registry package reports the same semantic version.
 
 Published Expo packages are comparison evidence only. They never redefine or fill gaps in an Expo-owned target surface. Installed registry manifests define target entrypoints only for bundled third-party packages that are absent from the pinned Expo workspace.
 
@@ -48,15 +48,50 @@ Only `effect` counts as migrated.
 apps/compatibility-suite       Executable Expo application and live vectors
 packages/*                     Publishable better-native packages
 tooling/compatibility-harness  Private Expo catalog and installation-validation CLI
+tooling/expo-catalog           Private declaration-only fallback for external packages
 packages/typescript-config     Private shared TypeScript presets
 compatibility/ownership.json   Reviewed per-export ownership overrides
 compatibility/surface-lock.json Reviewed lock for the complete discovered export denominator
 compatibility/expectations.json Case-level known upstream or candidate behavior
 compatibility/suites.json      Declarative upstream test discovery rules
 vendor/effect                  Pinned Effect source
-vendor/expo                    Pinned Expo source and behavioral oracle
+../expo                        External pinned Expo source and behavioral oracle
 .artifacts                     Disposable catalogs, reports, builds, logs, and screenshots
 ```
+
+## Fixture boundary
+
+The compatibility suite is a runner, not an application that installs the complete Expo SDK. Its
+manifest contains the runner's curated source/test dependency closure, not every third-party Expo
+package. The Expo catalog and ownership ledger retain every discovered package and export,
+including packages that cannot coexist in one native binary.
+
+`AppWorkspace` copies the fixture manifest unchanged. In particular, it must not inject the
+repository or pinned Expo `node_modules` directories into Expo Autolinking `searchPaths`: doing so
+would turn every installed native module into a build input. Native package coverage is instead
+added through generated single-package or explicitly compatible-cohort fixtures. An upstream
+failure of such a fixture is recorded as an upstream result; it is never hidden by omitting the
+package from the catalog.
+
+For bundled third-party packages absent from Expo's source tree, declaration extraction reads the
+normal installation of the pinned external Expo checkout. When that installation does not
+materialize an artifact, the current implementation falls back to the non-native
+`tooling/expo-catalog` declaration workspace. The installation report records runner dependencies
+separately, so a fixture's dependency set cannot redefine the catalog. Native coverage becomes
+blocking only in the generated fixture that declares the relevant package.
+
+The fallback is a temporary implementation boundary, not a publishable dependency or a second
+Expo target. It restores the complete, locked surface denominator without autolinking every
+third-party package into the runner. However, it currently brings some legacy package dependency
+trees into the root Bun lockfile; the security audit rejects those trees. The catalog must move to
+verified declaration artifacts (or another isolated, integrity-checked artifact source) before
+the root security gate can be considered green.
+
+An execution unit selects exactly one source and names its runner and platform. The harness retains
+the complete unit manifest as evidence, but an application receives only
+`run?runId=<id>&source=<source-id>`. Its static registry expands that source to its cases locally.
+This keeps complete compatibility plans out of HTTP headers and native deep links while retaining
+case-level results and source-level attribution.
 
 The harness source is divided by responsibility:
 
@@ -114,7 +149,7 @@ and are closed by observed runner cases rather than invented static identifiers.
 
 Publishable packages do not import harness code. The harness may inspect public package exports and pinned vendor sources. `bun run generate` recreates disposable catalog artifacts under `.artifacts`.
 
-Knip enforces workspace file and dependency boundaries through `bun run check`. Unused exports and exported types remain disabled while the harness protocols are being built. The compatibility application's complete Expo SDK dependency set is validated by `ExpoInstallation`, so Knip does not treat intentionally dormant SDK packages as ordinary unused dependencies.
+Knip enforces workspace file and dependency boundaries through `bun run check`. Unused exports and exported types remain disabled while the harness protocols are being built. `ExpoInstallation` validates the minimal fixture's declared dependency closure; generated single-package and compatible-cohort fixtures validate the rest of the Expo catalog when they are materialized.
 
 ## Harness data flow
 
@@ -150,7 +185,7 @@ Build products, test reports, logs, screenshots, and simulator state belong unde
 are not committed. The repository root owns only its own Turbo configuration through `turbo.json`.
 Pinned Expo is materialized by the harness with Expo's normal `pnpm install --frozen-lockfile`
 lifecycle. The harness does not suppress lifecycle scripts, curate a replacement rebuild list, or
-inject a Turbo endpoint into `vendor/expo`. This is the same runnable-workspace model used by
+inject a Turbo endpoint into the external Expo checkout. This is the same runnable-workspace model used by
 Expo's test-suite workflows. Compatibility build services consume that one verified
 materialization and create separate upstream and candidate CNG workspaces only when a differential
 run is requested.
@@ -225,7 +260,7 @@ stable and each has a dedicated invariant and fault-injection test.
 
 The repository derives a manifest-resolution catalog and an indexed test corpus from pinned source. The catalog separates runtime, build-time, server, metadata, and asset entrypoints, preserves conditional and fallback resolution branches, decodes native-registration metadata, and derives package roles from explicit upstream evidence.
 
-`ExpoInstallation` validates the complete SDK dependency map declared by the compatibility app against `bun.lock` and the installed package manifests. It records expected, declared, resolved, and installed versions and preserves integrity information. Pinned manifests and tracked files define Expo-owned target entrypoints and wildcard expansion. Installed manifests and files define target entrypoints only for bundled external packages absent from the pinned workspace. Registry installations are retained separately for toolchain validation and comparison, and a different published package revision remains explicit non-blocking evidence instead of being treated as equivalent to the pinned target.
+`ExpoInstallation` validates the fixture's declared dependency map against `bun.lock` and the installed package manifests. It records expected, declared, resolved, and installed versions and preserves integrity information. Pinned manifests and tracked files define Expo-owned target entrypoints and wildcard expansion. Installed manifests and files define target entrypoints only for bundled external packages absent from the pinned workspace. Registry installations are retained separately for toolchain validation and comparison, and a different published package revision remains explicit non-blocking evidence instead of being treated as equivalent to the pinned target.
 
 Static declaration extraction builds the current export denominator from those concrete target entrypoints. Every discovered export is present in the generated ownership ledger, with `upstream` filled explicitly when no reviewed override exists. `compatibility/surface-lock.json` makes additions, removals, and extraction drift reviewable instead of silently changing the denominator.
 
@@ -233,19 +268,19 @@ Static extraction is deliberately honest about uncertainty: entrypoints whose na
 
 The paired resolver is implemented in `@better-native/metro`. One Expo application can select `upstream` or `candidate` mode without uninstalling or modifying its native Expo packages. Exact candidate mappings, self-import bypass, configuration validation, and resolution observations are Effect services. Metro requires `resolveRequest` to synchronously return a resolution, so `withBetterNative` is the reviewed synchronous runner boundary; it delegates to an existing resolver or `context.resolveRequest` and preserves the original Metro result or failure. The caller supplies run and build identities, and the mode is also supplied to Metro as a custom resolver option so it participates in graph identity. Paired production builds run in isolated processes. The web and native supervisors validate protocol closure, preserve bounded process evidence, and persist normalized run records for differential comparison.
 
-The compatibility suite is a production-bundleable Expo Router application generated from the complete test corpus. Every source is represented as app-runnable or explicitly external; platform loaders statically import eligible pinned Expo Jasmine modules, and background-task registrations are emitted as eager module-scope imports. Selected static cases and explicitly reported runtime discoveries run by stable catalog ID through one application `ManagedRuntime`, with build identity decoded from Expo configuration and Schema-validated result summaries emitted to the UI and console. Upstream and candidate web exports are separate Metro graphs. Native supervisors own launch, timeout, bounded retry, crash detection, result extraction, and evidence persistence; simulator and emulator jobs remain the live conformance boundary.
+The compatibility suite is a production-bundleable Expo Router application generated from the complete test corpus. Every source is explicitly classified as `native-app`, `web-app`, `javascript-runner`, `xctest`, `gradle`, `build`, or `unsupported`; non-app sources receive an external runner plan or a reviewed blocker. Platform loaders statically import eligible pinned Expo Jasmine modules, and background-task registrations are emitted as eager module-scope imports. A source-sized selection runs by stable catalog ID through one application `ManagedRuntime`, with build identity decoded from Expo configuration and Schema-validated case results emitted to the UI and console. Upstream and candidate web exports are separate Metro graphs. Native supervisors install and launch once per shard, generate one Expo-style Maestro flow per source (`clearState`, deep link, readiness, result), retry a failed flow once, and persist per-source evidence; simulator and emulator jobs remain the live conformance boundary.
 
 ## Dependency security policy
 
-`bun run security:audit` rejects every new moderate-or-higher advisory. Its reviewed exceptions cover only these exact vulnerable dependency trees pulled in by packages that are intentionally present in the pinned Expo compatibility denominator:
+`bun run security:audit` rejects every new moderate-or-higher advisory. A reviewed exception is
+allowed only when it identifies the exact owner, locked dependency path, version, and advisory;
+the audit policy also fails if that path changes or the exception becomes stale. Exceptions are
+never allowed for publishable `@better-native/*` runtime packages.
 
-| Owner in the pinned denominator                     | Vulnerable dependency                 | Reviewed advisories                                                                                               |
-| --------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `expo-app-auth@11.1.1`                              | `@xmldom/xmldom@0.7.13`               | `GHSA-wh4c-j3r5-mjhp`, `GHSA-2v35-w6hq-6mfw`, `GHSA-f6ww-3ggp-fr8h`, `GHSA-x6wf-f3px-wcqx`, `GHSA-j759-j44w-7fr8` |
-| `expo-app-auth@11.1.1`                              | `xml2js@0.4.23`                       | `GHSA-776f-qx25-q3cc`                                                                                             |
-| `react-native-bootsplash@6.3.12`                    | `sharp@0.32.6`                        | `GHSA-f88m-g3jw-g9cj`                                                                                             |
-| `@react-native-community/cli-config-android@18.0.1` | `fast-xml-parser@4.5.7`               | `GHSA-gh4j-gqv2-49f6`                                                                                             |
-| `sentry-expo@7.0.1`                                 | `@sentry/browser@7.52.0` and `7.52.1` | `GHSA-593m-55hh-j8gv`                                                                                             |
-| Expo's `xcode@3.0.1` tool                           | `uuid@7.0.3`                          | `GHSA-w5hq-g745-h8pq`                                                                                             |
-
-The installed modern trees are already patched where their dependency ranges permit it. Overriding the remaining incompatible major versions would stop the harness from testing the authoritative Expo installation. These exceptions apply only to the private compatibility application and its build tooling; they are not permitted in publishable `@better-native/*` runtime packages. Each ignored advisory must be removed when its owning Expo package leaves the pinned denominator or accepts a patched dependency. The raw `bun audit` report remains the review source; the checked command ensures an unreviewed advisory cannot silently join the exception set.
+At present, the only reviewed exception is Expo's build-time `xcode@3.0.1 → uuid@7.0.3` path
+(`GHSA-w5hq-g745-h8pq`). The current `tooling/expo-catalog` fallback introduces additional legacy
+transitive dependencies—including old Sentry, XML, image-processing, and React Server Component
+trees—which are intentionally **not** suppressed. Consequently, `bun run security:audit` and the
+root `bun run check` remain red until that fallback is replaced or isolated with a verified
+declaration-artifact design. This is a correctness requirement: keeping the full Expo surface
+must not silently weaken the repository's supply-chain gate.

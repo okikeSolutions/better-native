@@ -13,10 +13,17 @@ if (!runId) throw new Error("BETTER_NATIVE_RUN_ID is required")
 if (!upstreamNodeModulesPath) throw new Error("BETTER_NATIVE_UPSTREAM_NODE_MODULES is required")
 const pinnedExpoRoot = process.env.BETTER_NATIVE_PINNED_EXPO_ROOT
 if (!pinnedExpoRoot) throw new Error("BETTER_NATIVE_PINNED_EXPO_ROOT is required")
+const expoSourceRoot = process.env.EXPO_SOURCE_ROOT ?? path.resolve(__dirname, "../../../expo")
+
 const { getDefaultConfig } = require(path.join(pinnedExpoRoot, "packages", "expo", "metro-config"))
 
 const config = getDefaultConfig(__dirname)
 if (!config.resolver.assetExts.includes("wasm")) config.resolver.assetExts.push("wasm")
+config.watchFolders = [...new Set([...(config.watchFolders ?? []), expoSourceRoot])]
+config.resolver.extraNodeModules = {
+  ...config.resolver.extraNodeModules,
+  "@better-native/expo-source": expoSourceRoot,
+}
 
 module.exports = withBetterNative(config, {
   mode,

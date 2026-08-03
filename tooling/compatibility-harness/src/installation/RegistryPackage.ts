@@ -16,15 +16,34 @@ const packageDirectory = (path: Path.Path, nodeModules: string, name: string): s
   path.join(nodeModules, ...name.split("/"))
 
 const locate = Effect.fn("RegistryPackage.locate")(function* (
-  root: string,
-  appRoot: string,
+  nodeModulesPaths: ReadonlyArray<string>,
   name: string,
+  expectedVersion: string,
 ) {
   const fs = yield* FileSystem.FileSystem
   const path = yield* Path.Path
-  for (const nodeModules of [path.join(appRoot, "node_modules"), path.join(root, "node_modules")]) {
+  for (const nodeModules of nodeModulesPaths) {
     const directory = packageDirectory(path, nodeModules, name)
     if (yield* fs.exists(path.join(directory, "package.json"))) return directory
+
+    const store = path.join(nodeModules, ".pnpm")
+    if (!(yield* fs.exists(store))) continue
+    const packagePrefix = `${name.replace("/", "+")}@`
+    const version = expectedVersion.match(/\d+\.\d+\.\d+/)?.[0]
+    const entries = yield* fs
+      .readDirectory(store)
+      .pipe(Effect.mapError((cause) => failure("list pnpm virtual store", store, cause)))
+    const candidates = entries
+      .filter(
+        (entry) =>
+          entry.startsWith(packagePrefix) &&
+          (version === undefined || entry.startsWith(`${packagePrefix}${version}`)),
+      )
+      .toSorted()
+    for (const entry of candidates) {
+      const candidate = packageDirectory(path, path.join(store, entry, "node_modules"), name)
+      if (yield* fs.exists(path.join(candidate, "package.json"))) return candidate
+    }
   }
   return null
 })
@@ -32,31 +51,43 @@ const locate = Effect.fn("RegistryPackage.locate")(function* (
 const files = Effect.fn("RegistryPackage.files")(function* (directory: string) {
   const fs = yield* FileSystem.FileSystem
   const path = yield* Path.Path
-  const entries = yield* fs
-    .readDirectory(directory, { recursive: true })
-    .pipe(Effect.mapError((cause) => failure("list installed package", directory, cause)))
-  return yield* Effect.filter(
-    entries,
-    (entry) =>
-      fs.stat(path.join(directory, entry)).pipe(
-        Effect.map((info) => info.type === "File"),
-        Effect.mapError((cause) => failure("inspect installed package", directory, cause)),
-      ),
-    { concurrency: "unbounded" },
-  ).pipe(
-    Effect.map((matchedFiles) => matchedFiles.map((file) => file.replaceAll("\\", "/")).toSorted()),
-  )
+  const visit = (
+    current: string,
+    prefix: string,
+  ): Effect.Effect<ReadonlyArray<string>, HarnessError> =>
+    Effect.gen(function* () {
+      const entries = yield* fs
+        .readDirectory(current)
+        .pipe(Effect.mapError((cause) => failure("list installed package", current, cause)))
+      const discovered: Array<string> = []
+      for (const entry of entries) {
+        // A pnpm package directory can contain linked dependencies. They are not part of this
+        // package's public files and recursively visiting them expands one package inspection
+        // into its entire dependency graph.
+        if (entry === "node_modules" || entry === ".git") continue
+        const target = path.join(current, entry)
+        const relative = path.join(prefix, entry)
+        const info = yield* fs
+          .stat(target)
+          .pipe(Effect.mapError((cause) => failure("inspect installed package", target, cause)))
+        if (info.type === "File") discovered.push(relative.replaceAll("\\", "/"))
+        if (info.type === "Directory") discovered.push(...(yield* visit(target, relative)))
+      }
+      return discovered
+    })
+  return (yield* visit(directory, "")).toSorted()
 })
 
 export const inspect = Effect.fn("RegistryPackage.inspect")(function* (
   root: string,
-  appRoot: string,
+  nodeModulesPaths: ReadonlyArray<string>,
   name: string,
+  expectedVersion: string,
   lock: BunLock,
 ) {
   const fs = yield* FileSystem.FileSystem
   const path = yield* Path.Path
-  const directory = yield* locate(root, appRoot, name)
+  const directory = yield* locate(nodeModulesPaths, name, expectedVersion)
   if (directory === null) return null
 
   const manifestPath = path.join(directory, "package.json")

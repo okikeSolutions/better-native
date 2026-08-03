@@ -18,8 +18,7 @@ import {
   type CorpusSnapshot,
   type DiscoveryRecord,
   type ProcessObservation,
-  type TestCaseId,
-  type TestSourceId,
+  type ExecutionUnit,
 } from "../Domain.ts"
 import type { BuildOutput } from "../build/BuildPipeline.ts"
 import { DiscoveryPass } from "../evidence/DiscoveryPass.ts"
@@ -30,13 +29,12 @@ import * as RunProtocol from "../protocol/RunProtocol.ts"
 export interface WebRunRequest {
   readonly id: string
   readonly build: BuildOutput
-  readonly caseIds: ReadonlyArray<TestCaseId>
-  readonly sourceIds: ReadonlyArray<TestSourceId>
+  readonly unit: ExecutionUnit
   readonly port: number
   readonly timeoutMillis: number
   readonly corpus: CorpusSnapshot
 }
-export interface WebProbeRequest extends Omit<WebRunRequest, "caseIds" | "sourceIds"> {
+export interface WebProbeRequest extends Omit<WebRunRequest, "unit"> {
   readonly specifier: string
 }
 
@@ -94,6 +92,10 @@ export class BrowserDriverError extends Data.TaggedError("BrowserDriverError")<{
 const maximumBrowserConsoleCharacters = 256 * 1024
 const maximumBrowserConsoleEntries = 1_000
 const maximumBrowserResultBytes = 16 * 1024 * 1024
+const browserReadinessTimeoutMillis = 60_000
+/** @internal */
+export const webRunUrl = (port: number, runId: string, sourceId: string): string =>
+  `http://127.0.0.1:${port}/run?${new URLSearchParams({ runId, source: sourceId }).toString()}`
 
 /** @internal */
 export const makeBoundedConsoleCollector = (
@@ -198,9 +200,27 @@ export const browserLayer = Layer.succeed(
               try: async () => {
                 const page = await browser.newPage()
                 page.on("console", (message) => messages.push(message.text()))
-                await page.goto(url, { waitUntil: "networkidle", timeout: timeoutMillis })
+                page.on("pageerror", (error) => messages.push(`page error: ${error.message}`))
+                const response = await page.goto(url, {
+                  waitUntil: "domcontentloaded",
+                  timeout: Math.min(timeoutMillis, browserReadinessTimeoutMillis),
+                })
+                if (response !== null && !response.ok()) {
+                  throw new Error(
+                    `web route returned HTTP ${response.status()} ${response.statusText()}`,
+                  )
+                }
                 const result = page.getByTestId(resultTestId)
-                await result.waitFor({ state: "visible", timeout: timeoutMillis })
+                const failure = page.getByTestId("compatibility_run_error")
+                const completed = await Promise.race([
+                  result.waitFor({ state: "visible", timeout: timeoutMillis }).then(() => "result"),
+                  failure
+                    .waitFor({ state: "visible", timeout: timeoutMillis })
+                    .then(() => "failure"),
+                ])
+                if (completed === "failure") {
+                  throw new Error(`compatibility app failed: ${await failure.textContent()}`)
+                }
                 const resultJson = await result.evaluate((element, byteLimit) => {
                   const text = element.textContent ?? ""
                   if (
@@ -249,6 +269,23 @@ export const layer: Layer.Layer<
         Effect.gen(function* () {
           const runId = RunId.make(request.id)
           const startedAtMillis = yield* Clock.currentTimeMillis
+          const plan = {
+            schemaVersion: 1 as const,
+            id: runId,
+            buildId: request.build.record.id,
+            platform: "web" as const,
+            unit: request.unit,
+            timeoutMillis: request.timeoutMillis,
+            retries: 0,
+          }
+          const planArtifact = yield* evidence
+            .writeJson("runs", request.id, "plan.json", RunPlan, plan)
+            .pipe(
+              Effect.mapError(
+                (cause) =>
+                  new WebSupervisorError({ phase: "evidence", request, cause, observations: [] }),
+              ),
+            )
           const server = yield* processes
             .start({
               command: "node",
@@ -277,12 +314,9 @@ export const layer: Layer.Layer<
           return yield* withServerFailureEvidence(
             server,
             Effect.gen(function* () {
-              const query = new URLSearchParams({ runId: request.id })
-              for (const caseId of request.caseIds) query.append("case", caseId)
-              for (const sourceId of request.sourceIds) query.append("source", sourceId)
               const browserResult = yield* browser
                 .execute(
-                  `http://127.0.0.1:${request.port}/run?${query.toString()}`,
+                  webRunUrl(request.port, request.id, request.unit.sourceId),
                   request.timeoutMillis,
                   "compatibility_run_result_json",
                 )
@@ -306,8 +340,7 @@ export const layer: Layer.Layer<
                   runId: request.id,
                   buildId: request.build.record.id,
                   mode: request.build.record.mode,
-                  caseIds: request.caseIds,
-                  sourceIds: request.sourceIds,
+                  sourceId: request.unit.sourceId,
                 },
                 summary,
               ).pipe(Effect.mapError((cause) => webFailure("protocol", request, cause)))
@@ -321,16 +354,6 @@ export const layer: Layer.Layer<
                 browserResult.console,
                 finishedAtMillis,
               )
-              const plan = {
-                schemaVersion: 1 as const,
-                id: runId,
-                buildId: request.build.record.id,
-                platform: "web" as const,
-                testCases: request.caseIds,
-                testSources: request.sourceIds,
-                timeoutMillis: request.timeoutMillis,
-                retries: 0,
-              }
               const infrastructure = RunProtocol.infrastructureOf(summary)
               const record: RunRecordType = {
                 schemaVersion: 1,
@@ -356,14 +379,11 @@ export const layer: Layer.Layer<
                     infrastructure,
                     results: summary.results,
                     observations,
-                    artifacts: [],
+                    artifacts: [planArtifact.id],
                   },
                 ],
                 finalInfrastructure: infrastructure,
               }
-              yield* Schema.decodeUnknownEffect(RunPlan)(plan).pipe(
-                Effect.mapError((cause) => webFailure("protocol", request, cause)),
-              )
               yield* evidence
                 .writeJson("runs", request.id, "record.json", RunRecord, record)
                 .pipe(Effect.mapError((cause) => webFailure("evidence", request, cause)))

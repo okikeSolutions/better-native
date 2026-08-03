@@ -39,8 +39,8 @@
       "cache": false,
       "inputs": [
         "compatibility/upstreams.json",
-        "vendor/expo/pnpm-lock.yaml",
-        "vendor/expo/pnpm-workspace.yaml",
+        "apps/compatibility-suite/package.json",
+        "bun.lock",
         "tooling/compatibility-harness/src/build/**"
       ],
       "outputs": []

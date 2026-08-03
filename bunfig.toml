@@ -1,0 +1,5 @@
+[install]
+# Native Expo modules must resolve to one physical installation in the
+# compatibility app. Bun's isolated workspace layout creates peer-context
+# copies that Expo Autolinking correctly reports as duplicates.
+linker = "hoisted"

@@ -20,7 +20,6 @@ export interface PreparedAppWorkspace {
 interface Service {
   readonly prepare: (
     request: BuildRequest,
-    pinnedNodeModules: string,
   ) => Effect.Effect<PreparedAppWorkspace, BuildPipelineError>
 }
 
@@ -36,7 +35,7 @@ export const layer = (
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem
       const path = yield* Path.Path
-      const prepare: Service["prepare"] = (request, pinnedNodeModules) =>
+      const prepare: Service["prepare"] = (request) =>
         Effect.gen(function* () {
           if (!safeBuildId.test(request.id)) {
             return yield* new BuildPipelineError({
@@ -75,16 +74,6 @@ export const layer = (
               cause: "compatibility app package.json must contain a JSON object",
             })
           }
-          const expo = isRecord(parsedManifest.expo) ? parsedManifest.expo : {}
-          const autolinking = isRecord(expo.autolinking) ? expo.autolinking : {}
-          parsedManifest.expo = {
-            ...expo,
-            autolinking: {
-              ...autolinking,
-              searchPaths: [pinnedNodeModules, path.join(root, "node_modules")],
-            },
-          }
-          yield* fs.writeFileString(appManifestPath, `${JSON.stringify(parsedManifest, null, 2)}\n`)
           if (request.probeSpecifier !== undefined) {
             const catalogPath = path.join(
               root,

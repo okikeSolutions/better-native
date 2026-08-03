@@ -9,6 +9,7 @@ export const metadata: {
     readonly path: string
     readonly caseIds: ReadonlyArray<string>
     readonly runner: string
+    readonly execution: "native-app" | "web-app" | "javascript-runner" | "xctest" | "gradle" | "build" | "unsupported"
     readonly platforms: ReadonlyArray<string>
     readonly executability: string
     readonly registration: "eager" | "lazy" | "external"
@@ -3016,6 +3017,7 @@ export const metadata: {
       "path": "apps/brownfield-tester/integrated/android/app/src/androidTest/java/dev/expo/brownfieldtester/ExampleInstrumentedTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3030,6 +3032,7 @@ export const metadata: {
       "path": "apps/brownfield-tester/isolated/android/app/src/androidTest/java/dev/expo/brownfieldintegratedtester/ExampleInstrumentedTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3044,6 +3047,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/annotations/ExpoAlwaysPassThroughFilter.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3058,6 +3062,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/annotations/ExpoDevModeTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3072,6 +3077,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/annotations/ExpoSdkVersionTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3086,6 +3092,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/annotations/ExpoTestSuiteTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3100,6 +3107,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/BaseTestClass.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3114,6 +3122,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/DevModeTests.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3128,6 +3137,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/TestSuiteTests.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3142,6 +3152,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/DeviceUtils.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3156,6 +3167,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/ElapsedTimeIdlingResource.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3170,6 +3182,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/ExpoConditionWatcher.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3184,6 +3197,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/ExponentMatchers.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3198,6 +3212,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/ExponentScrollToAction.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3212,6 +3227,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/ExpoTestRunner.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3226,6 +3242,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/JSTestRunnerIdlingResource.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3240,6 +3257,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/LoadingScreenIdlingResource.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3254,6 +3272,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/RetryTestRule.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3268,6 +3287,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/TestConfig.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3282,6 +3302,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/TestContacts.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3296,6 +3317,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/TestNativeModuleServer.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3310,6 +3332,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/TestReporterRule.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3324,6 +3347,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/androidTest/java/host/exp/exponent/utils/TestServerUtils.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3338,6 +3362,7 @@ export const metadata: {
       "path": "packages/expo-eas-client/android/src/androidTest/java/expo/modules/easclient/EASClientIDTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3352,6 +3377,7 @@ export const metadata: {
       "path": "packages/expo-file-system/android/src/androidTest/java/expo/modules/filesystem/CopyMoveOperationsTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3366,6 +3392,7 @@ export const metadata: {
       "path": "packages/expo-file-system/android/src/androidTest/java/expo/modules/filesystem/FileSystemDownloadTaskMathTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3380,6 +3407,7 @@ export const metadata: {
       "path": "packages/expo-file-system/android/src/androidTest/java/expo/modules/filesystem/FileSystemUploadTaskMathTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3394,6 +3422,7 @@ export const metadata: {
       "path": "packages/expo-file-system/android/src/androidTest/java/expo/modules/filesystem/TestStorageProvider.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3408,6 +3437,7 @@ export const metadata: {
       "path": "packages/expo-font/android/src/androidTest/java/expo/modules/font/VariableTypefacesTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3422,6 +3452,7 @@ export const metadata: {
       "path": "packages/expo-image-picker/android/src/androidTest/java/expo/modules/imagepicker/exporters/DimensionsExporterTests.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3436,6 +3467,7 @@ export const metadata: {
       "path": "packages/expo-json-utils/android/src/androidTest/java/expo/modules/jsonutils/JSONObjectUtilsTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3450,6 +3482,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/BenchmarkTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3464,6 +3497,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/ControllableJSHeapAccessExecutor.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3478,6 +3512,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/CoreModuleTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3492,6 +3527,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/EventEmitterTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3506,6 +3542,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/extensions/StringExtension.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3520,6 +3557,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/FormatterTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3534,6 +3572,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JavaScriptAnonymousObjectTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3548,6 +3587,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JavaScriptArrayBufferTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3562,6 +3602,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JavaScriptClassTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3576,6 +3617,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JavaScriptFunctionTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3590,6 +3632,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JavaScriptObjectTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3604,6 +3647,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JavaScriptRuntimeTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3618,6 +3662,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JavaScriptTypedArrayTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3632,6 +3677,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JavaScriptValueTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3646,6 +3692,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JavaScriptViewModule.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3660,6 +3707,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JNIDeallocatorTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3674,6 +3722,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JSIAsyncFunctionsTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3688,6 +3737,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JSIContextTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3702,6 +3752,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JSIFunctionsTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3716,6 +3767,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JSIModuleMock.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3730,6 +3782,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JSIPropertiesTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3744,6 +3797,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JSIScheduleTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3758,6 +3812,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/JSISuspendableFunctionsTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3772,6 +3827,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/RecordConversionStrategyBenchmarkTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3786,6 +3842,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/ReloadTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3800,6 +3857,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/SharedObjectTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3814,6 +3872,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/SharedRefTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3828,6 +3887,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/types/ArrayBufferConversionTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3842,6 +3902,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/types/BlobTypeConversionTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3856,6 +3917,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/types/CustomTypeConvertersTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3870,6 +3932,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/types/DurationTypeConversionTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3884,6 +3947,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/types/EitherTypeConversionTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3898,6 +3962,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/types/IOTypeConversionTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3912,6 +3977,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/types/ListTypeConversionTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3926,6 +3992,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/types/NetTypeConversionTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3940,6 +4007,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/types/NullableTypeConversionTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3954,6 +4022,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/types/TypeConversionHelper.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3968,6 +4037,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/jni/types/ValueOrUndefinedTypeConversionTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3982,6 +4052,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/kotlin/types/TestConverterContext.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -3996,6 +4067,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/androidTest/java/expo/modules/TestRunner.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4010,6 +4082,7 @@ export const metadata: {
       "path": "packages/expo-notifications/android/src/androidTest/kotlin/expo/modules/notifications/notifications/model/ExpoNotificationBuilderTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4024,6 +4097,7 @@ export const metadata: {
       "path": "packages/expo-test-runner/templates/detox/android/app/src/androidTest/java/com/testrunner/DetoxTest.java",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4038,6 +4112,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/codesigning/CertificateChainTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4052,6 +4127,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/codesigning/CertificateFixtures.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4066,6 +4142,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/codesigning/CodeSigningAlgorithmTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4080,6 +4157,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/codesigning/CodeSigningConfigurationTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4094,6 +4172,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/codesigning/SignatureHeaderInfoTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4108,6 +4187,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/db/BuildDataTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4122,6 +4202,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/db/DatabaseIntegrityCheckTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4136,6 +4217,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/db/UpdatesDatabaseMigrationTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4150,6 +4232,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/db/UpdatesDatabaseTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4164,6 +4247,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/errorrecovery/ErrorRecoveryTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4178,6 +4262,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/HermesDiffTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4192,6 +4277,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/launcher/DatabaseLauncherTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4206,6 +4292,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/loader/EmbeddedLoaderTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4220,6 +4307,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/loader/RemoteLoaderTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4234,6 +4322,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/manifest/ExpoUpdatesUpdateTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4248,6 +4337,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/manifest/ResponseHeaderDataTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4262,6 +4352,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/manifest/UpdateFactoryTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4276,6 +4367,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/manifest/UpdateMetadataTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4290,6 +4382,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/selectionpolicy/ReaperSelectionPolicyDevelopmentClientTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4304,6 +4397,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/selectionpolicy/ReaperSelectionPolicyFilterAwareTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4318,6 +4412,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/selectionpolicy/SelectionPolicyFilterAwareTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4332,6 +4427,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/UpdatesConfigurationInstrumentationTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4346,6 +4442,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/UpdatesStateMachineInstrumentationTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4360,6 +4457,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/androidTest/java/expo/modules/updates/UpdatesUtilsInstrumentationTest.kt",
       "caseIds": [],
       "runner": "gradle-instrumentation",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4374,6 +4472,7 @@ export const metadata: {
       "path": "apps/brownfield-tester/integrated/android/app/src/test/java/dev/expo/brownfieldtester/ExampleUnitTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4388,6 +4487,7 @@ export const metadata: {
       "path": "apps/brownfield-tester/isolated/android/app/src/test/java/dev/expo/brownfieldintegratedtester/ExampleUnitTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4402,6 +4502,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/test/java/host/exp/exponent/BasicUnitTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4416,6 +4517,7 @@ export const metadata: {
       "path": "apps/expo-go/android/app/src/test/java/host/exp/exponent/utils/MockExpoDI.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4430,6 +4532,7 @@ export const metadata: {
       "path": "apps/expo-go/android/expoview/src/test/java/host/exp/exponent/ABIVersionTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4444,6 +4547,7 @@ export const metadata: {
       "path": "apps/expo-go/android/expoview/src/test/java/host/exp/exponent/NotificationTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4458,6 +4562,7 @@ export const metadata: {
       "path": "apps/expo-go/modules/@react-native-async-storage/async-storage/android/src/test/java/com/reactnativecommunity/asyncstorage/next/ArgumentHelpersTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4472,6 +4577,7 @@ export const metadata: {
       "path": "apps/expo-go/modules/@react-native-async-storage/async-storage/android/src/test/java/com/reactnativecommunity/asyncstorage/next/StorageTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4486,6 +4592,7 @@ export const metadata: {
       "path": "packages/expo-age-range/android/src/test/java/expo/modules/agerange/AgeSignalsManagerTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4500,6 +4607,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/AppMetricsPreferencesTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4514,6 +4622,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/appstartup/AppStartupManagerTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4528,6 +4637,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/crashreporting/CallStackTreeBuilderTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4542,6 +4652,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/crashreporting/CrashFileReaderTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4556,6 +4667,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/crashreporting/CrashFileWriterTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4570,6 +4682,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/crashreporting/CrashReportAttributionTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4584,6 +4697,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/crashreporting/CrashReportingPipelineTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4598,6 +4712,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/crashreporting/CrashReportProcessorTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4612,6 +4727,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/crashreporting/CrashReportTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4626,6 +4742,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/crashreporting/ExitInfoProviderImplTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4640,6 +4757,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/crashreporting/JvmCrashHandlerTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4654,6 +4772,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/frames/FrameMetricsRecorderTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4668,6 +4787,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/frames/FrameRateMonitorTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4682,6 +4802,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/GlobalAttributesTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4696,6 +4817,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/jserrors/ErrorReportTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4710,6 +4832,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/jserrors/PendingErrorStoreTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4724,6 +4847,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/logevents/AttributeValidationTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4738,6 +4862,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/logevents/DisplayNameValidationTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4752,6 +4877,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/logevents/EventBodyValidationTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4766,6 +4892,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/logevents/EventNameValidationTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4780,6 +4907,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/networkrequests/NetworkRequestFilterTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4794,6 +4922,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/networkrequests/NetworkRequestInterceptorTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4808,6 +4937,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/networkrequests/NetworkRequestMonitorTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4822,6 +4952,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/networkrequests/NetworkRequestObserverTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4836,6 +4967,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/networkrequests/NetworkRequestSummaryTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4850,6 +4982,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/storage/CrashReportStorageTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4864,6 +4997,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/storage/SessionManagerGlobalAttributesTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4878,6 +5012,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/storage/SessionManagerTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4892,6 +5027,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/storage/SessionMappersTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4906,6 +5042,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/storage/SessionSharedObjectTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4920,6 +5057,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/utils/JsonAnyTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4934,6 +5072,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/utils/MetricParamsBuilderTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4948,6 +5087,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/android/src/test/java/expo/modules/appmetrics/utils/TimeUtilsTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4962,6 +5102,7 @@ export const metadata: {
       "path": "packages/expo-asset/android/src/test/java/expo/modules/asset/FileUtilsTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4976,6 +5117,7 @@ export const metadata: {
       "path": "packages/expo-asset/android/src/test/java/expo/modules/asset/ResourceAssetTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -4990,6 +5132,7 @@ export const metadata: {
       "path": "packages/expo-brownfield/gradle-plugins/brownfield/src/test/kotlin/expo/modules/plugin/StripFusedPackageListEntriesTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5004,6 +5147,7 @@ export const metadata: {
       "path": "packages/expo-calendar/android/src/test/java/expo/modules/calendar/EventRecurrenceTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5018,6 +5162,7 @@ export const metadata: {
       "path": "packages/expo-calendar/android/src/test/java/expo/modules/calendar/next/domain/repositories/attendee/AttendeeRepositoryTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5032,6 +5177,7 @@ export const metadata: {
       "path": "packages/expo-calendar/android/src/test/java/expo/modules/calendar/next/domain/repositories/calendar/CalendarRepositoryTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5046,6 +5192,7 @@ export const metadata: {
       "path": "packages/expo-calendar/android/src/test/java/expo/modules/calendar/next/domain/repositories/event/EventRepositoryTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5060,6 +5207,7 @@ export const metadata: {
       "path": "packages/expo-calendar/android/src/test/java/expo/modules/calendar/next/domain/repositories/instance/InstanceRepositoryTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5074,6 +5222,7 @@ export const metadata: {
       "path": "packages/expo-calendar/android/src/test/java/expo/modules/calendar/next/domain/repositories/reminder/ReminderRepositoryTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5088,6 +5237,7 @@ export const metadata: {
       "path": "packages/expo-calendar/android/src/test/java/expo/modules/calendar/next/EventRecurrenceRulesTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5102,6 +5252,7 @@ export const metadata: {
       "path": "packages/expo-calendar/android/src/test/java/expo/modules/calendar/next/mappers/AttendeeMapperTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5116,6 +5267,7 @@ export const metadata: {
       "path": "packages/expo-calendar/android/src/test/java/expo/modules/calendar/next/mappers/CalendarMapperTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5130,6 +5282,7 @@ export const metadata: {
       "path": "packages/expo-calendar/android/src/test/java/expo/modules/calendar/next/mappers/EventMapperTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5144,6 +5297,7 @@ export const metadata: {
       "path": "packages/expo-calendar/android/src/test/java/expo/modules/calendar/next/mappers/ExpoCalendarEventMapperTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5158,6 +5312,7 @@ export const metadata: {
       "path": "packages/expo-calendar/android/src/test/java/expo/modules/calendar/next/mappers/ReminderMapperTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5172,6 +5327,7 @@ export const metadata: {
       "path": "packages/expo-clipboard/android/src/test/java/expo/modules/clipboard/ClipboardImageTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5186,6 +5342,7 @@ export const metadata: {
       "path": "packages/expo-clipboard/android/src/test/java/expo/modules/clipboard/ClipboardModuleTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5200,6 +5357,7 @@ export const metadata: {
       "path": "packages/expo-contacts/android/src/test/java/expo/modules/contacts/next/domain/ContactRepositoryTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5214,6 +5372,7 @@ export const metadata: {
       "path": "packages/expo-crypto/android/src/test/java/expo/modules/crypto/CryptoModuleTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5228,6 +5387,7 @@ export const metadata: {
       "path": "packages/expo-crypto/android/src/test/java/expo/modules/crypto/ExpectedEncodingResults.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5242,6 +5402,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/android/src/test/java/expo/modules/devlauncher/helpers/DevLauncherColorsHelperTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5256,6 +5417,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/android/src/test/java/expo/modules/devlauncher/helpers/DevLauncherCoroutinesExtensionsTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5270,6 +5432,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/android/src/test/java/expo/modules/devlauncher/helpers/DevLauncherInstallationIDHelperTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5284,6 +5447,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/android/src/test/java/expo/modules/devlauncher/helpers/DevLauncherUpdatesHelperTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5298,6 +5462,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/android/src/test/java/expo/modules/devlauncher/helpers/DevLauncherURLHelperTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5312,6 +5477,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/android/src/test/java/expo/modules/devlauncher/launcher/manifest/DevLauncherManifestParserTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5326,6 +5492,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/android/src/test/java/expo/modules/devlauncher/launcher/manifest/DevLauncherManifestTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5340,6 +5507,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/android/src/test/java/expo/modules/devlauncher/react/DevLauncherDevSupportManagerFactoryTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5354,6 +5522,7 @@ export const metadata: {
       "path": "packages/expo-file-system/android/src/test/java/expo/modules/filesystem/FileSystemDownloadTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5368,6 +5537,7 @@ export const metadata: {
       "path": "packages/expo-file-system/android/src/test/java/expo/modules/filesystem/FileSystemFileTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5382,6 +5552,7 @@ export const metadata: {
       "path": "packages/expo-file-system/android/src/test/java/expo/modules/filesystem/fsops/CopyDirectoryParallelTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5396,6 +5567,7 @@ export const metadata: {
       "path": "packages/expo-file-system/android/src/test/java/expo/modules/filesystem/fsops/UtilitiesTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5410,6 +5582,7 @@ export const metadata: {
       "path": "packages/expo-font/android/src/test/java/expo/modules/font/FontBytesTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5424,6 +5597,7 @@ export const metadata: {
       "path": "packages/expo-font/android/src/test/java/expo/modules/font/FontVariationAxesTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5438,6 +5612,7 @@ export const metadata: {
       "path": "packages/expo-image-manipulator/android/src/test/java/expo/modules/imagemanipulator/FileUtilsTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5452,6 +5627,7 @@ export const metadata: {
       "path": "packages/expo-image-manipulator/android/src/test/java/expo/modules/imagemanipulator/ImageDownsamplingTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5466,6 +5642,7 @@ export const metadata: {
       "path": "packages/expo-manifests/android/src/test/java/expo/modules/manifests/core/ExpoUpdatesManifestTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5480,6 +5657,7 @@ export const metadata: {
       "path": "packages/expo-manifests/android/src/test/java/expo/modules/manifests/core/ManifestTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5494,6 +5672,7 @@ export const metadata: {
       "path": "packages/expo-media-library/android/src/test/java/expo/modules/medialibrary/albums/GetAlbumInfoTests.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5508,6 +5687,7 @@ export const metadata: {
       "path": "packages/expo-media-library/android/src/test/java/expo/modules/medialibrary/albums/GetAlbumsTests.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5522,6 +5702,7 @@ export const metadata: {
       "path": "packages/expo-media-library/android/src/test/java/expo/modules/medialibrary/albums/GetAlbumTests.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5536,6 +5717,7 @@ export const metadata: {
       "path": "packages/expo-media-library/android/src/test/java/expo/modules/medialibrary/assets/AssetUtilsTests.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5550,6 +5732,7 @@ export const metadata: {
       "path": "packages/expo-media-library/android/src/test/java/expo/modules/medialibrary/assets/GetAssetInfoTests.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5564,6 +5747,7 @@ export const metadata: {
       "path": "packages/expo-media-library/android/src/test/java/expo/modules/medialibrary/assets/GetAssetsQueryTests.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5578,6 +5762,7 @@ export const metadata: {
       "path": "packages/expo-media-library/android/src/test/java/expo/modules/medialibrary/assets/GetAssetsTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5592,6 +5777,7 @@ export const metadata: {
       "path": "packages/expo-media-library/android/src/test/java/expo/modules/medialibrary/FileChannelExtensionsTests.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5606,6 +5792,7 @@ export const metadata: {
       "path": "packages/expo-media-library/android/src/test/java/expo/modules/medialibrary/MediaLibraryUtilsTests.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5620,6 +5807,7 @@ export const metadata: {
       "path": "packages/expo-media-library/android/src/test/java/expo/modules/medialibrary/MockData.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5634,6 +5822,7 @@ export const metadata: {
       "path": "packages/expo-media-library/android/src/test/java/expo/modules/medialibrary/TestUtils.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5648,6 +5837,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin-shared/src/test/kotlin/com/modules/plugin/connfiguration/ExpoAutolinkingConfigTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5662,6 +5852,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-settings-plugin/src/test/kotlin/expo/modules/plugin/ExpoAutolinkingSettingsPluginTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5676,6 +5867,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-settings-plugin/src/test/kotlin/expo/modules/plugin/MavenArtifactRepositoryExtensionTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5690,6 +5882,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/android/expo-gradle-plugin/expo-max-sdk-override-plugin/src/test/java/expo/modules/plugin/AnalyzeManifestReportTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5704,6 +5897,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/android/expo-gradle-plugin/expo-max-sdk-override-plugin/src/test/java/expo/modules/plugin/ExtractPathFromLineTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5718,6 +5912,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/android/expo-gradle-plugin/expo-max-sdk-override-plugin/src/test/java/expo/modules/plugin/FindPermissionsToOverrideTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5732,6 +5927,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/android/expo-gradle-plugin/expo-max-sdk-override-plugin/src/test/java/expo/modules/plugin/FixManifestMaxSdkTaskTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5746,6 +5942,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/adapters/react/permissions/PermissionsServiceTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5760,6 +5957,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/core/logging/LoggerTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5774,6 +5972,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/core/logging/PersistentFileLogTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5788,6 +5987,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/allocators/ObjectConstructorFactoryTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5802,6 +6002,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/devtools/ExpoNetworkInspectOkHttpInterceptorsTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5816,6 +6017,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/devtools/ExpoRequestCdpInterceptorTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5830,6 +6032,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/exception/CodedExceptionTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5844,6 +6047,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/functions/AnyFunctionTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5858,6 +6062,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/functions/TypeConverterHelperTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5872,6 +6077,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/KClassExtensionsTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5886,6 +6092,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/KotlinInteropModuleRegistryTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5900,6 +6107,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/KPromiseWrapperTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5914,6 +6122,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/ModuleHolderTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5928,6 +6137,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/ModuleRegistryTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5942,6 +6152,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/modules/ModuleDefinitionBuilderTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5956,6 +6167,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/modules/ModuleHolderTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5970,6 +6182,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/records/formatters/FormatterTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5984,6 +6197,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/records/RecordTypeConverterTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -5998,6 +6212,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/sharedobjects/SharedObjectTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6012,6 +6227,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/TestEnums.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6026,6 +6242,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/types/AnyTypeConverterTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6040,6 +6257,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/types/BasicTypeConverterTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6054,6 +6272,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/types/ColorTypeConverterTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6068,6 +6287,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/types/DateTypeConverterTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6082,6 +6302,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/types/EnumSerializerTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6096,6 +6317,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/types/EnumTypeConverterTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6110,6 +6332,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/types/ExpectedTypeTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6124,6 +6347,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/types/JSTypeConverterTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6138,6 +6362,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/types/PairTypeConverterTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6152,6 +6377,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/types/TestConverterContext.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6166,6 +6392,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/viewevent/ViewEventTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6180,6 +6407,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/views/ConcreteViewPropTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6194,6 +6422,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/views/OnAttachAfterDetachmentListenerTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6208,6 +6437,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/views/ViewManagerDefinitionTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6222,6 +6452,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/kotlin/views/ViewTypeConverterTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6236,6 +6467,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/PromiseMock.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6250,6 +6482,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/android/src/test/java/expo/modules/TruthExtensions.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6264,6 +6497,7 @@ export const metadata: {
       "path": "packages/expo-network/android/src/test/java/expo/modules/network/IsInternetReachableTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6278,6 +6512,7 @@ export const metadata: {
       "path": "packages/expo-notifications/android/src/test/java/expo/modules/notifications/NotificationContentSerializationTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6292,6 +6527,7 @@ export const metadata: {
       "path": "packages/expo-notifications/android/src/test/java/expo/modules/notifications/NotificationDataTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6306,6 +6542,7 @@ export const metadata: {
       "path": "packages/expo-notifications/android/src/test/java/expo/modules/notifications/NotificationTriggerTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6320,6 +6557,7 @@ export const metadata: {
       "path": "packages/expo-notifications/android/src/test/java/expo/modules/notifications/service/delegates/ExpoHandlingDelegateTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6334,6 +6572,7 @@ export const metadata: {
       "path": "packages/expo-notifications/android/src/test/java/expo/modules/notifications/service/NotificationsServiceResponseIntentTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6348,6 +6587,7 @@ export const metadata: {
       "path": "packages/expo-notifications/android/src/test/java/expo/modules/notifications/UtilsTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6362,6 +6602,7 @@ export const metadata: {
       "path": "packages/expo-observe/android/src/test/java/expo/modules/observe/BaseObservabilityManagerTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6376,6 +6617,7 @@ export const metadata: {
       "path": "packages/expo-observe/android/src/test/java/expo/modules/observe/DispatchUtilsBackoffTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6390,6 +6632,7 @@ export const metadata: {
       "path": "packages/expo-observe/android/src/test/java/expo/modules/observe/DispatchUtilsRetryGateTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6404,6 +6647,7 @@ export const metadata: {
       "path": "packages/expo-observe/android/src/test/java/expo/modules/observe/DispatchUtilsTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6418,6 +6662,7 @@ export const metadata: {
       "path": "packages/expo-observe/android/src/test/java/expo/modules/observe/EventDispatcherTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6432,6 +6677,7 @@ export const metadata: {
       "path": "packages/expo-observe/android/src/test/java/expo/modules/observe/ObservePreferencesTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6446,6 +6692,7 @@ export const metadata: {
       "path": "packages/expo-observe/android/src/test/java/expo/modules/observe/OpenTelemetryTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6460,6 +6707,7 @@ export const metadata: {
       "path": "packages/expo-observe/android/src/test/java/expo/modules/observe/OTAnyValueTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6474,6 +6722,7 @@ export const metadata: {
       "path": "packages/expo-observe/android/src/test/java/expo/modules/observe/storage/PendingMetricsManagerTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6488,6 +6737,7 @@ export const metadata: {
       "path": "packages/expo-speech/android/src/test/java/expo/modules/speech/LocaleBuilderCompatibilityTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6502,6 +6752,7 @@ export const metadata: {
       "path": "packages/expo-speech/android/src/test/java/expo/modules/speech/SpeechModuleTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6516,6 +6767,7 @@ export const metadata: {
       "path": "packages/expo-structured-headers/android/src/test/java/android/util/Base64.java",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6530,6 +6782,7 @@ export const metadata: {
       "path": "packages/expo-structured-headers/android/src/test/java/expo/modules/structuredheaders/AbstractSpecificationTests.java",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6544,6 +6797,7 @@ export const metadata: {
       "path": "packages/expo-structured-headers/android/src/test/java/expo/modules/structuredheaders/DiagnosticsTests.java",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6558,6 +6812,7 @@ export const metadata: {
       "path": "packages/expo-structured-headers/android/src/test/java/expo/modules/structuredheaders/ItemAPITests.java",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6572,6 +6827,7 @@ export const metadata: {
       "path": "packages/expo-structured-headers/android/src/test/java/expo/modules/structuredheaders/SpecificationTests.java",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6586,6 +6842,7 @@ export const metadata: {
       "path": "packages/expo-structured-headers/android/src/test/java/expo/modules/structuredheaders/Tests.java",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6600,6 +6857,7 @@ export const metadata: {
       "path": "packages/expo-task-manager/android/src/test/java/expo/modules/taskManager/TaskManagerUtilsTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6614,6 +6872,7 @@ export const metadata: {
       "path": "packages/expo-task-manager/android/src/test/java/expo/modules/taskManager/TaskServiceTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6628,6 +6887,7 @@ export const metadata: {
       "path": "packages/expo-ui/android/src/test/java/expo/modules/ui/icon/VectorIconLoaderTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6642,6 +6902,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/codesigning/CertificateFixtures.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6656,6 +6917,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/db/BuildDataTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6670,6 +6932,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/loader/CompressionInterceptorTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6684,6 +6947,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/loader/FileDownloaderAssetDiffTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6698,6 +6962,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/loader/FileDownloaderManifestParsingTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6712,6 +6977,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/loader/FileDownloaderTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6726,6 +6992,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/logging/UpdatesLoggingTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6740,6 +7007,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/procedures/StateMachineSerialExecutorQueueTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6754,6 +7022,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/selectionpolicy/LauncherSelectionPolicyFilterAwareTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6768,6 +7037,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/selectionpolicy/LoaderSelectionPolicyFilterAwareTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6782,6 +7052,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/UpdatesConfigurationOverrideTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6796,6 +7067,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/UpdatesConfigurationTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6810,6 +7082,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/UpdatesUtilsTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6824,6 +7097,7 @@ export const metadata: {
       "path": "packages/expo-updates/android/src/test/java/expo/modules/updates/utils/AndroidResourceAssetUtilsTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6838,6 +7112,7 @@ export const metadata: {
       "path": "packages/expo-video/android/src/test/java/expo/modules/video/cache/CachePolicyTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6852,6 +7127,7 @@ export const metadata: {
       "path": "packages/expo-web-browser/android/src/test/java/expo/modules/webbrowser/TestUtils.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6866,6 +7142,7 @@ export const metadata: {
       "path": "packages/expo-web-browser/android/src/test/java/expo/modules/webbrowser/WebBrowserModuleTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6880,6 +7157,7 @@ export const metadata: {
       "path": "packages/expo/android/src/test/java/expo/modules/fetch/NativeRequestTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6894,6 +7172,7 @@ export const metadata: {
       "path": "packages/expo/android/src/test/java/expo/modules/fetch/TransparentCompressionInterceptorTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6908,6 +7187,7 @@ export const metadata: {
       "path": "packages/expo/android/src/test/java/expo/modules/ReactActivityDelegateWrapperDelayLoadTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6922,6 +7202,7 @@ export const metadata: {
       "path": "packages/expo/android/src/test/java/expo/modules/ReactActivityDelegateWrapperTest.kt",
       "caseIds": [],
       "runner": "gradle-unit",
+      "execution": "gradle",
       "platforms": [
         "android"
       ],
@@ -6945,6 +7226,7 @@ export const metadata: {
         "apps-unit#apps/bare-expo/scripts/lib/e2e-common.test.ts#throws when maestro hangs without ever writing a report@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -6967,6 +7249,7 @@ export const metadata: {
         "apps-unit#apps/bare-expo/scripts/lib/maestro-junit-report.test.ts#treats any non-SUCCESS status as a failure@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -6991,6 +7274,7 @@ export const metadata: {
         "apps-unit#apps/test-suite/screens/__tests__/getScreenIdForLinking.test.ts#should split and normalize query string@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7009,6 +7293,7 @@ export const metadata: {
         "bun-e2e#apps/bare-expo/e2e/image-comparison/src/compareImages.test.ts#should write diff image when outputPath is provided@1"
       ],
       "runner": "bun-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7026,6 +7311,7 @@ export const metadata: {
         "bun-e2e#apps/bare-expo/e2e/image-comparison/src/imageNormalizer.test.ts#ImageNormalizer > should normalize images with different aspect ratios@1"
       ],
       "runner": "bun-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7044,6 +7330,7 @@ export const metadata: {
         "bun-e2e#apps/bare-expo/e2e/image-comparison/src/pathUtils.test.ts#view shots with platformDependent mode@1"
       ],
       "runner": "bun-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7068,6 +7355,7 @@ export const metadata: {
         "bun-e2e#apps/bare-expo/e2e/image-comparison/src/schema.test.ts#Zod schema validation > should validate data with testID and mode@1"
       ],
       "runner": "bun-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7082,6 +7370,7 @@ export const metadata: {
       "path": ".github/workflows/android-instrumentation-tests.yml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "ci"
       ],
@@ -7096,6 +7385,7 @@ export const metadata: {
       "path": ".github/workflows/android-unit-tests.yml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "ci"
       ],
@@ -7110,6 +7400,7 @@ export const metadata: {
       "path": ".github/workflows/development-client-latest-e2e.yml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "ci"
       ],
@@ -7124,6 +7415,7 @@ export const metadata: {
       "path": ".github/workflows/ios-unit-tests.yml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "ci"
       ],
@@ -7138,6 +7430,7 @@ export const metadata: {
       "path": ".github/workflows/test-react-native-nightly.yml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "ci"
       ],
@@ -7152,6 +7445,7 @@ export const metadata: {
       "path": ".github/workflows/test-suite-lint.yml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "ci"
       ],
@@ -7166,6 +7460,7 @@ export const metadata: {
       "path": ".github/workflows/test-suite-macos.yml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "ci"
       ],
@@ -7180,6 +7475,7 @@ export const metadata: {
       "path": ".github/workflows/test-suite-nightly.yml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "ci"
       ],
@@ -7194,6 +7490,7 @@ export const metadata: {
       "path": ".github/workflows/test-suite.yml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "ci"
       ],
@@ -7212,6 +7509,7 @@ export const metadata: {
         "detox-e2e#packages/expo-dev-client/e2e/DevLauncher.e2e.ts#DevLauncher > should render main screen@1"
       ],
       "runner": "detox",
+      "execution": "javascript-runner",
       "platforms": [
         "android",
         "ios"
@@ -7230,6 +7528,7 @@ export const metadata: {
         "docs-unit#docs/checks/check-alt-text.test.ts#docs image alt text > scans a meaningful number of images (guards against a vacuous pass)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7247,6 +7546,7 @@ export const metadata: {
         "docs-unit#docs/checks/check-asset-refs.test.ts#docs asset references > scans a meaningful number of asset references (guards against a vacuous pass)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7264,6 +7564,7 @@ export const metadata: {
         "docs-unit#docs/checks/check-link-protocol.test.ts#docs link protocol > scans a meaningful number of links (guards against a vacuous pass)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7281,6 +7582,7 @@ export const metadata: {
         "docs-unit#docs/checks/check-link-text.test.ts#docs link text > scans a meaningful number of links (guards against a vacuous pass)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7298,6 +7600,7 @@ export const metadata: {
         "docs-unit#docs/checks/check-redirects.test.ts#public/_redirects > stays within the Cloudflare Pages static rule limit@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7315,6 +7618,7 @@ export const metadata: {
         "docs-unit#docs/checks/check-repeated-words.test.ts#docs repeated words > scans a meaningful number of API descriptions (guards against a vacuous pass)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7332,6 +7636,7 @@ export const metadata: {
         "docs-unit#docs/checks/ja/sync.test.ts#docs ja translation sync > scans the translated pages (guards against a vacuous pass)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7367,6 +7672,7 @@ export const metadata: {
         "docs-unit#docs/common/client-redirects.test.ts#rewrites /eas/update/** prefix to /eas-update/**@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7395,6 +7701,7 @@ export const metadata: {
         "docs-unit#docs/common/code-utilities.test.tsx#XMLComments - removes the annotation mid-line@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7419,6 +7726,7 @@ export const metadata: {
         "docs-unit#docs/common/headingManager.test.ts#HeadingManager.addHeading() > uses argument level over meta level@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7448,6 +7756,7 @@ export const metadata: {
         "docs-unit#docs/common/routes.test.ts#uses sidebarTitle over name when available@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7472,6 +7781,7 @@ export const metadata: {
         "docs-unit#docs/common/suppress-trailing-slash-warning.test.ts#suppresses trailing-slash pairs before a hash@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7494,6 +7804,7 @@ export const metadata: {
         "docs-unit#docs/components/plugins/api/APISectionCompoundNames.test.ts#deriveComponentsFromProps > derives nested components from compound component properties@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7533,6 +7844,7 @@ export const metadata: {
         "docs-unit#docs/components/plugins/api/APISectionUtils.test.tsx#APISectionUtils.resolveTypeName > void@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7552,6 +7864,7 @@ export const metadata: {
         "docs-unit#docs/components/plugins/api/components/APICommentTextBlock.test.tsx#no comment@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7575,6 +7888,7 @@ export const metadata: {
         "docs-unit#docs/components/plugins/APISection.test.tsx#APISection > renders the fallback when provider data is missing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7595,6 +7909,7 @@ export const metadata: {
         "docs-unit#docs/components/plugins/InstallSection.test.tsx#shows the tabs when browsing via the latest alias@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7624,6 +7939,7 @@ export const metadata: {
         "docs-unit#docs/constants/structured-data.test.ts#uses websiteSchema publisher@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7648,6 +7964,7 @@ export const metadata: {
         "docs-unit#docs/mdx-plugins/remark-export-headings.test.js#header object > has title from text child@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7673,6 +7990,7 @@ export const metadata: {
         "docs-unit#docs/mdx-plugins/remark-image-size.test.js#remarkImageSize > skips other components@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7710,6 +8028,7 @@ export const metadata: {
         "docs-unit#docs/mdx-plugins/remark-link-rewrite.test.js#only rewrites internal links > skips https://external.link@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7739,6 +8058,7 @@ export const metadata: {
         "docs-unit#docs/providers/page-api-version.test.tsx#uses unversioned version from pathname@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7755,6 +8075,7 @@ export const metadata: {
         "docs-unit#docs/scripts/agent-instructions.test.ts#buildFeedbackSection > prints the Expo feedback CLI command and curl fallback with the page URL@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7781,6 +8102,7 @@ export const metadata: {
         "docs-unit#docs/scripts/create-sitemap.test.js#pathSortedByPriority > two priority items sort by their priority order@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7810,6 +8132,7 @@ export const metadata: {
         "docs-unit#docs/scripts/docs-navigation.test.ts#normalizeNavKey > adds a leading slash, drops trailing slashes, and maps empty to root@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7835,6 +8158,7 @@ export const metadata: {
         "docs-unit#docs/scripts/generate-llms/shared.test.js#stripAgentInstructions > removes the combined AgentInstructions block so it does not leak into aggregates@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7960,6 +8284,7 @@ export const metadata: {
         "docs-unit#docs/scripts/generate-markdown-pages-utils.test.ts#terminal snippet labels > skips empty/comment-only manager sections, ignores unknown keys, and preserves angle brackets@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -7991,6 +8316,7 @@ export const metadata: {
         "docs-unit#docs/scripts/generate-upgrade-diff-pages.test.ts#writes unversioned pairs only when unversioned is shown@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8020,6 +8346,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/AppConfigSchemaTable/AppConfigSchemaTable.test.tsx#formatSchema > splash has two subproperties@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8037,6 +8364,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/AskPageAI/AskPageAITrigger.test.tsx#has no axe violations@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8056,6 +8384,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/Collapsible/Collapsible.test.tsx#Collapsible > shows content when rendered with open@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8076,6 +8405,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/FAQ/FAQ.test.tsx#FAQ > renders children unchanged@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8104,6 +8434,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/Footer/Footer.test.tsx#githubUrl > versioned index page@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8131,6 +8462,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/InlineHelp/InlineHelp.test.tsx#renders inline help with warning style from warning type@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8165,6 +8497,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/MarkdownActions/paths.test.ts#strips trailing slashes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8188,6 +8521,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/Navigation/Navigation.test.tsx#skips hidden navigation node@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8216,6 +8550,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/PageHeader/PageHeader.test.tsx#shows markdown actions once the router is ready with a version pair@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8234,6 +8569,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/Prerequisites/Prerequisites.test.tsx#Prerequisites > renders numbered prefixes when there are multiple requirements@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8260,6 +8596,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/RelatedSkills/RelatedSkills.test.tsx#RelatedSkills > uses a custom description from the descriptions prop@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8289,6 +8626,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/Snippet/CodeSelectionCopy.test.tsx#survives clicks landing on the SVG icon inside the button@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8311,6 +8649,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/Snippet/DiffBlock.test.tsx#Shows the operation in header when showOperation is true@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8328,6 +8667,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/Snippet/SnackInline.test.tsx#labels the Snack submit button@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8351,6 +8691,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/Snippet/Terminal.test.tsx#renders package manager tabs and switches commands with correct copy@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8370,6 +8711,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/TableOfContents/TableOfContents.test.tsx#TableOfContents > scrolls to align heading with activation line on click@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8388,6 +8730,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/Tabs/Tabs.test.tsx#Tabs server rendering > keeps every panel in the server markup (preserves SEO/a11y)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8407,6 +8750,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/Tabs/TabsGroup.test.tsx#TabsGroup > syncs the selected index across sibling Tabs@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8428,6 +8772,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/TemplateBareMinimumDiffViewer/buildUpgradePrompt.test.ts#buildNativeUpgradePrompt > tells the agent to apply changes outside android/ and ios/, such as package.json@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8448,6 +8793,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/TemplateBareMinimumDiffViewer/NativeUpgradePromptCallout.test.tsx#NativeUpgradePromptCallout > shows copied feedback after copying the prompt@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8466,6 +8812,7 @@ export const metadata: {
         "docs-unit#docs/ui/components/Text/withAnchor.test.tsx#returns text from multiple child elements@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -8480,6 +8827,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/tools/__lint8__.mjs",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8494,6 +8842,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/tools/__lint9__.mjs",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8508,6 +8857,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/tools/lint8Async.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8522,6 +8872,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/tools/lint9Async.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8536,6 +8887,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/tools/testUtils.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8550,6 +8902,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/tools/__lint__.mjs",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8564,6 +8917,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/tools/checkPrettierRulesAsync.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8578,6 +8932,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/tools/getBaseConfig.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8592,6 +8947,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/tools/lintAsync.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8606,6 +8962,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/tools/__lint__.mjs",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8620,6 +8977,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/tools/checkPrettierRulesAsync.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8634,6 +8992,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/tools/getBaseConfig.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8648,6 +9007,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/tools/lintAsync.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -8678,6 +9038,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Application.js#iOS device tests > doesn't call Android-only methods > Application.getLastUpdateTimeAsync() doesn't get called@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -8719,6 +9080,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/AppMetrics.ts#setGlobalAttributes > stops applying globals after they are cleared@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -8737,6 +9099,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Asset.ts#Asset > when having a local file asset, downloading it twice should reuse the local file@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -8753,6 +9116,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/Asset.web.ts",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -8794,6 +9158,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Audio.ts#Player instance > Player.volume > sets the volume@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -8815,6 +9180,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/AuthSession.js#PKCE > produces the right base64 encoded challenge@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -8834,6 +9200,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Basic.js#Basic > waits 0.5 seconds and passes@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -8858,6 +9225,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Battery.js#Battery > isLowPowerModeEnabledAsync() > returns a boolean low power mode@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -8942,6 +9310,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Blob.ts#Blob > Worker > Create Blob in Worker@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -8958,6 +9327,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/Blur.js",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -8980,6 +9350,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Brightness.ts#Event listeners > addBrightnessListener() registers@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -8996,6 +9367,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/Calendar.js",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9012,6 +9384,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/CalendarNext.ts",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9028,6 +9401,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/CalendarReminders.js",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9050,6 +9424,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Cellular.ts#Cellular > Cellular.getMobileNetworkCodeAsync() > returns a string or null@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9081,6 +9456,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Clipboard.js#Clipboard > URLs > sets and gets an url@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9097,6 +9473,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/Constants.js",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9113,6 +9490,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/Contacts.js",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9129,6 +9507,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/Contacts.web.js",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9264,6 +9643,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/ContactsNext.ts#Set, Get properties > should handle setting an organization field to null@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9282,6 +9662,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Crypto.js#Crypto > digestStringAsync() > Invalid CryptoEncoding throws an error@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9328,6 +9709,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/CryptoAES.ts#AES Crypto > SealedData > respects ciphertext config@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9360,6 +9742,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Device.js#Device.getUptimeAsync() > calls getUptimeAsync() and returns number@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9382,6 +9765,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/DevToolsPluginClient.ts#Transportation tests > should support plaintext messages@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9400,6 +9784,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/EASClient.js#EASClient > gets the EAS client ID@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9455,6 +9840,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Fetch.ts#Streaming > should stream response@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9490,6 +9876,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/FileSystem-legacy.js#FileSystem (legacy) > mkdir(multi-level) + download(multi-level local path)@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9679,6 +10066,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/FileSystem.ts#FileSystem > Writes a string to a file reference@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9699,6 +10087,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Font.js#loads@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9725,6 +10114,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/GLView.js#GLView > static > takes a snapshot@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9751,6 +10141,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Haptics.js#Haptics > selectionAsync()@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9767,6 +10158,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/helpers.js",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "unsupported",
       "platforms": [
         "android",
         "ios",
@@ -9785,6 +10177,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Hermes.js#Hermes > defines HermesInternal@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9805,6 +10198,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/HTML.js#renders a table@2"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9848,6 +10242,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Image.js#ImageView > writeToCacheAsync / readFromCacheAsync > seeds the cache from an ImageRef and reads it back@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9892,6 +10287,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/ImageManipulator.ts#ImageManipulator > manipulate() > returns a context@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -9917,6 +10313,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/ImagePicker.js#launchImageLibraryAsync > videoExportPreset should affect video dimensions@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -10014,6 +10411,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/JSAsync.js#JS Async > stack traces > re-thrown error preserves original stack@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -10120,6 +10518,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/JSAsyncGenerator.js#JS Async Generator > sync generators > yield* with iterable that has no return method@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -10201,6 +10600,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/JSBlockScoping.js#JS Block Scoping > temporal dead zone > typeof on TDZ variable does not throw@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -10326,6 +10726,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/JSDestructuring.js#JS Destructuring > object patterns > rest produces an empty object when all keys extracted@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -10363,6 +10764,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/JSHermesMisc.js#JS Hermes Misc > super in object literal accessors > paired getter/setter on the same key@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -10439,6 +10841,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/JSNamedGroupsRegexes.js#JS Named Groups Regexes > test() method > test() works with named groups@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -10549,6 +10952,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/JSNullishCoalescing.js#JS Nullish Coalescing > with various types > symbol value preserved@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -10671,6 +11075,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/JSOptionalChaining.js#JS Optional Chaining > with various types as base > symbol base@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -10764,6 +11169,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/JSPrivateMethods.js#JS Private Methods > static blocks > static block can access private static method@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -10874,6 +11280,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/JSPrivateProperties.js#JS Private Properties > various object types as RHS > works with Object.create(null)@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -10930,6 +11337,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/JSReactJSX.js#JS React JSX > React 19 element shape > JSX element has _debugTask@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11053,6 +11461,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/JSUnicodeRegexes.js#JS Unicode Regexes > Unicode code point escapes (\\u{XXXXX}) > \\u{} with zero-padded code point@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11074,6 +11483,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/KeepAwake.js#keeps the screen on@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11092,6 +11502,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/LinearGradient.js#renders@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11119,6 +11530,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Linking.js#Linking > createURL > returns correctly encoded URL @1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11139,6 +11551,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Localization.js#Localization works with i18n-js > expect language to match strings (en, pl, fr supported)@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11166,6 +11579,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Location.js#Location > Location.reverseGeocodeAsync() > throws for a location where `latitude` and `longitude` aren't numbers@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11182,6 +11596,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/MediaLibrary.js",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11269,6 +11684,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/MediaLibraryNext.ts#Video asset properties > returns positive width@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11289,6 +11705,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/ModulesCore.ts#EventEmitter > is backwards compatible when a native module is passed@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11311,6 +11728,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Network.js#Network.isAirplaneModeEnabledAsync() > throws error Network.getNetworkStateAsync() if Airplane mode is on@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11390,6 +11808,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Notifications.ts#Notifications > scheduling > scheduleNotificationAsync() with null trigger > resolves for an invalid notification ID@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11406,6 +11825,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/Recording.ts",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11433,6 +11853,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/ScreenOrientation.js#Screen Orientation > Screen Orientation locking, getters, setters, listeners, etc > Unlock the screen orientation back to default@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11470,6 +11891,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/SecureStore.js#Stores with access group > Set long value@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11496,6 +11918,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/SMS.ios.js#SMS > sendSMSAsync() > throws when provided with undefined recipient@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11520,6 +11943,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/SMS.js#SMS > sendSMSAsync() > throws when provided with undefined recipient@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11538,6 +11962,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/SMS.web.js#sendSMSAsync() > is unavailable@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11554,6 +11979,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/SMSCommon.js",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "unsupported",
       "platforms": [
         "android",
         "ios",
@@ -11570,6 +11996,7 @@ export const metadata: {
       "path": "apps/test-suite/tests/Speech.js",
       "caseIds": [],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11625,6 +12052,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/SQLite.ts#withTransactionAsync > withTransactionAsync could possibly have other async queries interrupted inside the transaction@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11644,6 +12072,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/StoreReview.ios.js#isAvailableAsync() > is not available on previous than 10.3 iOS versions'@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11663,6 +12092,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/StoreReview.js#isAvailableAsync() > is not available@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11681,6 +12111,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/SystemUI.js#SystemUI.setBackgroundColorAsync() > flips a value@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11709,6 +12140,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/TaskManager.js#TaskManager > unregisterAllTasksAsync() > unregisters tasks correctly@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11761,6 +12193,7 @@ export const metadata: {
         "expo-app-suite#apps/test-suite/tests/Video.tsx#VideoViewEvents > Emits onFistFrameRendered@1"
       ],
       "runner": "expo-jasmine",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios",
@@ -11777,6 +12210,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/BundlePatchTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11791,6 +12225,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/BundleSourceMapProviderTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11805,6 +12240,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/DependencyResolverTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11819,6 +12255,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/EditApplierRoutingTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11833,6 +12270,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/EditOverlayTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11847,6 +12285,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/FakeWebSocket.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11861,6 +12300,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/HighlightPolicyTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11875,6 +12315,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/PatchedBundleRegistryTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11889,6 +12330,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/PublishedBundleApplierTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11903,6 +12345,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/PublishedBundleIndexTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11917,6 +12360,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/SanityTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11931,6 +12375,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/SnackAPIClientTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11945,6 +12390,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/SnackDiffTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11959,6 +12405,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/SnackpubFrameTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11973,6 +12420,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/SnackpubTransportTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -11987,6 +12435,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/SourceProviderTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12001,6 +12450,7 @@ export const metadata: {
       "path": "apps/expo-go/ios/Tests/SourceTreeTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12015,6 +12465,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/AnyCodableTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12029,6 +12480,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/AppStartupMonitoringTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12043,6 +12495,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/AttributeValidationTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12057,6 +12510,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/CrashReportSymbolicatorTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12071,6 +12525,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/CrashReportTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12085,6 +12540,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/DisplayNameValidationTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12099,6 +12555,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/ErrorReportTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12113,6 +12570,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/EventBodyValidationTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12127,6 +12585,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/EventNameValidationTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12141,6 +12600,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/ForegroundSessionTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12155,6 +12615,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/FrameMetricsRecorderTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12169,6 +12630,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/GlobalAttributesTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12183,6 +12645,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/JsMetricTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12197,6 +12660,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/MemoryMonitoringTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12211,6 +12675,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/MetricParamsBuilderTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12225,6 +12690,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/MetricRow+BuilderTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12239,6 +12705,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/MetricsDatabaseTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12253,6 +12720,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/NetworkPathTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12267,6 +12735,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/NetworkRequestTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12281,6 +12750,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/PendingErrorStoreTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12295,6 +12765,7 @@ export const metadata: {
       "path": "packages/expo-app-metrics/ios/Tests/SessionMetricInputTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12309,6 +12780,7 @@ export const metadata: {
       "path": "packages/expo-audio/ios/Tests/AudioRecordsTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12323,6 +12795,7 @@ export const metadata: {
       "path": "packages/expo-audio/ios/Tests/AudioStreamFileWriterTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12337,6 +12810,7 @@ export const metadata: {
       "path": "packages/expo-audio/ios/Tests/AudioUtilsTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12351,6 +12825,7 @@ export const metadata: {
       "path": "packages/expo-audio/ios/Tests/StringConversionsTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12365,6 +12840,7 @@ export const metadata: {
       "path": "packages/expo-background-task/ios/Tests/BackgroundTaskSchedulerTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12379,6 +12855,7 @@ export const metadata: {
       "path": "packages/expo-camera/ios/Tests/BarcodeScannerUtilsTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12393,6 +12870,7 @@ export const metadata: {
       "path": "packages/expo-camera/ios/Tests/BarcodeTypeTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12407,6 +12885,7 @@ export const metadata: {
       "path": "packages/expo-camera/ios/Tests/BarcodeUtilsTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12421,6 +12900,7 @@ export const metadata: {
       "path": "packages/expo-camera/ios/Tests/CapturedPhotoProcessorTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12435,6 +12915,7 @@ export const metadata: {
       "path": "packages/expo-camera/ios/Tests/ExpoCameraUtilsTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12449,6 +12930,7 @@ export const metadata: {
       "path": "packages/expo-clipboard/ios/Tests/ClipboardModuleTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12463,6 +12945,7 @@ export const metadata: {
       "path": "packages/expo-clipboard/ios/Tests/MockNSAttributedString.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12477,6 +12960,7 @@ export const metadata: {
       "path": "packages/expo-clipboard/ios/Tests/MockUIPasteboard.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12491,6 +12975,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/BridgeTestHelpers.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12505,6 +12990,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/DevLauncherLoadErrorMessageTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12519,6 +13005,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/EXDevLauncherControllerTest.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12533,6 +13020,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/EXDevLauncherInstallationIDHelperTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12547,6 +13035,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/EXDevLauncherManifestHelperTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12561,6 +13050,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/EXDevLauncherManifestParserTests.m",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12575,6 +13065,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/EXDevLauncherModuleTests.m",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12589,6 +13080,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/EXDevLauncherPendingDeepLinkRegistryTest.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12603,6 +13095,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/EXDevLauncherRecentlyOpenedAppsRegistryTest.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12617,6 +13110,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/EXDevLauncherTest.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12631,6 +13125,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/EXDevLauncherUpdatesHelperTests.m",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12645,6 +13140,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/EXDevLauncherURLHelperTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12659,6 +13155,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/LocalNetworkConfigTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12673,6 +13170,7 @@ export const metadata: {
       "path": "packages/expo-dev-launcher/ios/Tests/LocalNetworkVerdictTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12687,6 +13185,7 @@ export const metadata: {
       "path": "packages/expo-dev-menu/ios/Tests/BridgeTestHelpers.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12701,6 +13200,7 @@ export const metadata: {
       "path": "packages/expo-eas-client/ios/Tests/EASClientIDTest.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12715,6 +13215,7 @@ export const metadata: {
       "path": "packages/expo-image-manipulator/ios/Tests/ImageDownsamplingTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12729,6 +13230,7 @@ export const metadata: {
       "path": "packages/expo-image-picker/ios/Tests/ImageUtilsBase64Tests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12743,6 +13245,7 @@ export const metadata: {
       "path": "packages/expo-image/ios/Tests/ImageCacheSeedingTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12757,6 +13260,7 @@ export const metadata: {
       "path": "packages/expo-image/ios/Tests/ImageResizingTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12771,6 +13275,7 @@ export const metadata: {
       "path": "packages/expo-json-utils/ios/Tests/dummy.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12785,6 +13290,7 @@ export const metadata: {
       "path": "packages/expo-json-utils/ios/Tests/NSDictionary+EXJSONUtilsTest.m",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12799,6 +13305,7 @@ export const metadata: {
       "path": "packages/expo-manifests/ios/Tests/EmbeddedManifestTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12813,6 +13320,7 @@ export const metadata: {
       "path": "packages/expo-manifests/ios/Tests/ExpoUpdatesManifestTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12827,6 +13335,7 @@ export const metadata: {
       "path": "packages/expo-manifests/ios/Tests/ManifestTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12841,6 +13350,7 @@ export const metadata: {
       "path": "packages/expo-media-library/ios/Tests/MediaLibraryTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12855,6 +13365,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/AppCodeSignEntitlementsTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12869,6 +13380,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/AppContextTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12883,6 +13395,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ArrayBufferTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12897,6 +13410,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/AsyncFunctionTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12911,6 +13425,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/BlobConvertiblesTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12925,6 +13440,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ClassDefinitionTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12939,6 +13455,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ColorConvertiblesTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12953,6 +13470,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ConstantsTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12967,6 +13485,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ConvertiblesTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12981,6 +13500,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/CoreModuleTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -12995,6 +13515,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/DynamicDataTypeTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13009,6 +13530,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/DynamicEitherTypeTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13023,6 +13545,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/DynamicEnumTypeTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13037,6 +13560,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/DynamicTypeTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13051,6 +13575,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/EitherTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13065,6 +13590,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/EnumerableTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13079,6 +13605,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/EventEmitterTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13093,6 +13620,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/EXAppDefinesTest.m",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13107,6 +13635,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ExceptionsTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13121,6 +13650,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ExpoAppDelegateSubscriberManagerTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13135,6 +13665,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ExpoModulesTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13149,6 +13680,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ExpoRequestCdpInterceptorTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13163,6 +13695,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/EXReactSchedulerDispatchTests.mm",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13177,6 +13710,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/FileSystemManagerTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13191,6 +13725,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/FormatterTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13205,6 +13740,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/FunctionTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13219,6 +13755,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/FunctionWithConvertiblesTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13233,6 +13770,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/JavaScriptCodableArrayBufferTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13247,6 +13785,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/JavaScriptCodableEnumerableTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13261,6 +13800,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/JavaScriptCodableRecordTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13275,6 +13815,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/JavaScriptCodableSharedObjectTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13289,6 +13830,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/JavaScriptCodableTypedArrayTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13303,6 +13845,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/JSValueDecoderTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13317,6 +13860,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/JSValueEncoderTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13331,6 +13875,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/LoggerTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13345,6 +13890,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/Macros/MacroEventTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13359,6 +13905,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/Macros/MacroModuleTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13373,6 +13920,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/Macros/MacroSharedObjectTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13387,6 +13935,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/Mocks/EXTestReactScheduler.mm",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13401,6 +13950,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/Mocks/ModuleMocks.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13415,6 +13965,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/Mocks/ModulesProviderMock.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13429,6 +13980,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ModuleEventListenersTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13443,6 +13995,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ModuleLifecycleHooksTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13457,6 +14010,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ModuleRegistryTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13471,6 +14025,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ModuleTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13485,6 +14040,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/OptimizedFunctionTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13499,6 +14055,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/PersistentFileLogTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13513,6 +14070,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/PropertyDefinitionTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13527,6 +14085,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ReactSchedulerDispatchIntegrationTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13541,6 +14100,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/RecordTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13555,6 +14115,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/RuntimeTargetedConversionTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13569,6 +14130,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/SceneGeometryTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13583,6 +14145,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/SharedObjectRegistryTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13597,6 +14160,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/SharedObjectTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13611,6 +14175,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/SharedRefTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13625,6 +14190,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/TestsHelper.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13639,6 +14205,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/TypedArraysTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13653,6 +14220,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ValueOrUndefinedTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13667,6 +14235,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/ios/Tests/ViewDefinitionTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13681,6 +14250,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptActorTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13695,6 +14265,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptArrayBufferTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13709,6 +14280,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptArrayTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13723,6 +14295,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptBigIntTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13737,6 +14310,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptCodableBuiltinsTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13751,6 +14325,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptCodableContainersTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13765,6 +14340,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptCodableDataTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13779,6 +14355,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptCodableDateTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13793,6 +14370,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptCodablePrimitivesTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13807,6 +14385,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptCodableTaskTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13821,6 +14400,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptErrorTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13835,6 +14415,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptFunctionTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13849,6 +14430,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptNativeStateTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13863,6 +14445,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptObjectTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13877,6 +14460,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptPromiseTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13891,6 +14475,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptPropNameIDTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13905,6 +14490,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptRefTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13919,6 +14505,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptRuntimeTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13933,6 +14520,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptTypedArrayTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13947,6 +14535,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptUnownedValueTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13961,6 +14550,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptValuesBufferTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13975,6 +14565,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptValueTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -13989,6 +14580,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/JavaScriptWeakObjectTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14003,6 +14595,7 @@ export const metadata: {
       "path": "packages/expo-modules-jsi/apple/Tests/LongLivedObjectCollectionTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14017,6 +14610,7 @@ export const metadata: {
       "path": "packages/expo-notifications/ios/Tests/BackgroundEventTransformerTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14031,6 +14625,7 @@ export const metadata: {
       "path": "packages/expo-observe/ios/Tests/CursorRepairTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14045,6 +14640,7 @@ export const metadata: {
       "path": "packages/expo-observe/ios/Tests/DispatchUtilsBackoffTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14059,6 +14655,7 @@ export const metadata: {
       "path": "packages/expo-observe/ios/Tests/DispatchUtilsNextCursorTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14073,6 +14670,7 @@ export const metadata: {
       "path": "packages/expo-observe/ios/Tests/DispatchUtilsRetryGateTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14087,6 +14685,7 @@ export const metadata: {
       "path": "packages/expo-observe/ios/Tests/ObservabilityClassifyResponseTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14101,6 +14700,7 @@ export const metadata: {
       "path": "packages/expo-observe/ios/Tests/ObservabilityTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14115,6 +14715,7 @@ export const metadata: {
       "path": "packages/expo-observe/ios/Tests/ObserveUserDefaultsTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14129,6 +14730,7 @@ export const metadata: {
       "path": "packages/expo-observe/ios/Tests/OpenTelemetryTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14143,6 +14745,7 @@ export const metadata: {
       "path": "packages/expo-observe/ios/Tests/OTAnyValueTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14157,6 +14760,7 @@ export const metadata: {
       "path": "packages/expo-router/ios/Tests/LinkPreviewMemoryTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14171,6 +14775,7 @@ export const metadata: {
       "path": "packages/expo-router/ios/Tests/RNScreensTabCompatTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14185,6 +14790,7 @@ export const metadata: {
       "path": "packages/expo-router/ios/Tests/ToolbarMemoryTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14199,6 +14805,7 @@ export const metadata: {
       "path": "packages/expo-structured-headers/ios/Tests/dummy.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14213,6 +14820,7 @@ export const metadata: {
       "path": "packages/expo-structured-headers/ios/Tests/EXStructuredHeadersParserIgnoringParametersTests.m",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14227,6 +14835,7 @@ export const metadata: {
       "path": "packages/expo-structured-headers/ios/Tests/EXStructuredHeadersParserTests.m",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14241,6 +14850,7 @@ export const metadata: {
       "path": "packages/expo-structured-headers/ios/Tests/EXStructuredHeadersTestFixtures.m",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14255,6 +14865,7 @@ export const metadata: {
       "path": "packages/expo-structured-headers/ios/Tests/NSArray+EXStructuredHeadersTests.m",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14269,6 +14880,7 @@ export const metadata: {
       "path": "packages/expo-structured-headers/ios/Tests/NSDictionary+EXStructuredHeadersTests.m",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14283,6 +14895,7 @@ export const metadata: {
       "path": "packages/expo-task-manager/ios/Tests/EXTaskServiceTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14297,6 +14910,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/AppLauncherWithDatabaseTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14311,6 +14925,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/CertificateChainTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14325,6 +14940,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/CertificateFixtures.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14339,6 +14955,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/CodeSigningAlgorithmTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14353,6 +14970,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/CodeSigningConfigurationTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14367,6 +14985,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/DatabaseInitializationTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14381,6 +15000,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/DatabaseIntegrityCheckTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14395,6 +15015,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/EmbeddedAppLoaderTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14409,6 +15030,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/ErrorRecoveryTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14423,6 +15045,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/FileDownloaderManifestParsingTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14437,6 +15060,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/FileDownloaderTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14451,6 +15075,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/HermesDiffTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14465,6 +15090,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/LauncherSelectionPolicyFilterAwareTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14479,6 +15105,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/LoaderSelectionPolicyFilterAwareTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14493,6 +15120,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/NewUpdateTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14507,6 +15135,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/ReaperSelectionPolicyDevelopmentClientTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14521,6 +15150,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/ReaperSelectionPolicyFilterAwareTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14535,6 +15165,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/ResponseHeaderDataTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14549,6 +15180,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/SelectionPolicyFilterAwareTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14563,6 +15195,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/SignatureHeaderInfoTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14577,6 +15210,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/StringDictionaryTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14591,6 +15225,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/StringItemTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14605,6 +15240,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/StringListTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14619,6 +15255,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/UpdateAssetTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14633,6 +15270,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/UpdatesBuildDataTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14647,6 +15285,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/UpdatesConfigOverrideTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14661,6 +15300,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/UpdatesConfigTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14675,6 +15315,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/UpdatesDatabaseTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14689,6 +15330,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/UpdatesLogReaderTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14703,6 +15345,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/UpdatesMultipartStreamReaderTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14717,6 +15360,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/UpdatesParameterParserTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14731,6 +15375,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/UpdatesStateMachineSpec.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14745,6 +15390,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/UpdatesStateMachineTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14759,6 +15405,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/UpdateTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14773,6 +15420,7 @@ export const metadata: {
       "path": "packages/expo-video/ios/Tests/CachePolicyTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14787,6 +15435,7 @@ export const metadata: {
       "path": "packages/expo/ios/Tests/ExpoAppDelegateTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14801,6 +15450,7 @@ export const metadata: {
       "path": "packages/expo/ios/Tests/ExpoAppSceneDelegateTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14815,6 +15465,7 @@ export const metadata: {
       "path": "packages/unimodules-app-loader/ios/Tests/UMAppLoaderProviderTests.swift",
       "caseIds": [],
       "runner": "xctest",
+      "execution": "xctest",
       "platforms": [
         "ios"
       ],
@@ -14829,6 +15480,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/__tests__/export/export-side-effects.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -14843,6 +15495,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/__tests__/utils.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -14857,6 +15510,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/e2e/__tests__/utils/CLIUtils.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -14871,6 +15525,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/e2e/__tests__/utils/constants.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -14885,6 +15540,7 @@ export const metadata: {
       "path": "packages/create-expo-module/e2e/__tests__/utils.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -14899,6 +15555,7 @@ export const metadata: {
       "path": "packages/create-expo/e2e/__tests__/utils.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -14913,6 +15570,7 @@ export const metadata: {
       "path": "packages/patch-project/e2e/__tests__/localPackages.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -14933,6 +15591,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/config-test.ts#throws on invalid project root@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -14954,6 +15613,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/customize-test.ts#runs `npx expo customize`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -14970,6 +15630,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export-async-imports-test.ts#runs `npx expo export -p web`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -14986,6 +15647,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export-dom-test.ts#Export DOM Components > runs `npx expo export`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15002,6 +15664,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export-embed-eager.test.ts#runs `npx expo export:embed --platform ios --eager`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15024,6 +15687,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export-embed-test.ts#runs `npx expo export:embed`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15040,6 +15704,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export-monorepo-test.ts#exports identical projects with cache invalidation@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15058,6 +15723,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export-web-test.ts#runs `npx expo export:web`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15079,6 +15745,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export.test.ts#server > runs `npx expo export`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15098,6 +15765,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/base-path.test.ts#static-rendering with a custom base path > writes assets with prefix@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15112,6 +15780,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/__tests__/export/export-embed-rsc.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15129,6 +15798,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/export-no-ssg.test.ts#export-no-ssg > has expected routes manifest entries@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15146,6 +15816,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/export-server-magic-import.test.ts#export server with magic import comments > server > fetches api route to ensure the dynamic import works@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15164,6 +15835,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/modal-splitting.test.ts#exports static splitting with modal > has expected files@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15181,6 +15853,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/no-bytecode.test.ts#exports for hermes with no bytecode and no minification > has expected files@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15197,6 +15870,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/no-sitemap.test.ts#static-rendering with no sitemap > has expected files@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15214,6 +15888,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/serializer-plugins.test.ts#exports with serializer plugins > source maps do not contain project paths@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15228,6 +15903,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/__tests__/export/server-env.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15244,6 +15920,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/server-headers.test.ts#export server with headers > includes `headers` and `pageHeaders` in the export manifest@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15264,6 +15941,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/server-loader.test.ts#sets custom headers on response using `setResponseHeaders()`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15290,6 +15968,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/server-middleware-matchers.test.ts#middleware matchers > pattern matching > runs middleware when pattern matches an exact route@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15318,6 +15997,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/server-middleware.test.ts#skips middleware when flag is disabled > does not export middleware when unstable_useServerMiddleware is not enabled@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15336,6 +16016,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/server-rendering-async.test.ts#server rendering with async routes > has top-level assets for sync chunks@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15369,6 +16050,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/server-rendering.test.ts#exports server > supports usePathname in +html files@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15392,6 +16074,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/server-rewrites-api.test.ts#server rewrites > requests > will rewrite only if the method is post@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15410,6 +16093,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/server-rewrites-screens.test.ts#server rewrites > server > correctly shows the destination contents after a rewrite@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15427,6 +16111,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/server-root-group.test.tsx#server-root-group > requests > can serve up group routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15465,6 +16150,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/server.test.ts#server-output > supports multiple values headers in API routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15485,6 +16171,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/single-page-app.test.ts#exports with single-page > statically extracts CSS@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15502,6 +16189,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/static-headers.test.ts#export static with headers > includes `headers` and `pageHeaders` in the export manifest@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15521,6 +16209,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/static-loader.test.ts#returns 404 for loader endpoint when route has no loader@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15537,6 +16226,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/static-middleware.test.ts#static export with middleware > static > skips middleware when exporting a project with web.output === static@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15560,6 +16250,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/static-redirects-api.test.ts#server api redirects > requests > will redirect only if the method is post@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15578,6 +16269,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/static-redirects-screens.test.ts#exports static > server > gets a screen redirect@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15594,6 +16286,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/static-redirects-ssr.test.ts#exports server > requests > gets an external URL redirect@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15621,6 +16314,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/static-rendering.test.ts#exports static > supports usePathname in +html files@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15638,6 +16332,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/static-rewrites-screens.test.ts#static rewrites > server > can serve up index html@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15664,6 +16359,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/static-splitting.test.ts#exports static with bundle splitting > supports usePathname in +html files@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15682,6 +16378,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/tailwind-postcss.test.ts#exports with tailwind and postcss > has tailwind CSS@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15698,6 +16395,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/url-polyfill.test.ts#exports with url-polyfill > has expected files@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15716,6 +16414,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/web-modal.test.ts#injects correct scripts@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15733,6 +16432,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/with-atlas.test.ts#exports all platforms with static export > has .expo/atlas.jsonl file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15749,6 +16449,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/export/without-sourcemaps.test.ts#exports static without sourcemaps > has no reference to source maps@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15768,6 +16469,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/index-test.ts#runs `npx expo -v`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15790,6 +16492,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/install-test.ts#validates when with `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --check`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15809,6 +16512,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/lint.test.ts#runs `npx expo lint` to install lint in a project@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15829,6 +16533,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/login-test.ts#throws on invalid project root@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15847,6 +16552,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/logout-test.ts#throws on invalid project root@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15861,6 +16567,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/__tests__/metro-server-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15879,6 +16586,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/prebuild-test.ts#runs `npx expo prebuild` asserts when expo is not installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15898,6 +16606,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/register-test.ts#throws on invalid project root@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15915,6 +16624,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/run-android-test.ts#runs `npx expo run:android --help`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15932,6 +16642,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/run-ios-test.ts#runs `npx expo run:ios --help`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15951,6 +16662,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/run-test.ts#runs `npx expo run ios --help`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15965,6 +16677,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/__tests__/start-headers.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -15983,6 +16696,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/start-test.ts#start - dev clients > runs `npx expo start` in dev client mode, using environment variable from .env@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16003,6 +16717,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/cli/e2e/__tests__/whoami-test.ts#throws on invalid project root@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16022,6 +16737,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/fingerprint/e2e/__tests__/bare-test.ts#bare project test > should have same hash for specifying android platform after changing podfile@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16039,6 +16755,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/fingerprint/e2e/__tests__/default-ignore-paths-test.ts#default template ignore paths > should not include the whole project package.json from ExpoConfigLoader@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16065,6 +16782,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/fingerprint/e2e/__tests__/managed-test.ts#managed project test > should keep the same fingerprint under the `relaxed` preset when the app version and name change@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16081,6 +16799,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/fingerprint/e2e/__tests__/relative-paths-test.ts#relative paths test > should not include absolute paths in the whole fingerprint@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16097,6 +16816,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/fingerprint/e2e/__tests__/updates-test.ts#updates managed support > should have same hash before and after prebuild@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16113,6 +16833,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/image-utils/e2e/__tests__/sharp-test.ts#findSharpInstanceAsync > resolves global sharp-cli path with yarn@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16131,6 +16852,7 @@ export const metadata: {
         "javascript-e2e#packages/@expo/schemer/e2e/__tests__/network-test.ts#validates incorrect asset dimensions hosted remotely@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16180,6 +16902,7 @@ export const metadata: {
         "javascript-e2e#packages/create-expo-module/e2e/__tests__/index-test.ts#non-interactive module creation > warns when target directory is not empty but continues@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16196,6 +16919,7 @@ export const metadata: {
         "javascript-e2e#packages/create-expo/e2e/__tests__/app-json-test.ts#creates project with app.json without root `expo` object@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16228,6 +16952,7 @@ export const metadata: {
         "javascript-e2e#packages/create-expo/e2e/__tests__/index-test.ts#yes > creates a default project in the current directory@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16263,6 +16988,7 @@ export const metadata: {
         "javascript-e2e#packages/expo-brownfield/e2e/cli/__tests__/build-android.test.ts#build:android command > without prebuild > shouldn't allow passing another command@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16293,6 +17019,7 @@ export const metadata: {
         "javascript-e2e#packages/expo-brownfield/e2e/cli/__tests__/build-ios.test.ts#build:ios command > without prebuild > shouldn't allow passing another command@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16315,6 +17042,7 @@ export const metadata: {
         "javascript-e2e#packages/expo-brownfield/e2e/cli/__tests__/help.test.ts#--help option > shouldn't take precedence over `--version`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16338,6 +17066,7 @@ export const metadata: {
         "javascript-e2e#packages/expo-brownfield/e2e/cli/__tests__/host-provided.test.ts#validateHostProvided > warns when a host-provided name does not resolve in any of the three layers@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16359,6 +17088,7 @@ export const metadata: {
         "javascript-e2e#packages/expo-brownfield/e2e/cli/__tests__/index.test.ts#basic cli tests > should display help message if no arguments are provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16397,6 +17127,7 @@ export const metadata: {
         "javascript-e2e#packages/expo-brownfield/e2e/cli/__tests__/precompiled.test.ts#enumerateSpmDepsXcframeworks > walks up to find packages/precompile/.build/.spm-deps/ and enumerates the requested flavor@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16420,6 +17151,7 @@ export const metadata: {
         "javascript-e2e#packages/expo-brownfield/e2e/cli/__tests__/tasks-android.test.ts#tasks:android command > without prebuild > shouldn't allow passing another command@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16439,6 +17171,7 @@ export const metadata: {
         "javascript-e2e#packages/expo-brownfield/e2e/cli/__tests__/version.test.ts#--version option > shouldn't break when option is passed multiple times@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16469,6 +17202,7 @@ export const metadata: {
         "javascript-e2e#packages/expo-brownfield/e2e/plugin/__tests__/plugin-android.test.ts#plugin for android > should properly resolve paths for localDirectory repositories@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16495,6 +17229,7 @@ export const metadata: {
         "javascript-e2e#packages/expo-brownfield/e2e/plugin/__tests__/plugin-ios.test.ts#plugin for ios > should properly set up build settings@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16518,6 +17253,7 @@ export const metadata: {
         "javascript-e2e#packages/expo-brownfield/e2e/plugin/__tests__/templates.test.ts#plugin templates > uses overriden templates for ios@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16532,6 +17268,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/e2e/__tests__/monorepo-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16549,6 +17286,7 @@ export const metadata: {
         "javascript-e2e#packages/patch-project/e2e/__tests__/patchProject-test.ts#patch-project > runs `patch-project` should convert a project to CNG patches`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -16563,6 +17301,7 @@ export const metadata: {
       "path": "apps/bare-expo/e2e/_nested-flows/screenshot-comparison.yaml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "unsupported",
       "platforms": [
         "android",
         "ios"
@@ -16578,6 +17317,7 @@ export const metadata: {
       "path": "apps/bare-expo/e2e/_nested-flows/viewshot-comparison.yaml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "unsupported",
       "platforms": [
         "android",
         "ios"
@@ -16593,6 +17333,7 @@ export const metadata: {
       "path": "apps/bare-expo/e2e/expo-image/test.yaml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16608,6 +17349,7 @@ export const metadata: {
       "path": "apps/bare-expo/e2e/expo-video/fullscreen-test.yaml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16623,6 +17365,7 @@ export const metadata: {
       "path": "apps/bare-expo/e2e/expo-video/picture-in-picture-test.android.yaml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16638,6 +17381,7 @@ export const metadata: {
       "path": "apps/bare-expo/e2e/expo-video/playback-test.yaml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16653,6 +17397,7 @@ export const metadata: {
       "path": "apps/bare-expo/e2e/expo-video/player-output-test.yaml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16668,6 +17413,7 @@ export const metadata: {
       "path": "apps/bare-expo/e2e/expo-video/surface-type-test.android.yaml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16683,6 +17429,7 @@ export const metadata: {
       "path": "packages/expo-brownfield/e2e/maestro/__tests__/common/_nested-flows/launch-brownfield.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "unsupported",
       "platforms": [
         "android",
         "ios"
@@ -16698,6 +17445,7 @@ export const metadata: {
       "path": "packages/expo-brownfield/e2e/maestro/__tests__/common/_nested-flows/skip-dev-menu.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "unsupported",
       "platforms": [
         "android",
         "ios"
@@ -16713,6 +17461,7 @@ export const metadata: {
       "path": "packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16728,6 +17477,7 @@ export const metadata: {
       "path": "packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16743,6 +17493,7 @@ export const metadata: {
       "path": "packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16758,6 +17509,7 @@ export const metadata: {
       "path": "packages/expo-brownfield/e2e/maestro/__tests__/common/state.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16773,6 +17525,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/assetRecovery_restoreAssetFiles.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16788,6 +17541,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/basic_checkRequestHeaders.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16803,6 +17557,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/basic_reload.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16818,6 +17573,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/basic_rollback.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16833,6 +17589,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/basic_runUpdate.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16848,6 +17605,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/basic_startAndStop.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16863,6 +17621,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/basic_updateInvalidAssetHash.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16878,6 +17637,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/basic_updateInvalidHash.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16893,6 +17653,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/basic_updateMultipleAssets.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16908,6 +17669,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/basic_updateOldCommitTime.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16923,6 +17685,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/beforeEach.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16938,6 +17701,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/brickingDisabled_jsReloadUpdate.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16953,6 +17717,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/brickingDisabled_runUpdate.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16968,6 +17733,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/devClient_runUpdate.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16983,6 +17749,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/devClient_verifyState.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -16998,6 +17765,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/disabled_verifyState.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17013,6 +17781,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/errorRecovery_runUpdate.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17028,6 +17797,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/fingerprint_runUpdate.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17043,6 +17813,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/jsapi_runUpdate.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17058,6 +17829,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/jsapi_setRequestHeadersOverride.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17073,6 +17845,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/jsapi_stateMachine.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17088,6 +17861,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/startup_runFastUpdate.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17103,6 +17877,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/startup_runSlowUpdate.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17118,6 +17893,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/updates-e2e-bricking-measures-disabled.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17133,6 +17909,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/updates-e2e-dev-client.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17148,6 +17925,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/updates-e2e-disabled.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17163,6 +17941,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/updates-e2e-enabled.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17178,6 +17957,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/updates-e2e-error-recovery.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17193,6 +17973,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/updates-e2e-fingerprint.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17208,6 +17989,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/updates-e2e-startup.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -17226,6 +18008,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/metro-require/__tests__/fast-refresh-integration.test.tsx#Fast Refresh integration with require() > reloads a single-module bundle when invalidated by component signatures@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17240,6 +18023,7 @@ export const metadata: {
       "path": "packages/@expo/cli/metro-require/__tests__/MetroFastRefreshMockRuntime.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17315,6 +18099,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/metro-require/__tests__/require.test.ts#require > works with segmented bundles@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17332,6 +18117,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/__tests__/getExpoGoIntermediateCertificate-test.ts#gets project development certificate@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17346,6 +18132,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/api/__tests__/getExpoSchema-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17363,6 +18150,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/__tests__/getNativeModuleVersions-test.ts#gets versions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17380,6 +18168,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/__tests__/getProjectDevelopmentCertificate-test.ts#gets project development certificate@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17397,6 +18186,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/__tests__/getVersions-test.ts#gets versions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17416,6 +18206,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/__tests__/updateDevelopmentSession-test.ts#update development session@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17436,6 +18227,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/graphql/__tests__/client-test.ts#query > throws when the GraphQL result is null@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17464,6 +18256,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/rest/__tests__/client-test.ts#switches to offline mode when undici network errors are thrown > detects when UND_ERR_CONNECT_TIMEOUT is thrown@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17484,6 +18277,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/rest/__tests__/wrapFetchWithBaseUrl-test.ts#supports relative paths@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17501,6 +18295,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/rest/__tests__/wrapFetchWithOffline-test.ts#times out instantly when offline@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17520,6 +18315,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/rest/__tests__/wrapFetchWithProgress-test.ts#should warn that a request is missing the content length header@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17542,6 +18338,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/rest/__tests__/wrapFetchWithUserAgent.test.ts#adds user-agent without headers@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17568,6 +18365,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/rest/cache/__tests__/FileSystemResponseCache.test.ts#FileSystemResponseCache > set > should store response with TTL when configured@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17590,6 +18388,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/rest/cache/__tests__/ResponseCache.test.ts#returns json serializable response info@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17609,6 +18408,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/rest/cache/__tests__/wrapFetchWithCache.test.ts#returns cached response for post request with json body@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17634,6 +18434,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/user/__tests__/actions-test.ts#uses username/password login when credentials are provided, even in an interactive terminal@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17651,6 +18452,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/user/__tests__/otp-test.ts#shows authenticator OTP prompt@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17684,6 +18486,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/user/__tests__/user-test.ts#skips the server logout call when there is no session secret@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17710,6 +18513,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/api/user/__tests__/UserSettings-test.ts#stores session data in a private file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17731,6 +18535,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/customize/__tests__/generate-test.ts#selects a file, generates, and installs@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17747,6 +18552,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/createKeepFileAsync.test.ts#creates a keep.xml file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17767,6 +18573,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/createMetadataJson-test.ts#writes metadata without file hashes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17785,6 +18592,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/exportAssets-test.ts#previous location of the config key > expands bundle patterns@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17805,6 +18613,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/exportDomComponents-test.ts#should update asset paths and remove leading slashes from filenames@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17842,6 +18651,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/exportHermes.test.ts#should support shared jsEngine key@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17881,6 +18691,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/exportStaticAsync.test.ts#should get path variations@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17900,6 +18711,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/favicon.test.ts#writes to disk when no asset map is provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17918,6 +18730,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/getPublicExpoManifest-test.ts#reads sdkVersion from node module@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17935,6 +18748,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/getResolvedLocales-test.ts#resolves nothing if locales are not defined@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17959,6 +18773,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/metroAssetLocalPath.test.ts#strips asset prefix@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -17979,6 +18794,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/persistMetroAssets.test.ts#virtual files match real files > writes files that match virtual output@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18002,6 +18818,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/publicFolder.test.ts#returns the favicon file when defined@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18028,6 +18845,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/resolveOptions-test.ts#resolves the tvos platform@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18045,6 +18863,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/saveAssets-test.ts#logs file output@2"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18061,6 +18880,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/__tests__/writeContents-test.ts#writes asset map to disk@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18080,6 +18900,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/export/embed/__tests__/xcodeCompilerLogger.test.ts#returns message for unhandled Metro error@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18103,6 +18924,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/install/__tests__/checkPackages-test.ts#suppresses exclude list message when --json flag is used@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18121,6 +18943,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/install/__tests__/fixPackages-test.ts#routes through installExpoPackageAsync when expo itself is outdated@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18140,6 +18963,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/install/__tests__/installExpoPackage-test.ts#Installs expo package with the project's package manager and then runs 'npx expo install' with specified args@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18159,6 +18983,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/install/__tests__/resolveOptions-test.ts#prevents bad combos@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18175,6 +19000,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/install/utils/__tests__/autoAddConfigPlugins-test.ts#gets named plugins@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18194,6 +19020,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/install/utils/__tests__/checkPackagesCompatibility-test.ts#warns about one unsupported package@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18211,6 +19038,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/install/utils/__tests__/parsePackageSpecifier-test.ts#parses scoped names@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18231,6 +19059,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/login/__tests__/index-test.ts#strips a trailing CR for CRLF input@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18256,6 +19085,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/prebuild/__tests__/clearNativeFolder-test.ts#skips platforms that are missing native project folders@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18280,6 +19110,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/prebuild/__tests__/renameTemplateAppName-test.ts#renameTemplateAppNameAsync > renaming behaviour > sanitizes XML-unsafe characters in XML and Plist files when renaming@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18318,6 +19149,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/prebuild/__tests__/resolveOptions-test.ts#splits dependencies@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18344,6 +19176,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/prebuild/__tests__/updatePackageJson-test.ts#with skipDependencyUpdate@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18362,6 +19195,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/register/__tests__/registerAsync.test.ts#launches a registration window@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18378,6 +19212,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/__tests__/ensureNativeProject-test.ts#clears malformed project and regenerates@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18399,6 +19234,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/__tests__/resolveBundlerProps-test.ts#skips bundling if the port is busy@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18416,6 +19252,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/__tests__/startBundler-test.ts#starts in headless mode@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18434,6 +19271,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/android/__tests__/resolveDevice-test.ts#resolves default device@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18456,6 +19294,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/android/__tests__/resolveGradlePropsAsync-test.ts#throws when variant is not a string@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18481,6 +19320,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/android/__tests__/resolveInstallApkName-test.ts#resolves an APK using universal cpu name@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18502,6 +19342,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/android/__tests__/resolveLaunchProps-test.ts#throws when /android folder is missing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18519,6 +19360,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/android/__tests__/resolveOptions-test.ts#resolves default options@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18535,6 +19377,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/android/__tests__/runAndroidAsync-test.ts#runs android@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18553,6 +19396,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/__tests__/launchApp-test.ts#runs ios on simulator@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18571,6 +19415,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/__tests__/runIosAsync-test.ts#runs ios on simulator@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18601,6 +19446,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/__tests__/XcodeBuild-test.ts#surfaces the compile error before the raw log dump so it survives truncation@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18620,6 +19466,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/appleDevice/__tests__/installOnDeviceAsync-test.ts#surfaces rejections@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18644,6 +19491,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/appleDevice/client/__tests__/AFCClient-test.ts#writeFile > returns public staging file info@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18665,6 +19513,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/appleDevice/client/__tests__/DebugserverClient-test.ts#setWorkingDir > works@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18683,6 +19532,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/appleDevice/client/__tests__/UsbmuxdClient-test.ts#connect > throws when the connection fails@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18700,6 +19550,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/appleDevice/protocol/__tests__/GDBProtocol-test.ts#parseBody > parses event@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18721,6 +19572,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/codeSigning/__tests__/resolveCertificateSigningIdentity-test.ts#stores the apple team id in app manifest when prompted@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18741,6 +19593,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/codeSigning/__tests__/Security-test.ts#return identities@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18759,6 +19612,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/codeSigning/__tests__/simulatorCodeSigning.test.ts#returns true if the entitlements file contains values which require signing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18777,6 +19631,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/codeSigning/__tests__/xcodeCodeSigning-test.ts#returns the no existing code signing info@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18793,6 +19648,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/options/__tests__/appleDestinations.test.ts#parses destinations@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18812,6 +19668,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/options/__tests__/promptDevice-test.ts#formats USB connected device@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18833,6 +19690,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/options/__tests__/resolveDevice-test.ts#searches for the provided device by name@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18854,6 +19712,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/options/__tests__/resolveNativeScheme-test.ts#uses only scheme if available even if no application scheme is available@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18871,6 +19730,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/options/__tests__/resolveOptions-test.ts#resolves default options@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18889,6 +19749,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/run/ios/options/__tests__/resolveXcodeProject-test.ts#throws if neither xcworkspace nor xcodeproj are available@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18928,6 +19789,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/__tests__/resolveOptions-test.ts#warns when both native directories are defined and neither define a shared scheme@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18945,6 +19807,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/__tests__/startAsync-test.ts#starts both bundlers with --web@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18964,6 +19827,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/__tests__/Prerequisite-test.ts#prepends code@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -18986,6 +19850,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/apple/__tests__/SimulatorAppPrerequisite-test.ts#throws when no simulator app identifier was found@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19005,6 +19870,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/apple/__tests__/XcodePrerequisite-test.ts#validates that Xcode is installed and is valid@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19023,6 +19889,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/apple/__tests__/XcrunPrerequisite-test.ts#detects that xcrun is installed and is valid@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19042,6 +19909,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/dependencies/__tests__/bundledNativeModules-test.ts#throws an error if api is down and expo is not installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19063,6 +19931,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/dependencies/__tests__/ensureDependenciesAsync-test.ts#prompts to install@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19081,6 +19950,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/dependencies/__tests__/getMissingPackages-test.ts#version is satisfied@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19111,6 +19981,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/dependencies/__tests__/getVersionedPackages-test.ts#skips remote versions for canary releases@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19145,6 +20016,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/dependencies/__tests__/reactNativeTv-test.ts#treats a caret range whose minimum is a prerelease as @next@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19169,6 +20041,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/dependencies/__tests__/resolvePackages.test.ts#throws when package is not installed@2"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19196,6 +20069,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/dependencies/__tests__/validateDependenciesVersions-test.ts#supports npm package args for excluded packages@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19222,6 +20096,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/ngrok/__tests__/ExternalModule-test.ts#resolveAsync > upgrades non-compliant local package@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19244,6 +20119,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/typescript/__tests__/TypeScriptProjectPrerequisite-test.ts#assertAsync > skips setup due to environment variable@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19261,6 +20137,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/typescript/__tests__/updateTSConfig-test.ts#does not force the base config to be Expo@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19283,6 +20160,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/doctor/web/__tests__/WebSupportProjectPrerequisite-test.ts#should return true if the platform is excluded@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19304,6 +20182,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/interface/__tests__/createDevToolsMenuItems-test.ts#createInteractiveMenuItems > should return empty list of menu items when no plugins are provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19320,6 +20199,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/interface/__tests__/interactiveActions-test.ts#returns banner items for webpage plugins with bannerTitle only@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19341,6 +20221,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/__tests__/AppIdResolver-test.ts#getAppIdAsync > throws when the app id is missing in the project config and there are no native files@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19375,6 +20256,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/__tests__/ExpoGoInstaller-test.ts#promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync > returns true when the user uninstalls the outdated app@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19399,6 +20281,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/__tests__/PlatformManager-test.ts#openAsync > rejects when a required custom development client is not installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19418,6 +20301,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/android/__tests__/activateWindow-test.ts#skips on windows@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19458,6 +20342,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/android/__tests__/adb-test.ts#returns true when a package is installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19478,6 +20363,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/android/__tests__/adbReverse-test.ts#stops reverse@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19507,6 +20393,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/android/__tests__/ADBServer-test.ts#stopAsync > stops the ADB server when running@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19524,6 +20411,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/android/__tests__/AndroidAppIdResolver-test.ts#getAppIdAsync > resolves the app id from project config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19547,6 +20435,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/android/__tests__/AndroidDeviceManager-test.ts#openUrlAsync > opens Expo Go before launching into Expo Go@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19567,6 +20456,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/android/__tests__/AndroidPlatformManager-test.ts#openAsync > re-opens with custom runtime props if set@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19593,6 +20483,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/android/__tests__/AndroidSdk-test.ts#throws when default location for Windows is invalid@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19612,6 +20503,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/android/__tests__/emulator-test.ts#times out waiting for an emulator to start@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19628,6 +20520,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/android/__tests__/getDevices-test.ts#asserts no devices are available@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19651,6 +20544,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/android/__tests__/gradle-test.ts#throws a controlled abort error for ctrl+c@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19672,6 +20566,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/android/__tests__/promptAndroidDevice-test.ts#formats USB connected unauthorized device@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19691,6 +20586,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/ios/__tests__/AppleAppIdResolver-test.ts#hasNativeProjectAsync > returns true when the AppDelegate file exists@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19717,6 +20613,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/ios/__tests__/AppleDeviceManager-test.ts#openUrlAsync > opens a URL on a device@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19736,6 +20633,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/ios/__tests__/ApplePlatformManager-test.ts#openAsync > resolves device with osType iOS when opening Expo Go@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19753,6 +20651,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/ios/__tests__/devicectl.test.ts#throws generic error when `xcrun` fails without error logs@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19773,6 +20672,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/ios/__tests__/ensureSimulatorAppRunning-test.ts#should throw a timeout warning when Simulator.app takes too long to start@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19792,6 +20692,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/ios/__tests__/getBestSimulator-test.ts#returns the first simulator when osType is provided and doesn't match default@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19809,6 +20710,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/ios/__tests__/promptAppleDevice-test.ts#sorts default to the beginning@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19834,6 +20736,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/ios/__tests__/simctl-test.ts#throws with troubleshooting link when boot fails@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19851,6 +20754,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/platforms/ios/__tests__/xcrun-test.ts#throws on invalid setup@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19872,6 +20776,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/project/__tests__/devices-test.ts#devices info > should save at most 10 devices@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19888,6 +20793,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/project/__tests__/dotExpo-test.ts#creates persisted file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19913,6 +20819,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/AsyncNgrok-test.ts#startAsync > starts@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19937,6 +20844,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/AsyncWsTunnel-test.ts#startAsync (signed) > tunnels the signed URL to the dev server on any port@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -19984,6 +20892,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/BundlerDevServer-test.ts#stopAsync > stops a running dev server@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20001,6 +20910,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/createMCPDevToolsExtensionSchema-test.ts#throws error if plugin has no commands@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20022,6 +20932,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/DevelopmentSession-test.ts#startAsync > starts a dev session@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20039,6 +20950,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/DevServerManager-test.ts#ensureWebDevServerRunningAsync > starts the web dev server with the port resolved up front@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20068,6 +20980,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/DevToolsPlugin-test.ts#DevToolsPlugin > should validate the schema using and throw if the schema doesn't match@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20095,6 +21008,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/DevToolsPluginCliExtensionExecutor-test.ts#DevToolsPluginCliExtensionExecutor > validation > should validate that the command exists in the extension@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20116,6 +21030,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/DevToolsPluginCliExtensionResults-test.ts#DevToolsPluginCliExtensionResults > output truncation > truncates output once accumulated length exceeds MAX_STRING_LENGTH and stops accepting more@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20135,6 +21050,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/DevToolsPluginManager-test.ts#DevToolsPluginManager > should skip a plugin with an invalid config without affecting other valid plugins@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20158,6 +21074,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/MCP-test.ts#should use staging MCP server if the EXPO_STAGING environment variable is set@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20180,6 +21097,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/MCPDevToolsPluginCLIExtensions-test.ts#skips plugins without MCP-compatible commands@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20199,6 +21117,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/openPlatforms-test.ts#surfaces aborting@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20216,6 +21135,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/serverLogLikeMetro.test.ts#logs a basic server log@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20257,6 +21177,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/UrlCreator-test.ts#constructUrl > warns when tunnel isn't available@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20275,6 +21196,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/__tests__/webTemplate-test.ts#injects extraHead before `</head>`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20289,6 +21211,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/metro/__tests__/createExpoAutolinkingResolver.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20308,6 +21231,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/createServerRouteMiddleware.test.ts#patterns > logs if string pattern do not begin with /@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20364,6 +21288,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/createTypescriptResolver.test.ts#uses pathsBasePath when baseUrl is absent@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20382,6 +21307,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/externals.test.ts#should return the correct module id@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20398,6 +21324,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/getCssModulesFromBundler.test.ts#returns the filename from the filepath@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20416,6 +21343,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/instantiateMetro.test.ts#is enabled without CI@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20443,6 +21371,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/MetroBundlerDevServer-test.ts#startAsync > starts metro@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20477,6 +21406,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/metroErrorInterface.test.ts#nearestImportStack > returns undefined when no import stack exists@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20494,6 +21424,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/metroErrors.test.ts#matches upstream metro-resolver errors@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20539,6 +21470,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/MetroTerminalReporter-test.ts#symbolicate React stacks > should symbolicate multiple errors stacks - SDK 54 style@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20556,6 +21488,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/metroWatchTypeScriptFiles.test.ts#invokes the callback for every event@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20586,6 +21519,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/router-test.ts#throws when the configured root traverses out of the project@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20612,6 +21546,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/serializeHtml.test.ts#sorts assets based on requires tree@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20631,6 +21566,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/TerminalReporter-test.ts#skips logging if the filter function returns true@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20652,6 +21588,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/withMetroErrorReportingResolver.test.ts#prioritizes projectRoot stack over server root stack@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20698,6 +21635,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/withMetroMultiPlatform.test.ts#with fallback module resolver > resolves self-referencing module when getPackageForModule returns matching package name@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20717,6 +21655,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/withMetroResolvers.test.ts#skips extra resolvers when the custom resolver fails to extend correctly@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20736,6 +21675,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/__tests__/withMetroSupervisingTransformWorker.test.ts#does nothing for default configs@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20754,6 +21694,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/debugging/__tests__/createHandlersFactory.test.ts#returns custom handlers for supported page@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20772,6 +21713,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/debugging/__tests__/getDebuggerType.test.ts#returns `vscode` for user agent from chrome@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20786,6 +21728,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/metro/debugging/__tests__/mockConnection.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20804,6 +21747,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/debugging/__tests__/pageIsSupported.test.ts#returns true for synthetic reloadable page@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20823,6 +21767,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/debugging/messageHandlers/__tests__/NetworkResponse.test.ts#responds to response body from device and debugger@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20841,6 +21786,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/debugging/messageHandlers/__tests__/VscodeDebuggerGetPossibleBreakpoints.test.ts#responds to `Debugger.getPossibleBreakpoints` with empty `locations`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20859,6 +21805,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/debugging/messageHandlers/__tests__/VscodeDebuggerSetBreakpointByUrl.test.ts#mutates `Debugger.setBreakpointByUrl` debugger request to create an unbounded breakpoint@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20877,6 +21824,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/debugging/messageHandlers/__tests__/VscodeRuntimeCallFunctionOn.test.ts#swallows `Runtime.callFunctionOn` debugger message and responds with object ID pointer@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20897,6 +21845,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/debugging/messageHandlers/__tests__/VscodeRuntimeEvaluate.test.ts#swallows `Runtime.evaluate` debugger message containing `process.env[\"NODE_OPTIONS\"]`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20916,6 +21865,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/debugging/messageHandlers/__tests__/VscodeRuntimeGetProperties.test.ts#mutates `Runtime.getProperties` device responses and removes `objectId` from symbol types@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20939,6 +21889,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/dev-server/__tests__/createMessageSocket.test.ts#warns when broadcasting to no clients@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20963,6 +21914,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/metro/dev-server/__tests__/createMetroMiddleware.test.ts#websockets > creates the /message websocket@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20977,6 +21929,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/metro/dev-server/__tests__/utils.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -20994,6 +21947,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/ContextModuleSourceMapsMiddleware.test.ts#should skip unrelated requests@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21025,6 +21979,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/CorsMiddleware-test.ts#should skip CORS headers from \"localhost\"@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21045,6 +22000,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/CreateFileMiddleware-test.ts#shouldHandleRequest > returns true when the middleware should handle@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21071,6 +22027,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/DevToolsPluginMiddleware-test.ts#serverEntryPoint > should return 500 when the handler throws@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21101,6 +22058,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/ExpoGoManifestHandlerMiddleware-test.ts#getParsedHeaders > supports application/json and expo+json@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21122,6 +22080,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/ExpoMiddleware-test.ts#shouldHandleRequest > returns true when the request url is `/`, or `/index.html`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21141,6 +22100,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/FaviconMiddleware.test.ts#skips when user-defined favicon is used@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21159,6 +22119,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/HistoryFallbackMiddleware-test.ts#redirects to provided middleware on web with query parameter@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21182,6 +22143,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/InterstitialPageMiddleware-test.ts#shouldHandleRequest > returns true when the middleware should handle@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21206,6 +22168,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/ManifestMiddleware-test.ts#getHandler > returns error info in the response@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21231,6 +22194,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/metroOptions.test.ts#returns basic options@2"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21267,6 +22231,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/openHandlers-test.ts#resolveOpenInfo — tunnel > routes the disambiguation URL through the tunnel host and omits the runtime field@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21302,6 +22267,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/OpenMiddleware-test.ts#unsupported methods > 405s on PUT@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21321,6 +22287,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/resolveAssets-test.ts#warns when the defined files are missing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21346,6 +22313,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/resolvePlatform-test.ts#returns null@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21366,6 +22334,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/RuntimeRedirectMiddleware-test.ts#shouldHandleRequest > returns true when the middleware should handle@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21384,6 +22353,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/__tests__/ServeStaticMiddleware-test.ts#getHandler > skips serving for non GET requests@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21406,6 +22376,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/inspector/__tests__/createJsInspectorMiddleware-test.ts#createJsInspectorMiddleware > should return specific app entity for GET request with given applicationId@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21425,6 +22396,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/middleware/inspector/__tests__/JsInspector-test.ts#should return specific app entity for given appId@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21454,6 +22426,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/type-generation/__tests__/routes.test.ts#will not match standard routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21472,6 +22445,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/type-generation/__tests__/startTypescriptTypeGeneration.test.ts#sets up typed routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21493,6 +22467,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/type-generation/__tests__/tsconfig.test.ts#modify an existing tsconfig@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21509,6 +22484,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/webpack/__tests__/compile-test.ts#compiles successfully@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21527,6 +22503,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/webpack/__tests__/tls-test.ts#skips TLS if the environment variables are already configured@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21548,6 +22525,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/start/server/webpack/__tests__/WebpackBundlerDevServer-test.ts#startAsync > starts webpack@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21564,6 +22542,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/ansi-test.ts#strips ansi@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21581,6 +22560,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/arg-test.ts#handles unknown options errors@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21600,6 +22580,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/array-test.ts#should return the last index of an item based on a given criteria@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21633,6 +22614,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/codesigning-test.ts#validates generated signature against certificate@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21658,6 +22640,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/composeMetroIgnorePatterns-test.ts#uses non-capturing groups when composing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21678,6 +22661,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/delay-test.ts#wait for a given action to return a truthy value@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21699,6 +22683,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/downloadExpoGoAsync-test.ts#returns the entry for an UNVERSIONED project@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21722,6 +22707,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/editor-test.ts#spawns the determined editor@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21742,6 +22728,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/env-test.ts#returns true when running in stackblitz@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21761,6 +22748,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/exit-test.ts#force-exits when a ref'd timer is leaked@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21778,6 +22766,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/FileNotifier-test.ts#returns null when no files can be found@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21797,6 +22786,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/filePath-test.ts#should handle converted paths@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21814,6 +22804,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/findUp-test.ts#throws if project root not found@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21831,6 +22822,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/fn-test.ts#memoizes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21849,6 +22841,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/freeport.test.ts#returns true for a free port@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21867,6 +22860,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/getRunningProcess-test.ts#should return the pid value for a running port@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21886,6 +22880,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/glob-test.ts#returns the first match for a glob pattern@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21914,6 +22909,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/mergeGitIgnorePaths-test.ts#will remove the generated section if it is empty@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21934,6 +22930,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/net-test.ts#treats a malformed Origin header as untrusted@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21951,6 +22948,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/npm-test.ts#sanitizes invalid names@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -21973,6 +22971,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/obj-test.ts#shallow writes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22015,6 +23014,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/port.test.ts#writes the resolved port back to RCT_METRO_PORT@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22031,6 +23031,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/profile-test.ts#respects input types@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22047,6 +23048,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/prompts-test.ts#searches values@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22080,6 +23082,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/resolveArgs-test.ts#will collapse all occurrences of an alias@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22099,6 +23102,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/scheme-test.ts#resolves longest scheme without known expo schemes@2"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22122,6 +23126,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/strings-test.ts#returns an empty string for zero items@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22138,6 +23143,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/tar-test.ts#calls utility to extract tarball@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22155,6 +23161,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/template-test.ts#can use positional arguments@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22174,6 +23181,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/terminal-test.ts#uses $REACT_TERMINAL if defined@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22194,6 +23202,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/url-test.ts#removes the port from a URL string@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22221,6 +23230,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/validateApplicationId-test.ts#validates@2"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22244,6 +23254,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/__tests__/variadic-test.ts#splits unknown flags into extras@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22264,6 +23275,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/telemetry/__tests__/index.test.ts#returns telemetry with detached strategy by default@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22285,6 +23297,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/telemetry/__tests__/Telemetry.test.ts#waits until telemetry is initialized@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22305,6 +23318,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/telemetry/clients/__tests__/FetchClient.test.ts#returns all events when aborting@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22325,6 +23339,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/telemetry/clients/__tests__/FetchDetachedClient.test.ts#stores all recorded events to json file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22343,6 +23358,7 @@ export const metadata: {
         "package-unit#packages/@expo/cli/src/utils/telemetry/utils/__tests__/context.test.ts#contains os name and version@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22361,6 +23377,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/AllowBackup-test.ts#allowBackup > sets the allowBackup property to true@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22386,6 +23403,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/BuildProperties-test.ts#should remove original property when `value` is null when `removePropWhenValueIsNull` is true@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22412,6 +23430,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/codeMod-test.ts#should throw if plugin block is not found@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22431,6 +23450,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Colors-test.ts#modifies the colors file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22449,6 +23469,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/GoogleMapsApiKey-test.ts#returns null if no android google maps API key is provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22472,6 +23493,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/GoogleServices-test.ts#sets classpath in build.gradle if needed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22490,6 +23512,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/IntentFilters-test.ts#Android intent filters > writes intent filter to android manifest@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22508,6 +23531,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Locales-test.ts#e2e: Android locales > writes all the language files expected@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22534,6 +23558,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Manifest-test.ts#works@3"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22553,6 +23578,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Name-test.ts#replaces name in settings@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22573,6 +23599,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Orientation-test.ts#Android orientation > returns orientation if provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22598,6 +23625,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Package-test.ts#sanitizes kotlin package names@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22621,6 +23649,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Paths-test.ts#throws when the android folder is missing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22651,6 +23680,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Permissions-test.ts#restricts an existing permission@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22673,6 +23703,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/PrimaryColor-test.ts#returns primary color if provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22690,6 +23721,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/renamePackageOnDisk-test.ts#package > renamePackageOnDisk > re-creates the directory structure and replaces occurrences of old package in files@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22708,6 +23740,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Resources-test.ts#returns a fallback value for a missing file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22733,6 +23766,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Scheme-test.ts#Schemes > get all schemes for the host@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22751,6 +23785,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/SoftwareKeyboard-test.ts#maps custom values@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22769,6 +23804,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Strings-test.ts#support adding multiple items@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22787,6 +23823,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Styles-test.ts#Styles > sets a style on an empty resource item@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22806,6 +23843,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/SystemBars-test.ts#e2e: Android system bars > warns when androidStatusBar is set@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22824,6 +23862,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Updates-test.ts#Android Updates config > set correct values in AndroidManifest.xml@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22852,6 +23891,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/android/__tests__/Version-test.ts#warns when it cannot find the requested value@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22872,6 +23912,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Bitcode-test.ts#warns when enabling bitcode on an invalid configuration@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22893,6 +23934,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/BuildProperties-test.ts#should remove original property when `value` is null when `removePropWhenValueIsNull` is true@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22915,6 +23957,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/BuildScheme-test.ts#throws if the scheme does not exist@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22939,6 +23982,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/BundleIdentifier-test.ts#BundleIdentifier module > sets the CFBundleShortVersionString if bundleIdentifier is given@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22974,6 +24018,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/codeMod-test.ts#should support prepend code to the head@2"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -22998,6 +24043,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/DeploymentTarget-test.ts#sets the property from ios.deploymentTarget config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23017,6 +24063,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/DevelopmentTeam-test.ts#DevelopmentTeam module > returns the `developmentTeam` when provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23042,6 +24089,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/DeviceFamily-test.ts#warns about invalid config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23062,6 +24110,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Entitlements-test.ts#returns path if CODE_SIGN_ENTITLEMENTS is specified and file exists@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23080,6 +24129,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Google-test.ts#returns the REVERSED_CLIENT_ID from the linked file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23098,6 +24148,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Locales-test.ts#iOS Locales > returns the locales object@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23123,6 +24174,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Maps-test.ts#sets the google maps api key if provided or returns plist@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23143,6 +24195,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Name-test.ts#sets the iOS PRODUCT_NAME value@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23161,6 +24214,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Orientation-test.ts#orientation > sets to appropriate values@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23192,6 +24246,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Paths-test.ts#warns when multiple paths are found@3"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23208,6 +24263,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Permissions-test.ts#applies permissions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23224,6 +24280,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/PrivacyInfo-test.ts#withPrivacyInfo > adds PrivacyInfo.xcprivacy file to the project and merges with existing file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23245,6 +24302,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/ProvisioningProfile-test.ts#ProvisioningProfile module > single target > throws descriptive error when target name does not exist@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23268,6 +24326,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/RequiresFullScreen-test.ts#warns when the predefined UISupportedInterfaceOrientations~ipad values are invalid@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23291,6 +24350,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Scheme-test.ts#scheme > verifies that a scheme exists@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23309,6 +24369,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Target-test.ts#reads the application target and its dependencies@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23325,6 +24386,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Updates-test.ts#iOS Updates config > sets the correct values in Expo.plist@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23344,6 +24406,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/UsesNonExemptEncryption-test.ts#uses non exempt encryption > sets ITSAppUsesNonExemptEncryption the key is given@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23358,6 +24421,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/utils/getDirFromFS.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23379,6 +24443,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/Version-test.ts#version > uses version if it's given in config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23395,6 +24460,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/__tests__/XcodeProjectFile-test.ts#creates a source file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23414,6 +24480,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/utils/__tests__/getInfoPlistPath-test.ts#throws on invalid target name@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23431,6 +24498,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/utils/__tests__/string-test.ts#trims quotes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23458,6 +24526,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/ios/utils/__tests__/Xcodeproj-test.ts#uses slugify for better name support@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23474,6 +24543,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/plugins/__tests__/android-plugins-test.ts#is passed gradle.properties@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23492,6 +24562,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/plugins/__tests__/ios-plugins-test.ts#uses default behavior when not overwritten@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23506,6 +24577,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/plugins/__tests__/mockMods.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23530,6 +24602,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/plugins/__tests__/mod-compiler-test.ts#skips missing providers in loose mode@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23549,6 +24622,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/plugins/__tests__/withIosBaseMods-test.ts#infoPlist > evaluates in dry run mode@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23567,6 +24641,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/plugins/__tests__/withMod-test.ts#throws when attempting to add a mod as the parent of a provider@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23583,6 +24658,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/plugins/__tests__/withPlugins-test.ts#compiles plugins in the correct order@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23601,6 +24677,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/plugins/__tests__/withRunOnce-test.ts#runs plugins multiple times without withRunOnce@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23621,6 +24698,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/plugins/__tests__/withStaticPlugin-test.ts#uses internal projectRoot@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23645,6 +24723,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/utils/__tests__/commonCodeMod-test.ts#should throw for boundary errors@2"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23664,6 +24743,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/utils/__tests__/fs-test.ts#returns false if the requested file is missing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23680,6 +24760,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/utils/__tests__/generateCode-test.ts#should not remove contents from different tags@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23700,6 +24781,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/utils/__tests__/matchBrackets-test.ts#should return -1 for not found cases@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23731,6 +24813,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/utils/__tests__/plugin-resolver-test.ts#plugin resolver > throws when given > a non-existent plugin@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23776,6 +24859,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/utils/__tests__/Updates-test.ts#works if the top level runtimeVersion is a string@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23792,6 +24876,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/utils/__tests__/validations-test.ts#assertValidAndroidAssetName@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23812,6 +24897,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-plugins/src/utils/__tests__/XML-test.ts#throws when invalid due to empty tags > throws correct error@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23828,6 +24914,7 @@ export const metadata: {
         "package-unit#packages/@expo/config-types/src/__tests__/ExpoConfig.test.ts#is not manually edited@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23874,6 +24961,7 @@ export const metadata: {
         "package-unit#packages/@expo/config/src/__tests__/Config-test.ts#warns when modifying static with object-like dynamic config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23897,6 +24985,7 @@ export const metadata: {
         "package-unit#packages/@expo/config/src/__tests__/ConfigParsing-test.ts#language support > parses a ts config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23916,6 +25005,7 @@ export const metadata: {
         "package-unit#packages/@expo/config/src/__tests__/getConfig-e2e-test.ts#throws a useful error for a project with an external syntax error@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23939,6 +25029,7 @@ export const metadata: {
         "package-unit#packages/@expo/config/src/__tests__/getConfig-test.ts#writes a default config to a project without any config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23955,6 +25046,7 @@ export const metadata: {
         "package-unit#packages/@expo/config/src/__tests__/Serialize-test.ts#serializeAndEvaluate > serializes item@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -23973,6 +25065,7 @@ export const metadata: {
         "package-unit#packages/@expo/config/src/__tests__/Web-test.ts#uses the default output build path for web@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24001,6 +25094,7 @@ export const metadata: {
         "package-unit#packages/@expo/config/src/paths/__tests__/convertEntryPointToRelative-test.ts#uses realServerRoot when absolutePath starts with it@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24027,6 +25121,7 @@ export const metadata: {
         "package-unit#packages/@expo/config/src/paths/__tests__/extensions-test.ts#TypeScript@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24050,6 +25145,7 @@ export const metadata: {
         "package-unit#packages/@expo/config/src/paths/__tests__/paths-test.ts#uses node_modules/expo/AppEntry as a last resort@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24072,6 +25168,7 @@ export const metadata: {
         "package-unit#packages/@expo/devtools/src/__tests__/DevToolsPluginClient-test.ts#DevToolsPluginClient > should connect to the WebSocket server@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24093,6 +25190,7 @@ export const metadata: {
         "package-unit#packages/@expo/devtools/src/__tests__/DevToolsPluginClientFactory-test.ts#should return the same client from the same plugin name when called multiple times@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24110,6 +25208,7 @@ export const metadata: {
         "package-unit#packages/@expo/devtools/src/__tests__/logger-test.ts#logger > should not log by default@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24135,6 +25234,7 @@ export const metadata: {
         "package-unit#packages/@expo/devtools/src/__tests__/MessageFramePack-test.node.ts#should throw an error for an unsupported payload type@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24149,6 +25249,7 @@ export const metadata: {
       "path": "packages/@expo/devtools/src/__tests__/MockWebSocket.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24171,6 +25272,7 @@ export const metadata: {
         "package-unit#packages/@expo/devtools/src/__tests__/WebSocketWithReconnect-test.node.ts#should throw errors if exceeds max retries@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24248,6 +25350,7 @@ export const metadata: {
         "package-unit#packages/@expo/env/src/__tests__/index.test.ts#warns if NODE_ENV is not valid@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24275,6 +25378,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/__tests__/Config-test.ts#should throw for invalid sourceSkips type@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24297,6 +25401,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/__tests__/Dedup-test.ts#should throw error when a dir is descendant of a file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24318,6 +25423,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/__tests__/ExpoConfig-test.ts#should treat a linked/hoisted dep (starting with ..) as excludable framework@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24341,6 +25447,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/__tests__/ExpoConfigLoader-test.ts#resolveLoadedModuleSourcesAsync > should skip ignored paths@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24363,6 +25470,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/__tests__/ExpoResolver-test.ts#should return true if the expo version satisfies the range@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24384,6 +25492,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/__tests__/Fingerprint-filehook-test.ts#FileHookTransform > should call hook function from createFingerprintAsync@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24409,6 +25518,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/__tests__/Fingerprint-test.ts#should return empty array when fingerprint matched@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24434,6 +25544,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/__tests__/Options-test.ts#should return the default options if no options are provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24457,6 +25568,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/__tests__/Presets-test.ts#resolvePreset > should throw for an unknown preset@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24478,6 +25590,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/__tests__/ProjectWorkflow-test.ts#should return managed workflow for a project with native project files and ignored by gitignore@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24497,6 +25610,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/__tests__/Sort-test.ts#should support both HashSource and FingerprintSource types@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24517,6 +25631,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/hash/__tests__/Hash-package-test.ts#package sources > should return a null hash when the package is ignored@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24535,6 +25650,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/hash/__tests__/Hash-ReactImportsPatcher-test.ts#createFileHashResultsAsync - use ReactImportsPatchTransform > should use ReactImportsPatchTransform when `enableReactImportsPatcher=false`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24563,6 +25679,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/hash/__tests__/Hash-test.ts#snapshot@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24584,6 +25701,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/hash/__tests__/ReactImportsPatcher-test.ts#should transform with given `lengthOfFilePortionContainingHeadersToTransform` bytes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24603,6 +25721,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/sourcer/__tests__/AutolinkingPackage-test.ts#createAutolinkingHashSourceAsync > should fall back to a dir source when the package.json is missing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24627,6 +25746,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/sourcer/__tests__/Bare-test.ts#when sourceSkips=None, should not touch package.json scripts if items contain \"run\"@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24678,6 +25798,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/sourcer/__tests__/Expo-test.ts#sortExpoAutolinkingConfig > should sort autolinking projects by name@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24696,6 +25817,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/sourcer/__tests__/Packages-test.ts#should return null if package.json is not found@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24714,6 +25836,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/sourcer/__tests__/PatchPackage-test.ts#should NOT add patches dir if it is ignored from the root@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24730,6 +25853,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/sourcer/__tests__/Sourcer-test.ts#should include `extraSources` from input parameter@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24757,6 +25881,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/sourcer/__tests__/Utils-test.ts#should support primitive types@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24771,6 +25896,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/vol-utils.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24787,6 +25913,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/utils/__tests__/Concurrency-test.ts#limits concurrent executions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24829,6 +25956,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/utils/__tests__/Path-test.ts#windows > should handle converted paths@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24845,6 +25973,7 @@ export const metadata: {
         "package-unit#packages/@expo/fingerprint/src/utils/__tests__/Profile-test.ts#respects input types@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24866,6 +25995,7 @@ export const metadata: {
         "package-unit#packages/@expo/image-utils/src/__tests__/Image.test.ts#Image #getPngInfo > returns true if the file is a png@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24883,6 +26013,7 @@ export const metadata: {
         "package-unit#packages/@expo/image-utils/src/__tests__/sharp-test.ts#isAvailableAsync > can be disabled using an environment variable@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24900,6 +26031,7 @@ export const metadata: {
         "package-unit#packages/@expo/inline-modules/src/__tests__/xcodeUpdates.test.ts#updateXcodeProject > does nothing if watchedDirectories is empty@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24948,6 +26080,7 @@ export const metadata: {
         "package-unit#packages/@expo/json-file/src/__tests__/JsonFile-test.ts#sync > writes JSON with the requested file mode@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24966,6 +26099,7 @@ export const metadata: {
         "package-unit#packages/@expo/json-file/src/__tests__/JsonFileError-test.ts#JsonFileError > is an error@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -24983,6 +26117,7 @@ export const metadata: {
         "package-unit#packages/@expo/local-build-cache-provider/src/__tests__/upload-build-cache-test.ts#LocalBuildCacheProvider.uploadBuildCache > uses the provided cacheDir option when copying build artifacts@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25006,6 +26141,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/__tests__/babel-transformer.test.ts#passes the environment as isServer to the babel preset@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25031,6 +26167,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/__tests__/binary-file-store.test.ts#stores function values as undefined@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25050,6 +26187,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/__tests__/customizeFrame.test.ts#does not collapse valid source file frames@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25071,6 +26209,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/__tests__/ExpoMetroConfig-test.ts#neutralizes Metro's `useWatchman` default so the Node watcher is used by default@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25091,6 +26230,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/__tests__/rewriteRequestUrl.test.ts#rewrites expo request without changing preset transform options@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25123,6 +26263,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/config/__tests__/resolveMetroUserConfig.test.ts#unwraps __esModule default exports@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25141,6 +26282,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/bundle-workers.test.ts#supports worker bundle@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25165,6 +26307,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/css.test.ts#supports url with abstract imports for style attributes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25187,6 +26330,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/env-var-hmr.test.ts#will import corrupt files if the name is not supported@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25206,6 +26350,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/environmentVariableSerializerPlugin.test.ts#works with missing transform@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25220,6 +26365,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/serializer/__tests__/esm-support.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25236,6 +26382,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/exportPath.test.ts#returns consistent local path@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25256,6 +26403,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/getCssDeps.test.ts#returns the filename from the filepath@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25273,6 +26421,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/import-tracing.test.ts#traces multiple imports with namespace export to the same module@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25300,6 +26449,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/optimize-graph.test.ts#using unreferenced import inside other module@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25368,6 +26518,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/packedMap.test.ts#wrapTransformResultMaps > short-circuits on already-wrapped data without invoking the lazy `data.map` getter@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25388,6 +26539,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/sideEffects.test.ts#matches side effects with matching path patterns@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25428,6 +26580,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/sourceMap.test.ts#sourceMapString > sourceMapStringNonBlocking returns the same output as sourceMapString@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25495,6 +26648,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/tree-shaking.test.ts#TODO: removes default export with overlapping exports (export-all and default)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25557,6 +26711,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/__tests__/withExpoSerializers.test.ts#serializes > supports caching a shared chunk that doesn't change between runs@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25574,6 +26729,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/fork/__tests__/baseJSBundle.test.ts#returns the expected base url from direct API usage@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25595,6 +26751,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/fork/__tests__/js.test.ts#wraps module with params in prod with lazy loading enabled@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25611,6 +26768,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/serializer/fork/__tests__/mini-metro.test.ts#can create a micro Metro graph fixture@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25625,6 +26783,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/serializer/fork/__tests__/mini-metro.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25639,6 +26798,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/serializer/fork/__tests__/serializer-test-utils.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25653,6 +26813,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/transform-plugins/__tests__/__mocks__/test-helpers-upstream.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25708,6 +26869,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/import-export-plugin-babel-loose-snapshots.test.ts#interop-loose remap@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25804,6 +26966,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/import-export-plugin-babel-snapshots.test.ts#update-expression positive-suffix@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25818,6 +26981,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/transform-plugins/__tests__/import-export-plugin-snapshots.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25844,6 +27008,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/import-export-plugin-upstream-live-bindings.test.ts#supports `import {default as LocalName}`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25874,6 +27039,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/import-export-plugin-upstream.test.ts#supports `import {default as LocalName}`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25914,6 +27080,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/import-export-plugin.test.ts#transforms import default as local with live binding@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25932,6 +27099,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/suite/class-properties.test.ts#public@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25956,6 +27124,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/suite/export-from.test.ts#import then export constant@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25972,6 +27141,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/suite/import-from.test.ts#auxiliary comment@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -25993,6 +27163,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/suite/import-interop-node.test.ts#module.exports function@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26032,6 +27203,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/suite/interop.test.ts#side-effect imports@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26064,6 +27236,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/suite/misc.test.ts#shadowed namespace import@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26085,6 +27258,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/suite/regressions.test.ts#supports unbound function calls without implicit bound member-expression call (#39362)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26103,6 +27277,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-plugins/__tests__/suite/update-expression.test.ts#positive suffix@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26117,6 +27292,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/transform-plugins/__tests__/suite/utils.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26131,6 +27307,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/transform-plugins/__tests__/utils.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26153,6 +27330,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-worker/__tests__/asset-transformer.test.ts#parses font asset as string in client environment for web@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26252,6 +27430,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-worker/__tests__/collect-dependencies-upstream.test.ts#Worker > does not register dependency with worker constructor if a variable is used@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26271,6 +27450,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-worker/__tests__/css-modules.test.ts#transforms A@2"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26292,6 +27472,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-worker/__tests__/css.test.ts#should transform css in dev mode@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26333,6 +27514,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-worker/__tests__/metro-transform-worker.test.ts#uses a reserved dependency map name and prevents it from being minified@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26352,6 +27534,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-worker/__tests__/postcss.test.ts#resolves no config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26370,6 +27553,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-worker/__tests__/resolveOptions.test.ts#returns minify with default transform profile@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26407,6 +27591,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-worker/__tests__/transform-worker.test.ts#transforms a global CSS file in dev for web@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26430,6 +27615,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-worker/__tests__/transformShim.test.ts#wraps an empty body as an empty Metro module factory@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26447,6 +27633,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-config/src/transform-worker/utils/__tests__/moduleMapper.test.ts#remaps module names given to it@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26468,6 +27655,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/__tests__/Watcher.test.ts#Watcher.crawl ignoreForCrawl composition > user ignoreForCrawl alone suffices when prefix is null@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26494,6 +27682,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/cache/__tests__/DiskCacheManager.test.ts#DiskCacheManager > serialises and writes a cache file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26540,6 +27729,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/crawlers/node/__tests__/fallback.test.ts#returns true for regular directories@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26576,6 +27766,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/crawlers/node/__tests__/index.test.ts#node crawler > VCS directories > skips .git directory even when ignore would otherwise allow it@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26596,6 +27787,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/lib/__tests__/checkWatchmanCapabilities.test.ts#checkWatchmanCapabilities > rejects when we are missing a required capability@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26620,6 +27812,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/lib/__tests__/FileProcessor.test.ts#processRegularFile > asynchronously populates metadata@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26638,6 +27831,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/lib/__tests__/FileSystemChangeAggregator.test.ts#removing, adding, modifying and removing a file records initial data@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26660,6 +27854,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/lib/__tests__/isWatcherExcluded.test.ts#isWatcherExcluded > matches with backslash separators (Windows)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26677,6 +27872,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/lib/__tests__/normalizePathSeparatorsToSystem.test.ts#normalizePathSeparatorsToSystem > replace slashes on windows@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26705,6 +27901,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/lib/__tests__/removeOverlappingRoots.test.ts#sorts roots@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26729,6 +27926,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/lib/__tests__/RootPathUtils.test.ts#resolveSymlinkToNormal > strips trailing separator from target@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26746,6 +27944,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/lib/__tests__/rootRelativeCacheKeys.test.ts#returns a distinct cache key for any change@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26889,6 +28088,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/lib/__tests__/TreeFS.test.ts#symlinks to an ancestor of the project root > matchFiles follows links up@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26918,6 +28118,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/plugins/dependencies/__tests__/dependencyExtractor.test.ts#dependencyExtractor > should not extract dependencies inside comments@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26934,6 +28135,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/plugins/haste/__tests__/getPlatformExtension.test.ts#getPlatformExtension > should get platform ext@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26950,6 +28152,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/plugins/mocks/__tests__/getMockName.test.ts#getMockName > extracts mock name from file path@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26969,6 +28172,7 @@ export const metadata: {
         "package-unit#packages/@expo/metro-file-map/src/watchers/__tests__/AbstractWatcher.test.ts#AbstractWatcher.doIgnore > still applies the user pattern alongside the VCS check@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -26989,6 +28193,7 @@ export const metadata: {
         "package-unit#packages/@expo/osascript/src/__tests__/index-test.ts#passes plain strings through@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27003,6 +28208,7 @@ export const metadata: {
       "path": "packages/@expo/package-manager/src/__tests__/spawn-utils.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27034,6 +28240,7 @@ export const metadata: {
         "package-unit#packages/@expo/package-manager/src/ios/__tests__/CocoaPodsPackageManager-test.ts#throws for unimplemented methods@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27053,6 +28260,7 @@ export const metadata: {
         "package-unit#packages/@expo/package-manager/src/ios/__tests__/gemfile-test.ts#isUsingBundlerAsync > returns true when Gemfile has cocoapods and bundle exec pod succeeds@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27101,6 +28309,7 @@ export const metadata: {
         "package-unit#packages/@expo/package-manager/src/node/__tests__/BunPackageManager-test.ts#BunPackageManager > workspaceRoot > returns null for non-monorepo project@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27159,6 +28368,7 @@ export const metadata: {
         "package-unit#packages/@expo/package-manager/src/node/__tests__/NpmPackageManager-test.ts#NpmPackageManager > workspaceRoot > returns null for non-monorepo project@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27210,6 +28420,7 @@ export const metadata: {
         "package-unit#packages/@expo/package-manager/src/node/__tests__/PnpmPackageManager-test.ts#PnpmPackageManager > workspaceRoot > returns null for non-monorepo project@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27261,6 +28472,7 @@ export const metadata: {
         "package-unit#packages/@expo/package-manager/src/node/__tests__/YarnPackageManager-test.ts#YarnPackageManager > workspaceRoot > returns null for non-monorepo project@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27301,6 +28513,7 @@ export const metadata: {
         "package-unit#packages/@expo/package-manager/src/utils/__tests__/nodeManagers-test.ts#resolves yarn from monorepo workspace@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27321,6 +28534,7 @@ export const metadata: {
         "package-unit#packages/@expo/package-manager/src/utils/__tests__/spawn-test.ts#pipes return of async action to spawn action@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27341,6 +28555,7 @@ export const metadata: {
         "package-unit#packages/@expo/package-manager/src/utils/__tests__/yarn-test.ts#returns false when registry.yarnpkg.com can be reached@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27365,6 +28580,7 @@ export const metadata: {
         "package-unit#packages/@expo/pkcs12/src/__tests__/index-test.ts#reading X.509 certificates from PKCS#12 files > returns null if there are no X.509 certificates under friendly name for p12 keystores using #getX509CertificateByFriendlyName@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27392,6 +28608,7 @@ export const metadata: {
         "package-unit#packages/@expo/plist/src/__tests__/build-test.ts#plist > build() > should serialize null-prototype dicts (as produced by parse)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27438,6 +28655,7 @@ export const metadata: {
         "package-unit#packages/@expo/plist/src/__tests__/parse-test.ts#parse() > string > should parse the string contents@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27458,6 +28676,7 @@ export const metadata: {
         "package-unit#packages/@expo/prebuild-config/src/__tests__/getAutolinkedPackages-test.ts#skips auto plugins when not autolinked@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27472,6 +28691,7 @@ export const metadata: {
       "path": "packages/@expo/prebuild-config/src/plugins/__tests__/getDirFromFS.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27495,6 +28715,7 @@ export const metadata: {
         "package-unit#packages/@expo/prebuild-config/src/plugins/__tests__/withDefaultPlugins-test.ts#runs with no core mods@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27520,6 +28741,7 @@ export const metadata: {
         "package-unit#packages/@expo/prebuild-config/src/plugins/icons/__tests__/withAndroidIcons-test.ts#removes the round icon property when an adaptive icon is missing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27537,6 +28759,7 @@ export const metadata: {
         "package-unit#packages/@expo/prebuild-config/src/plugins/icons/__tests__/withAndroidManifestIcons-test.ts#removes the round icon property when an adaptive icon is missing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27566,6 +28789,7 @@ export const metadata: {
         "package-unit#packages/@expo/prebuild-config/src/plugins/icons/__tests__/withIosIcons-test.ts#removes stale `.icon` resource references when switching back to a PNG icon@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27583,6 +28807,7 @@ export const metadata: {
         "package-unit#packages/@expo/prebuild-config/src/plugins/unversioned/__tests__/createLegacyPlugin-test.ts#uses versioned plugin instead of fallback@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27603,6 +28828,7 @@ export const metadata: {
         "package-unit#packages/@expo/prebuild-config/src/plugins/unversioned/edge-to-edge/__tests__/withEdgeToEdge-test.ts#restoreDefaultTheme > restores the default theme when parent includes EdgeToEdge@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27617,6 +28843,7 @@ export const metadata: {
       "path": "packages/@expo/prebuild-config/src/plugins/unversioned/expo-system-ui/__tests__/mockMods.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27639,6 +28866,7 @@ export const metadata: {
         "package-unit#packages/@expo/prebuild-config/src/plugins/unversioned/expo-system-ui/__tests__/withAndroidRootViewBackgroundColor-test.ts#returns the backgroundColor under android if provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27656,6 +28884,7 @@ export const metadata: {
         "package-unit#packages/@expo/prebuild-config/src/plugins/unversioned/expo-system-ui/__tests__/withAndroidUserInterfaceStyle-test.ts#warns about unsupported feature@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27678,6 +28907,7 @@ export const metadata: {
         "package-unit#packages/@expo/prebuild-config/src/plugins/unversioned/expo-system-ui/__tests__/withIosRootViewBackgroundColor-test.ts#throws on invalid color@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27698,6 +28928,7 @@ export const metadata: {
         "package-unit#packages/@expo/prebuild-config/src/plugins/unversioned/expo-system-ui/__tests__/withIosUserInterfaceStyle-test.ts#sets the UIUserInterfaceStyle to the appropriate value if given@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27712,6 +28943,7 @@ export const metadata: {
       "path": "packages/@expo/prebuild-config/src/testing-library/__tests__/expect.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27726,6 +28958,7 @@ export const metadata: {
       "path": "packages/@expo/prebuild-config/src/testing-library/__tests__/prebuild-tester.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27746,6 +28979,7 @@ export const metadata: {
         "package-unit#packages/@expo/prebuild-config/src/testing-library/__tests__/prebuild-testing-lib.test.ts#runs normally for a single iOS prebuild@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27764,6 +28998,7 @@ export const metadata: {
         "package-unit#packages/@expo/require-utils/src/__tests__/codeframe-test.ts#annotateError > returns null for a non-Error thrown value without crashing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27787,6 +29022,7 @@ export const metadata: {
         "package-unit#packages/@expo/require-utils/src/__tests__/load-test.ts#evalModule > rethrows a non-Error thrown value without crashing the annotator@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27849,6 +29085,7 @@ export const metadata: {
         "package-unit#packages/@expo/require-utils/src/__tests__/resolve-test.ts#symlink type detection > treats a symlink-to-file as a file in the direct match path@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27897,6 +29134,7 @@ export const metadata: {
         "package-unit#packages/@expo/require-utils/src/__tests__/stacktrace-test.ts#source-mapped frames > uses sourceURL when getFileName is null@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27913,6 +29151,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/__tests__/getNamedParametrizedRoute.test.node.ts#matches optionals using non-standard from router v1@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27953,6 +29192,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/__tests__/getServerManifest.test.node.ts#supports groups@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -27982,6 +29222,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/__tests__/loadStaticParamsAsync.test.node.ts#throws when required parameter is missing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28015,6 +29256,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/rsc/router/__tests__/create-pages.test.node.ts#createPages > throws on duplicate components for the same path+kind@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28033,6 +29275,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/server/__tests__/metadata.test.tsx#returns null when the route module cannot be resolved@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28049,6 +29292,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/typed-routes/__tests__/default-types.test.node.ts#enforces the generated route types@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28065,6 +29309,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/typed-routes/__tests__/partial-groups.test.node.ts#enforces the generated partial-group route types@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28079,6 +29324,7 @@ export const metadata: {
       "path": "packages/@expo/router-server/src/typed-routes/__tests__/tsHarness.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28105,6 +29351,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/typed-routes/__tests__/type-generation.test.node.ts#works with only layouts@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28134,6 +29381,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/utils/__tests__/html.test.ts#uses an escaped payload for unsafe HTML input@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28153,6 +29401,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/utils/__tests__/react.test.node.tsx#returns no nodes when there are no external stylesheets@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28173,6 +29422,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/utils/__tests__/streams.test.node.ts#injects head content when no document attributes are provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28211,6 +29461,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/utils/metadata/__tests__/render.test.ts#returns empty array for minimal resolved metadata@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28272,6 +29523,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/utils/metadata/__tests__/resolve.test.ts#stringifies numeric values@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28294,6 +29546,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/utils/metadata/__tests__/serialize.test.tsx#returns empty array for empty metadata@2"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28317,6 +29570,7 @@ export const metadata: {
         "package-unit#packages/@expo/router-server/src/utils/metadata/__tests__/tag.test.ts#pushes a <meta> tag with property attribute@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28347,6 +29601,7 @@ export const metadata: {
         "package-unit#packages/@expo/schema-utils/src/__tests__/deref-test.ts#should work with root refs@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28391,6 +29646,7 @@ export const metadata: {
         "package-unit#packages/@expo/schema-utils/src/__tests__/validate-test.ts#uniqueItems > should require unique items@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28419,6 +29675,7 @@ export const metadata: {
         "package-unit#packages/@expo/schema-utils/src/__tests__/visit-test.ts#visitNode > visits the root with an empty path@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28451,6 +29708,7 @@ export const metadata: {
         "package-unit#packages/@expo/schemer/src/__tests__/Schemer-test.ts#Sanity Tests > returns instance with public functions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28475,6 +29733,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/__tests__/compiler.test.ts#supports memoizing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28489,6 +29748,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/hermes-bytecode.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28503,6 +29763,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/hermes-util.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28530,6 +29791,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/__tests__/index.test.ts#uses the platform's react-native import@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28546,6 +29808,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/__tests__/jsc-bundle.test.ts#bundles `@react-native/js-polyfills/console.js` without imports@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28568,6 +29831,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/__tests__/jsx-import.test.ts#transforms React display name@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28582,6 +29846,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/metro-uniformity-matrix.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28601,6 +29866,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/__tests__/minify-sanity.test.ts#retains exported functions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28615,6 +29881,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/minify-util.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28665,6 +29932,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/__tests__/platform-shaking.test.ts#supports Platform module default fallback on web@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28727,6 +29995,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/__tests__/preset-config.test.ts#unstable_transformProfile override > selects hermes-canary profile@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28744,6 +30013,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/__tests__/react-refresh.test.ts#injects react refresh with the caller@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28758,6 +30028,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/samples/App.js",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28772,6 +30043,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/samples/App.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28786,6 +30058,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/samples/compile-memo.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28800,6 +30073,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/samples/destructure-catch.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28814,6 +30088,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/samples/Lazy.js",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28828,6 +30103,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/samples/PureComponent.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28842,6 +30118,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/samples/try-catch-hook.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28856,6 +30133,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/samples/worklet.js",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28874,6 +30152,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/babel-plugin-transform-export-namespace-from-upstream.test.ts#transforms export namespace from syntax@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28891,6 +30170,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/babel-plugin-transform-export-namespace-from.test.ts#transform export namespace syntax with loc@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28923,6 +30203,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/client-module-proxy-plugin.test.ts#use server > collects metadata with React Server Function references@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28937,6 +30218,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/plugins/__tests__/detect-dynamic-exports.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28960,6 +30242,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/environment-restricted-imports.test.ts#forbidden server imports > react server mode > does not assert importing server-side modules in server components (react server mode)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -28976,6 +30259,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/expo-inline-manifest-plugin.test.ts#inlines app manifest on web@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29000,6 +30284,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/expo-router-plugin.test.ts#uses custom relative app entry@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29033,6 +30318,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/fix-hermes-v1-async-arrow-non-simple-params.test.ts#untouched > leaves sync arrow with destructured params alone@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29059,6 +30345,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/fix-hermes-v1-class-in-finally.test.ts#untouched > leaves a try/finally with no class inside alone@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29085,6 +30372,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/fix-hermes-v1-super-in-object-accessor.test.ts#untouched > leaves an already-computed accessor alone@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29103,6 +30391,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/import-meta-transform-plugin.test.ts#transforms import.meta.url to globalThis.__ExpoImportMetaRegistry.url when unstable_transformImportMeta is true@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29126,6 +30415,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/inline-env-vars.test.ts#leaves EXPO_PUBLIC_USE_RN_FETCH untouched inside node modules when the flag is unset@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29153,6 +30443,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/restricted-react-api-plugin.test.ts#forbidden React server APIs > does not asserts client-side code without React API usage in server components (named import)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29210,6 +30501,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/server-actions.test.ts#TypeScript > supports re-exporting individual modules as types: export type { X } from \"...\"@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29246,6 +30538,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/server-data-loaders-plugin.test.ts#server > preserves exports > preserves non-loader exports@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29267,6 +30560,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/server-metadata-plugin.test.ts#serverMetadataPlugin > removes `generateMetadata()` variable exports from client bundles@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29291,6 +30585,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/use-dom-directive-plugin.test.ts#keeps React import from tsx@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29312,6 +30607,7 @@ export const metadata: {
         "package-unit#packages/babel-preset-expo/src/plugins/__tests__/widgets-plugin.test.ts#widgets-plugin > transform > stringifies widget function after JSX transform@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29330,6 +30626,7 @@ export const metadata: {
         "package-unit#packages/create-expo-module/src/__tests__/appleFrameworks-test.ts#ensureSafeModuleName > prefixes Apple framework names with Expo@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29350,6 +30647,7 @@ export const metadata: {
         "package-unit#packages/create-expo-module/src/__tests__/create-expo-module-test.ts#resolveLocalModuleDir > uses nativeModulesDir from expo.autolinking when configured@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29372,6 +30670,7 @@ export const metadata: {
         "package-unit#packages/create-expo-module/src/__tests__/defaults-test.ts#buildDefaultsWarning > shows (empty) for empty string values@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29411,6 +30710,7 @@ export const metadata: {
         "package-unit#packages/create-expo-module/src/__tests__/featureDetection-test.ts#findModuleDefinitionFile > skips generated directories when searching for module definitions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29438,6 +30738,7 @@ export const metadata: {
         "package-unit#packages/create-expo-module/src/__tests__/features-test.ts#resolveFeatures > returns the core feature set when fullExample is true@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29461,6 +30762,7 @@ export const metadata: {
         "package-unit#packages/create-expo-module/src/__tests__/packageManager-test.ts#uses yarn from the package manager user agent@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29506,6 +30808,7 @@ export const metadata: {
         "package-unit#packages/create-expo-module/src/__tests__/snippets-test.ts#SwiftUIView and ComposeView module snippets > emits ViewModifierRegistry.register for SwiftUIModifier@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29526,6 +30829,7 @@ export const metadata: {
         "package-unit#packages/create-expo-module/src/__tests__/templateUtils-test.ts#updateWebStub > refuses to overwrite a custom web implementation@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29550,6 +30854,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/__tests__/configureWorkspaces.test.ts#with pnpm > rewrites \"*\" workspace deps to \"workspace:*\" and writes pnpm-workspace.yaml@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29567,6 +30872,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/__tests__/createAsync.test.ts#logs correct cd@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29588,6 +30894,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/__tests__/createExpoConfig.test.ts#returns undefined when the parsed value is not an object@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29609,6 +30916,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/__tests__/createFileTransformer.test.ts#returns true for files within glob pattern@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29634,6 +30942,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/__tests__/Examples.test.ts#throws when the metadata is not found@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29657,6 +30966,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/__tests__/generateAgentFiles.test.ts#writes correct content to .claude/settings.json@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29693,6 +31003,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/__tests__/promptSdkVersion.test.ts#uses the project name in the lead-in when provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29716,6 +31027,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/__tests__/resolvePackageManager.test.ts#should use yarn due to the user agent@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29733,6 +31045,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/__tests__/sanitizeTemplate.test.ts#adds default scripts for unmanaged apps@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29754,6 +31067,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/__tests__/telemetry.test.ts#telemetry > with pre-existing state > does not enqueue events if not initialized@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29786,6 +31100,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/__tests__/Template.test.ts#resolves windows local path@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29813,6 +31128,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/utils/__tests__/args.test.ts#will collapse aliases into arguments@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29829,6 +31145,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/utils/__tests__/array.test.ts#should replace a value in an array@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29851,6 +31168,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/utils/__tests__/log.test.ts#it uses stdout when in CI mode@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29875,6 +31193,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/utils/__tests__/npm.test.ts#splits without tag@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29891,6 +31210,7 @@ export const metadata: {
         "package-unit#packages/create-expo/src/utils/__tests__/obj.test.ts#should merge objects@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29908,6 +31228,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-expo/__tests__/baseline-flat-test.js#lints with the default config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29925,6 +31246,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-expo/__tests__/baseline-test.js#lints with the default config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29941,6 +31263,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-expo/__tests__/rules-flat-test.js#lints custom rules@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29957,6 +31280,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-expo/__tests__/rules-test.js#lints custom rules@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29975,6 +31299,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-universe/__tests__/default-test.js#lints with the default config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -29993,6 +31318,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-universe/__tests__/native-test.js#lints with the React Native config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30011,6 +31337,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-universe/__tests__/node-test.js#lints with the Node config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30025,6 +31352,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/projects/default/index.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30039,6 +31367,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/projects/native/index.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30053,6 +31382,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/projects/node/index.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30067,6 +31397,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/projects/web/index.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30083,6 +31414,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-universe/__tests__/typescript-analysis-test.js#lints@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30101,6 +31433,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-universe/__tests__/web-test.js#lints with the web config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30119,6 +31452,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-universe/flat/__tests__/default-test.js#lints with the default config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30137,6 +31471,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-universe/flat/__tests__/native-test.js#lints with the React Native config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30155,6 +31490,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-universe/flat/__tests__/node-test.js#lints with the Node config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30169,6 +31505,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/projects/default/index.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30183,6 +31520,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/projects/native/index.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30197,6 +31535,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/projects/node/index.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30211,6 +31550,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/projects/web/index.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30227,6 +31567,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-universe/flat/__tests__/typescript-analysis-test.js#lints@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30245,6 +31586,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-universe/flat/__tests__/web-test.js#lints with the web config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30262,6 +31604,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-universe/flat/shared/__tests__/extensions-test.js#orders more specific platform subextensions first@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30279,6 +31622,7 @@ export const metadata: {
         "package-unit#packages/eslint-config-universe/shared/__tests__/extensions-test.js#orders more specific platform subextensions first@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30293,6 +31637,7 @@ export const metadata: {
       "path": "packages/eslint-plugin-expo/src/__tests__/no-dynamic-env-var.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30307,6 +31652,7 @@ export const metadata: {
       "path": "packages/eslint-plugin-expo/src/__tests__/no-env-var-destructuring.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30321,6 +31667,7 @@ export const metadata: {
       "path": "packages/eslint-plugin-expo/src/__tests__/prefer-box-shadow.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30335,6 +31682,7 @@ export const metadata: {
       "path": "packages/eslint-plugin-expo/src/__tests__/use-dom-exports.test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30354,6 +31702,7 @@ export const metadata: {
         "package-unit#packages/expo-age-range/src/__tests__/ExpoAgeRange-test.ts#ExpoAgeRange > invokes showSignificantUpdateAcknowledgmentAsync@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30374,6 +31723,7 @@ export const metadata: {
         "package-unit#packages/expo-app-integrity/src/__tests__/ExpoAppIntegrity-test.native.ts#Native > invokes requestIntegrityCheckAsync native method correctly@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30400,6 +31750,7 @@ export const metadata: {
         "package-unit#packages/expo-app-metrics/src/__tests__/AppMetricsErrorBoundary.test.native.tsx#reports the same way when a fallback element is provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30419,6 +31770,7 @@ export const metadata: {
         "package-unit#packages/expo-app-metrics/src/__tests__/AppMetricsRoot.test.native.tsx#mounts no boundary without a fallback, so a render error propagates unchanged@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30435,6 +31787,7 @@ export const metadata: {
         "package-unit#packages/expo-asset/src/__rsc_tests__/index.test.ts#creates an asset@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30466,6 +31819,7 @@ export const metadata: {
         "package-unit#packages/expo-asset/src/__tests__/Asset-test.ts#web > fetches images to determine the dimensions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30485,6 +31839,7 @@ export const metadata: {
         "package-unit#packages/expo-asset/src/__tests__/AssetHooks-test.ts#useAssets > skips new asset list when rerendered@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30501,6 +31856,7 @@ export const metadata: {
         "package-unit#packages/expo-asset/src/__tests__/AssetSourceResolver-test.web.ts#resolves a font asset@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30531,6 +31887,7 @@ export const metadata: {
         "package-unit#packages/expo-asset/src/__tests__/AssetSources-test.ts#selectAssetSource > returns an asset source object with an invalid dummy remote URL if the asset metadata does not specify an absolute URL in production@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30559,6 +31916,7 @@ export const metadata: {
         "package-unit#packages/expo-asset/src/__tests__/AssetUris-test.ts#getManifestBaseUrl > returns the same URL when there is no filename@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30579,6 +31937,7 @@ export const metadata: {
         "package-unit#packages/expo-asset/src/__tests__/ImageAssets-test.ts#isImageType > recognizes popular web image types@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30599,6 +31958,7 @@ export const metadata: {
         "package-unit#packages/expo-asset/src/__tests__/LocalAssets-test.native.ts#getLocalAssetUri > returns null in __DEV__@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30617,6 +31977,7 @@ export const metadata: {
         "package-unit#packages/expo-audio/src/__tests__/AudioRecorderWeb-test.ts#AudioRecorderWeb fileSize > resets when the recorder is prepared again@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30645,6 +32006,7 @@ export const metadata: {
         "package-unit#packages/expo-auth-session/src/__tests__/AuthRequest-test.ts#skips loading a code verifier with PKCE disabled@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30659,6 +32021,7 @@ export const metadata: {
       "path": "packages/expo-auth-session/src/__tests__/AuthSession-test.ios.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30673,6 +32036,7 @@ export const metadata: {
       "path": "packages/expo-auth-session/src/__tests__/AuthSession-test.native.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30690,6 +32054,7 @@ export const metadata: {
         "package-unit#packages/expo-auth-session/src/__tests__/AuthSession-test.web.ts#Web and SSR > Creates a redirect URL@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30706,6 +32071,7 @@ export const metadata: {
         "package-unit#packages/expo-auth-session/src/__tests__/Base64-test.node.ts#creates the correct base64@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30722,6 +32088,7 @@ export const metadata: {
         "package-unit#packages/expo-auth-session/src/__tests__/Errors-test.ts#adds a message to invalid_scope@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30736,6 +32103,7 @@ export const metadata: {
       "path": "packages/expo-auth-session/src/__tests__/ManifestTestUtils.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30757,6 +32125,7 @@ export const metadata: {
         "package-unit#packages/expo-auth-session/src/__tests__/QueryParams-test.ts#parses an error from a query string@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30771,6 +32140,7 @@ export const metadata: {
       "path": "packages/expo-auth-session/src/__tests__/SessionUrlProvider-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30799,6 +32169,7 @@ export const metadata: {
         "package-unit#packages/expo-auth-session/src/__tests__/TokenRequest-test.node.ts#TokenResponse > supports reading non-spec fields via rawResponse@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30816,6 +32187,7 @@ export const metadata: {
         "package-unit#packages/expo-blur/src/__tests__/BlurView-test.android.tsx#renders a native blur view@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30833,6 +32205,7 @@ export const metadata: {
         "package-unit#packages/expo-blur/src/__tests__/BlurView-test.ios.tsx#renders a native blur view@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30851,6 +32224,7 @@ export const metadata: {
         "package-unit#packages/expo-blur/src/__tests__/BlurView-test.web.tsx#supports Animated API@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30870,6 +32244,7 @@ export const metadata: {
         "package-unit#packages/expo-brightness/src/__tests__/Brightness-test.android.ts#doesn't call setBrightnessAsync from setSystemBrightnessAsync@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30888,6 +32263,7 @@ export const metadata: {
         "package-unit#packages/expo-brightness/src/__tests__/Brightness-test.ios.ts#returns false from isUsingSystemBrightnessAsync@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30906,6 +32282,7 @@ export const metadata: {
         "package-unit#packages/expo-brightness/src/__tests__/Brightness-test.native.ts#throws when setSystemBrightnessAsync is called with an unsupported type@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30928,6 +32305,7 @@ export const metadata: {
         "package-unit#packages/expo-brownfield/cli/src/utils/__tests__/ios.test.ts#validateSchemeCollision > passes for a unique scheme name@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30949,6 +32327,7 @@ export const metadata: {
         "package-unit#packages/expo-brownfield/cli/src/utils/__tests__/precompiled.test.ts#symlinked shared SPM-dep xcframeworks > resolves symlinks to real paths and corrects the flavor to the requested configuration@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30974,6 +32353,7 @@ export const metadata: {
         "package-unit#packages/expo-build-properties/src/__tests__/android-pch-test.ts#should skip when neither config nor env var is set@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -30996,6 +32376,7 @@ export const metadata: {
         "package-unit#packages/expo-build-properties/src/__tests__/android-queries-test.ts#it changes the package name@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31018,6 +32399,7 @@ export const metadata: {
         "package-unit#packages/expo-build-properties/src/__tests__/android-test.ts#should purge the sectioned contents when mode is `overwrite` and rules is empty string@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31038,6 +32420,7 @@ export const metadata: {
         "package-unit#packages/expo-build-properties/src/__tests__/fileContentsUtils-test.ts#should purge existing section@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31052,6 +32435,7 @@ export const metadata: {
       "path": "packages/expo-build-properties/src/__tests__/mockMods.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31092,6 +32476,7 @@ export const metadata: {
         "package-unit#packages/expo-build-properties/src/__tests__/pluginConfig-test.ts#useHermesV1 resolution > returns undefined when not set anywhere@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31126,6 +32511,7 @@ export const metadata: {
         "package-unit#packages/expo-build-properties/src/__tests__/withBuildProperties-test.ts#should throw an error for invalid plugin config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31146,6 +32532,7 @@ export const metadata: {
         "package-unit#packages/expo-build-properties/src/__tests__/withBuildPropertiesDayNight-test.ts#removes the `ResetEditText` style@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31165,6 +32552,7 @@ export const metadata: {
         "package-unit#packages/expo-calendar/src/__tests__/Calendar-test.native.ts#entrypoints > root legacy method stubs warn and throw@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31184,6 +32572,7 @@ export const metadata: {
         "package-unit#packages/expo-camera/src/__tests__/ExponentCameraManager-test.web.ts#returns true when a video input device exists@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31200,6 +32589,7 @@ export const metadata: {
         "package-unit#packages/expo-checkbox/src/__tests__/CheckBox-test.ts#Checkbox > exports checkbox as default@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31216,6 +32606,7 @@ export const metadata: {
         "package-unit#packages/expo-checkbox/src/__tests__/ExpoCheckBox-test.android.tsx#Checkbox > renders a native checkbox@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31232,6 +32623,7 @@ export const metadata: {
         "package-unit#packages/expo-checkbox/src/__tests__/ExpoCheckBox-test.ios.tsx#Checkbox > renders a native checkbox@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31250,6 +32642,7 @@ export const metadata: {
         "package-unit#packages/expo-checkbox/src/__tests__/ExpoCheckBox-test.web.tsx#Checkbox > renders content matching snapshot@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31269,6 +32662,7 @@ export const metadata: {
         "package-unit#packages/expo-clipboard/src/__tests__/Clipboard-test.native.ts#Clipboard > setStringAsync@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31285,6 +32679,7 @@ export const metadata: {
         "package-unit#packages/expo-clipboard/src/__tests__/Clipboard-test.web.ts#Clipboard > copies the provided string asynchronously@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31308,6 +32703,7 @@ export const metadata: {
         "package-unit#packages/expo-clipboard/src/utils/__tests__/options-test.ts#flattenPlatformOptions > handles undefined platform options@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31337,6 +32733,7 @@ export const metadata: {
         "package-unit#packages/expo-codemod/src/run/__tests__/index-test.ts#resolveAndDispatch > splits files by extension into ts, tsx, and jsx parser buckets@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31397,6 +32794,7 @@ export const metadata: {
         "package-unit#packages/expo-codemod/src/transforms/__tests__/sdk-56-expo-router-react-navigation-replace-test.ts#unsupported packages (no direct equivalent) > throws on type-only import from @react-navigation/native-stack@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31413,6 +32811,7 @@ export const metadata: {
         "package-unit#packages/expo-constants/src/__rsc_tests__/Constants.test.ts#reads server constants without throwing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31441,6 +32840,7 @@ export const metadata: {
         "package-unit#packages/expo-constants/src/__tests__/Constants-test.ts#manifest > is overridden by expo-updates if both are defined@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31457,6 +32857,7 @@ export const metadata: {
         "package-unit#packages/expo-contacts/src/__tests__/Contacts-test.ios.ts#presentFormAsync > should invalidate contact when ID is provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31476,6 +32877,7 @@ export const metadata: {
         "package-unit#packages/expo-crypto/src/__tests__/Crypto-test.native.ts#returns an array with the desired number of bytes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31496,6 +32898,7 @@ export const metadata: {
         "package-unit#packages/expo-crypto/src/__tests__/Crypto-test.ts#asserts invalid encoding errors@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31515,6 +32918,7 @@ export const metadata: {
         "package-unit#packages/expo-dev-client/plugin/src/__tests__/getDefaultScheme-test.ts#removes unallowed characters@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31532,6 +32936,7 @@ export const metadata: {
         "package-unit#packages/expo-dev-client/plugin/src/__tests__/withGeneratedAndroidScheme-test.ts#removes exp+ scheme when intent filter autoVerify is true@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31549,6 +32954,7 @@ export const metadata: {
         "package-unit#packages/expo-dev-client/plugin/src/__tests__/withGeneratedIosScheme-test.ts#prevents adding a duplicate scheme@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31565,6 +32971,7 @@ export const metadata: {
         "package-unit#packages/expo-dev-client/src/__tests__/DevClient-test.ts#DevClient > DevMenu is defined@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31582,6 +32989,7 @@ export const metadata: {
         "package-unit#packages/expo-device/src/__tests__/ExpoDevice-test.web.ts#returns totalMemory as bytes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31615,6 +33023,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/__tests__/doctor.test.ts#VectorIconsCheck SDK version filtering > includes VectorIconsCheck for SDK 56 and above@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31629,6 +33038,7 @@ export const metadata: {
       "path": "packages/expo-doctor/src/__tests__/spawn-utils.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31653,6 +33063,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/AppConfigFieldsNotSyncedToNativeProjectsCheck.test.ts#runAsync > returns result with isSuccessful = true with ios/ android folders and config plugins present, in gitignore@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31671,6 +33082,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/AutolinkingDependencyDuplicatesCheck.test.ts#AutolinkingDependencyDuplicatesCheck > returns failing result with advice for corrupted node_modules folders@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31698,6 +33110,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/DependencyVersionOverrideCheck.test.ts#runAsync > traverses multi-step chains resolving each package from its parent@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31722,6 +33135,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/DirectoryCheck.test.ts#ReactNativeDirectoryCheck > treats new-arch-only packages as supported@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31739,6 +33153,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/DirectPackageInstallCheck.test.ts#runAsync > returns result with isSuccessful = true if package.json contains a dependency that is on list, but SDK requirement is not met@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31759,6 +33174,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/EnvLocalFilesCheck.test.ts#runAsync > returns isSuccessful = true when the ignore status is undetermined (no git)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31778,6 +33194,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/ExpoConfigCommonIssueCheck.test.ts#runAsync > returns result with isSuccessful = true if Expo config SDK version matches installed version@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31802,6 +33219,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/ExpoRouterReactNavigationCheck.test.ts#runAsync > returns isSuccessful = true if expo-router is not installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31820,6 +33238,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/GlobalPackageInstalledLocallyCheck.test.ts#runAsync > returns result with isSuccessful = true if check passes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31837,6 +33256,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/IllegalPackageCheck.js#runAsync > returns result with isSuccessful = true if check passes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31859,6 +33279,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/InstalledDependencyVersionCheck.test.ts#runAsync > uses --json flag for SDK 54+ projects@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31880,6 +33301,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/LockfileCheck.test.ts#runAsync > uses monorepo root lockfile when running from a workspace app@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31913,6 +33335,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/MetroConfigCheck.test.ts#runAsync > returns result with isSuccessful = true when no user config is found@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31940,6 +33363,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/NativeToolingVersionCheck.test.ts#runAsync > returns success if xcode is not installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31963,6 +33387,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/PackageJsonCheck.test.ts#runAsync > returns result with isSuccessful = true if scripts does not contain expo@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -31981,6 +33406,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/PackageManagerVersionCheck.test.ts#runAsync > returns result with isSuccessful = true if yarnpkg is not installed and npm version is in acceptable range@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32005,6 +33431,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/PeerDependencyChecks.test.ts#PeerDependencyChecks > returns successful result when no dependencies exist@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32025,6 +33452,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/ProjectSetupCheck.test.ts#runAsync > returns result with isSuccessful = true if no local expo modules are present@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32043,6 +33471,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/StoreCompatibilityCheck.test.ts#runAsync > returns result with isSuccessful = true if expo-build-properties plugin added, includes android prop, but not targetSdkVersion prop@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32063,6 +33492,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/SupportPackageVersionCheck.test.ts#runAsync > warns if package.json resolutions are not pinned to a valid version@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32080,6 +33510,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/checks/__tests__/VectorIconsCheck.test.ts#VectorIconsCheck > returns result with isSuccessful = true if @expo/vector-icons is not installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32112,6 +33543,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/utils/__tests__/doctorConfig.test.ts#getReactNativeDirectoryCheckListUnknownPackagesEnabled > returns true if the config is enabled@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32130,6 +33562,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/utils/__tests__/errors.test.ts#returns true for generic network error message@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32149,6 +33582,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/utils/__tests__/explainDependencies.test.ts#returns warning if package found with incorrect version@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32172,6 +33606,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/utils/__tests__/files.test.ts#returns true if file is ignored by .easignore@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32192,6 +33627,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/utils/__tests__/getProjectConfig.test.ts#throws when exp.sdkVersion is missing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32210,6 +33646,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/utils/__tests__/getRemoteVersionsForSdk.test.ts#returns results for a valid SDK version@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32228,6 +33665,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/utils/__tests__/getXcodeVersionAsync.test.ts#returns the version of xcode installed in semantic format@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32254,6 +33692,7 @@ export const metadata: {
         "package-unit#packages/expo-doctor/src/utils/__tests__/parseInstallCheckOutput.test.ts#parseInstallCheckOutput > should skip packages that are already up to date@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32272,6 +33711,7 @@ export const metadata: {
         "package-unit#packages/expo-document-picker/plugin/src/__tests__/withDocumentPickerIOS-test.ts#skips setting the iCloud entitlements if the flag isn't enabled@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32292,6 +33732,7 @@ export const metadata: {
         "package-unit#packages/expo-env-info/src/__tests__/diagnostics-test.ts#returns true if package.json is in the current folder@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32311,6 +33752,7 @@ export const metadata: {
         "package-unit#packages/expo-env-info/src/__tests__/helpers-test.ts#follows symlinks@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32380,6 +33822,7 @@ export const metadata: {
         "package-unit#packages/expo-file-system/src/__tests__/FileSystem-test.native.ts#expo-file-system/legacy mock > legacy mock functions return promises@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32394,6 +33837,7 @@ export const metadata: {
       "path": "packages/expo-file-system/src/__tests__/FileSystemWatcher-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32453,6 +33897,7 @@ export const metadata: {
         "package-unit#packages/expo-file-system/src/__tests__/FSNetworkTasks-test.native.ts#UploadTask > uploadAsync() throws if not in idle state@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32472,6 +33917,7 @@ export const metadata: {
         "package-unit#packages/expo-file-system/src/legacy/__tests__/FileSystem-test.native.ts#FileSystem > DownloadResumable > resumes correctly@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32493,6 +33939,7 @@ export const metadata: {
         "package-unit#packages/expo-font/plugin/src/__tests__/utils-test.ts#resolves unscoped package-style font paths relative to the project root@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32523,6 +33970,7 @@ export const metadata: {
         "package-unit#packages/expo-font/plugin/src/__tests__/withFontsAndroid-test.ts#planFontCopies > should skip files that are not fonts@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32540,6 +33988,7 @@ export const metadata: {
         "package-unit#packages/expo-font/src/__rsc_tests__/index.test.ts#Font in RSC env > useFonts returns loaded: false@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32567,6 +34016,7 @@ export const metadata: {
         "package-unit#packages/expo-font/src/__tests__/Font-test.native.ts#within Expo Go > loadAsync > throws if loading a downloaded font fails@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32586,6 +34036,7 @@ export const metadata: {
         "package-unit#packages/expo-font/src/__tests__/Font-test.node.ts#returns sync results@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32608,6 +34059,7 @@ export const metadata: {
         "package-unit#packages/expo-font/src/__tests__/Font-test.web.ts#works without map@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32622,6 +34074,7 @@ export const metadata: {
       "path": "packages/expo-font/src/__tests__/FontHooks-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32641,6 +34094,7 @@ export const metadata: {
         "package-unit#packages/expo-font/src/__tests__/FontLoader-test.web.ts#loadSingleFontAsync > rejects expo-asset@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32661,6 +34115,7 @@ export const metadata: {
         "package-unit#packages/expo-font/src/__tests__/serverContext-test.node.ts#throws when font registry is read or written outside a scope@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32677,6 +34132,7 @@ export const metadata: {
         "package-unit#packages/expo-gl/src/__tests__/GLView-test.tsx#renders static@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32693,6 +34149,7 @@ export const metadata: {
         "package-unit#packages/expo-glass-effect/src/__tests__/GlassContainer-test.ios.tsx#renders a liquid glass container view@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32707,6 +34164,7 @@ export const metadata: {
       "path": "packages/expo-glass-effect/src/__tests__/GlassView-test.ios.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32739,6 +34197,7 @@ export const metadata: {
         "package-unit#packages/expo-image-manipulator/src/__tests__/validators-test.ts#valid@2"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32760,6 +34219,7 @@ export const metadata: {
         "package-unit#packages/expo-image-manipulator/src/web/__tests__/utils.web-test.ts#uses the most restrictive bound@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32777,6 +34237,7 @@ export const metadata: {
         "package-unit#packages/expo-image-picker/plugin/src/__tests__/withImagePicker-test.ts#defaults to adding permissions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32798,6 +34259,7 @@ export const metadata: {
         "package-unit#packages/expo-image-picker/src/__tests__/ExponentImagePicker-test.web.ts#ExponentImagePicker > requestMediaLibraryPermissionsAsync > is always granted@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32815,6 +34277,7 @@ export const metadata: {
         "package-unit#packages/expo-image-picker/src/__tests__/ImagePicker-test.native.ts#ExponentImagePicker > launchImageLibraryAsync > defaults options to an empty object@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32831,6 +34294,7 @@ export const metadata: {
         "package-unit#packages/expo-image/src/__rsc_tests__/index.test.tsx#renders Image@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32873,6 +34337,7 @@ export const metadata: {
         "package-unit#packages/expo-image/src/__tests__/observe.test.ts#reportIfOversized > squares the device pixel ratio in the budget@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32891,6 +34356,7 @@ export const metadata: {
         "package-unit#packages/expo-keep-awake/src/__tests__/index-test.native.ts#test explicit calls with parameters@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32907,6 +34373,7 @@ export const metadata: {
         "package-unit#packages/expo-linear-gradient/src/__rsc_tests__/LinearGradient.test.tsx#renders to RSC@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32924,6 +34391,7 @@ export const metadata: {
         "package-unit#packages/expo-linear-gradient/src/__tests__/LinearGradient-test.native.tsx#renders a complex gradient@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32942,6 +34410,7 @@ export const metadata: {
         "package-unit#packages/expo-linear-gradient/src/__tests__/LinearGradient-test.web.tsx#renders@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32959,6 +34428,7 @@ export const metadata: {
         "package-unit#packages/expo-linking/src/__rsc_tests__/Linking.test.ts#runs open URL@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32975,6 +34445,7 @@ export const metadata: {
         "package-unit#packages/expo-linking/src/__tests__/Linking-test.ts#bare > uses triple slashes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -32991,6 +34462,7 @@ export const metadata: {
         "package-unit#packages/expo-linking/src/__tests__/Linking-test.web.ts#returns the expected subscription@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33018,6 +34490,7 @@ export const metadata: {
         "package-unit#packages/expo-linking/src/__tests__/Schemes-test.native.ts#warns when multiple schemes are defined in bare@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33035,6 +34508,7 @@ export const metadata: {
         "package-unit#packages/expo-local-authentication/src/__tests__/LocalAuthentication-test.native.ts#uses options@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33058,6 +34532,7 @@ export const metadata: {
         "package-unit#packages/expo-localization/plugin/__tests__/withExpoLocalization-test.ts#setResourceConfigurations > updates the resourceConfigurations when supportedLocales change@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33076,6 +34551,7 @@ export const metadata: {
         "package-unit#packages/expo-localization/src/__tests__/Localization-test.native.ts#Localization works with i18n-js > expect language to match strings (en, pl, fr supported)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33094,6 +34570,7 @@ export const metadata: {
         "package-unit#packages/expo-localization/src/__tests__/Localization-test.web.ts#Localization works with i18n-js > expect language to match strings (en, pl, fr supported)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33115,6 +34592,7 @@ export const metadata: {
         "package-unit#packages/expo-location/src/__tests__/Location-test.native.ts#watchPositionAsync > receives repeated events@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33134,6 +34612,7 @@ export const metadata: {
         "package-unit#packages/expo-mail-composer/src/__tests__/ExpoMailComposer.test.web.ts#launches mail@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33154,6 +34633,7 @@ export const metadata: {
         "package-unit#packages/expo-media-library/plugin/src/__tests__/withMediaLibrary-test.ts#withMediaLibrary - granularPermissions behavior > applies only photo permission when granularPermissions is [\"photo\"]@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33175,6 +34655,7 @@ export const metadata: {
         "package-unit#packages/expo-media-library/src/__tests__/MediaLibrary-test.native.ts#isAvailableAsync > should resolve to true on native platforms@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33193,6 +34674,7 @@ export const metadata: {
         "package-unit#packages/expo-media-library/src/__tests__/MediaLibrary-test.web.ts#next API > should not throw when permissions are requested on web platform from the root import@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33209,6 +34691,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/__tests__/concurrency-test.ts#limits concurrent executions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33250,6 +34733,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/__tests__/inlineModules.test.ts#isTargetInInlineModulesTargets > with an explicit targetName > should use targetName even when the path contains an abstract target prefix@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33268,6 +34752,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/__tests__/memoize.test.ts#provides cached value for memoizer@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33289,6 +34774,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/__tests__/utils.test.ts#returns sorted files@2"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33319,6 +34805,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/autolinking/__tests__/findModules-test.ts#should use real path on iOS even when path contains = and .pnpm@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33345,6 +34832,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/commands/__tests__/autolinkingOptions-test.ts#returns default options when no autolinking config exists@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33363,6 +34851,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/dependencies/__tests__/CachedDependenciesLinker-test.ts#includes non-native dependencies by name via include option@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33382,6 +34871,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/dependencies/__tests__/resolution-test.ts#resolves multi-level isolated duplicates with stable path and version, stable originPath@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33399,6 +34889,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/dependencies/__tests__/rncliLocal-test.ts#resolves local dependencies by react-native.config.js roots@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33413,6 +34904,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/src/dependencies/__tests__/scanning-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33439,6 +34931,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/dependencies/__tests__/utils-test.ts#searches duplicates when a SEARCH_PATH module has not matched@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33473,6 +34966,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/platforms/__tests__/android-test.ts#should support expo adapter name@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33499,6 +34993,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/platforms/__tests__/apple-test.ts#should use value from module config when it exists@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33522,6 +35017,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/platforms/__tests__/devtools-test.ts#returns null when devtools config is absent@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33536,6 +35032,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/src/reactNativeConfig/__tests__/androidResolver-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33550,6 +35047,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/src/reactNativeConfig/__tests__/config-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33572,6 +35070,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-autolinking/src/reactNativeConfig/__tests__/iosResolver-test.ts#should return null if reactNativeConfig is null@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33586,6 +35085,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/src/reactNativeConfig/__tests__/reactNativeConfig-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33600,6 +35100,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/src/reactNativeConfig/__tests__/webResolver-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33614,6 +35115,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/src/utilities/__tests__/isNativeModule-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33630,6 +35132,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-core/src/__rsc_tests__/index.test.ts#has platform defined@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33667,6 +35170,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-core/src/__tests__/core-module/EventEmitter-test.ts#EventEmitter > subscriptions > removes itself@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33683,6 +35187,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-core/src/__tests__/Errors-test.ts#UnavailabilityError > has a constructor which takes a module and property name as parameters@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33700,6 +35205,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-core/src/__tests__/NativeViewManagerAdapter-test.native.tsx#requireNativeViewManager > sets the \"displayName\" of the native component@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33731,6 +35237,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-core/src/__tests__/PermissionsHook-test.ts#product > skips state update when unmounted@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33747,6 +35254,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-core/src/__tests__/Platform-test.ts#matches snapshots@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33763,6 +35271,7 @@ export const metadata: {
         "package-unit#packages/expo-modules-core/src/__tests__/Refs-test.ts#Refs > refs should be snapshot friendly@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33792,6 +35301,7 @@ export const metadata: {
         "package-unit#packages/expo-navigation-bar/plugin/src/__tests__/withNavigationBar-test.ts#sets light style@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33809,6 +35319,7 @@ export const metadata: {
         "package-unit#packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#Android notifications configuration > writes all the asset files (sounds and images) as expected@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33825,6 +35336,7 @@ export const metadata: {
         "package-unit#packages/expo-notifications/plugin/src/__tests__/withNotificationsiOS-test.ts#iOS notifications configuration > writes all the asset files (sounds and images) as expected@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33845,6 +35357,7 @@ export const metadata: {
         "package-unit#packages/expo-notifications/src/__tests__/DevicePushTokenAutoRegistration-test.ts#__handlePersistedRegistrationInfoAsync > skips registration if enabled but token has not changed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33863,6 +35376,7 @@ export const metadata: {
         "package-unit#packages/expo-notifications/src/__tests__/hasInvalidTriggerObject-test.ts#returns true when type / channelId key is present (regardless of value) - an approximation@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33880,6 +35394,7 @@ export const metadata: {
         "package-unit#packages/expo-notifications/src/__tests__/index-test.ts#Notifications exports@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33898,6 +35413,7 @@ export const metadata: {
         "package-unit#packages/expo-notifications/src/__tests__/NotificationCategories-test.ts#setNotificationCategoryAsync accepts the expected arguments@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33930,6 +35446,7 @@ export const metadata: {
         "package-unit#packages/expo-notifications/src/__tests__/Notifications-test.ts#verifies yearly trigger input validation@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33947,6 +35464,7 @@ export const metadata: {
         "package-unit#packages/expo-notifications/src/__tests__/useLastNotificationResponse-test.ts#returns the new response if it is different from the previous@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33967,6 +35485,7 @@ export const metadata: {
         "package-unit#packages/expo-notifications/src/utils/__tests__/backoff-test.ts#supports constant backoff with a multiplier of one@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -33994,6 +35513,7 @@ export const metadata: {
         "package-unit#packages/expo-notifications/src/utils/__tests__/updateDevicePushTokenAsync-test.ts#hasDeviceTokenChangedAsync > returns true when TTL has expired@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34037,6 +35557,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/__tests__/module.test.native.ts#module Proxy > warns when react-navigation integration is enabled but @react-navigation/native is not installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34054,6 +35575,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/__tests__/ObserveErrorBoundary.test.native.tsx#ObserveErrorBoundary > catches a render error and renders the fallback through the Observe entry point@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34078,6 +35600,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/__tests__/ObserveInteractiveMarker.test.native.tsx#warns once when params change after the first render@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34094,6 +35617,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/__tests__/optionalImport.test.ts#expo-observe root entry optional imports > loads with neither expo-router nor @react-navigation/native installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34118,6 +35642,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/__tests__/registerIntegration.test.native.ts#Observe.registerIntegration > removes the subscription without calling the callback when an event omits the key@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34140,6 +35665,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/__tests__/useAssertValueDoesNotChange.test.native.tsx#uses reference equality — a new object with the same shape triggers a throw@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34162,6 +35688,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/__tests__/useObserve.test.native.tsx#returns the router-scoped markInteractive when useObserveForRouter resolves to a function@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34196,6 +35723,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/expo-router/__tests__/init.test.native.ts#isInitialized + initRouterIntegration > flips initialized when initRouterIntegration is called and stays decoupled from initListeners@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34218,6 +35746,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/expo-router/__tests__/navigationConfig.test.ts#expo-router navigation config > returns an empty object when every param is filtered@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34238,6 +35767,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/expo-router/__tests__/ObserveRouterIntegrationProvider.test.native.tsx#ObserveRouterIntegrationProvider > throws when isInitialized() flips during the provider lifetime@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34254,6 +35784,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/expo-router/__tests__/optionalImport.test.ts#expo-router integration optional imports > loads its entry point without expo-router installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34270,6 +35801,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/expo-router/__tests__/routeName.test.ts#buildRoutePattern > returns undefined when segments is undefined@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34287,6 +35819,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/expo-router/__tests__/storage.test.ts#createRouterIntegrationStorage > returns isolated instances@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34318,6 +35851,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/expo-router/__tests__/useObserveForRouter.test.native.tsx#useObserveForRouter > warns when there is no screenId on the route@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34337,6 +35871,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/react-navigation/__tests__/actionListener.test.ts#attachActionListener > pushes a pending action for a non-noop NAVIGATE@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34362,6 +35897,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/react-navigation/__tests__/getPathname.test.native.ts#getPathname > walks a useStateForPath subtree where index is undefined at every level@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34392,6 +35928,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/react-navigation/__tests__/handleStateChange.test.native.ts#createStateChangeHandler > treats undefined state as a no-op@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34416,6 +35953,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/react-navigation/__tests__/integration.test.native.tsx#react-navigation integration (real navigation tree) > tti via markInteractive > emits tti and markInteractive with a params-free routeName@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34436,6 +35974,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/react-navigation/__tests__/navigationConfig.test.ts#react-navigation navigation config > sets urlHidden when a route param is filtered@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34462,6 +36001,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/react-navigation/__tests__/ObserveNavigationContainer.test.native.tsx#ObserveNavigationContainer > uses the same createStateChangeHandler for the entire mount lifetime@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34491,6 +36031,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/react-navigation/__tests__/ObserveNavigationProvider.test.native.tsx#ObserveNavigationProvider > uses the same createStateChangeHandler for the entire mount lifetime@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34507,6 +36048,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/react-navigation/__tests__/optionalImport.test.ts#react-navigation integration optional imports > loads its entry point without @react-navigation/native installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34534,6 +36076,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/react-navigation/__tests__/stateTraversal.test.ts#findFocusedLeaf > stops when the focused route has no nested state@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34562,6 +36105,7 @@ export const metadata: {
         "package-unit#packages/expo-observe/src/integrations/react-navigation/__tests__/useObserveForReactNavigation.test.native.tsx#useObserveForReactNavigation > warns when there is no screenId on the route@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34580,6 +36124,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/+native-intent.test.ios.tsx#legacy_subscribe@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34611,6 +36156,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/context-stubs.test.node.ts#requireContextWithOverrides > uses the existing context for every file when there are no overrides@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34627,6 +36173,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/custom-navigators.test.ios.tsx#can render a custom navigator@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34645,6 +36192,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/dismissTo.test.ios.tsx#will replace the route if the provided href is not in the history@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34668,6 +36216,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/experimental-stack.composition.test.ios.tsx#ExperimentalStack — composition components inside pages > unmounting Stack.Screen.Title restores the previous title (route name fallback)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34698,6 +36247,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/experimental-stack.test.ios.tsx#ExperimentalStack — unsupported option warning > warns once for unsupported screenOptions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34716,6 +36266,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/experimentalModalStack.test.web.tsx#ExperimentalModalStack > preserves Screen options after conversion@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34737,6 +36288,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/getId.test.ios.tsx#returns the context string when the route is not dynamic and there are no search params@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34754,6 +36306,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/getReactNavigationConfig.test.ios.ts#should return a valid linking config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34801,6 +36354,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/getRoutes.test.ios.ts#tutorial > will return null if there are no _layout or routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34829,6 +36383,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/getRoutes.test.web.ts#rewrites > will not duplicate routes for rewrites@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34847,6 +36402,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/hashs.test.ios.tsx#works alongside with search params@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34881,6 +36437,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/headless-tabs.test.ios.tsx#works with nested layouts@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34901,6 +36458,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/initialRouteName.test.ios.tsx#will default to the anchor@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34920,6 +36478,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/issues.test.ios.tsx#should return correct pathname for nested stack with initialRouteName@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34937,6 +36496,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/LocationProvider.test.ios.ts#returns the normalized path@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34963,6 +36523,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/matchers.test.ios.ts#strips index route segments@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -34984,6 +36545,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/modal-filter.test.web.ts#modal route filtering on web > recalculates stack index after filtering out modal routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35000,6 +36562,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/modal-stack.test.ios.tsx#native stack handles mixed modal + normal screens@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35018,6 +36581,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/navigation-events.test.ios.tsx#AnalyticsListeners pageFocused timing > re-emits pageFocused when the screen is re-focused after a push/pop@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35106,6 +36670,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/navigation.test.ios.tsx#will warn if a href provides duplicate parameters (wildcard)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35173,6 +36738,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/navigationParams.test.ios.tsx#searches recursively through multiple nested levels@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35190,6 +36756,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/platform-routes.test.android.tsx#should work with layout routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35207,6 +36774,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/platform-routes.test.ios.tsx#should work with layout routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35223,6 +36791,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/platform-routes.test.node.ts#should skip platform routes when no platform has been provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35244,6 +36813,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/platform-routes.test.web.ts#will throw if a route does not have a platform fallback > pages@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35273,6 +36843,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/prefetch.test.ios.tsx#works with relative Href@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35318,6 +36889,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/protected.test.ios.tsx#works with tabs@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35341,6 +36913,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/push.test.ios.tsx#works in a nested layout Stack->Tab->Stack@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35367,6 +36940,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/redirects.test.ios.tsx#tabs can still work for redirects@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35385,6 +36959,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/renderCount.test.ios.tsx#Tabs render counts > screens are always rerendered when pathname changes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35404,6 +36979,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/require-context-ponyfill.test.node.ts#will match a directory@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35425,6 +37001,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/Route.test.ios.ts#sorts not found routes by priority@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35446,6 +37023,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/screen-provenance.test.ios.tsx#marks screens declared with NativeTabs.Trigger as layout@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35467,6 +37045,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/search-params.test.ios.tsx#replace > can handle navigation between routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35494,6 +37073,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/sitemap.test.ios.tsx#system information > shows location origin, Expo SDK version and Hermes version@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35524,6 +37104,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/smoke.test.android.tsx#will pick a static route over the dynamic route in the same group@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35555,6 +37136,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/smoke.test.ios.tsx#will pick a static route over the dynamic route in the same group@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35591,6 +37173,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/stacks.test.ios.tsx#Stack.Screen types > accepts layout navigation props@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35610,6 +37193,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/SuspenseFallback.test.ios.tsx#uses the nearest layout `<SuspenseFallback>` in sync mode@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35640,6 +37224,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/tabs.test.ios.tsx#works with goBack@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35673,6 +37258,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/testing-library.test.ios.tsx#toHaveSegments > fails with the correct message@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35690,6 +37276,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/useFocusEffect.test.ios.tsx#is called once on focus@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35713,6 +37300,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/__tests__/useNavigation.test.ios.tsx#works with hoisted routes and relative hrefs@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35729,6 +37317,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/color/__tests__/color.test.android.ts#returns null for ios base color@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35746,6 +37335,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/color/__tests__/color.test.ios.ts#retrieves android base color as platform color@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35770,6 +37360,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/fork/__tests__/extractPathFromURL.test.ios.ts#parses Expo Go link with query params and no path@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35818,6 +37409,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/fork/__tests__/getPathFromState-upstream.test.web.ts#uses nearest parent wildcard match for unmatched paths@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35838,6 +37430,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/fork/__tests__/getPathFromState.test.web.ts#state mutation safety > does not mutate input state params when focusedParams falls back to focusedRoute.params@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35912,6 +37505,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/fork/__tests__/getStateFromPath-upstream.test.web.ts#uses nearest parent wildcard match for unmatched paths@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35940,6 +37534,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/fork/__tests__/getStateFromPath.test.web.ts#supports spaces@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35967,6 +37562,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/fork/native-stack/__tests__/usePreviewTransition.test.ios.tsx#usePreviewTransition > wraps emit when openPreviewKey is set@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -35992,6 +37588,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/fork/native-stack/composition-options/__tests__/mergeOptions.test.ts#mergeOptions > skips composition layer for preloaded unfocused route@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36017,6 +37614,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/fork/native-stack/composition-options/__tests__/registryReducer.test.ts#registryReducer > unset action > returns same state reference for non-matching options reference@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36037,6 +37635,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/fork/native-stack/composition-options/__tests__/useCompositionOption.test.ios.ts#useCompositionOption > unregisters on unmount@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36072,6 +37671,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/global-state/__tests__/getNavigationAction.test.ios.ts#withAnchor sets initial: false on root and all nested params@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36106,6 +37706,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/global-state/__tests__/getRouteInfoFromState.test.ios.ts#getRouteInfoFromState > uses non-zero index when state has index property@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36131,6 +37732,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/global-state/__tests__/routeInfoCache.test.ios.ts#setCachedRouteInfo > pre-populates the cache so getCachedRouteInfo does not call getRouteInfoFromState@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36177,6 +37779,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/global-state/__tests__/router.test.ios.ts#router action functions > setParams calls store.assertIsReady@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36202,6 +37805,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/global-state/__tests__/routingQueue.test.ios.ts#routingQueue > subscribe() returns unsubscribe function@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36234,6 +37838,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/global-state/__tests__/stateUtils.test.ios.ts#getPayloadFromStateRoute > uses the last route in state.routes when traversing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36248,6 +37853,7 @@ export const metadata: {
       "path": "packages/expo-router/src/hooks/__tests__/renderHook.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36270,6 +37876,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/hooks/__tests__/useGlobalSearchParams.test.ios.tsx#return params of deeply nested routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36293,6 +37900,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/hooks/__tests__/useLoaderData.test.ios.tsx#uses the loader function's return types@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36315,6 +37923,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/hooks/__tests__/useLocalSearchParams.test.ios.tsx#return styles of deeply nested routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36331,6 +37940,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/hooks/__tests__/usePathname.test.ios.tsx#return pathname of deeply nested routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36350,6 +37960,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/hooks/__tests__/useRootNavigationState.test.ios.tsx#returns the root navigation state@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36370,6 +37981,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/hooks/__tests__/useSearchParams.test.ios.tsx#return params of deeply nested routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36388,6 +38000,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/hooks/__tests__/useSegments.test.ios.tsx#defaults abstract types@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36404,6 +38017,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/__rsc_tests__/JSStack.test.tsx#renders to RSC@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36421,6 +38035,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/__rsc_tests__/Stack.test.tsx#renders to RSC@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36440,6 +38055,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/__tests__/Drawer-exports.test.tsx#expo-router/drawer re-exports > still exports the Drawer navigator as a named and default export@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36456,6 +38072,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/__tests__/Stack.liquidGlass.test.ios.tsx#applies Liquid Glass defaults to form sheets without overriding explicit options@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36476,6 +38093,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/__tests__/Stack.test.ios.tsx#tabPress > pops the stack to top when the focused tab is pressed again@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36492,6 +38110,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/__tests__/StackClient.test.web.tsx#StackClient on web > renders, pushes, goes back, and provides the header back href@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36508,6 +38127,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/context.test.ios.tsx#ToolbarPlacementContext > has null as default value@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36531,6 +38151,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/mapProtectedScreen.test.tsx#warns on unknown children@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36569,6 +38190,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/processHeaderItemsForPlatform.test.android.tsx#processHeaderItemsForPlatform > Row is rendered inside Host@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36593,6 +38215,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/processHeaderItemsForPlatform.test.ios.tsx#processHeaderItemsForPlatform (iOS) > unstable_headerRightItems() returns button items with correct structure@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36667,6 +38290,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/shared.test.ios.tsx#xcasset iconRenderingMode > uses iconRenderingMode prop when StackToolbarIcon has no renderingMode@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36691,6 +38315,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackComposition.renderCount.test.android.tsx#Stack composition components render count > unfocused screens with composition do not trigger extra renders on further navigation@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36715,6 +38340,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackComposition.renderCount.test.ios.tsx#Stack composition components render count > unfocused screens with composition do not trigger extra renders on further navigation@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36734,6 +38360,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackComposition.unmount.test.android.tsx#Stack composition component unmount resets options > unmounting Stack.SearchBar resets search bar options@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36755,6 +38382,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackComposition.unmount.test.ios.tsx#Stack composition component unmount resets options > unmounting Stack.Toolbar placement=\"right\" resets right bar button items@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36792,6 +38420,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackHeaderComponent.test.ios.tsx#transparent prop > does not auto-enable transparency when transparent is explicitly false@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36826,6 +38455,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackScreen.test.ios.tsx#unknown children warning > warns for unknown children@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36853,6 +38483,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackScreenBackButton.test.ios.tsx#options merging > overwrites conflicting options@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36870,6 +38501,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackScreenTitle.test.ios.tsx#Stack.Screen.Title (deprecated alias) > exposes the same options helper as appendStackTitlePropsToOptions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36897,6 +38529,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackSearchBar.test.ios.tsx#options merging > overwrites headerShown in existing options@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36932,6 +38565,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackTitle.test.ios.tsx#title from children > sets title from string children@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36954,6 +38588,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackToolbar.integration.test.android.tsx#Stack.Toolbar Android integration tests > renders RouterToolbarHost for bottom toolbar@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -36984,6 +38619,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackToolbar.integration.test.ios.tsx#Stack.Toolbar integration tests > toolbar from page component > renders bottom toolbar from page@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37007,6 +38643,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackToolbar.placement-changes.test.ios.tsx#updates multiple toolbars correctly when one changes placement@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37057,6 +38694,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackToolbarButton.test.android.tsx#NativeToolbarButton > toolbar color context > uses context tintColor when no prop tintColor@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37100,6 +38738,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackToolbarButton.test.ios.tsx#uses provided onPress callback@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37156,6 +38795,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackToolbarMenu.test.android.tsx#StackToolbarMenu > renders with visible={true} when hidden={false}@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37217,6 +38857,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackToolbarMenu.test.ios.tsx#uses provided onPress callback@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37237,6 +38878,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackToolbarSearchBarSlot.test.ios.tsx#StackToolbarSearchBarSlot component > props passthrough > renders with searchBar type@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37260,6 +38902,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackToolbarSpacer.test.ios.tsx#StackToolbarSpacer component > renders RouterToolbarItem in bottom placement@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37281,6 +38924,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackToolbarView.test.android.tsx#StackToolbarView component > throws error when used outside a toolbar (no placement context)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37302,6 +38946,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/layouts/stack-utils/__tests__/StackToolbarView.test.ios.tsx#StackToolbarView component > renders RouterToolbarItem in bottom placement@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37320,6 +38965,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/__rsc_tests__/Link.test.tsx#renders Link@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37343,6 +38989,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/__tests__/href.test.web.ts#passes strings back without resolution@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37406,6 +39053,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/__tests__/Link.test.ios.tsx#throws an error when using asChild with multiple children@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37433,6 +39081,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/__tests__/Link.test.web.tsx#uses web-only href attributes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37464,6 +39113,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/preview/__tests__/HrefPreview.test.ios.tsx#ZoomTransitionEnabler in preview > does not render LinkZoomTransitionEnabler@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37488,6 +39138,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/preview/__tests__/menu.test.ios.tsx#LinkMenu > inline and palette prop combinations > uses displayInline when inline is not provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37517,6 +39168,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/preview/__tests__/utils.test.ios.tsx#returns single tab path with one tab navigator in href, but without change@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37535,6 +39187,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/zoom/__tests__/link-apple-zoom-target.test.ios.tsx#LinkAppleZoomTarget > warns when multiple children are passed and renders null@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37562,6 +39215,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/zoom/__tests__/usePreventZoomTransitionDismissal.test.ios.tsx#usePreventZoomTransitionDismissal > warns when used on a modal screen@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37584,6 +39238,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/zoom/__tests__/useShouldEnableZoomTransition.test.ios.tsx#useShouldEnableZoomTransition > warns when link preview navigation targets a non-modal screen@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37598,6 +39253,7 @@ export const metadata: {
       "path": "packages/expo-router/src/link/zoom/__tests__/useZoomHref.test.ios.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37630,6 +39286,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/zoom/__tests__/zoom-transition-context-providers.test.ios.tsx#tracks multiple enablers correctly@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37654,6 +39311,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/zoom/__tests__/ZoomTransitionEnabler.e2e.test.ios.tsx#ZoomTransitionEnabler with gestureEnabled > can dynamically block dismissal gesture with gestureEnabled set via Stack.Screen inside page@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37675,6 +39333,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/link/zoom/__tests__/ZoomTransitionEnabler.test.ios.tsx#ZoomTransitionEnabler > passes null when no descriptor exists for route key@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37693,6 +39352,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/loaders/__tests__/LoaderCache.test.ts#notify > bumps the version and wakes subscribers@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37717,6 +39377,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/loaders/__tests__/LoaderSuspenseStore.test.ts#stores and returns a settled entry@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37738,6 +39399,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/loaders/__tests__/readLoaderData.test.ts#serves a document-cache hit without fetching@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37762,6 +39424,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/loaders/__tests__/utils.test.web.ts#strips trailing slashes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37786,6 +39449,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__rsc_tests__/tabs.test.tsx#renders NativeTabsBottomAccessory@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37807,6 +39471,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/appearance.test.android.tsx#uses dynamic color defaults when options are empty@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37827,6 +39492,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/appearance.test.ios.tsx#should convert empty object to valid appearance@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37846,6 +39512,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/events.test.ios.tsx#emits tabPress with isPrevented false on a normal native selection@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37867,6 +39534,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/listeners.test.ios.tsx#NativeTabs.Trigger listeners prop > only calls listener for the pressed tab@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37891,6 +39559,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/NativeTabsView.test.android.tsx#unstable_nativeProps > wires onTabSelectionPrevented onto Tabs.Host@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37919,6 +39588,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/NativeTabsView.test.ios.tsx#uses shadowColor when it is passed to NativeTabs@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37937,6 +39607,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/NativeTabsView.test.web.tsx#Native Bottom Tabs Navigation > renders tabs correctly for two elements@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -37967,6 +39638,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/navigation.test.ios.tsx#Native Bottom Tabs trigger changes > shows and navigates a tab whose trigger names a directory index route@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38032,6 +39704,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/options.e2e.test.android.tsx#when no options are passed, default ones are used@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38087,6 +39760,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/options.e2e.test.ios.tsx#when vector icon is used, promise is set@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38108,6 +39782,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/options.test.android.tsx#when vector icon is used, promise is set@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38171,6 +39846,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/options.test.ios.tsx#when vector icon is used, promise is set@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38210,6 +39886,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/__tests__/render.test.ios.tsx#when nesting NativeTabs, it throws an Error@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38228,6 +39905,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/utils/__tests__/bottomAccessory.test.ios.tsx#useBottomAccessoryFunctionFromBottomAccessories > returns undefined when given undefined@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38265,6 +39943,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/utils/__tests__/icon.test.tsx#useAwaitedScreensIcon > returns undefined when icon is undefined@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38287,6 +39966,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/utils/__tests__/label.test.ts#wraps an array style into default@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38308,6 +39988,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/utils/__tests__/optionsIconConverter.test.android.tsx#returns undefined when src is falsy (null)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38337,6 +40018,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/native-tabs/utils/__tests__/optionsIconConverter.test.ios.tsx#smart default with iconColor > respects explicit renderingMode=\"template\" even when iconColor is undefined@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38353,6 +40035,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/__tests__/exports.test.ts#react-navigation/index re-exports > does not export static navigation APIs@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38372,6 +40055,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/bottom-tabs/__tests__/index.test.ios.tsx#tab bars render appropriate hrefs on web@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38386,6 +40070,7 @@ export const metadata: {
       "path": "packages/expo-router/src/react-navigation/core/__tests__/__fixtures__/MockRouter.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38419,6 +40104,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/BaseNavigationContainer.test.ios.tsx#works with state change events in independent nested container@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38438,6 +40124,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/checkSerializable.test.tsx#returns true for serializable object@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38455,6 +40142,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/createNavigationContainerRef.test.ios.tsx#removal of non-existing listener should not break updating ref@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38493,6 +40181,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/getActionFromState.test.tsx#gets undefined action from state@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38512,6 +40201,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/getFocusedRouteNameFromRoute.test.tsx#gets undefined if there is no nested state@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38564,6 +40254,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/getPathFromState.test.tsx#uses nearest parent wildcard match for unmatched paths@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38588,6 +40279,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/getPatternParts.test.tsx#throws an error if a regex starts at beginning@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38667,6 +40359,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/getStateFromPath.test.web.tsx#uses nearest parent wildcard match for unmatched paths@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38743,6 +40436,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/index.test.ios.tsx#updates route params with setParams@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38761,6 +40455,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/StaticContainer.test.ios.tsx#updates element if any props changed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38781,6 +40476,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/theming.test.ios.tsx#throws if useTheme is used without BaseNavigationContainer@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38809,6 +40505,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/useDescriptors.test.ios.tsx#updates options with setOptions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38835,6 +40532,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/useEventEmitter.test.ios.tsx#removes only one listener when unsubscribe is called multiple times@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38859,6 +40557,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/useFocusEffect.test.ios.tsx#runs focus effect when only focused route is rendered@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38876,6 +40575,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/useIsFocused.test.ios.tsx#returns correct focus state after conditional rendering@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38896,6 +40596,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/useNavigation.test.ios.tsx#throws if called outside a navigation context@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38915,6 +40616,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/useNavigationCache.test.ios.tsx#returns correct value for isFocused@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38934,6 +40636,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/useNavigationState.test.ios.tsx#gets the current navigation state@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38961,6 +40664,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/useOnAction.test.ios.tsx#prevents removing by multiple screens with 'beforeRemove' event@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -38986,6 +40690,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/usePreventRemove.test.ios.tsx#should have no effect when 'usePreventRemove' hook is set to false@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39002,6 +40707,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/useRoute.test.ios.tsx#gets route prop from context@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39020,6 +40726,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/core/__tests__/useStateForPath.test.ios.tsx#gets path in each screen@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39039,6 +40746,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/drawer/__tests__/index.test.ios.tsx#resets a nested stack when its drawer screen loses focus with popToTopOnBlur@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39055,6 +40763,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/drawer/__tests__/types.test.ts#drawer types > type-checks@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39071,6 +40780,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/material-top-tabs/__tests__/index.test.ios.tsx#renders a material top tab navigator with screens@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39087,6 +40797,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/material-top-tabs/__tests__/missing-dependency.test.ios.tsx#throws an error when react-native-tab-view is not installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39121,6 +40832,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/native-stack/__tests__/index.test.ios.tsx#useHeaderHeight in native-stack > returns parent header height in nested stack when headerShown: false on Web@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39135,6 +40847,7 @@ export const metadata: {
       "path": "packages/expo-router/src/react-navigation/native-stack/__tests__/useHeaderConfigProps-setup.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39164,6 +40877,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/native-stack/__tests__/useHeaderConfigProps.test.android.tsx#translucent > false with large title (no iOS-specific translucency)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39268,6 +40982,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/native-stack/__tests__/useHeaderConfigProps.test.ios.tsx#translucent > true when headerTransparent is true@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39284,6 +40999,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/native-stack/utils/__tests__/makePopAction.test.ios.ts#makePopAction > dispatches a POP action with count, source, and target@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39301,6 +41017,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/native-stack/views/__tests__/NativeStackView.nested-presentation.test.native.tsx#nested stack inside a transparent presentation > resets the default background for a stack nested deeper under a card screen@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39324,6 +41041,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/native-stack/views/__tests__/NativeStackView.unstable-native-props.test.native.tsx#unstable_nativeProps > renders without unstable_nativeProps@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39340,6 +41058,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/native/__tests__/createMemoryHistory.test.web.tsx#will not attempt to navigate beyond whatever browser history it is possible to know about@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39364,6 +41083,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/native/__tests__/extractPathFromURL.test.tsx#returns undefined for non-matching protocol@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39389,6 +41109,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/native/__tests__/useLinkBuilder.test.ios.tsx#builds href outside of a navigator@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39405,6 +41126,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/native/__tests__/useLinking.test.ios.tsx#throws if multiple instances of useLinking are used@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39421,6 +41143,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/native/__tests__/useLinking.test.web.tsx#does not add browser history when preloading a stack route@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39439,6 +41162,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/native/__tests__/useRoutePath.test.ios.tsx#throws when not rendered inside a screen@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39467,6 +41191,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/routers/__tests__/BaseRouter.test.tsx#sets params for the source screen with SET_PARAMS@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39483,6 +41208,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/routers/__tests__/CommonActions.test.tsx#throws if NAVIGATE is called without name@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39511,6 +41237,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/routers/__tests__/DrawerRouter.test.tsx#updates history on focus change with backBehavior: history@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39531,6 +41258,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/routers/__tests__/getRoutesForRouteNames.test.tsx#keeps routes whose name is allowed, preserving order@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39600,6 +41328,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/routers/__tests__/StackRouter.test.tsx#uses preloaded route with the same name when popTo replaces current route@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39652,6 +41381,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/routers/__tests__/TabRouter.test.tsx#updates route key history on navigate and jump to with backBehavior: history@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39674,6 +41404,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/stack/__tests__/index.test.ios.tsx#runs focus effect on focus change on preloaded route@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39691,6 +41422,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/stack/utils/__tests__/getShadowStyles.test.tsx#returns web shadow styles@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39713,6 +41445,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/stack/utils/__tests__/useKeyboardManager.test.ios.tsx#useKeyboardManager > useLayoutEffect keyboard dismiss on focus loss > does not dismiss keyboard when only enabled changes without focus changing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39742,6 +41475,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/react-navigation/stack/views/Stack/__tests__/StackView.test.ios.tsx#StackView.getDerivedStateFromProps > replace navigation (push animation) > preserves replacing routes during chained replaces (A→B→C)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39758,6 +41492,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/standard-navigation/__tests__/descriptorIdentity.integration.test.ios.tsx#preserves the preloaded route and rendered element through promotion@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39774,6 +41509,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/standard-navigation/__tests__/docs-examples.test.tsx#custom navigator documentation examples > is type-checked by tsc via pnpm typecheck or et check-packages@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39819,6 +41555,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/standard-navigation/__tests__/integration.test.ios.tsx#unstable_integrateWithRouter / unstable_createStandardRouterNavigator > updates state when navigating imperatively@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39835,6 +41572,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/standard-navigation/__tests__/types.test.tsx#standard-navigation types > is type-checked by tsc via pnpm typecheck or et check-packages@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39851,6 +41589,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/standard-navigation/__tests__/useBuildHref.integration.test.ios.tsx#useBuildHref (integration) > resolves real hrefs (index → /, group segment stripped) for navigator routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39876,6 +41615,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/standard-navigation/__tests__/useBuildHref.test.ios.tsx#useBuildHref (unit) > returns the pathnameWithParams from getRouteInfoFromState@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39898,6 +41638,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/standard-navigation/__tests__/useStandardActions.test.ios.tsx#useStandardActions (unit) > returns a stable reference while navigation and target are unchanged@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39921,6 +41662,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/standard-navigation/__tests__/useStandardEmitter.test.ios.tsx#useStandardEmitter (unit) > returns a stable reference while navigation is unchanged@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39941,6 +41683,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/standard-navigation/__tests__/useStandardState.integration.test.ios.tsx#useStandardState (integration with useBuildHref) > resolves a real href per route from the focused-route state@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39963,6 +41706,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/standard-navigation/__tests__/useStandardState.test.ios.tsx#useStandardState > returns a stable reference when neither builderState nor buildHref change@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -39980,6 +41724,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/toolbar/__tests__/native.test.android.tsx#RouterToolbarHost (Android bottom toolbar) > renders its children inside the floating toolbar@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40012,6 +41757,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/utils/__tests__/children.test.tsx#returns true for matching function component@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40031,6 +41777,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/utils/__tests__/color.test.ios.ts#returns undefined for PlatformColor@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40060,6 +41807,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/utils/__tests__/url.test.ios.ts#should parse relative path@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40074,6 +41822,7 @@ export const metadata: {
       "path": "packages/expo-router/src/utils/__tests__/url.test.web.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40094,6 +41843,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/utils/__tests__/useLatestCallback.test.ios.tsx#useLatestCallback > returns a stable reference across re-renders@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40113,6 +41863,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/views/__rsc_tests__/views.test.tsx#renders Sitemap@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40135,6 +41886,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/views/__tests__/Screen.test.ios.tsx#Screen > should throw an error when name is set outside of a Layout@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40153,6 +41905,7 @@ export const metadata: {
         "package-unit#packages/expo-router/src/views/__tests__/Unmatched.test.ios.tsx#Unmatched > can run router prefetch to the unmatched route@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40179,6 +41932,7 @@ export const metadata: {
         "package-unit#packages/expo-screen-capture/src/__tests__/ScreenCapture-test.native.js#Test key functionality > Will not call the native method if default key already active@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40203,6 +41957,7 @@ export const metadata: {
         "package-unit#packages/expo-screen-capture/src/__tests__/ScreenCapture-test.web.js#Test key functionality > throws for preventScreenCapture on web platform@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40222,6 +41977,7 @@ export const metadata: {
         "package-unit#packages/expo-screen-capture/src/__tests__/ScreenCaptureHook-test.native.js#hooks > Unmounting one hook when two are active does not re-allow screen capturing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40240,6 +41996,7 @@ export const metadata: {
         "package-unit#packages/expo-screen-orientation/plugin/src/__tests__/withScreenOrientation-test.ts#throws on invalid orientation@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40257,6 +42014,7 @@ export const metadata: {
         "package-unit#packages/expo-screen-orientation/src/__tests__/ScreenOrientation-test.android.ts#throws when lockPlatformAsync is called with unsupported types in its Android properties@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40274,6 +42032,7 @@ export const metadata: {
         "package-unit#packages/expo-screen-orientation/src/__tests__/ScreenOrientation-test.ios.ts#throws when lockPlatformAsync is called with unsupported types in its iOS properties@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40294,6 +42053,7 @@ export const metadata: {
         "package-unit#packages/expo-screen-orientation/src/__tests__/ScreenOrientation-test.native.ts#throws when supportsOrientationLockAsync is called with an unsupported type@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40310,6 +42070,7 @@ export const metadata: {
         "package-unit#packages/expo-secure-store/src/__tests__/SecureStore-test.ios.ts#exports accessibility options@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40331,6 +42092,7 @@ export const metadata: {
         "package-unit#packages/expo-secure-store/src/__tests__/SecureStore-test.native.ts#sets values@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40347,6 +42109,7 @@ export const metadata: {
         "package-unit#packages/expo-sensors/src/__tests__/Accelerometer-test.ios.ts#notifies listeners@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40363,6 +42126,7 @@ export const metadata: {
         "package-unit#packages/expo-sensors/src/__tests__/Accelerometer-test.native.ts#sets the update interval@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40379,6 +42143,7 @@ export const metadata: {
         "package-unit#packages/expo-sensors/src/__tests__/DeviceMotion-test.ios.ts#notifies listeners@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40396,6 +42161,7 @@ export const metadata: {
         "package-unit#packages/expo-sensors/src/__tests__/DeviceMotion-test.native.ts#sets the update interval@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40412,6 +42178,7 @@ export const metadata: {
         "package-unit#packages/expo-sensors/src/__tests__/DeviceSensor-test.android.ts#starts and stops observing after removing all listeners at once on Android@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40429,6 +42196,7 @@ export const metadata: {
         "package-unit#packages/expo-sensors/src/__tests__/DeviceSensor-test.ios.ts#starts and stops observing on iOS@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40445,6 +42213,7 @@ export const metadata: {
         "package-unit#packages/expo-sensors/src/__tests__/DeviceSensor-test.native.ts#counts the number of listeners@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40461,6 +42230,7 @@ export const metadata: {
         "package-unit#packages/expo-sensors/src/__tests__/Gyroscope-test.ios.ts#notifies listeners@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40477,6 +42247,7 @@ export const metadata: {
         "package-unit#packages/expo-sensors/src/__tests__/Gyroscope-test.native.ts#sets the update interval@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40491,6 +42262,7 @@ export const metadata: {
       "path": "packages/expo-sensors/src/__tests__/Magnetometer-test.native.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40505,6 +42277,7 @@ export const metadata: {
       "path": "packages/expo-sensors/src/__tests__/mocks/MockNativeSensorModule.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40537,6 +42310,7 @@ export const metadata: {
         "package-unit#packages/expo-server/src/__tests__/ImmutableRequest.test.ts#sets up environment using default global@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40558,6 +42332,7 @@ export const metadata: {
         "package-unit#packages/expo-server/src/loaders/__tests__/helpers.test.ts#works when request is undefined (SSG context)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40590,6 +42365,7 @@ export const metadata: {
         "package-unit#packages/expo-server/src/runtime/__tests__/index.test.ts#try-catch > uses thrown Response as response if thrown@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40616,6 +42392,7 @@ export const metadata: {
         "package-unit#packages/expo-server/src/utils/__tests__/headers.test.ts#sets scalars only when absent without `shouldOverwrite`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40632,6 +42409,7 @@ export const metadata: {
         "package-unit#packages/expo-server/src/utils/__tests__/importMetaRegistry.test.ts#importMetaRegistry > provides mock `url` param@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40673,6 +42451,7 @@ export const metadata: {
         "package-unit#packages/expo-server/src/utils/__tests__/matchers.test.ts#static routes > should handle static route with no parameters@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40717,6 +42496,7 @@ export const metadata: {
         "package-unit#packages/expo-server/src/utils/__tests__/middleware.test.ts#pattern matching > regex patterns > should not carry state across requests for stateful regex flags@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40751,6 +42531,7 @@ export const metadata: {
         "package-unit#packages/expo-server/src/vendor/__tests__/abstract.test.ts#returns streamed HTML responses for matched routes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40798,6 +42579,7 @@ export const metadata: {
         "package-unit#packages/expo-server/src/vendor/environment/__tests__/common.test.ts#getRoutesManifest > loads and parses `routes.json`@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40814,6 +42596,7 @@ export const metadata: {
         "package-unit#packages/expo-sharing/src/__tests__/Sharing-test.native.ts#Sharing > isAvailableAsync > is always true on native@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40831,6 +42614,7 @@ export const metadata: {
         "package-unit#packages/expo-sharing/src/__tests__/Sharing-test.web.ts#Sharing > isAvailableAsync > node > returns false@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40848,6 +42632,7 @@ export const metadata: {
         "package-unit#packages/expo-sms/src/__tests__/SMS-test.ts#normalizes one phone number into an array@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40864,6 +42649,7 @@ export const metadata: {
         "package-unit#packages/expo-splash-screen/plugin/src/__tests__/InterfaceBuilder-test.ts#createConstraint > creates a reliable constraint@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40882,6 +42668,7 @@ export const metadata: {
         "package-unit#packages/expo-splash-screen/plugin/src/__tests__/withAndroidSplashImages-test.ts#sets no images@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40899,6 +42686,7 @@ export const metadata: {
         "package-unit#packages/expo-splash-screen/plugin/src/__tests__/withAndroidSplashStrings-test.ts#override old expo_splash_screen_strings@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40918,6 +42706,7 @@ export const metadata: {
         "package-unit#packages/expo-splash-screen/plugin/src/__tests__/withAndroidSplashStyles-test.ts#sets style@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40934,6 +42723,7 @@ export const metadata: {
         "package-unit#packages/expo-splash-screen/plugin/src/__tests__/withIosSplashAssets-test.ts#supports dark mode@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40951,6 +42741,7 @@ export const metadata: {
         "package-unit#packages/expo-splash-screen/plugin/src/__tests__/withIosSplashInfoPlist-test.ts#warns about dark mode conflicts and resets the interface style@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40968,6 +42759,7 @@ export const metadata: {
         "package-unit#packages/expo-splash-screen/plugin/src/__tests__/withIosSplashScreen-test.ts#supports color only mode@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -40984,6 +42776,7 @@ export const metadata: {
         "package-unit#packages/expo-splash-screen/plugin/src/__tests__/withIosSplashScreenStoryboardImage-test.ts#gets a splash screen without options@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41011,6 +42804,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/dev-plugin-webui/src/hooks/__tests__/useDevToolsConnection.test.ts#useDevToolsConnection - useEffect cleanup > should not register listener when client is null@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41047,6 +42841,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/dev-plugin-webui/src/hooks/__tests__/useSQLiteDatabase.test.ts#useSQLiteDatabase - State Management > should set loading state during database open@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41071,6 +42866,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/dev-plugin-webui/src/lib/__tests__/sharedArrayBufferDetection.test.ts#sharedArrayBufferDetection > isSharedArrayBufferSupported > should return all required properties@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41122,6 +42918,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/dev-plugin-webui/src/lib/__tests__/sqliteDump.integration.test.ts#sqliteDump - Table Features > should handle multiple tables@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41167,6 +42964,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/dev-plugin-webui/src/lib/__tests__/sqliteDump.unit.test.ts#sqliteDump > unusedString > should return second option if first is found@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41193,6 +42991,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/src/__tests__/hooks-test.ios.tsx#should throw when using `onError` and `useSuspense` together@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41235,6 +43034,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/src/__tests__/paramUtils-test.ios.ts#special cases - should pass as array params@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41260,6 +43060,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/src/__tests__/pathUtils-test.ios.ts#should return the entire string if no slash is present@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41301,6 +43102,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/src/__tests__/queryUtils-test.ios.ts#should prioritize RETURNING in backwards parsing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41334,6 +43136,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/src/__tests__/SQLiteDatabase-test.ios.ts#Database > withTransactionAsync should rollback changes when exceptions happen@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41361,6 +43164,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/src/__tests__/SQLiteDevToolsClient-test.ios.ts#SQLiteDevToolsClient > should unregister database and remove it from the list@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41388,6 +43192,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/src/__tests__/SQLiteStatement-test.ios.ts#resetAsync should reset the statement cursor@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41445,6 +43250,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/src/__tests__/SQLiteTaggedQuery-test.ios.ts#SQLiteTaggedQuery > should work within transactions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41484,6 +43290,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/src/__tests__/Storage-test.ios.ts#SQLiteStorage synchronous > should update item using setItemSync updater function@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41507,6 +43314,7 @@ export const metadata: {
         "package-unit#packages/expo-sqlite/src/__tests__/WebStorage-test.ios.ts#Web Storage API compatibility > should support property accessor@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41523,6 +43331,7 @@ export const metadata: {
         "package-unit#packages/expo-standard-web-crypto/src/__tests__/getRandomValues-test.ts#throws if requesting more than 65536 bytes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41539,6 +43348,7 @@ export const metadata: {
         "package-unit#packages/expo-standard-web-crypto/src/__tests__/index-test.ts#defines getRandomValues@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41569,6 +43379,7 @@ export const metadata: {
         "package-unit#packages/expo-status-bar/plugin/src/__tests__/withStatusBar-test.ts#sets light style@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41583,6 +43394,7 @@ export const metadata: {
       "path": "packages/expo-status-bar/src/__tests__/Helpers.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41603,6 +43415,7 @@ export const metadata: {
         "package-unit#packages/expo-status-bar/src/__tests__/NativeStatusBarWrapper-test.tsx#StatusBar > style > uses light-content when inverted in light mode@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41619,6 +43432,7 @@ export const metadata: {
         "package-unit#packages/expo-status-bar/src/__tests__/StatusBar-test.ios.tsx#StatusBar > is just the native status bar wrapper@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41635,6 +43449,7 @@ export const metadata: {
         "package-unit#packages/expo-status-bar/src/__tests__/StatusBar-test.web.tsx#renders null@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41649,6 +43464,7 @@ export const metadata: {
       "path": "packages/expo-system-ui/plugin/src/__tests__/mockMods.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41671,6 +43487,7 @@ export const metadata: {
         "package-unit#packages/expo-system-ui/plugin/src/__tests__/withAndroidRootViewBackgroundColor-test.ts#returns the backgroundColor under android if provided@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41693,6 +43510,7 @@ export const metadata: {
         "package-unit#packages/expo-system-ui/plugin/src/__tests__/withAndroidUserInterfaceStyle-test.ts#uses more specific key@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41711,6 +43529,7 @@ export const metadata: {
         "package-unit#packages/expo-system-ui/plugin/src/__tests__/withIosRootViewBackgroundColor-test.ts#throws on invalid color@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41731,6 +43550,7 @@ export const metadata: {
         "package-unit#packages/expo-system-ui/plugin/src/__tests__/withIosUserInterfaceStyle-test.ts#user interface style > sets the UIUserInterfaceStyle to the appropriate value if given@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41747,6 +43567,7 @@ export const metadata: {
         "package-unit#packages/expo-tracking-transparency/plugin/src/__tests__/withTrackingTransparency-test.ts#Expo Tracking Transparency > sets default `NSUserTrackingUsageDescription` permission message in the config@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41767,6 +43588,7 @@ export const metadata: {
         "package-unit#packages/expo-tracking-transparency/src/__tests__/TrackingTransparency-test.native.ts#TrackingTransparency > useTrackingPermissions is defined@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41793,6 +43615,7 @@ export const metadata: {
         "package-unit#packages/expo-type-information/__tests__/typeInformation.test.ts#Same type information@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41825,6 +43648,7 @@ export const metadata: {
         "package-unit#packages/expo-ui/plugin/src/__tests__/babel-plugin-test.ts#expo-ui babel plugin > should rewrite Icon.select reached through a namespace import@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41842,6 +43666,7 @@ export const metadata: {
         "package-unit#packages/expo-ui/src/__tests__/aspectRatio-test.ts#allows omitting the ratio to use the intrinsic aspect ratio@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41861,6 +43686,7 @@ export const metadata: {
         "package-unit#packages/expo-ui/src/__tests__/dynamicTypeSize-test.ts#sets a floor with a min only (partial range)@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41879,6 +43705,7 @@ export const metadata: {
         "package-unit#packages/expo-ui/src/__tests__/foregroundStyle-test.ts#treats top-level React Native color values as color styles@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41895,6 +43722,7 @@ export const metadata: {
         "package-unit#packages/expo-ui/src/community/masked-view/__tests__/MaskedView.test.ios.tsx#MaskedView > keeps the SwiftUI host inside the React Native layout bounds@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41926,6 +43754,7 @@ export const metadata: {
         "package-unit#packages/expo-ui/src/jetpack-compose/AnimatedVisibility/__tests__/index.test.android.tsx#plus() chaining > does not mutate the original transition@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41948,6 +43777,7 @@ export const metadata: {
         "package-unit#packages/expo-ui/src/swift-ui/Image/__tests__/index.test.ios.tsx#Image > routes the size prop to a font modifier@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41966,6 +43796,7 @@ export const metadata: {
         "package-unit#packages/expo-ui/src/universal/__tests__/modifierUtils.test.ts#omitUserOverridden > returns the derived modifiers as-is when the user supplies none@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -41985,6 +43816,7 @@ export const metadata: {
         "package-unit#packages/expo-ui/src/universal/__tests__/transformStyle.test.android.ts#transformToModifiers (Android) > keeps the onPress clickable when the user supplies their own clickable@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42005,6 +43837,7 @@ export const metadata: {
         "package-unit#packages/expo-ui/src/universal/__tests__/transformStyle.test.ios.ts#transformToModifiers (iOS) > keeps the onPress tap gesture when the user supplies their own onTapGesture@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42025,6 +43858,7 @@ export const metadata: {
         "package-unit#packages/expo-ui/src/universal/Button/__tests__/index.test.ios.tsx#Button > prefers a user buttonStyle modifier over the variant prop@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42044,6 +43878,7 @@ export const metadata: {
         "package-unit#packages/expo-ui/src/universal/Text/__tests__/index.test.ios.tsx#Text > prefers a user lineLimit modifier over numberOfLines@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42071,6 +43906,7 @@ export const metadata: {
         "package-unit#packages/expo-updates/cli/src/__tests__/assetsVerify-test.ts#Throws if platform missing from metadata@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42088,6 +43924,7 @@ export const metadata: {
         "package-unit#packages/expo-updates/cli/src/__tests__/configure-test.ts#codesigning:configure > validates the certificate@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42104,6 +43941,7 @@ export const metadata: {
         "package-unit#packages/expo-updates/cli/src/__tests__/generate-test.ts#codesigning:generate > generates a key pair and certificate in a project directory@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42124,6 +43962,7 @@ export const metadata: {
         "package-unit#packages/expo-updates/e2e-cli/__tests__/cli-test.ts#CLI > runtimeversion:resolve basic case@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42138,6 +43977,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e-cli/__tests__/utils/CLIUtils.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42152,6 +43992,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e-cli/__tests__/utils/Utils.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42168,6 +44009,7 @@ export const metadata: {
         "package-unit#packages/expo-updates/plugin/src/__tests__/withUpdates-test.ts#Updates plugin > calls platforms@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42189,6 +44031,7 @@ export const metadata: {
         "package-unit#packages/expo-updates/src/__tests__/Updates-test.ios.ts#returns the proper object when no logs from readLogEntriesAsync@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42205,6 +44048,7 @@ export const metadata: {
         "package-unit#packages/expo-updates/src/__tests__/Updates-test.node.ts#doesn't throw when reloadAsync is called in production@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42228,6 +44072,7 @@ export const metadata: {
         "package-unit#packages/expo-updates/src/__tests__/UseUpdates-test.ios.tsx#useUpdates() > Test individual methods > updateFromManifest() with a manifest@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42242,6 +44087,7 @@ export const metadata: {
       "path": "packages/expo-updates/src/__tests__/UseUpdatesTestApp.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42263,6 +44109,7 @@ export const metadata: {
         "package-unit#packages/expo-updates/utils/src/__tests__/resolveRuntimeVersionAsync-test.ts#uses platform precedence for constant string@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42280,6 +44127,7 @@ export const metadata: {
         "package-unit#packages/expo-web-browser/src/__tests__/ExpoWebBrowser-test.web.ts#normalizes url@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42297,6 +44145,7 @@ export const metadata: {
         "package-unit#packages/expo-web-browser/src/__tests__/WebBrowser-test.native.ts#openBrowserAsync returns correctly@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42317,6 +44166,7 @@ export const metadata: {
         "package-unit#packages/expo-widgets/bundle/__tests__/decorator.test.ts#jsx-runtime-stub > uses the nearest keyed parent when generating button targets@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42337,6 +44187,7 @@ export const metadata: {
         "package-unit#packages/expo-widgets/bundle/__tests__/jsx-runtime.test.ts#jsx-runtime-stub children flattening > preserves text and conditional children in mixed arrays@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42351,6 +44202,7 @@ export const metadata: {
       "path": "packages/expo-widgets/plugin/src/__tests__/mockMods.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42369,6 +44221,7 @@ export const metadata: {
         "package-unit#packages/expo-widgets/plugin/src/__tests__/withPushNotifications-test.ts#keeps a pre-existing aps-environment value when push notifications are enabled@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42386,6 +44239,7 @@ export const metadata: {
         "package-unit#packages/expo/src/__tests__/__fbBatchedBridgeConfig-test.ts#provides a helpful error message on web@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42407,6 +44261,7 @@ export const metadata: {
         "package-unit#packages/expo/src/__tests__/url-builtin.test.native.ts#uses the working URLSearchParams builtin from the global@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42433,6 +44288,7 @@ export const metadata: {
         "package-unit#packages/expo/src/async-require/__tests__/asyncRequireModule.test.ts#asyncRequireModule > unstable_importMaybeSync > returns synchronously when no bundle loading needed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42450,6 +44306,7 @@ export const metadata: {
         "package-unit#packages/expo/src/async-require/__tests__/buildAsyncRequire.test.ts#loads the module with `loadBundleAsync` if the module has not been loaded already@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42468,6 +44325,7 @@ export const metadata: {
         "package-unit#packages/expo/src/async-require/__tests__/buildUrlForBundle.test.native.ts#returns an expected URL in production@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42485,6 +44343,7 @@ export const metadata: {
         "package-unit#packages/expo/src/async-require/__tests__/buildUrlForBundle.test.web.ts#returns an expected URL@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42501,6 +44360,7 @@ export const metadata: {
         "package-unit#packages/expo/src/async-require/__tests__/fetchAsync.test.web.ts#fetches@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42519,6 +44379,7 @@ export const metadata: {
         "package-unit#packages/expo/src/async-require/__tests__/loadBundle.test.ios.ts#loads a bundle@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42536,6 +44397,7 @@ export const metadata: {
         "package-unit#packages/expo/src/async-require/__tests__/loadBundle.test.web.ts#loads a bundle@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42555,6 +44417,7 @@ export const metadata: {
         "package-unit#packages/expo/src/dom/__tests__/base-test.ts#getBaseURL > should serve from updates directory when using updates@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42574,6 +44437,7 @@ export const metadata: {
         "package-unit#packages/expo/src/dom/__tests__/webview-wrapper-test.ts#resolveWebView > should throw an error if react-native-webview cannot be resolved when useExpoDOMWebView is false@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42592,6 +44456,7 @@ export const metadata: {
         "package-unit#packages/expo/src/utils/__tests__/getBundleUrl.test.web.ts#still returns the bundle URL after the script finished executing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42617,6 +44482,7 @@ export const metadata: {
         "package-unit#packages/expo/src/winter/__tests__/AbortSignal.test.native.ts#AbortSignal patch > should return non-aborted signal for empty any iterable@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42638,6 +44504,7 @@ export const metadata: {
         "package-unit#packages/expo/src/winter/__tests__/DOMException.test.native.ts#DOMException > should use the Expo built-in API@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42663,6 +44530,7 @@ export const metadata: {
         "package-unit#packages/expo/src/winter/__tests__/FormData.test.ios.ts#FormData > setters > supports set@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42680,6 +44548,7 @@ export const metadata: {
         "package-unit#packages/expo/src/winter/__tests__/structuredClone.test.ios.ts#structuredClone > uses the Expo built-in APIs@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42706,6 +44575,7 @@ export const metadata: {
         "package-unit#packages/expo/src/winter/__tests__/TextDecoder.test.native.ts#TextDecoder > UTF-8 - Encode/Decode - full roundtrip and agreement with encode/decodeURIComponent@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42737,6 +44607,7 @@ export const metadata: {
         "package-unit#packages/expo/src/winter/__tests__/TextDecoderStream.test.ios.ts#TextDecoderStream > works with multiple chunk reads@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42759,6 +44630,7 @@ export const metadata: {
         "package-unit#packages/expo/src/winter/__tests__/TextEncoderStream.test.ios.ts#TextEncoderStream > uses the Expo built-in APIs@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42781,6 +44653,7 @@ export const metadata: {
         "package-unit#packages/expo/src/winter/fetch/__tests__/convertFormData-test.native.ts#should throw an error if the react-native FormData passing an uri@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42800,6 +44673,7 @@ export const metadata: {
         "package-unit#packages/expo/src/winter/fetch/__tests__/FetchResponse-blob-test.native.ts#FetchResponse blob() with react-native Blob > should warn about the performance overhead only once@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42842,6 +44716,7 @@ export const metadata: {
         "package-unit#packages/expo/src/winter/fetch/__tests__/FetchResponse-test.ts#FetchResponse > identifies as a standard Response via Symbol.toStringTag@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42874,6 +44749,7 @@ export const metadata: {
         "package-unit#packages/expo/src/winter/fetch/__tests__/RequestUtils-test.ts#should throw a FormData body@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42895,6 +44771,7 @@ export const metadata: {
         "package-unit#packages/html-elements/babel/__tests__/transform.test.js#Skips injecting the import if one is already present@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42913,6 +44790,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/css/__tests__/createSafeStyledView.test.native.tsx#strips invalid style properties@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42929,6 +44807,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/elements/__tests__/Anchor.test.ios.tsx#renders A@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42945,6 +44824,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/elements/__tests__/Anchor.test.web.tsx#renders A@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42959,6 +44839,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/Headings.test.ios.tsx",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -42981,6 +44862,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/elements/__tests__/Layout.test.ios.tsx#renders Section@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43003,6 +44885,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/elements/__tests__/Layout.test.web.tsx#renders Section@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43019,6 +44902,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/elements/__tests__/Lists.test.native.tsx#renders UL nested in LI@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43037,6 +44921,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/elements/__tests__/Lists.test.web.tsx#renders UL nested in UL@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43053,6 +44938,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/elements/__tests__/Rules.test.native.tsx#renders HR@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43069,6 +44955,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/elements/__tests__/Rules.test.web.tsx#renders HR@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43092,6 +44979,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/elements/__tests__/Table.test.ios.tsx#renders TR@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43109,6 +44997,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/elements/__tests__/Table.test.web.tsx#renders Table@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43139,6 +45028,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/elements/__tests__/Text.test.ios.tsx#renders Time@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43157,6 +45047,7 @@ export const metadata: {
         "package-unit#packages/html-elements/src/primitives/__tests__/createDevView.test.tsx#warns about unwrapped strings@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43183,6 +45074,7 @@ export const metadata: {
         "package-unit#packages/install-expo-modules/src/plugins/android/__tests__/withAndroidModulesMainActivity-test.ts#should be able to update from react-native@>=0.73.0 kotlin template@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43205,6 +45097,7 @@ export const metadata: {
         "package-unit#packages/install-expo-modules/src/plugins/android/__tests__/withAndroidModulesMainApplication-test.ts#should support another manually modified kotlin version MainApplication@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43223,6 +45116,7 @@ export const metadata: {
         "package-unit#packages/install-expo-modules/src/plugins/android/__tests__/withAndroidSettingsGradle-test.ts#should be able to update settings.gradle for react-native@0.79.0@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43239,6 +45133,7 @@ export const metadata: {
         "package-unit#packages/install-expo-modules/src/plugins/android/__tests__/witnAndroidGradles-test.ts#should be able to update build.gradle for react-native@0.79.0@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43263,6 +45158,7 @@ export const metadata: {
         "package-unit#packages/install-expo-modules/src/plugins/cli/__tests__/withCliIntegration-test.ts#should update the `metro.config.js` file@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43288,6 +45184,7 @@ export const metadata: {
         "package-unit#packages/install-expo-modules/src/plugins/ios/__tests__/withIosDeploymentTarget-test.ts#should update deployment target in Podfile@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43312,6 +45209,7 @@ export const metadata: {
         "package-unit#packages/install-expo-modules/src/plugins/ios/__tests__/withIosModulesAppDelegate-test.ts#should migrate from RN 0.77 AppDelegate.swift@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43331,6 +45229,7 @@ export const metadata: {
         "package-unit#packages/install-expo-modules/src/plugins/ios/__tests__/withIosModulesPodfile-test.ts#should support react-native 0.76 podfile@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43345,6 +45244,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/withSwiftVersion-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43359,6 +45259,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/utils/__tests__/expoVersionMappings-test.ts",
       "caseIds": [],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43378,6 +45279,7 @@ export const metadata: {
         "package-unit#packages/jest-expo/tests/__tests__/expo-modules-mock-shape.test.js#generated expoModules mock > keeps the required top-level shape@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43394,6 +45296,7 @@ export const metadata: {
         "package-unit#packages/jest-expo/tests/__tests__/jest-test.android.js#android only@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43410,6 +45313,7 @@ export const metadata: {
         "package-unit#packages/jest-expo/tests/__tests__/jest-test.ios.js#ios only@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43428,6 +45332,7 @@ export const metadata: {
         "package-unit#packages/jest-expo/tests/__tests__/jest-test.js#jest-expo/universal > resolves to fallback extensions@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43444,6 +45349,7 @@ export const metadata: {
         "package-unit#packages/jest-expo/tests/__tests__/jest-test.native.js#native only@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43460,6 +45366,7 @@ export const metadata: {
         "package-unit#packages/jest-expo/tests/__tests__/jest-test.node.js#node only@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43476,6 +45383,7 @@ export const metadata: {
         "package-unit#packages/jest-expo/tests/__tests__/jest-test.web.js#web or node@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43502,6 +45410,7 @@ export const metadata: {
         "package-unit#packages/jest-expo/tests/__tests__/jest-transform-ignore.test.node.js#transforms standard-navigation package@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43518,6 +45427,7 @@ export const metadata: {
         "package-unit#packages/jest-expo/tests/__tests__/secondary-test.js#secondary file testing@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43539,6 +45449,7 @@ export const metadata: {
         "package-unit#packages/jest-expo/tests/__tests__/withTypescriptMapping-test.js#skips and warns about invalid typescript paths@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43555,6 +45466,7 @@ export const metadata: {
         "package-unit#packages/jest-expo/tests/__tests__/workflow-test.ios.js#resolves a workflow extension@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43575,6 +45487,7 @@ export const metadata: {
         "package-unit#packages/patch-project/src/__tests__/gitPatch-test.ts#should throw if git is not installed@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43594,6 +45507,7 @@ export const metadata: {
         "package-unit#packages/patch-project/src/cli/__tests__/generateNativeProjects-test.ts#should throw an error if platform directory does not exist@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43610,6 +45524,7 @@ export const metadata: {
         "package-unit#packages/patch-project/src/cli/__tests__/normalizeNativeProjects-test.ts#should remove generated properties@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43642,6 +45557,7 @@ export const metadata: {
         "package-unit#packages/submit-expo-feedback/src/__tests__/cli.test.ts#user metadata > includes username and id from the local session state@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43661,6 +45577,7 @@ export const metadata: {
         "package-unit#packages/uri-scheme/src/__tests__/Android.test.ts#escapes special characters in URI search parameter values@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43678,6 +45595,7 @@ export const metadata: {
         "package-unit#packages/uri-scheme/src/__tests__/Ios.test.ts#escapes special characters in URI search parameter values@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43697,6 +45615,7 @@ export const metadata: {
         "package-unit#packages/uri-scheme/src/__tests__/URIScheme-test.ts#lists schemes@1"
       ],
       "runner": "jest",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -43711,6 +45630,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/01-rsc.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43725,6 +45645,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/02-server-actions.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43739,6 +45660,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/03-server-actions-only.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43753,6 +45675,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/04-server-error-boundaries.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43769,6 +45692,7 @@ export const metadata: {
         "playwright-e2e#packages/@expo/cli/e2e/playwright/dev/dev-console-errors.test.ts#dev console errors@1"
       ],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43785,6 +45709,7 @@ export const metadata: {
         "playwright-e2e#packages/@expo/cli/e2e/playwright/dev/devtools-e2e.test.ts#devtools-e2e@1"
       ],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43799,6 +45724,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/fast-refresh.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43813,6 +45739,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/headless.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43829,6 +45756,7 @@ export const metadata: {
         "playwright-e2e#packages/@expo/cli/e2e/playwright/dev/hmr-env-vars.test.ts#router-e2e with spaces@1"
       ],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43845,6 +45773,7 @@ export const metadata: {
         "playwright-e2e#packages/@expo/cli/e2e/playwright/dev/hmr-server.test.ts#server-loader HMR in streaming SSR@1"
       ],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43859,6 +45788,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/hydration.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43873,6 +45803,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/metro-resolver.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43887,6 +45818,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/native-tabs.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43901,6 +45833,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/navigator-browser-history.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43915,6 +45848,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/react-compiler.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43929,6 +45863,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/router-misc.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43943,6 +45878,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/server-loader.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43957,6 +45893,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/stable-module-ids.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43971,6 +45908,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/dev/web-workers.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -43987,6 +45925,7 @@ export const metadata: {
         "playwright-e2e#packages/@expo/cli/e2e/playwright/dev/with-spaces.test.ts#router-e2e with spaces@1"
       ],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44001,6 +45940,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/prod/01-rsc.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44015,6 +45955,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/prod/02-server-actions.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44029,6 +45970,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/prod/03-server-actions-only.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44043,6 +45985,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/prod/css-global-import.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44059,6 +46002,7 @@ export const metadata: {
         "playwright-e2e#packages/@expo/cli/e2e/playwright/prod/helmet.test.ts#Head component document title@1"
       ],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44073,6 +46017,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/prod/optimize-pass.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44089,6 +46034,7 @@ export const metadata: {
         "playwright-e2e#packages/@expo/cli/e2e/playwright/prod/server-loader.test.ts#server loaders in production@1"
       ],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44105,6 +46051,7 @@ export const metadata: {
         "playwright-e2e#packages/@expo/cli/e2e/playwright/prod/server-rendering-async.test.ts#server rendering with async routes in production@1"
       ],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44121,6 +46068,7 @@ export const metadata: {
         "playwright-e2e#packages/@expo/cli/e2e/playwright/prod/server-rendering.test.ts#server rendering in production@1"
       ],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44137,6 +46085,7 @@ export const metadata: {
         "playwright-e2e#packages/@expo/cli/e2e/playwright/prod/static-loader.test.ts#static loaders in production@1"
       ],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44151,6 +46100,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/prod/tree-shaking.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44165,6 +46115,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/playwright/prod/web-workers.test.ts",
       "caseIds": [],
       "runner": "playwright",
+      "execution": "javascript-runner",
       "platforms": [
         "web"
       ],
@@ -44179,6 +46130,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/expo-go-dev-maestro-router/__tests__/hash.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44194,6 +46146,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/expo-go-dev-maestro-router/__tests__/imperative-api.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44209,6 +46162,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/expo-go-dev-maestro-router/__tests__/platform-routes.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44224,6 +46178,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/expo-go-dev-maestro-router/__tests__/smoke.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44239,6 +46194,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/expo-go-dev-maestro-router/__tests__/stack.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44254,6 +46210,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/expo-go-dev-maestro-router/__tests__/tabs.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44269,6 +46226,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/link-preview/__tests__/link-preview.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44284,6 +46242,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/maestro/__tests__/relative-imperative.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44299,6 +46258,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/maestro/__tests__/relative-link.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44314,6 +46274,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/assert-accessory-visible.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44329,6 +46290,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/assert-all-tabs-visible.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44344,6 +46306,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/close-warning.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44359,6 +46322,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/drawer/back-button.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44374,6 +46338,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/drawer/default-open.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44389,6 +46354,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/drawer/open-navigate.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44404,6 +46370,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/header-items/button-press.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44419,6 +46386,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/header-items/button-selected.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44434,6 +46402,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/header-items/hide-show.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44449,6 +46418,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/header-items/left-menu.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44464,6 +46434,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/header-items/menu-states.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44479,6 +46450,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/header-items/menu.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44494,6 +46466,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/tabs/link-preview-menu.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44509,6 +46482,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/tabs/link-preview-tabs.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44524,6 +46498,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/tabs/link-preview.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44539,6 +46514,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/tabs/native-tabs-minimize.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44554,6 +46530,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/tabs/native-tabs.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44569,6 +46546,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/toolbar/button-press.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44584,6 +46562,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/toolbar/button-shares-background.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44599,6 +46578,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/toolbar/hide-show.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44614,6 +46594,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/toolbar/menu.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44629,6 +46610,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/toolbar/search-bar.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44644,6 +46626,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/native-navigation/__tests__/toolbar/spacer.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44659,6 +46642,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/toolbar-press/__tests__/close-warning.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44674,6 +46658,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/toolbar-press/__tests__/press-blocked.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44689,6 +46674,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/toolbar-press/__tests__/toolbar-button-works.yml",
       "caseIds": [],
       "runner": "maestro",
+      "execution": "native-app",
       "platforms": [
         "android",
         "ios"
@@ -44704,6 +46690,7 @@ export const metadata: {
       "path": "apps/bare-expo/scripts/fixtures/macos/patches/react-native-macos.patch",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44718,6 +46705,7 @@ export const metadata: {
       "path": "apps/bare-expo/scripts/fixtures/macos/patches/react-native-screens.patch",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44732,6 +46720,7 @@ export const metadata: {
       "path": "apps/bare-expo/scripts/fixtures/macos/patches/react-native.patch",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44746,6 +46735,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/06-errors/app/fixtures/hmr-fixtures.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44760,6 +46750,7 @@ export const metadata: {
       "path": "apps/router-e2e/__e2e__/06-errors/app/fixtures/log-box-error-fixtures.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44774,6 +46765,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/__tests__/__snapshots__/lint.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44788,6 +46780,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/__tests__/__snapshots__/prebuild-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44802,6 +46795,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-assets/absolute-import.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44816,6 +46810,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-assets/aliased.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44830,6 +46825,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-assets/app.config.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44844,6 +46840,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-assets/App.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44858,6 +46855,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-assets/assets/font.ios.ttf",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44872,6 +46870,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-assets/assets/font.ttf",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44886,6 +46885,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-assets/assets/icon.png",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44900,6 +46900,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-assets/assets/icon@2x.png",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44914,6 +46915,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-assets/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44928,6 +46930,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-assets/jsconfig.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44942,6 +46945,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-assets/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44956,6 +46960,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-assets/public/favicon.ico",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44970,6 +46975,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-blank/App.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44984,6 +46990,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-blank/app.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -44998,6 +47005,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-blank/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45012,6 +47020,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-blank/metro.config.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45026,6 +47035,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-blank/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45040,6 +47050,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-circular-async-imports/App.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45054,6 +47065,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-circular-async-imports/app.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45068,6 +47080,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-circular-async-imports/circular-dangling/a.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45082,6 +47095,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-circular-async-imports/circular-dangling/b.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45096,6 +47110,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-circular-async-imports/circular-dangling/c.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45110,6 +47125,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-circular-async-imports/circular-entrypoints/a.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45124,6 +47140,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-circular-async-imports/circular-entrypoints/b.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45138,6 +47155,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-circular-async-imports/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45152,6 +47170,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-circular-async-imports/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45166,6 +47185,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-circular-async-imports/shared.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45180,6 +47200,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-dom/App.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45194,6 +47215,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-dom/app.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45208,6 +47230,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-dom/assets/font.ttf",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45222,6 +47245,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-dom/assets/icon.png",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45236,6 +47260,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-dom/DomView.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45250,6 +47275,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-dom/global.css",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45264,6 +47290,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-dom/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45278,6 +47305,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-dom/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45292,6 +47320,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-hmr-env-vars/.env",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45306,6 +47335,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-hmr-env-vars/app.config.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45320,6 +47350,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-hmr-env-vars/App.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45334,6 +47365,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-hmr-env-vars/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45348,6 +47380,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-hmr-env-vars/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45362,6 +47395,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-monorepo/.gitignore",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45376,6 +47410,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-monorepo/apps/app-a/app.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45390,6 +47425,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-monorepo/apps/app-a/app/page-a.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45404,6 +47440,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-monorepo/apps/app-a/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45418,6 +47455,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-monorepo/apps/app-b/app.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45432,6 +47470,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-monorepo/apps/app-b/app/page-b.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45446,6 +47485,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-monorepo/apps/app-b/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45460,6 +47500,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-monorepo/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45474,6 +47515,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router-typed-routes/.gitignore",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45488,6 +47530,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router-typed-routes/app.config.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45502,6 +47545,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router-typed-routes/app/_layout.tsx",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45516,6 +47560,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router-typed-routes/app/(a)/fruit/[fruit]/[...other].tsx",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45530,6 +47575,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router-typed-routes/app/(a)/fruit/[fruit]/index.tsx",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45544,6 +47590,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router-typed-routes/app/about.tsx",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45558,6 +47605,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router-typed-routes/app/index.tsx",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45572,6 +47620,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router-typed-routes/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45586,6 +47635,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router-typed-routes/tsconfig.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45600,6 +47650,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router/.gitignore",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45614,6 +47665,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router/app.config.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45628,6 +47680,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router/app/_layout.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45642,6 +47695,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router/app/about.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45656,6 +47710,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router/app/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45670,6 +47725,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-router/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45684,6 +47740,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-web-only/app.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45698,6 +47755,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-web-only/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45712,6 +47770,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-web-only/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45726,6 +47785,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-web/App.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45740,6 +47800,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-web/app.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45754,6 +47815,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-web/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45768,6 +47830,7 @@ export const metadata: {
       "path": "packages/@expo/cli/e2e/fixtures/with-web/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45782,6 +47845,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/api/__tests__/fixtures/44.0.0.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45796,6 +47860,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/api/__tests__/fixtures/native-modules/44.0.0.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45810,6 +47875,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/api/__tests__/fixtures/projects/4254c843-457a-4a6e-9b21-1506dc175ba4.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45824,6 +47890,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/api/__tests__/fixtures/UNVERSIONED.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45838,6 +47905,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/api/__tests__/fixtures/versions-latest.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45852,6 +47920,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/api/rest/__tests__/fixtures/panda.png",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45866,6 +47935,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/export/__tests__/fixtures/plain.74.hbc",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45880,6 +47950,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/export/__tests__/fixtures/plain.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45894,6 +47965,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/prebuild/__tests__/fixtures/contrived-template/app.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45908,6 +47980,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/prebuild/__tests__/fixtures/contrived-template/README.md",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45922,6 +47995,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/prebuild/__tests__/fixtures/react-native-project.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45936,6 +48010,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/run/ios/__tests__/fixtures/outdated-xcode-error.log",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45950,6 +48025,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/run/ios/__tests__/fixtures/unhandled-compile-error.log",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45964,6 +48040,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/run/ios/__tests__/fixtures/xcodebuild.log",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45978,6 +48055,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/run/ios/codeSigning/__tests__/fixtures/minimal.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -45992,6 +48070,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/run/ios/codeSigning/__tests__/fixtures/project.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46006,6 +48085,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/run/ios/codeSigning/__tests__/fixtures/signed-project.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46020,6 +48100,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/run/ios/options/__tests__/__snapshots__/appleDestinations.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46034,6 +48115,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/platforms/android/__tests__/fixtures/adb-output.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46048,6 +48130,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/platforms/ios/__tests__/fixtures/xcrun-simctl-list-devices.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46062,6 +48145,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/__tests__/__snapshots__/serverLogLikeMetro.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46076,6 +48160,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/__tests__/__snapshots__/webTemplate-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46090,6 +48175,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/__tests__/fixtures/devtools-plugin-server-invalid.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46104,6 +48190,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/__tests__/fixtures/devtools-plugin-server.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46118,6 +48205,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/__tests__/fixtures/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46132,6 +48220,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/metro/__tests__/__snapshots__/MetroTerminalReporter-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46146,6 +48235,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/metro/__tests__/__snapshots__/serializeHtml.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46160,6 +48250,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/metro/__tests__/fixtures/terminal-logs.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46174,6 +48265,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/middleware/__tests__/__snapshots__/ExpoGoManifestHandlerMiddleware-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46188,6 +48280,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/middleware/__tests__/fixtures/icon.png",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46202,6 +48295,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/start/server/middleware/inspector/__tests__/fixtures/metroInspectorResponse.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46216,6 +48310,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/utils/__tests__/__snapshots__/codesigning-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46230,6 +48325,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/utils/__tests__/fixtures/certificates.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46244,6 +48340,7 @@ export const metadata: {
       "path": "packages/@expo/cli/src/utils/__tests__/fixtures/exit-indefinite-process.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46258,6 +48355,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/android/__tests__/__snapshots__/Permissions-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46272,6 +48370,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/android/__tests__/fixtures/build-with-incorrect-create-manifest-android-path.gradle",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46286,6 +48385,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/android/__tests__/fixtures/build-without-create-manifest-android.gradle",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46300,6 +48400,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/android/__tests__/fixtures/codeSigningCertificate.pem",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46314,6 +48415,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/android/__tests__/fixtures/complex-react-native-AndroidManifest.xml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46328,6 +48430,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/android/__tests__/fixtures/google-services.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46342,6 +48445,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/android/__tests__/fixtures/icon-aliases-AndroidManifest.xml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46356,6 +48460,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/android/__tests__/fixtures/icon.png",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46370,6 +48475,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/android/__tests__/fixtures/react-native-AndroidManifest-with-host.xml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46384,6 +48490,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/android/__tests__/fixtures/styles.xml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46398,6 +48505,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/__snapshots__/BundleIdentifier-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46412,6 +48520,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/__snapshots__/DevelopmentTeam-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46426,6 +48535,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/__snapshots__/Locales-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46440,6 +48550,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/__snapshots__/Maps-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46454,6 +48565,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/__snapshots__/PrivacyInfo-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46468,6 +48580,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/__snapshots__/ProvisioningProfile-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46482,6 +48595,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/codeSigningCertificate.pem",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46496,6 +48610,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/framework.xcscheme",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46510,6 +48625,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/GoogleService-Info.plist",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46524,6 +48640,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/icons/icon.png",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46538,6 +48655,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/multitarget.xcscheme",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46552,6 +48670,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/PrivacyInfo.xcprivacy",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46566,6 +48685,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/project-multitarget-missing-targetattributes.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46580,6 +48700,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/project-multitarget.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46594,6 +48715,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/project-rni.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46608,6 +48730,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/project-swift.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46622,6 +48745,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/project-with-entitlements.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46636,6 +48760,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/project-with-framework.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46650,6 +48775,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/project-with-incorrect-create-manifest-ios-path.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46664,6 +48790,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/project-without-create-manifest-ios.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46678,6 +48805,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/testproject-2.xcscheme",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46692,6 +48820,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/testproject.xcscheme",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46706,6 +48835,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/watch.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46720,6 +48850,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/ios/__tests__/fixtures/watch.xcscheme",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46734,6 +48865,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/plugins/__tests__/fixtures/project-files/beta/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46748,6 +48880,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/plugins/__tests__/fixtures/project-files/ios/project.entitlements",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46762,6 +48895,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/plugins/__tests__/fixtures/project-files/ios/project.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46776,6 +48910,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/plugins/__tests__/fixtures/project-files/my-plugin.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46790,6 +48925,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/plugins/__tests__/fixtures/react-native-project.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46804,6 +48940,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/.gitignore",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46818,6 +48955,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/codeSigningCertificate.pem",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46832,6 +48970,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/localTsPlugin.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46846,6 +48985,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-lib-esm/app.plugin.mjs",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46860,6 +49000,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-lib-esm/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46874,6 +49015,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-lib-ts/app.plugin.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46888,6 +49030,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-lib-ts/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46902,6 +49045,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-lib/app.plugin.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46916,6 +49060,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-lib/lib/commonjs/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46930,6 +49075,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-lib/lib/commonjs/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46944,6 +49090,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-lib/lib/module/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46958,6 +49105,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-lib/lib/module/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46972,6 +49120,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-lib/not.app.plugin.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -46986,6 +49135,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-lib/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47000,6 +49150,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-lib/README.md",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47014,6 +49165,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-plugin/lib/commonjs/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47028,6 +49180,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-plugin/lib/commonjs/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47042,6 +49195,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-plugin/lib/module/index.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47056,6 +49210,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-plugin/lib/module/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47070,6 +49225,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-plugin/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47084,6 +49240,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/node_modules/test-plugin/README.md",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47098,6 +49255,7 @@ export const metadata: {
       "path": "packages/@expo/config-plugins/src/utils/__tests__/fixtures/testPlugin.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47112,6 +49270,7 @@ export const metadata: {
       "path": "packages/@expo/config-types/src/__tests__/fixtures/ExpoConfig.backup.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47126,6 +49285,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/__tests__/__snapshots__/Serialize-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47140,6 +49300,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/__tests__/fixtures/dynamic-cwd/app.config.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47154,6 +49315,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/__tests__/fixtures/external-error/app.config.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47168,6 +49330,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/__tests__/fixtures/external-error/other.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47182,6 +49345,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/__tests__/fixtures/external-error/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47196,6 +49360,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/__tests__/fixtures/plugins/app.config.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47210,6 +49375,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/__tests__/fixtures/plugins/my-plugin.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47224,6 +49390,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/__tests__/fixtures/plugins/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47238,6 +49405,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/__tests__/fixtures/require-file/app.config.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47252,6 +49420,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/__tests__/fixtures/require-file/export-json_app.config.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47266,6 +49435,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/__tests__/fixtures/require-file/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47280,6 +49450,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/__tests__/fixtures/ts/app.config.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47294,6 +49465,7 @@ export const metadata: {
       "path": "packages/@expo/config/src/paths/__tests__/__snapshots__/extensions-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47308,6 +49480,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/e2e/__tests__/__snapshots__/managed-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47322,6 +49495,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/__tests__/__snapshots__/Options-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47336,6 +49510,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/__snapshots__/Bare-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47350,6 +49525,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/__snapshots__/Expo-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47364,6 +49540,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/BareReactNative70Project.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47378,6 +49555,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/ExpoAutolinkingAndroid.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47392,6 +49570,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/ExpoAutolinkingIos.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47406,6 +49585,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/ExpoDefault52Project.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47420,6 +49600,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/ExpoGo.icon/Assets/1-bg.svg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47434,6 +49615,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/ExpoGo.icon/Assets/2-logo.svg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47448,6 +49630,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/ExpoGo.icon/Assets/3-circle-black.svg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47462,6 +49645,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/ExpoGo.icon/Assets/3-slab.svg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47476,6 +49660,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/ExpoGo.icon/Assets/4-circle-black.svg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47490,6 +49675,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/ExpoGo.icon/Assets/4-circle-white.svg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47504,6 +49690,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/ExpoGo.icon/icon.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47518,6 +49705,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/ExpoManaged47Project.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47532,6 +49720,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/PatchPackage.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47546,6 +49735,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/RncoreAutoLinkingBadDependencyFromRncCli.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47560,6 +49750,7 @@ export const metadata: {
       "path": "packages/@expo/fingerprint/src/sourcer/__tests__/fixtures/RncoreAutoLinkingFromRncCli.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47574,6 +49765,7 @@ export const metadata: {
       "path": "packages/@expo/inline-modules/src/__tests__/fixtures/bare-project/app/File.swift",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47588,6 +49780,7 @@ export const metadata: {
       "path": "packages/@expo/inline-modules/src/__tests__/fixtures/bare-project/ios/bare-project.xcodeproj/project.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47602,6 +49795,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/__tests__/__snapshots__/babel-transformer.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47616,6 +49810,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/transform-plugins/__tests__/__snapshots__/import-export-plugin-babel-loose-snapshots.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47630,6 +49825,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/transform-plugins/__tests__/__snapshots__/import-export-plugin-babel-snapshots.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47644,6 +49840,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/transform-plugins/__tests__/__snapshots__/import-export-plugin-snapshots.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47658,6 +49855,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/transform-worker/__tests__/__snapshots__/collect-dependencies-upstream.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47672,6 +49870,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/transform-worker/__tests__/__snapshots__/css-modules.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47686,6 +49885,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/transform-worker/__tests__/__snapshots__/css.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47700,6 +49900,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/transform-worker/__tests__/__snapshots__/metro-transform-worker.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47714,6 +49915,7 @@ export const metadata: {
       "path": "packages/@expo/metro-config/src/transform-worker/__tests__/__snapshots__/transform-worker.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47728,6 +49930,7 @@ export const metadata: {
       "path": "packages/@expo/pkcs12/src/__tests__/__snapshots__/index-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47742,6 +49945,7 @@ export const metadata: {
       "path": "packages/@expo/prebuild-config/src/plugins/__tests__/__snapshots__/withDefaultPlugins-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47756,6 +49960,7 @@ export const metadata: {
       "path": "packages/@expo/prebuild-config/src/plugins/__tests__/fixtures/androidIcons.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47770,6 +49975,7 @@ export const metadata: {
       "path": "packages/@expo/prebuild-config/src/plugins/__tests__/fixtures/GoogleService-Info.plist",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47784,6 +49990,7 @@ export const metadata: {
       "path": "packages/@expo/prebuild-config/src/plugins/__tests__/fixtures/icon.png",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47798,6 +50005,7 @@ export const metadata: {
       "path": "packages/@expo/prebuild-config/src/plugins/__tests__/fixtures/react-native-project.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47812,6 +50020,7 @@ export const metadata: {
       "path": "packages/@expo/prebuild-config/src/plugins/icons/__tests__/__snapshots__/withIosIcons-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47826,6 +50035,7 @@ export const metadata: {
       "path": "packages/@expo/require-utils/src/__tests__/fixtures/example.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47840,6 +50050,7 @@ export const metadata: {
       "path": "packages/@expo/schemer/e2e/fixtures/schema.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47854,6 +50065,7 @@ export const metadata: {
       "path": "packages/@expo/schemer/src/__tests__/__snapshots__/Schemer-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47868,6 +50080,7 @@ export const metadata: {
       "path": "packages/@expo/schemer/src/__tests__/fixtures/app.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47882,6 +50095,7 @@ export const metadata: {
       "path": "packages/@expo/schemer/src/__tests__/fixtures/bad.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47896,6 +50110,7 @@ export const metadata: {
       "path": "packages/@expo/schemer/src/__tests__/fixtures/badwithnot.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47910,6 +50125,7 @@ export const metadata: {
       "path": "packages/@expo/schemer/src/__tests__/fixtures/check.png",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47924,6 +50140,7 @@ export const metadata: {
       "path": "packages/@expo/schemer/src/__tests__/fixtures/invalidAppIcon.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47938,6 +50155,7 @@ export const metadata: {
       "path": "packages/@expo/schemer/src/__tests__/fixtures/schema.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47952,6 +50170,7 @@ export const metadata: {
       "path": "packages/@expo/schemer/src/__tests__/fixtures/secretlyPng.jpg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47966,6 +50185,7 @@ export const metadata: {
       "path": "packages/@expo/schemer/src/__tests__/fixtures/test.icon/.gitkeep",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47980,6 +50200,7 @@ export const metadata: {
       "path": "packages/@expo/schemer/src/__tests__/fixtures/webp.webp",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -47994,6 +50215,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/__snapshots__/compiler.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48008,6 +50230,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/__snapshots__/index.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48022,6 +50245,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/__tests__/__snapshots__/jsx-import.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48036,6 +50260,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/plugins/__tests__/__snapshots__/client-module-proxy-plugin.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48050,6 +50275,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/plugins/__tests__/__snapshots__/environment-restricted-imports.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48064,6 +50290,7 @@ export const metadata: {
       "path": "packages/babel-preset-expo/src/plugins/__tests__/__snapshots__/inline-env-vars.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48078,6 +50305,7 @@ export const metadata: {
       "path": "packages/create-expo/e2e/fixtures/flat-app-json/App.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48092,6 +50320,7 @@ export const metadata: {
       "path": "packages/create-expo/e2e/fixtures/flat-app-json/app.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48106,6 +50335,7 @@ export const metadata: {
       "path": "packages/create-expo/e2e/fixtures/flat-app-json/package.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48120,6 +50350,7 @@ export const metadata: {
       "path": "packages/create-expo/src/__tests__/fixtures/contrived-template/app.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48134,6 +50365,7 @@ export const metadata: {
       "path": "packages/create-expo/src/__tests__/fixtures/contrived-template/README.md",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48148,6 +50380,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/__snapshots__/baseline-flat-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48162,6 +50395,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/__snapshots__/baseline-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48176,6 +50410,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/__snapshots__/rules-flat-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48190,6 +50425,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/__snapshots__/rules-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48204,6 +50440,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/all-00.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48218,6 +50455,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/all-01.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48232,6 +50470,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/all-02.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48246,6 +50485,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/all-03.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48260,6 +50500,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/all-04.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48274,6 +50515,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/all-05.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48288,6 +50530,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/all-06.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48302,6 +50545,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/all-07.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48316,6 +50560,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/web-native-00.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48330,6 +50575,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/web-native-01.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48344,6 +50590,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/web-native-02.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48358,6 +50605,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/web-native-03.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48372,6 +50620,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/baseline/web-native-04.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48386,6 +50635,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/rule-no-var.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48400,6 +50650,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/rule-no-var.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48414,6 +50665,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/rule-require.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48428,6 +50680,7 @@ export const metadata: {
       "path": "packages/eslint-config-expo/__tests__/fixtures/rule-require.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48442,6 +50695,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/__snapshots__/default-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48456,6 +50710,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/__snapshots__/native-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48470,6 +50725,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/__snapshots__/node-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48484,6 +50740,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/__snapshots__/typescript-analysis-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48498,6 +50755,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/__snapshots__/web-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48512,6 +50770,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/all-00.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48526,6 +50785,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/all-01.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48540,6 +50800,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/all-02.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48554,6 +50815,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/all-03.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48568,6 +50830,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/all-04.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48582,6 +50845,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/all-05.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48596,6 +50860,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/all-06.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48610,6 +50875,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/all-07.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48624,6 +50890,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/node-00.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48638,6 +50905,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/typescript-analysis-00.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48652,6 +50920,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/typescript-analysis-01.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48666,6 +50935,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/typescript-analysis-02.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48680,6 +50950,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/typescript-analysis-03.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48694,6 +50965,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/typescript-analysis-04.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48708,6 +50980,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/web-native-00.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48722,6 +50995,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/web-native-01.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48736,6 +51010,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/web-native-02.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48750,6 +51025,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/web-native-03.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48764,6 +51040,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/__tests__/fixtures/web-native-04.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48778,6 +51055,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/__snapshots__/default-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48792,6 +51070,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/__snapshots__/native-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48806,6 +51085,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/__snapshots__/node-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48820,6 +51100,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/__snapshots__/typescript-analysis-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48834,6 +51115,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/__snapshots__/web-test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48848,6 +51130,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/all-00.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48862,6 +51145,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/all-01.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48876,6 +51160,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/all-02.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48890,6 +51175,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/all-03.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48904,6 +51190,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/all-04.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48918,6 +51205,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/all-05.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48932,6 +51220,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/all-06.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48946,6 +51235,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/all-07.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48960,6 +51250,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/node-00.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48974,6 +51265,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/typescript-analysis-00.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -48988,6 +51280,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/typescript-analysis-01.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49002,6 +51295,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/typescript-analysis-02.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49016,6 +51310,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/typescript-analysis-03.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49030,6 +51325,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/typescript-analysis-04.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49044,6 +51340,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/web-native-00.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49058,6 +51355,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/web-native-01.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49072,6 +51370,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/web-native-02.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49086,6 +51385,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/web-native-03.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49100,6 +51400,7 @@ export const metadata: {
       "path": "packages/eslint-config-universe/flat/__tests__/fixtures/web-native-04.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49114,6 +51415,7 @@ export const metadata: {
       "path": "packages/expo-blur/src/__tests__/__snapshots__/BlurView-test.android.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49128,6 +51430,7 @@ export const metadata: {
       "path": "packages/expo-blur/src/__tests__/__snapshots__/BlurView-test.ios.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49142,6 +51445,7 @@ export const metadata: {
       "path": "packages/expo-brownfield/e2e/cli/__tests__/__snapshots__/build-android.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49156,6 +51460,7 @@ export const metadata: {
       "path": "packages/expo-brownfield/e2e/cli/__tests__/__snapshots__/build-ios.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49170,6 +51475,7 @@ export const metadata: {
       "path": "packages/expo-brownfield/e2e/cli/__tests__/__snapshots__/help.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49184,6 +51490,7 @@ export const metadata: {
       "path": "packages/expo-brownfield/e2e/cli/__tests__/__snapshots__/tasks-android.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49198,6 +51505,7 @@ export const metadata: {
       "path": "packages/expo-checkbox/src/__tests__/__snapshots__/ExpoCheckBox-test.web.tsx.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49212,6 +51520,7 @@ export const metadata: {
       "path": "packages/expo-checkbox/src/__tests__/__snapshots__/ExpoCheckBox-test.web.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49226,6 +51535,7 @@ export const metadata: {
       "path": "packages/expo-constants/src/__tests__/__snapshots__/Constants-test.ts.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49240,6 +51550,7 @@ export const metadata: {
       "path": "packages/expo-constants/src/__tests__/__snapshots__/Constants-test.ts.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49254,6 +51565,7 @@ export const metadata: {
       "path": "packages/expo-dev-client/plugin/src/__tests__/fixtures/test-AndroidManifest.xml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49268,6 +51580,7 @@ export const metadata: {
       "path": "packages/expo-doctor/src/utils/__tests__/fixtures/npm-explain.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49282,6 +51595,7 @@ export const metadata: {
       "path": "packages/expo-font/src/__tests__/__snapshots__/Font-test.native.ts.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49296,6 +51610,7 @@ export const metadata: {
       "path": "packages/expo-font/src/__tests__/__snapshots__/Font-test.native.ts.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49310,6 +51625,7 @@ export const metadata: {
       "path": "packages/expo-gl/src/__tests__/__snapshots__/GLView-test.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49324,6 +51640,7 @@ export const metadata: {
       "path": "packages/expo-gl/src/__tests__/__snapshots__/GLView-test.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49338,6 +51655,7 @@ export const metadata: {
       "path": "packages/expo-gl/src/__tests__/__snapshots__/GLView-test.tsx.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49352,6 +51670,7 @@ export const metadata: {
       "path": "packages/expo-gl/src/__tests__/__snapshots__/GLView-test.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49366,6 +51685,7 @@ export const metadata: {
       "path": "packages/expo-glass-effect/src/__tests__/__snapshots__/GlassContainer-test.ios.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49380,6 +51700,7 @@ export const metadata: {
       "path": "packages/expo-glass-effect/src/__tests__/__snapshots__/GlassView-test.ios.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49394,6 +51715,7 @@ export const metadata: {
       "path": "packages/expo-image-picker/plugin/src/__tests__/fixtures/react-native-AndroidManifest.xml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49408,6 +51730,7 @@ export const metadata: {
       "path": "packages/expo-linear-gradient/src/__tests__/__snapshots__/LinearGradient-test.native.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49422,6 +51745,7 @@ export const metadata: {
       "path": "packages/expo-linear-gradient/src/__tests__/__snapshots__/LinearGradient-test.native.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49436,6 +51760,7 @@ export const metadata: {
       "path": "packages/expo-linear-gradient/src/__tests__/__snapshots__/LinearGradient-test.web.tsx.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49450,6 +51775,7 @@ export const metadata: {
       "path": "packages/expo-linear-gradient/src/__tests__/__snapshots__/LinearGradient-test.web.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49464,6 +51790,7 @@ export const metadata: {
       "path": "packages/expo-linking/src/__tests__/__snapshots__/Linking-test.ts.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49478,6 +51805,7 @@ export const metadata: {
       "path": "packages/expo-linking/src/__tests__/__snapshots__/Linking-test.ts.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49492,6 +51820,7 @@ export const metadata: {
       "path": "packages/expo-linking/src/__tests__/__snapshots__/Linking-test.ts.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49506,6 +51835,7 @@ export const metadata: {
       "path": "packages/expo-linking/src/__tests__/__snapshots__/Linking-test.ts.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49520,6 +51850,7 @@ export const metadata: {
       "path": "packages/expo-media-library/plugin/src/__tests__/fixtures/react-native-AndroidManifest.xml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49534,6 +51865,7 @@ export const metadata: {
       "path": "packages/expo-modules-autolinking/e2e/__tests__/__snapshots__/monorepo-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49548,6 +51880,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/deprecate-test.ts.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49562,6 +51895,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/deprecate-test.ts.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49576,6 +51910,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/deprecate-test.ts.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49590,6 +51925,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/deprecate-test.ts.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49604,6 +51940,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/NativeModulesProxy-test.native.ts.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49618,6 +51955,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/NativeModulesProxy-test.native.ts.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49632,6 +51970,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/NativeModulesProxy-test.ts.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49646,6 +51985,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/Platform-test.ts.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49660,6 +52000,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/Platform-test.ts.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49674,6 +52015,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/Platform-test.ts.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49688,6 +52030,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/Platform-test.ts.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49702,6 +52045,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/Refs-test.ts.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49716,6 +52060,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/Refs-test.ts.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49730,6 +52075,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/Refs-test.ts.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49744,6 +52090,7 @@ export const metadata: {
       "path": "packages/expo-modules-core/src/__tests__/__snapshots__/Refs-test.ts.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49758,6 +52105,7 @@ export const metadata: {
       "path": "packages/expo-notifications/plugin/src/__tests__/fixtures/cat.wav",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49772,6 +52120,7 @@ export const metadata: {
       "path": "packages/expo-notifications/plugin/src/__tests__/fixtures/icon.png",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49786,6 +52135,7 @@ export const metadata: {
       "path": "packages/expo-notifications/src/__tests__/__snapshots__/index-test.ts.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49800,6 +52150,7 @@ export const metadata: {
       "path": "packages/expo-router/src/__tests__/__snapshots__/testing-library.test.ios.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49814,6 +52165,7 @@ export const metadata: {
       "path": "packages/expo-router/src/__tests__/fixtures/context-stubs/_layout.tsx",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49828,6 +52180,7 @@ export const metadata: {
       "path": "packages/expo-router/src/__tests__/fixtures/context-stubs/index.tsx",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49842,6 +52195,7 @@ export const metadata: {
       "path": "packages/expo-router/src/__tests__/fixtures/context-stubs/nested/route.tsx",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49856,6 +52210,7 @@ export const metadata: {
       "path": "packages/expo-router/src/fork/__tests__/__snapshots__/extractPathFromURL.test.ios.ts.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49870,6 +52225,7 @@ export const metadata: {
       "path": "packages/expo-router/src/link/__tests__/__snapshots__/Link.test.web.tsx.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49884,6 +52240,7 @@ export const metadata: {
       "path": "packages/expo-router/src/link/__tests__/__snapshots__/Link.test.web.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49898,6 +52255,7 @@ export const metadata: {
       "path": "packages/expo-router/src/native-tabs/__tests__/__snapshots__/NativeTabsView.test.web.tsx.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49912,6 +52270,7 @@ export const metadata: {
       "path": "packages/expo-router/src/native-tabs/__tests__/__snapshots__/NativeTabsView.test.web.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49926,6 +52285,7 @@ export const metadata: {
       "path": "packages/expo-secure-store/src/__tests__/__snapshots__/SecureStore-test.ios.ts.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49940,6 +52300,7 @@ export const metadata: {
       "path": "packages/expo-secure-store/src/__tests__/__snapshots__/SecureStore-test.native.ts.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49954,6 +52315,7 @@ export const metadata: {
       "path": "packages/expo-secure-store/src/__tests__/__snapshots__/SecureStore-test.native.ts.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49968,6 +52330,7 @@ export const metadata: {
       "path": "packages/expo-splash-screen/plugin/src/__tests__/fixtures/icon.png",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49982,6 +52345,7 @@ export const metadata: {
       "path": "packages/expo-splash-screen/plugin/src/__tests__/fixtures/react-native-project.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -49996,6 +52360,7 @@ export const metadata: {
       "path": "packages/expo-type-information/__tests__/__snapshots__/typeInformation.test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50010,6 +52375,7 @@ export const metadata: {
       "path": "packages/expo-updates/cli/src/__tests__/fixtures/invalid-certificate.pem",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50024,6 +52390,7 @@ export const metadata: {
       "path": "packages/expo-updates/cli/src/__tests__/fixtures/invalid-private-key.pem",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50038,6 +52405,7 @@ export const metadata: {
       "path": "packages/expo-updates/cli/src/__tests__/fixtures/invalid-public-key.pem",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50052,6 +52420,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/App-apitest.tsx",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50066,6 +52435,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/App-updates-disabled.tsx",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50080,6 +52450,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/App.tsx",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50094,6 +52465,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/custom_init/AppDelegate.swift",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50108,6 +52480,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/custom_init/MainActivity.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50122,6 +52495,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/custom_init/MainApplication.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50136,6 +52510,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/custom_init/SceneDelegate.swift",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50150,6 +52525,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/E2ETestModule.swift",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50164,6 +52540,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/.env",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50178,6 +52555,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/.fingerprintignore",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50192,6 +52570,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/assetsInUpdates/coffee-prep.jpg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50206,6 +52585,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/eas.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50220,6 +52600,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/embeddedAssets/Abel_400Regular.ttf",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50234,6 +52615,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/embeddedAssets/coffee-prep.jpg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50248,6 +52630,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/embeddedAssets/dougheadshot.jpg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50262,6 +52645,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/embeddedAssets/HankenGrotesk_300Light.ttf",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50276,6 +52660,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/includedAssets/lock-filled.svg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50290,6 +52675,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/includedAssets/test.png",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50304,6 +52690,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/maestro-test-executor.sh",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50318,6 +52705,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/tests/maestroUpdatesApi.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50332,6 +52720,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/updates-server/assets/lubo-minar-j2RgHfqKhCM-unsplash.jpg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50346,6 +52735,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/updates-server/assets/niklas-liniger-zuPiCN7xekM-unsplash.jpg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50360,6 +52750,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/updates-server/assets/patrick-untersee-XJjsuuDwWas-unsplash.jpg",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50374,6 +52765,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/updates-server/server.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50388,6 +52780,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/updates-server/start.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50402,6 +52795,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/maestro/updates-server/update.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50416,6 +52810,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/scripts/check-android-emulator.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50430,6 +52825,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/scripts/files/App.tsx.embedded",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50444,6 +52840,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/scripts/files/App.tsx.update1",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50458,6 +52855,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/scripts/files/App.tsx.update2",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50472,6 +52870,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/scripts/generate-test-update-bundles.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50486,6 +52885,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/scripts/reset-app.ts",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50500,6 +52900,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/project_files/tsconfig.json",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50514,6 +52915,7 @@ export const metadata: {
       "path": "packages/expo-updates/e2e/fixtures/UpdatesE2ETestModule.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50528,6 +52930,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/Support/fixtures/new.hbc",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50542,6 +52945,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/Support/fixtures/old.hbc",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50556,6 +52960,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/Support/fixtures/test.patch",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50570,6 +52975,7 @@ export const metadata: {
       "path": "packages/expo-updates/ios/Tests/Support/fixtures/TestConfig.plist",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50584,6 +52990,7 @@ export const metadata: {
       "path": "packages/html-elements/babel/__tests__/__snapshots__/transform.test.js.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50598,6 +53005,7 @@ export const metadata: {
       "path": "packages/html-elements/babel/__tests__/fixtures/one.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50612,6 +53020,7 @@ export const metadata: {
       "path": "packages/html-elements/src/css/__tests__/__snapshots__/createSafeStyledView.test.native.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50626,6 +53035,7 @@ export const metadata: {
       "path": "packages/html-elements/src/css/__tests__/__snapshots__/createSafeStyledView.test.native.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50640,6 +53050,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Anchor-test.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50654,6 +53065,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Anchor-test.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50668,6 +53080,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Anchor-test.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50682,6 +53095,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Anchor.test.ios.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50696,6 +53110,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Anchor.test.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50710,6 +53125,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Anchor.test.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50724,6 +53140,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Anchor.test.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50738,6 +53155,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Headings-test.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50752,6 +53170,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Headings-test.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50766,6 +53185,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Headings-test.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50780,6 +53200,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Headings.test.ios.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50794,6 +53215,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Layout-test.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50808,6 +53230,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Layout-test.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50822,6 +53245,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Layout-test.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50836,6 +53260,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Layout.test.ios.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50850,6 +53275,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Layout.test.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50864,6 +53290,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Layout.test.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50878,6 +53305,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Layout.test.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50892,6 +53320,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Lists-test.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50906,6 +53335,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Lists-test.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50920,6 +53350,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Lists-test.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50934,6 +53365,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Lists.test.native.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50948,6 +53380,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Lists.test.native.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50962,6 +53395,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Rules-test.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50976,6 +53410,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Rules-test.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -50990,6 +53425,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Rules-test.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51004,6 +53440,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Rules.test.native.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51018,6 +53455,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Rules.test.native.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51032,6 +53470,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Table-test.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51046,6 +53485,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Table-test.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51060,6 +53500,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Table-test.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51074,6 +53515,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Table.test.ios.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51088,6 +53530,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Table.test.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51102,6 +53545,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Table.test.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51116,6 +53560,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Table.test.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51130,6 +53575,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Text-test.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51144,6 +53590,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Text-test.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51158,6 +53605,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Text-test.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51172,6 +53620,7 @@ export const metadata: {
       "path": "packages/html-elements/src/elements/__tests__/__snapshots__/Text.test.ios.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51186,6 +53635,7 @@ export const metadata: {
       "path": "packages/html-elements/src/primitives/__tests__/__snapshots__/createDevView.test.ios.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51200,6 +53650,7 @@ export const metadata: {
       "path": "packages/html-elements/src/primitives/__tests__/__snapshots__/createDevView.test.tsx.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51214,6 +53665,7 @@ export const metadata: {
       "path": "packages/html-elements/src/primitives/__tests__/__snapshots__/createDevView.test.tsx.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51228,6 +53680,7 @@ export const metadata: {
       "path": "packages/html-elements/src/primitives/__tests__/__snapshots__/createDevView.test.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51242,6 +53695,7 @@ export const metadata: {
       "path": "packages/html-elements/src/primitives/__tests__/__snapshots__/createDevView.test.web.tsx.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51256,6 +53710,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-anonymous-delegate-updated.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51270,6 +53725,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-anonymous-delegate-updated.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51284,6 +53740,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-anonymous-delegate.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51298,6 +53755,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-anonymous-delegate.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51312,6 +53770,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-no-delegate-updated.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51326,6 +53785,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-no-delegate-updated.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51340,6 +53800,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-no-delegate.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51354,6 +53815,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-no-delegate.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51368,6 +53830,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn064-updated.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51382,6 +53845,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn064-updated.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51396,6 +53860,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn064.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51410,6 +53875,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn064.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51424,6 +53890,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn068-updated.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51438,6 +53905,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn068-updated.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51452,6 +53920,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn068.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51466,6 +53935,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn068.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51480,6 +53950,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn071-updated.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51494,6 +53965,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn071-updated.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51508,6 +53980,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn071.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51522,6 +53995,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn071.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51536,6 +54010,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn073-updated.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51550,6 +54025,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainActivity-rn073.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51564,6 +54040,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn064-updated.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51578,6 +54055,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn064-updated.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51592,6 +54070,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn064.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51606,6 +54085,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn064.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51620,6 +54100,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn068-updated.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51634,6 +54115,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn068.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51648,6 +54130,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn071-updated.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51662,6 +54145,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn071.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51676,6 +54160,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn073-updated.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51690,6 +54175,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn073.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51704,6 +54190,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn074-updated.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51718,6 +54205,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn074.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51732,6 +54220,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn083-updated.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51746,6 +54235,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/MainApplication-rn083.kt",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51760,6 +54250,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/ProjectBuild-rn079-updated.gradle",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51774,6 +54265,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/ProjectBuild-rn079.gradle",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51788,6 +54280,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/settings-rn074-updated.gradle",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51802,6 +54295,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/settings-rn074.gradle",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51816,6 +54310,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/settings-rn076-updated.gradle",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51830,6 +54325,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/settings-rn076.gradle",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51844,6 +54340,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/settings-rn079-updated.gradle",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51858,6 +54355,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/android/__tests__/fixtures/settings-rn079.gradle",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51872,6 +54370,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/__snapshots__/withCliIntegration-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51886,6 +54385,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/appBuild-rn072-updated.gradle",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51900,6 +54400,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/appBuild-rn072.gradle",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51914,6 +54415,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/AppDelegate-rn072-updated.mm",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51928,6 +54430,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/AppDelegate-rn072.mm",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51942,6 +54445,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/babel-config-rn072-updated.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51956,6 +54460,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/babel-config-rn072.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51970,6 +54475,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/MainApplication-rn072-updated.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51984,6 +54490,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/MainApplication-rn072.java",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -51998,6 +54505,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/metro-config-rn071.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52012,6 +54520,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/metro-config-rn072-updated.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52026,6 +54535,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/metro-config-rn072.js",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52040,6 +54550,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/xcodeProject-rn072-updated.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52054,6 +54565,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/cli/__tests__/fixtures/xcodeProject-rn072.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52068,6 +54580,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/__snapshots__/withIosModulesAppDelegate-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52082,6 +54595,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/__snapshots__/withIosModulesPodfile-test.ts.snap",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52096,6 +54610,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn067-updated.h",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52110,6 +54625,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn067-updated.m",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52124,6 +54640,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn067-updated.swift",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52138,6 +54655,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn067.h",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52152,6 +54670,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn067.m",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52166,6 +54685,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn067.swift",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52180,6 +54700,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn068-updated.mm",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52194,6 +54715,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn068.mm",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52208,6 +54730,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn071-updated.h",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52222,6 +54745,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn071.h",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52236,6 +54760,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn071.mm",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52250,6 +54775,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn077.swift",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52264,6 +54790,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn079-updated.swift",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52278,6 +54805,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn079.swift",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52292,6 +54820,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn083-updated.swift",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52306,6 +54835,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/AppDelegate-rn083.swift",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52320,6 +54850,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/Podfile-rn070",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52334,6 +54865,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/Podfile-rn070-updated",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52348,6 +54880,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/Podfile-rn071",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52362,6 +54895,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/Podfile-rn071-updated",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52376,6 +54910,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/Podfile-rn076",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52390,6 +54925,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/Podfile-rn076-updated",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52404,6 +54940,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/Podfile-with-post-integrate",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52418,6 +54955,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/Podfile-with-post-integrate-updated",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52432,6 +54970,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/TestTargetsDontHaveSwiftVersion-updated.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52446,6 +54985,7 @@ export const metadata: {
       "path": "packages/install-expo-modules/src/plugins/ios/__tests__/fixtures/TestTargetsDontHaveSwiftVersion.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52460,6 +55000,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/jest-test.android.js.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52474,6 +55015,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/jest-test.ios.js.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52488,6 +55030,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/jest-test.js.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52502,6 +55045,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/jest-test.js.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52516,6 +55060,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/jest-test.js.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52530,6 +55075,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/jest-test.js.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52544,6 +55090,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/jest-test.native.js.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52558,6 +55105,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/jest-test.native.js.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52572,6 +55120,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/jest-test.node.js.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52586,6 +55135,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/jest-test.web.js.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52600,6 +55150,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/jest-test.web.js.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52614,6 +55165,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/secondary-test.js.snap.android",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52628,6 +55180,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/secondary-test.js.snap.ios",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52642,6 +55195,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/secondary-test.js.snap.node",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52656,6 +55210,7 @@ export const metadata: {
       "path": "packages/jest-expo/tests/__tests__/__snapshots__/secondary-test.js.snap.web",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52670,6 +55225,7 @@ export const metadata: {
       "path": "packages/patch-project/src/cli/__tests__/fixtures/sdk53.pbxproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52684,6 +55240,7 @@ export const metadata: {
       "path": "packages/uri-scheme/src/__tests__/fixtures/react-native/android/app/src/main/AndroidManifest.xml",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52698,6 +55255,7 @@ export const metadata: {
       "path": "packages/uri-scheme/src/__tests__/fixtures/react-native/ios/demo.xcodeproj",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52712,6 +55270,7 @@ export const metadata: {
       "path": "packages/uri-scheme/src/__tests__/fixtures/react-native/ios/Info.plist",
       "caseIds": [],
       "runner": "workflow",
+      "execution": "unsupported",
       "platforms": [
         "host"
       ],
@@ -52735,6 +55294,7 @@ export const metadata: {
         "tools-unit#tools/src/commands/CheckSdkPrs.test.ts#renderRows > keeps a column that is populated in only some rows@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -52751,6 +55311,7 @@ export const metadata: {
         "tools-unit#tools/src/commands/GenerateDocsAPIData.test.ts#PACKAGES_MAPPING > every entry point resolves to an existing source file@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -52770,6 +55331,7 @@ export const metadata: {
         "tools-unit#tools/src/commands/PrepareBranch.test.ts#validatePreconditions > warns on a non-sdk branch without erroring@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -52826,6 +55388,7 @@ export const metadata: {
         "tools-unit#tools/src/commands/ValidateNpmOwners.test.ts#removalFailureReason > keeps the cause that npm prints below the generic error code@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -52859,6 +55422,7 @@ export const metadata: {
         "tools-unit#tools/src/generate-docs-api-data/docsInline.test.ts#suppressLeftoverReferences > walks deeply into nested structures@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -52882,6 +55446,7 @@ export const metadata: {
         "tools-unit#tools/src/NpmOtp.test.ts#withOtpRetry > rethrows a non-OTP error unchanged and without prompting@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -52903,6 +55468,7 @@ export const metadata: {
         "tools-unit#tools/src/Packages.test.ts#getPackageByName > returns null for third-party scoped packages installed only under node_modules@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -52923,6 +55489,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/ExternalPackage.test.ts#getExternalPackageByProductName > returns null for a non-existent product@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -52977,6 +55544,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/PathBuilders.test.ts#SPMGenerator path functions > getTargetPath > returns <productPath>/<targetName>@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53008,6 +55576,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/pipeline/ErrorPolicy.test.ts#synthesizeSkippedResult > respects productFilter@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53031,6 +55600,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/pipeline/Reporter.test.ts#logPackageBanner > does not throw with multiple flavors@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53082,6 +55652,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/pipeline/RunSteps.test.ts#sortPackagesByDependencies > sorts linear chain: A depends on B → B first@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53106,6 +55677,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/pipeline/Scheduler.test.ts#runPackagesInParallel > works with concurrency 1 (sequential)@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53140,6 +55712,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/pipeline/StepGating.test.ts#verify shouldRun > returns true when skipVerify is false@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53157,6 +55730,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/Prune.test.ts#findDerivedDataDirsAsync > targets frameworks/ (DerivedData) and never the xcframeworks/ deliverables@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53178,6 +55752,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/resolvePackage.test.ts#resolveInstalledPackage > returns the install when exactly one workspace has a satisfying version@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53208,6 +55783,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/SPMBuild.test.ts#formatVersionRequirement > throws for invalid version@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53225,6 +55801,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/SPMGenerator.hardlinkRefresh.test.ts#refreshHardlinkIfNeeded > relinks when the source inode changed even though content is identical@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53241,6 +55818,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/SPMGenerator.headerStaging.test.ts#SPMGenerator header staging — expo-modules-core > does not stage @implementation-fragment headers into the public include dir@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53259,6 +55837,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/SPMIdentifier.test.ts#assertSafeSPMIdentifier > throws with the field name and the offending value for unsafe strings@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53287,6 +55866,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/SPMPackage.test.ts#findSiblingProductDependencies > returns empty when product has no target dependencies@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53307,6 +55887,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/TransformReactXCFramework.test.ts#isVFSGenerated > returns true when version stamp matches current RN version@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53333,6 +55914,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/Utils.test.ts#selectDistributedPackages > returns every package unchanged when allPackages is true@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53359,6 +55941,7 @@ export const metadata: {
         "tools-unit#tools/src/prebuilds/VersionStamp.test.ts#VersionStamp > write > writes a stamp file with the given entries@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53390,6 +55973,7 @@ export const metadata: {
         "tools-unit#tools/src/publish-packages/tasks/bundleIOSPrebuilds.test.ts#parseXcodeVersion > returns null when the expected prefix is missing@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53411,6 +55995,7 @@ export const metadata: {
         "tools-unit#tools/src/publish-packages/tasks/publishCanary.test.ts#computeCanaryVersion > on SDK branch > returns null for packages on a different major@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53431,6 +56016,7 @@ export const metadata: {
         "tools-unit#tools/src/Utils.test.ts#spawnErrorOutput > trims surrounding whitespace of each stream@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],
@@ -53458,6 +56044,7 @@ export const metadata: {
         "tools-unit#tools/src/Workspace.test.ts#buildWorkspacesInfo > treats workspace: protocol specs as always-satisfying (pnpm linkWorkspacePackages: deep)@1"
       ],
       "runner": "node-test",
+      "execution": "javascript-runner",
       "platforms": [
         "host"
       ],

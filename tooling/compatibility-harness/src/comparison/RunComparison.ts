@@ -234,15 +234,8 @@ const recordIssues = (record: RunRecordType): ReadonlyArray<string> => {
   const issues: Array<string> = []
   const prefix = `${record.plan.id}:`
   if (record.attempts.length === 0) issues.push(`${prefix} run has no attempts`)
-  const plannedCases = record.plan.testCases
-  const plannedSources = record.plan.testSources
+  const plannedSource = record.plan.unit.sourceId
   const runtimeCases = new Set(record.runtimeDiscoveredCaseIds)
-  if (new Set(plannedCases).size !== plannedCases.length) {
-    issues.push(`${prefix} plan contains duplicate cases`)
-  }
-  if (new Set(plannedSources).size !== plannedSources.length) {
-    issues.push(`${prefix} plan contains duplicate sources`)
-  }
   if (runtimeCases.size !== record.runtimeDiscoveredCaseIds.length) {
     issues.push(`${prefix} runtime discovery contains duplicate cases`)
   }
@@ -264,12 +257,8 @@ const recordIssues = (record: RunRecordType): ReadonlyArray<string> => {
         issues.push(`${prefix} ${result.caseId} has the wrong run or attempt identity`)
       }
       observed.set(result.caseId, (observed.get(result.caseId) ?? 0) + 1)
-      const planned = plannedCases.includes(result.caseId)
-      const runtimeDiscovered =
-        runtimeCases.has(result.caseId) &&
-        plannedSources.some((sourceId) => result.caseId.startsWith(`${sourceId}#`))
-      if (!planned && !runtimeDiscovered) {
-        issues.push(`${prefix} ${result.caseId} is outside the planned cases and sources`)
+      if (!result.caseId.startsWith(`${plannedSource}#`)) {
+        issues.push(`${prefix} ${result.caseId} is outside the planned source`)
       }
     }
   }
@@ -279,17 +268,11 @@ const recordIssues = (record: RunRecordType): ReadonlyArray<string> => {
       issues.push(`${prefix} runtime-discovered case ${caseId} was not observed exactly once`)
     }
   }
-  for (const caseId of plannedCases) {
-    const count = observed.get(caseId) ?? 0
-    if (count !== 1) issues.push(`${prefix} planned case ${caseId} was observed ${count} times`)
-  }
   for (const [caseId, count] of observed) {
     if (count > 1) issues.push(`${prefix} result ${caseId} was observed ${count} times`)
   }
-  for (const sourceId of plannedSources) {
-    if (![...observed.keys()].some((caseId) => caseId.startsWith(`${sourceId}#`))) {
-      issues.push(`${prefix} planned source ${sourceId} produced no results`)
-    }
+  if (![...observed.keys()].some((caseId) => caseId.startsWith(`${plannedSource}#`))) {
+    issues.push(`${prefix} planned source ${plannedSource} produced no results`)
   }
   return issues
 }
@@ -301,8 +284,7 @@ const expectedTag = (expected: "fail" | "skip" | "timeout" | "crash") => {
 }
 
 const planIdentity = (records: ReadonlyArray<RunRecordType>) => ({
-  cases: [...new Set(records.flatMap(({ plan }) => plan.testCases))].toSorted(),
-  sources: [...new Set(records.flatMap(({ plan }) => plan.testSources))].toSorted(),
+  sources: [...new Set(records.map(({ plan }) => plan.unit.sourceId))].toSorted(),
 })
 
 const buildIdentities = (records: ReadonlyArray<RunRecordType>) =>
@@ -360,7 +342,7 @@ export const compare = (
   const upstreamPlan = planIdentity(upstream)
   const candidatePlan = planIdentity(candidate)
   if (JSON.stringify(upstreamPlan) !== JSON.stringify(candidatePlan)) {
-    issues.push("upstream and candidate evidence cover different case or source plans")
+    issues.push("upstream and candidate evidence cover different source-unit plans")
   }
   if (expectedSources !== undefined) {
     const observedSources = new Set(upstreamPlan.sources)

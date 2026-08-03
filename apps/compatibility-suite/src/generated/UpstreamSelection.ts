@@ -2,7 +2,7 @@ import { configureUpstreamSelection } from "../Registry.ts"
 
 // Kept in an app-only module: invoking the pinned function preserves its
 // platform, Expo Go, device-farm, WebGL, optional-module and eager-load gates.
-const upstream: unknown = require("../../../../vendor/expo/apps/test-suite/TestModules")
+const upstream: unknown = require("@better-native/expo-source/apps/test-suite/TestModules")
 const getter: unknown = typeof upstream === "object" && upstream !== null
   ? Reflect.get(upstream, "getTestModules")
   : undefined

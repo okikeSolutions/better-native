@@ -34,77 +34,6 @@ export class SecurityAuditError extends Data.TaggedError("SecurityAuditError")<{
 
 const reviewed: ReadonlyArray<ReviewedException> = [
   {
-    owner: {
-      lockKey: "expo-app-auth/@expo/config-plugins/@expo/plist",
-      identifier: "@expo/plist@0.0.18",
-    },
-    dependency: {
-      lockKey: "expo-app-auth/@expo/config-plugins/@expo/plist/@xmldom/xmldom",
-      name: "@xmldom/xmldom",
-      version: "0.7.13",
-    },
-    advisories: [
-      "GHSA-wh4c-j3r5-mjhp",
-      "GHSA-2v35-w6hq-6mfw",
-      "GHSA-f6ww-3ggp-fr8h",
-      "GHSA-x6wf-f3px-wcqx",
-      "GHSA-j759-j44w-7fr8",
-    ],
-  },
-  {
-    owner: {
-      lockKey: "expo-app-auth/@expo/config-plugins",
-      identifier: "@expo/config-plugins@4.1.5",
-    },
-    dependency: {
-      lockKey: "expo-app-auth/@expo/config-plugins/xml2js",
-      name: "xml2js",
-      version: "0.4.23",
-    },
-    advisories: ["GHSA-776f-qx25-q3cc"],
-  },
-  {
-    owner: { lockKey: "react-native-bootsplash", identifier: "react-native-bootsplash@6.3.12" },
-    dependency: { lockKey: "sharp", name: "sharp", version: "0.32.6" },
-    advisories: ["GHSA-f88m-g3jw-g9cj"],
-  },
-  {
-    owner: {
-      lockKey: "@react-native-community/cli-config-android",
-      identifier: "@react-native-community/cli-config-android@18.0.1",
-    },
-    dependency: {
-      lockKey: "fast-xml-parser",
-      name: "fast-xml-parser",
-      version: "4.5.7",
-    },
-    advisories: ["GHSA-gh4j-gqv2-49f6"],
-  },
-  {
-    owner: {
-      lockKey: "sentry-expo/@sentry/react",
-      identifier: "@sentry/react@7.52.1",
-    },
-    dependency: {
-      lockKey: "sentry-expo/@sentry/react/@sentry/browser",
-      name: "@sentry/browser",
-      version: "7.52.1",
-    },
-    advisories: ["GHSA-593m-55hh-j8gv"],
-  },
-  {
-    owner: {
-      lockKey: "sentry-expo/@sentry/react-native",
-      identifier: "@sentry/react-native@5.5.0",
-    },
-    dependency: {
-      lockKey: "sentry-expo/@sentry/react-native/@sentry/browser",
-      name: "@sentry/browser",
-      version: "7.52.0",
-    },
-    advisories: ["GHSA-593m-55hh-j8gv"],
-  },
-  {
     owner: { lockKey: "xcode", identifier: "xcode@3.0.1" },
     dependency: { lockKey: "xcode/uuid", name: "uuid", version: "7.0.3" },
     advisories: ["GHSA-w5hq-g745-h8pq"],
@@ -229,7 +158,10 @@ export const run = Effect.fn("AuditPolicy.run")(function* () {
   )
   const lock = yield* BunLock.read(`${repository.root}/bun.lock`)
   const issues = validate(report, lock)
-  if (issues.length > 0) return yield* new SecurityAuditError({ issues })
+  if (issues.length > 0) {
+    yield* Console.error(issues.join("\n"))
+    return yield* new SecurityAuditError({ issues })
+  }
   yield* Console.log(
     `Dependency audit accepted ${Object.values(report).flat().length} reviewed findings`,
   )

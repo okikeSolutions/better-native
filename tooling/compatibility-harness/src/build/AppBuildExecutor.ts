@@ -39,10 +39,7 @@ export const layer: Layer.Layer<
     const products = yield* BuildProducts
     const execute: Service["execute"] = (request, pinnedUpstream) =>
       Effect.gen(function* () {
-        const { appDirectory, workspace: workspaceRoot } = yield* workspace.prepare(
-          request,
-          pinnedUpstream.nodeModules,
-        )
+        const { appDirectory, workspace: workspaceRoot } = yield* workspace.prepare(request)
         const commonEnv = {
           BETTER_NATIVE_MODE: request.mode,
           BETTER_NATIVE_BUILD_ID: request.id,

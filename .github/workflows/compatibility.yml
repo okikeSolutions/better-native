@@ -69,7 +69,7 @@ jobs:
             "package.json",
             "bun.lock",
             "turbo.json",
-            "vendor/expo",
+            "compatibility/upstreams.json",
             "tooling/compatibility-harness/src/**"
 
   web-baseline:

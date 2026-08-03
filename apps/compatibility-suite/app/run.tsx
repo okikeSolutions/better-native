@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router"
-import { type ReactNode, useEffect, useMemo, useState } from "react"
+import { type ReactNode, useEffect, useState } from "react"
 import { ScrollView, StyleSheet, Text, View } from "react-native"
 import * as Match from "effect/Match"
 import { registry } from "../src/Registry.ts"
@@ -10,46 +10,40 @@ const smokeCaseIds = registry
   .filter(({ path }) => /\/tests\/(?:Basic|Network)\.[^.]+$/.test(path))
   .flatMap(({ caseIds }) => caseIds)
 
+const smokeSourceId = registry.find(({ caseIds }) =>
+  caseIds.some((caseId) => smokeCaseIds.includes(caseId)),
+)?.sourceId
+
+const selectionFor = (runId: string, sourceId: string | undefined): unknown => {
+  if (sourceId !== undefined) return { schemaVersion: 1, runId, sourceId }
+  if (smokeSourceId !== undefined) return { schemaVersion: 1, runId, sourceId: smokeSourceId }
+  throw new Error("the static compatibility registry has no interactive smoke source")
+}
+
 export default function Run() {
   const params = useLocalSearchParams<{
-    case?: string | Array<string>
     runId?: string
-    source?: string | Array<string>
+    source?: string
   }>()
   const [summary, setSummary] = useState<RunSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [portalChild, setPortalChild] = useState<ReactNode>(null)
-  const caseIds = useMemo(() => {
-    if (params.case === undefined) return smokeCaseIds
-    return (Array.isArray(params.case) ? params.case : [params.case]).filter(Boolean)
-  }, [params.case])
-  const sourceIds = useMemo(
-    () =>
-      params.source === undefined
-        ? []
-        : (Array.isArray(params.source) ? params.source : [params.source]).filter(Boolean),
-    [params.source],
-  )
+  const runId = params.runId ?? "interactive-run"
+  const sourceId = typeof params.source === "string" ? params.source : undefined
 
   useEffect(() => {
     let active = true
-    runtime
-      .runPromise(
-        run(
-          {
-            schemaVersion: 1,
-            runId: params.runId ?? "interactive-run",
-            caseIds,
-            sourceIds,
-          },
-          {
+    Promise.resolve(selectionFor(runId, sourceId))
+      .then((input) =>
+        runtime.runPromise(
+          run(input, {
             setPortalChild,
             cleanupPortal: () =>
               new Promise<void>((resolve) => {
                 setPortalChild(null)
                 requestAnimationFrame(() => resolve())
               }),
-          },
+          }),
         ),
       )
       .then((result) => {
@@ -62,7 +56,7 @@ export default function Run() {
     return () => {
       active = false
     }
-  }, [caseIds, params.runId, sourceIds])
+  }, [params.runId, runId, sourceId])
 
   const failed =
     summary?.results.filter(({ outcome }) =>
@@ -73,10 +67,10 @@ export default function Run() {
     ).length ?? 0
   return (
     <ScrollView contentContainerStyle={styles.container} testID="compatibility_run">
-      <Text style={styles.title}>Run {params.runId ?? "interactive-run"}</Text>
+      <Text style={styles.title}>Run {runId}</Text>
       {error ? <Text testID="compatibility_run_error">{error}</Text> : null}
       {summary === null && error === null ? (
-        <Text testID="compatibility_run_running">Running {caseIds.length} cases…</Text>
+        <Text testID="compatibility_run_running">Loading compatibility run…</Text>
       ) : null}
       {summary ? (
         <View testID="compatibility_run_complete">

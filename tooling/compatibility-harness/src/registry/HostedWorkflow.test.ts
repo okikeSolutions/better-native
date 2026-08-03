@@ -12,6 +12,7 @@ describe("hosted compatibility workflow", () => {
         checkWorkflow,
         staticSetup,
         buildSetup,
+        expoSourceSetup,
         deviceSetup,
         compareSetup,
         changeDetection,
@@ -24,6 +25,7 @@ describe("hosted compatibility workflow", () => {
         fs.readFileString(".github/workflows/check.yml"),
         fs.readFileString(".github/actions/setup-static/action.yml"),
         fs.readFileString(".github/actions/setup-build/action.yml"),
+        fs.readFileString(".github/actions/setup-expo-source/action.yml"),
         fs.readFileString(".github/actions/setup-device-test/action.yml"),
         fs.readFileString(".github/actions/setup-compare/action.yml"),
         fs.readFileString(".github/actions/detect-compatibility-change/action.yml"),
@@ -36,7 +38,11 @@ describe("hosted compatibility workflow", () => {
       assert.notMatch(staticSetup, /ignore-scripts/)
       assert.match(buildSetup, /node-version: 24/)
       assert.match(buildSetup, /version: 10\.33\.0/)
-      assert.match(buildSetup, /cache-dependency-path: vendor\/expo\/pnpm-lock\.yaml/)
+      assert.match(buildSetup, /setup-expo-source/)
+      assert.match(buildSetup, /pnpm store path/)
+      assert.match(buildSetup, /node-24-pnpm-10-expo/)
+      assert.match(expoSourceSetup, /fetch --depth=1 origin/)
+      assert.match(expoSourceSetup, /actual_revision=.*rev-parse HEAD/)
       assert.match(deviceSetup, /setup-static/)
       assert.match(compareSetup, /setup-static/)
       assert.match(changeDetection, /tj-actions\/changed-files/)
@@ -48,7 +54,7 @@ describe("hosted compatibility workflow", () => {
       assert.notMatch(workflow, /TURBO_TOKEN/)
       assert.notMatch(workflow, /setup-project/)
       assert.notMatch(workflow, /setup-native-build-cache/)
-      assert.match(checkWorkflow, /setup-static/)
+      assert.match(checkWorkflow, /setup-build/)
       assert.notMatch(checkWorkflow, /TURBO_API/)
       assert.match(turboConfig, /"signature": true/)
       assert.match(workflow, /version: 2\.6\.1/)

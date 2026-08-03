@@ -8,11 +8,11 @@ import jasmineRequire from "jasmine-core/lib/jasmine-core/jasmine"
 import { CompatibilityConfiguration } from "./Configuration.ts"
 import { registry, type ExpoTestModule, type RegistryEntry, type TestTools } from "./Registry.ts"
 
-const RunPlan = Schema.Struct({
+/** The only execution data accepted over a deep link or browser URL. */
+const RunSelection = Schema.Struct({
   schemaVersion: Schema.Literal(1),
   runId: Schema.NonEmptyString,
-  caseIds: Schema.Array(Schema.String),
-  sourceIds: Schema.optional(Schema.Array(Schema.String)),
+  sourceId: Schema.NonEmptyString,
 })
 const Passed = Schema.TaggedStruct("passed", { durationMillis: Schema.Number })
 const Failed = Schema.TaggedStruct("failed", {
@@ -39,11 +39,11 @@ const RunSummary = Schema.Struct({
   runtimeDiscoveredCaseIds: Schema.Array(Schema.String),
 })
 
-export type RunPlan = Schema.Schema.Type<typeof RunPlan>
+export type RunSelection = Schema.Schema.Type<typeof RunSelection>
 export type RunSummary = Schema.Schema.Type<typeof RunSummary>
 export type CaseResult = Schema.Schema.Type<typeof CaseResult>
 
-export class RunPlanError extends Data.TaggedError("RunPlanError")<{
+export class RunSelectionError extends Data.TaggedError("RunSelectionError")<{
   readonly reason: string
 }> {}
 
@@ -127,7 +127,7 @@ const skipped = (runId: string, caseId: string, reason: string): CaseResult => (
 })
 
 const runSource = (
-  plan: RunPlan,
+  selection: RunSelection,
   source: RegistryEntry,
   selectedCaseIds: ReadonlySet<string>,
   discovery: boolean,
@@ -142,7 +142,7 @@ const runSource = (
             : [`${source.sourceId}#<not-applicable>@1`]
         return {
           results: caseIds.map((caseId) =>
-            skipped(plan.runId, caseId, "not selected by pinned Expo TestModules.ts"),
+            skipped(selection.runId, caseId, "not selected by pinned Expo TestModules.ts"),
           ),
           runtimeDiscoveredCaseIds:
             selectedCaseIds.size === 0 ? [`${source.sourceId}#<not-applicable>@1`] : [],
@@ -151,7 +151,11 @@ const runSource = (
       if (source.load === null) {
         return {
           results: [...selectedCaseIds].map((caseId) =>
-            notRun(plan.runId, caseId, source.reason ?? "source is external to the application"),
+            notRun(
+              selection.runId,
+              caseId,
+              source.reason ?? "source is external to the application",
+            ),
           ),
           runtimeDiscoveredCaseIds: [],
         }
@@ -161,7 +165,7 @@ const runSource = (
         loaded = source.load()
       } catch (cause) {
         return {
-          results: [...selectedCaseIds].map((caseId) => failed(plan.runId, caseId, cause)),
+          results: [...selectedCaseIds].map((caseId) => failed(selection.runId, caseId, cause)),
           runtimeDiscoveredCaseIds: [],
         }
       }
@@ -170,7 +174,7 @@ const runSource = (
         return {
           results: [...selectedCaseIds].map((caseId) =>
             failed(
-              plan.runId,
+              selection.runId,
               caseId,
               new Error(`${source.sourceId} is not an Expo Jasmine module`),
             ),
@@ -240,7 +244,7 @@ const runSource = (
           )
           results.push({
             schemaVersion: 1,
-            runId: plan.runId,
+            runId: selection.runId,
             caseId,
             attempt: 1,
             outcome,
@@ -270,69 +274,53 @@ const runSource = (
           `Jasmine completed with status ${done.overallStatus ?? "unknown"}`
         const first = results[0]
         if (first !== undefined) {
-          results[0] = failed(plan.runId, first.caseId, new Error(detail))
+          results[0] = failed(selection.runId, first.caseId, new Error(detail))
         } else {
           const selected = [...selectedCaseIds][0]
           const caseId = selected ?? `${source.sourceId}#<suite failure>@1`
-          results.push(failed(plan.runId, caseId, new Error(detail)))
+          results.push(failed(selection.runId, caseId, new Error(detail)))
           if (selected === undefined) runtimeDiscoveredCaseIds.push(caseId)
         }
       }
       const observed = new Set(results.map(({ caseId }) => caseId))
       for (const caseId of selectedCaseIds) {
         if (!observed.has(caseId)) {
-          results.push(notRun(plan.runId, caseId, "case was not registered at runtime"))
+          results.push(notRun(selection.runId, caseId, "case was not registered at runtime"))
         }
       }
       return { results, runtimeDiscoveredCaseIds }
     },
-    catch: (cause) => new RunPlanError({ reason: `execute ${source.sourceId}: ${String(cause)}` }),
+    catch: (cause) =>
+      new RunSelectionError({ reason: `execute ${source.sourceId}: ${String(cause)}` }),
   })
 
-const decodeRunPlanWith = (entries: ReadonlyArray<RegistryEntry>, input: unknown) =>
-  Schema.decodeUnknownEffect(RunPlan)(input).pipe(
-    Effect.mapError((cause) => new RunPlanError({ reason: String(cause) })),
-    Effect.flatMap((plan) => {
-      const unique = new Set(plan.caseIds)
-      if (unique.size !== plan.caseIds.length) {
-        return Effect.fail(new RunPlanError({ reason: "run plan contains duplicate case IDs" }))
-      }
-      const known = new Set(entries.flatMap(({ caseIds }) => caseIds))
-      const missing = plan.caseIds.filter((caseId) => !known.has(caseId))
-      if (missing.length > 0) {
-        return Effect.fail(new RunPlanError({ reason: `unknown case IDs: ${missing.join(", ")}` }))
-      }
-      const knownSources = new Set(entries.map(({ sourceId }) => sourceId))
-      const missingSources = (plan.sourceIds ?? []).filter(
-        (sourceId) => !knownSources.has(sourceId),
-      )
-      return missingSources.length === 0
-        ? Effect.succeed(plan)
+const decodeRunSelectionWith = (entries: ReadonlyArray<RegistryEntry>, input: unknown) =>
+  Schema.decodeUnknownEffect(RunSelection)(input).pipe(
+    Effect.mapError((cause) => new RunSelectionError({ reason: String(cause) })),
+    Effect.flatMap((selection) =>
+      entries.some((entry) => entry.sourceId === selection.sourceId)
+        ? Effect.succeed(selection)
         : Effect.fail(
-            new RunPlanError({ reason: `unknown source IDs: ${missingSources.join(", ")}` }),
-          )
-    }),
+            new RunSelectionError({ reason: `unknown source ID: ${selection.sourceId}` }),
+          ),
+    ),
   )
 
 export const make = (entries: ReadonlyArray<RegistryEntry>) => {
-  const decodeRunPlan = (input: unknown) => decodeRunPlanWith(entries, input)
+  const decodeRunSelection = (input: unknown) => decodeRunSelectionWith(entries, input)
   const run = Effect.fn("CompatibilityRunner.run")(function* (input: unknown, tools: TestTools) {
-    const plan = yield* decodeRunPlan(input)
+    const selection = yield* decodeRunSelection(input)
     const configuration = yield* CompatibilityConfiguration
-    const selected = new Set(plan.caseIds)
-    const discoverySources = new Set(plan.sourceIds ?? [])
-    const sources = entries.filter(
-      (source) =>
-        discoverySources.has(source.sourceId) ||
-        source.caseIds.some((caseId) => selected.has(caseId)),
+    const source = entries.find((entry) => entry.sourceId === selection.sourceId)
+    if (source === undefined) {
+      return yield* new RunSelectionError({ reason: `unknown source ID: ${selection.sourceId}` })
+    }
+    const groups = yield* Effect.forEach([source], (entry) =>
+      runSource(selection, entry, new Set(entry.caseIds), true, tools),
     )
-    const groups = yield* Effect.forEach(sources, (source) => {
-      const sourceCases = new Set(source.caseIds.filter((caseId) => selected.has(caseId)))
-      return runSource(plan, source, sourceCases, discoverySources.has(source.sourceId), tools)
-    })
     const summary = yield* Schema.decodeUnknownEffect(RunSummary)({
       schemaVersion: 1,
-      runId: plan.runId,
+      runId: selection.runId,
       buildId: configuration.buildId,
       mode: configuration.mode,
       results: groups.flatMap(({ results }) => results),
@@ -343,7 +331,7 @@ export const make = (entries: ReadonlyArray<RegistryEntry>) => {
     yield* Effect.sync(() => console.log(`BETTER_NATIVE_RESULT_V1=${JSON.stringify(summary)}`))
     return summary
   })
-  return { decodeRunPlan, run } as const
+  return { decodeRunSelection, run } as const
 }
 
 const live = make(registry)

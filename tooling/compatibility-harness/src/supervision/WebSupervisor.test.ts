@@ -1,13 +1,14 @@
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as Ref from "effect/Ref"
-import { BuildId, ContentHash, type ProcessObservation } from "../Domain.ts"
+import { BuildId, ContentHash, TestSourceId, type ProcessObservation } from "../Domain.ts"
 import { ProcessFailure, type RunningProcess } from "./ProcessSupervisor.ts"
 import {
   appendBrowserConsoleObservations,
   BrowserDriverError,
   makeBoundedConsoleCollector,
   validateBrowserResultPayload,
+  webRunUrl,
   WebSupervisorError,
   withServerFailureEvidence,
   type WebRunRequest,
@@ -34,8 +35,12 @@ const request: WebRunRequest = {
     expoCli: "/workspace/expo-cli",
     observations: [],
   },
-  caseIds: [],
-  sourceIds: [],
+  unit: {
+    id: "web-source-one",
+    runner: "web-app",
+    platform: "web",
+    sourceId: TestSourceId.make("source one"),
+  },
   port: 8_081,
   timeoutMillis: 1_000,
   corpus: {
@@ -48,6 +53,12 @@ const request: WebRunRequest = {
 }
 
 describe("WebSupervisor failure evidence", () => {
+  it("uses one short source selection in the web URL", () => {
+    const url = webRunUrl(8_081, request.id, request.unit.sourceId)
+    assert.strictEqual(url, "http://127.0.0.1:8081/run?runId=web-failure&source=source+one")
+    assert.isBelow(url.length, 16_384)
+  })
+
   it("bounds retained browser console evidence with deterministic metadata", () => {
     const messages = makeBoundedConsoleCollector(10, 2)
     messages.push("first")

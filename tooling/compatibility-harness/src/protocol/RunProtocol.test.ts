@@ -8,7 +8,7 @@ const expected = {
   runId: "run-1",
   buildId: "build-1",
   mode: "candidate" as const,
-  caseIds: [caseWithComma],
+  sourceId: TestSourceId.make("suite#source"),
 }
 const summary = (caseIds: ReadonlyArray<TestCaseId> = [caseWithComma]): AppRunSummary => ({
   schemaVersion: 1,
@@ -27,14 +27,14 @@ const summary = (caseIds: ReadonlyArray<TestCaseId> = [caseWithComma]): AppRunSu
 })
 
 describe("RunProtocol", () => {
-  it.effect("closes the exact requested case set without delimiter assumptions", () =>
+  it.effect("closes one selected source without delimiter assumptions", () =>
     validate(expected, summary()).pipe(
       Effect.map((closed) => assert.strictEqual(closed.results[0]?.caseId, caseWithComma)),
     ),
   )
 
   it.effect(
-    "rejects mode drift, duplicates, missing cases, and cases outside selected sources",
+    "rejects mode drift, duplicates, missing results, and cases outside the selected source",
     () =>
       Effect.gen(function* () {
         const invalid = [
@@ -48,18 +48,14 @@ describe("RunProtocol", () => {
         }
 
         const outside = yield* validate(
-          {
-            ...expected,
-            caseIds: [],
-            sourceIds: [TestSourceId.make("suite#selected")],
-          },
+          { ...expected, sourceId: TestSourceId.make("suite#selected") },
           summary([TestCaseId.make("suite#other#case@1")]),
         ).pipe(Effect.flip)
         assert.instanceOf(outside, RunProtocolError)
       }),
   )
 
-  it.effect("requires every static case while admitting declared runtime discoveries", () => {
+  it.effect("admits declared runtime discoveries from the selected source", () => {
     const sourceId = TestSourceId.make("suite#selected")
     const staticCase = TestCaseId.make(`${sourceId}#static@1`)
     const dynamicCase = TestCaseId.make(`${sourceId}#dynamic@1`)
@@ -68,23 +64,8 @@ describe("RunProtocol", () => {
       runtimeDiscoveredCaseIds: [dynamicCase],
     }
     return Effect.gen(function* () {
-      const closed = yield* validate(
-        { ...expected, caseIds: [staticCase], sourceIds: [sourceId] },
-        complete,
-      )
+      const closed = yield* validate({ ...expected, sourceId }, complete)
       assert.lengthOf(closed.results, 2)
-
-      const missing = yield* validate(
-        { ...expected, caseIds: [staticCase], sourceIds: [sourceId] },
-        { ...summary([dynamicCase]), runtimeDiscoveredCaseIds: [dynamicCase] },
-      ).pipe(Effect.flip)
-      assert.match(missing.reason, /missing/)
-
-      const undeclared = yield* validate(
-        { ...expected, caseIds: [staticCase], sourceIds: [sourceId] },
-        summary([staticCase, dynamicCase]),
-      ).pipe(Effect.flip)
-      assert.match(undeclared.reason, /unexpected/)
     })
   })
 

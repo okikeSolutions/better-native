@@ -113,15 +113,6 @@ html {
   mask-image: linear-gradient(to bottom, black 0%, transparent 84%);
 }
 
-.hero-glow {
-  background: radial-gradient(
-    circle,
-    color-mix(in oklch, var(--primary) 24%, transparent),
-    transparent 68%
-  );
-  filter: blur(12px);
-}
-
 .runtime-shell {
   animation: settle 900ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
 }

@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react"
+import { useEffect, useState, type ComponentProps } from "react"
 import {
   Accordion,
   AccordionContent,
@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -104,10 +104,14 @@ function Wordmark() {
       className="group flex items-center gap-2.5 font-medium tracking-[-0.04em]"
       href="#top"
     >
-      <span className="grid size-8 place-items-center rounded-[0.55rem] bg-primary text-[11px] font-bold text-primary-foreground transition-transform duration-300 group-hover:rotate-[-8deg]">
-        E/
+      <span className="relative grid size-9 overflow-hidden rounded-[0.65rem] transition-transform duration-300 group-hover:rotate-[-6deg]">
+        <img
+          alt=""
+          className="size-full scale-[1.7] object-cover mix-blend-screen"
+          src="/better-native-logo.png"
+        />
       </span>
-      <span className="text-[15px]">better-native</span>
+      <span className="text-[15px]">Better Native</span>
     </a>
   )
 }
@@ -205,10 +209,7 @@ function RuntimePreview() {
               x="24"
               y="24"
             >
-              <div
-                className="iphone-screen flex size-full flex-col bg-card px-4 pb-4 pt-8 lg:px-7 lg:pb-7 lg:pt-14"
-                xmlns="http://www.w3.org/1999/xhtml"
-              >
+              <div className="iphone-screen flex size-full flex-col bg-card px-4 pb-4 pt-8 lg:px-7 lg:pb-7 lg:pt-14">
                 <div className="flex items-center justify-between font-mono text-[8px] text-muted-foreground lg:text-[10px]">
                   <span>9:41</span>
                   <span>5G</span>
@@ -258,7 +259,6 @@ function LandingPrototype() {
     <main id="top" className="overflow-x-clip bg-background text-foreground">
       <section className="landing-hero relative isolate min-h-svh overflow-hidden">
         <div className="pointer-events-none absolute inset-0 dot-grid opacity-50" />
-        <div className="hero-glow pointer-events-none absolute -right-40 top-[-12rem] size-[44rem] rounded-full" />
 
         <header className="relative z-10 mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8">
           <Wordmark />
@@ -270,12 +270,15 @@ function LandingPrototype() {
               Roadmap
             </a>
           </nav>
-          <Button asChild size="sm" variant="outline">
-            <a href={githubUrl} rel="noreferrer" target="_blank">
-              <GitHubLogo data-icon="inline-start" />
-              GitHub
-            </a>
-          </Button>
+          <a
+            className={buttonVariants({ size: "sm", variant: "outline" })}
+            href={githubUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <GitHubLogo data-icon="inline-start" />
+            GitHub
+          </a>
         </header>
 
         <div className="relative mx-auto max-w-7xl px-5 pb-12 pt-12 sm:px-8 lg:pb-20 lg:pt-16">
@@ -295,19 +298,20 @@ function LandingPrototype() {
               native surface before you build on it.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Button asChild size="lg">
-                <a href={githubUrl} rel="noreferrer" target="_blank">
-                  <GitHubLogo data-icon="inline-start" />
-                  Follow the project
-                  <ArrowUpRightIcon data-icon="inline-end" />
-                </a>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <a href="#foundation">
-                  Explore the harness
-                  <ArrowDownRightIcon data-icon="inline-end" />
-                </a>
-              </Button>
+              <a
+                className={buttonVariants({ size: "lg" })}
+                href={githubUrl}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <GitHubLogo data-icon="inline-start" />
+                Follow the project
+                <ArrowUpRightIcon data-icon="inline-end" />
+              </a>
+              <a className={buttonVariants({ size: "lg", variant: "outline" })} href="#foundation">
+                Explore the harness
+                <ArrowDownRightIcon data-icon="inline-end" />
+              </a>
             </div>
             <dl className="mt-8 grid max-w-2xl border-y border-border font-mono text-[10px] uppercase tracking-[0.11em] sm:grid-cols-3">
               <div className="py-3 sm:pr-4">
@@ -326,7 +330,6 @@ function LandingPrototype() {
           </div>
 
           <div className="relative ml-auto mt-12 w-full max-w-5xl lg:mt-16">
-            <div className="absolute -inset-12 -z-10 rounded-full bg-primary/10 blur-3xl" />
             <RuntimePreview />
             <div className="mt-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
               <OrbitIcon className="size-3 text-primary" />
@@ -471,7 +474,7 @@ function LandingPrototype() {
             A small surface, with deliberate decisions.
           </h2>
         </div>
-        <Accordion collapsible type="single">
+        <Accordion>
           <AccordionItem value="item-1">
             <AccordionTrigger>Is this ready for production?</AccordionTrigger>
             <AccordionContent>
@@ -507,12 +510,15 @@ function LandingPrototype() {
               The reliable path to native.
             </h2>
           </div>
-          <Button asChild size="lg" variant="secondary">
-            <a href={githubUrl} rel="noreferrer" target="_blank">
-              View the repository
-              <ArrowUpRightIcon data-icon="inline-end" />
-            </a>
-          </Button>
+          <a
+            className={buttonVariants({ size: "lg", variant: "secondary" })}
+            href={githubUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            View the repository
+            <ArrowUpRightIcon data-icon="inline-end" />
+          </a>
         </div>
       </section>
 
@@ -525,4 +531,3 @@ function LandingPrototype() {
 }
 
 export default LandingPrototype
-import { useEffect, useState } from "react"

@@ -13,21 +13,34 @@ import {
   DeviceId,
   RunId,
   RunRecord,
+  TestSourceId,
   type RunRecord as RunRecordType,
-  type TestCaseId,
-  type TestSourceId,
+  type ExecutionUnit,
 } from "../Domain.ts"
 import type { BuildOutput } from "../build/BuildPipeline.ts"
 import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import { PlatformDrivers, type NativeDevice } from "./PlatformDrivers.ts"
 import * as RunProtocol from "../protocol/RunProtocol.ts"
+import * as NativeMaestroFlow from "./NativeMaestroFlow.ts"
+
+const maestroFlowRetries = 1
 
 export interface NativeRunRequest {
   readonly id: string
   readonly build: BuildOutput
   readonly device: NativeDevice
-  readonly caseIds: ReadonlyArray<TestCaseId>
-  readonly sourceIds: ReadonlyArray<TestSourceId>
+  readonly unit: ExecutionUnit
+  readonly permissionState: "granted" | "reset"
+  readonly timeoutMillis: number
+  /** @internal A batch owns setup and cleanup for prepared source runs. */
+  readonly session?: "isolated" | "prepared"
+}
+
+export interface NativeBatchRequest {
+  readonly id: string
+  readonly build: BuildOutput
+  readonly device: NativeDevice
+  readonly units: ReadonlyArray<ExecutionUnit>
   readonly permissionState: "granted" | "reset"
   readonly timeoutMillis: number
 }
@@ -40,6 +53,9 @@ export class NativeSupervisorError extends Data.TaggedError("NativeSupervisorErr
 
 export interface Service {
   readonly run: (request: NativeRunRequest) => Effect.Effect<RunRecordType, NativeSupervisorError>
+  readonly runBatch: (
+    request: NativeBatchRequest,
+  ) => Effect.Effect<ReadonlyArray<RunRecordType>, NativeSupervisorError>
 }
 
 export class NativeSupervisor extends Context.Service<NativeSupervisor, Service>()(
@@ -61,10 +77,9 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
             id: runId,
             buildId: request.build.record.id,
             platform: request.device.platform,
-            testCases: request.caseIds,
-            testSources: request.sourceIds,
+            unit: request.unit,
             timeoutMillis: request.timeoutMillis,
-            retries: 0,
+            retries: maestroFlowRetries,
           }
           const device: RunRecordType["device"] = {
             id: DeviceId.make(request.device.id),
@@ -74,6 +89,19 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
             osVersion: null,
             runtimeVersion: null,
           }
+          const flowArtifact = yield* evidence
+            .writeBytes(
+              "runs",
+              request.id,
+              "flow.yaml",
+              "application/yaml",
+              new TextEncoder().encode(NativeMaestroFlow.make(request)),
+            )
+            .pipe(
+              Effect.mapError(
+                (cause) => new NativeSupervisorError({ phase: "evidence", request, cause }),
+              ),
+            )
           const failureOutcome = (
             error: NativeSupervisorError,
           ): RunRecordType["finalInfrastructure"] =>
@@ -136,26 +164,31 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
             }).pipe(Effect.ignore)
           const program = Effect.gen(function* () {
             const execute = Effect.gen(function* () {
-              yield* drivers.reset(request.device)
-              yield* drivers.install(request.device, request.build.output)
-              if (request.permissionState === "granted") {
-                yield* drivers.grantPermissions(request.device)
+              if (request.session !== "prepared") {
+                yield* drivers.reset(request.device)
+                yield* drivers.install(request.device, request.build.output)
+                if (request.permissionState === "granted") {
+                  yield* drivers.grantPermissions(request.device)
+                }
+                const launch = yield* drivers.launch(request.device)
+                if (launch.crashed) {
+                  return yield* new NativeSupervisorError({
+                    phase: "crash",
+                    request,
+                    cause: "application crashed during launch",
+                  })
+                }
               }
-              const launch = yield* drivers.launch(request.device)
-              if (launch.crashed) {
-                return yield* new NativeSupervisorError({
-                  phase: "crash",
-                  request,
-                  cause: "application crashed during launch",
-                })
-              }
-              const query = new URLSearchParams({ runId: request.id })
-              for (const caseId of request.caseIds) query.append("case", caseId)
-              for (const sourceId of request.sourceIds) query.append("source", sourceId)
-              yield* drivers.openUrl(request.device, `better-native://run?${query.toString()}`)
+              const maestroObservations = yield* drivers
+                .runMaestroFlow(request.device, flowArtifact.path, request.timeoutMillis)
+                .pipe(Effect.retry(Schedule.recurs(maestroFlowRetries)))
               const poll = Effect.gen(function* () {
                 const json = yield* drivers.result(request.device)
-                if (json !== null) return { json, logs: yield* drivers.logs(request.device) }
+                if (json !== null)
+                  return {
+                    json,
+                    logs: [...maestroObservations, ...(yield* drivers.logs(request.device))],
+                  }
                 if (!(yield* drivers.isAlive(request.device))) {
                   return yield* new NativeSupervisorError({
                     phase: "crash",
@@ -192,7 +225,9 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
               ),
             )
             const execution = yield* Effect.exit(execute)
-            const cleanup = yield* Effect.exit(drivers.cleanup(request.device))
+            const cleanup = yield* Effect.exit(
+              request.session === "prepared" ? Effect.void : drivers.cleanup(request.device),
+            )
             if (Exit.isFailure(cleanup)) {
               return yield* new NativeSupervisorError({
                 phase: "device",
@@ -217,8 +252,7 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
                 runId: request.id,
                 buildId: request.build.record.id,
                 mode: request.build.record.mode,
-                caseIds: request.caseIds,
-                sourceIds: request.sourceIds,
+                sourceId: request.unit.sourceId,
               },
               summary,
             ).pipe(
@@ -245,7 +279,7 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
                   infrastructure,
                   results: summary.results,
                   observations: [...request.build.observations, ...logs],
-                  artifacts: [],
+                  artifacts: [flowArtifact.id],
                 },
               ],
               finalInfrastructure: infrastructure,
@@ -261,6 +295,86 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
           })
           return yield* program.pipe(Effect.tapError(persistFailure))
         })
-      return NativeSupervisor.of({ run })
+      const runBatch: Service["runBatch"] = (request) =>
+        Effect.gen(function* () {
+          const firstUnit = request.units[0]
+          if (firstUnit === undefined) {
+            return yield* new NativeSupervisorError({
+              phase: "device",
+              request: {
+                ...request,
+                unit: {
+                  id: "empty",
+                  runner: "native-app",
+                  platform: request.device.platform,
+                  sourceId: TestSourceId.make("empty"),
+                },
+              },
+              cause: "native batch has no execution units",
+            })
+          }
+          const batchRequest = { ...request, unit: firstUnit }
+          yield* drivers.reset(request.device).pipe(
+            Effect.andThen(drivers.install(request.device, request.build.output)),
+            Effect.andThen(
+              request.permissionState === "granted"
+                ? drivers.grantPermissions(request.device)
+                : Effect.void,
+            ),
+            Effect.mapError(
+              (cause) =>
+                new NativeSupervisorError({ phase: "device", request: batchRequest, cause }),
+            ),
+          )
+          const launch = yield* drivers
+            .launch(request.device)
+            .pipe(
+              Effect.mapError(
+                (cause) =>
+                  new NativeSupervisorError({ phase: "device", request: batchRequest, cause }),
+              ),
+            )
+          if (launch.crashed) {
+            return yield* new NativeSupervisorError({
+              phase: "crash",
+              request: {
+                ...request,
+                unit: firstUnit,
+              },
+              cause: "application crashed during launch",
+            })
+          }
+          const outcomes = yield* Effect.forEach(request.units, (unit) =>
+            Effect.exit(
+              run({
+                id: `${request.id}-${unit.id}`,
+                build: request.build,
+                device: request.device,
+                unit,
+                permissionState: request.permissionState,
+                timeoutMillis: request.timeoutMillis,
+                session: "prepared",
+              }),
+            ),
+          )
+          const cleanup = yield* Effect.exit(drivers.cleanup(request.device))
+          if (Exit.isFailure(cleanup)) {
+            return yield* new NativeSupervisorError({
+              phase: "device",
+              request: { ...request, unit: firstUnit },
+              cause: cleanup.cause,
+            })
+          }
+          const failed = outcomes.find(Exit.isFailure)
+          if (failed !== undefined && Exit.isFailure(failed)) {
+            return yield* new NativeSupervisorError({
+              phase: "device",
+              request: { ...request, unit: firstUnit },
+              cause: failed.cause,
+            })
+          }
+          return outcomes.flatMap((outcome) => (Exit.isSuccess(outcome) ? [outcome.value] : []))
+        })
+      return NativeSupervisor.of({ run, runBatch })
     }),
   )

@@ -20,11 +20,12 @@ import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import { ProcessSupervisor, type ProcessSpec } from "../supervision/ProcessSupervisor.ts"
 
 const expoRevision = "1".repeat(40)
+const expoSourceRoot = (root: string) => `${root}/expo-source`
 
 const preparePinnedExpoFixture = (root: string) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
-    const upstream = `${root}/vendor/expo`
+    const upstream = expoSourceRoot(root)
     yield* fs.makeDirectory(`${upstream}/node_modules`, { recursive: true })
     yield* fs.makeDirectory(`${upstream}/packages/expo/build`, { recursive: true })
     yield* fs.makeDirectory(`${upstream}/packages/@expo/cli/build/src`, { recursive: true })
@@ -67,7 +68,7 @@ const dependencies = Layer.mergeAll(BunServices.layer, unusedProcesses, unusedEv
 
 const buildPipelineLayer = (root: string) => {
   const commands = buildCommandLayer
-  const toolchain = expoToolchainLayer(root).pipe(Layer.provide(commands))
+  const toolchain = expoToolchainLayer(root, expoSourceRoot(root)).pipe(Layer.provide(commands))
   return layer(root).pipe(Layer.provide(Layer.mergeAll(commands, toolchain)))
 }
 
@@ -75,13 +76,21 @@ const prepareToolchain = (root: string, request: BuildRequest) =>
   Effect.gen(function* () {
     const toolchain = yield* ExpoToolchain
     return yield* toolchain.prepare(request)
-  }).pipe(Effect.provide(expoToolchainLayer(root).pipe(Layer.provideMerge(buildCommandLayer))))
+  }).pipe(
+    Effect.provide(
+      expoToolchainLayer(root, expoSourceRoot(root)).pipe(Layer.provideMerge(buildCommandLayer)),
+    ),
+  )
 
 const ensureToolchain = (root: string, request: BuildRequest) =>
   Effect.gen(function* () {
     const toolchain = yield* ExpoToolchain
     return yield* toolchain.ensure(request)
-  }).pipe(Effect.provide(expoToolchainLayer(root).pipe(Layer.provideMerge(buildCommandLayer))))
+  }).pipe(
+    Effect.provide(
+      expoToolchainLayer(root, expoSourceRoot(root)).pipe(Layer.provideMerge(buildCommandLayer)),
+    ),
+  )
 
 describe("BuildPipeline imported products", () => {
   it.effect("accepts a hash-matched Release product and rejects tampering", () =>
@@ -272,7 +281,7 @@ describe("BuildPipeline imported products", () => {
       assert.strictEqual(failure.phase, "build", String(failure.cause))
       assert.include(evidenceNames, "upstream-source-status.ndjson")
       assert.include(evidenceNames, "upstream-post-build-status.ndjson")
-      assert.isTrue(yield* fs.exists(`${root}/vendor/expo/node_modules/.modules.yaml`))
+      assert.isTrue(yield* fs.exists(`${expoSourceRoot(root)}/node_modules/.modules.yaml`))
       const sourceStatusIndex = calls.findIndex(
         ({ command, args }) => command === "git" && args?.includes("status"),
       )
@@ -448,13 +457,12 @@ describe("BuildPipeline imported products", () => {
     }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
   )
 
-  it.effect("rejects a symbolic-link pinned Expo root", () =>
+  it.effect("rejects a symbolic-link external Expo root", () =>
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem
       const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-cache-link-" })
       const outside = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-cache-outside-" })
-      yield* fs.makeDirectory(`${root}/vendor`, { recursive: true })
-      yield* fs.symlink(outside, `${root}/vendor/expo`)
+      yield* fs.symlink(outside, expoSourceRoot(root))
       const failure = yield* Effect.gen(function* () {
         const builds = yield* BuildPipeline
         return yield* builds
@@ -469,7 +477,7 @@ describe("BuildPipeline imported products", () => {
           .pipe(Effect.flip)
       }).pipe(Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))))
       assert.instanceOf(failure, BuildPipelineError)
-      assert.match(String(failure.cause), /symbolic-link pinned Expo root/)
+      assert.match(String(failure.cause), /symbolic-link Expo source root/)
     }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
   )
 })

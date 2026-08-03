@@ -7,7 +7,6 @@
   },
   "expo": {
     "repository": "https://github.com/expo/expo.git",
-    "revision": "534c99966e34580f56242eb92aac7689b9089cc7",
-    "path": "vendor/expo"
+    "revision": "534c99966e34580f56242eb92aac7689b9089cc7"
   }
 }

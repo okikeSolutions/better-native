@@ -24,8 +24,8 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Setup static profile
-        uses: ./.github/actions/setup-static
+      - name: Setup build profile
+        uses: ./.github/actions/setup-build
 
       - name: Check
         run: bun run check

@@ -21,7 +21,7 @@
       "ignoreIssues": {
         "package.json": ["dependencies", "devDependencies"]
       },
-      "ignoreDependencies": ["expo-updates"],
+      "ignoreDependencies": ["expo-updates", "@better-native/expo-source"],
       "metro": {
         "config": []
       }
@@ -38,6 +38,11 @@
     "tooling/compatibility-harness": {
       "entry": ["src/main.ts", "src/checkGenerated.ts", "src/**/*.test.ts"],
       "project": ["src/**/*.ts"]
+    },
+    "tooling/expo-catalog": {
+      "ignoreIssues": {
+        "package.json": ["dependencies"]
+      }
     }
   }
 }

@@ -56,6 +56,7 @@ const validateRequest = (request: BuildRequest) =>
 
 export const layer = (
   root: string,
+  expoSourceRoot?: string,
 ): Layer.Layer<
   ExpoToolchain,
   never,
@@ -68,15 +69,50 @@ export const layer = (
       const path = yield* Path.Path
       const commands = yield* BuildCommand
       const processes = yield* ProcessSupervisor
+      const configuredExpoRoot =
+        expoSourceRoot ?? process.env.EXPO_SOURCE_ROOT ?? path.join(root, "..", "expo")
 
       const locations = (revision: string) => {
-        const upstream = path.join(root, "vendor", "expo")
+        const upstream = configuredExpoRoot
         return {
           upstream,
           nodeModules: path.join(upstream, "node_modules"),
           record: path.join(root, ".artifacts", "toolchains", `expo-${revision}`, "record.json"),
         }
       }
+
+      const resolveSourceRoot = (request: BuildRequest, upstream: string) =>
+        Effect.gen(function* () {
+          const canonicalUpstream = yield* fs.realPath(upstream).pipe(
+            Effect.mapError(
+              (cause) =>
+                new BuildPipelineError({
+                  phase: "upstream",
+                  request,
+                  cause: `external Expo source is unavailable: ${String(cause)}`,
+                }),
+            ),
+          )
+          const canonicalParent = yield* fs.realPath(path.dirname(upstream)).pipe(
+            Effect.mapError(
+              (cause) =>
+                new BuildPipelineError({
+                  phase: "upstream",
+                  request,
+                  cause: `external Expo source parent is unavailable: ${String(cause)}`,
+                }),
+            ),
+          )
+          const expected = path.join(canonicalParent, path.basename(upstream))
+          if (canonicalUpstream !== expected) {
+            return yield* new BuildPipelineError({
+              phase: "upstream",
+              request,
+              cause: `refusing symbolic-link Expo source root ${upstream} -> ${canonicalUpstream}`,
+            })
+          }
+          return canonicalUpstream
+        })
 
       const validateFiles = (request: BuildRequest, upstream: string) =>
         Effect.gen(function* () {
@@ -144,7 +180,7 @@ export const layer = (
             return yield* new BuildPipelineError({
               phase: "upstream",
               request,
-              cause: `pinned Expo workspace HEAD ${actualRevision || "<unavailable>"} differs from ${request.expoRevision}`,
+              cause: `external Expo source HEAD ${actualRevision || "<unavailable>"} differs from ${request.expoRevision}`,
             })
           }
           return revision
@@ -167,7 +203,7 @@ export const layer = (
             return yield* new BuildPipelineError({
               phase: "upstream",
               request,
-              cause: `pinned Expo workspace HEAD ${actualRevision || "<unavailable>"} differs from ${request.expoRevision}`,
+              cause: `external Expo source HEAD ${actualRevision || "<unavailable>"} differs from ${request.expoRevision}`,
             })
           }
           return undefined
@@ -176,25 +212,8 @@ export const layer = (
       const prepare: Service["prepare"] = (request) =>
         Effect.gen(function* () {
           yield* validateRequest(request)
-          const canonicalRoot = yield* fs.realPath(root)
           const { upstream, nodeModules, record } = locations(request.expoRevision)
-          const canonicalUpstream = yield* fs.realPath(upstream).pipe(
-            Effect.mapError(
-              (cause) =>
-                new BuildPipelineError({
-                  phase: "upstream",
-                  request,
-                  cause: `pinned Expo submodule is unavailable: ${String(cause)}`,
-                }),
-            ),
-          )
-          if (canonicalUpstream !== path.join(canonicalRoot, "vendor", "expo")) {
-            return yield* new BuildPipelineError({
-              phase: "upstream",
-              request,
-              cause: `refusing symbolic-link pinned Expo root ${upstream} -> ${canonicalUpstream}`,
-            })
-          }
+          const canonicalUpstream = yield* resolveSourceRoot(request, upstream)
           const results: Array<BuildCommandResult> = [
             yield* inspectRevision(request, canonicalUpstream),
           ]
@@ -218,7 +237,7 @@ export const layer = (
             return yield* new BuildPipelineError({
               phase: "upstream",
               request,
-              cause: "pinned Expo submodule contains modified tracked files",
+              cause: "external Expo source contains modified tracked files",
             })
           }
           results.push(
@@ -271,16 +290,8 @@ export const layer = (
       const load: Service["load"] = (request) =>
         Effect.gen(function* () {
           yield* validateRequest(request)
-          const canonicalRoot = yield* fs.realPath(root)
           const { upstream, nodeModules, record } = locations(request.expoRevision)
-          const canonicalUpstream = yield* fs.realPath(upstream)
-          if (canonicalUpstream !== path.join(canonicalRoot, "vendor", "expo")) {
-            return yield* new BuildPipelineError({
-              phase: "upstream",
-              request,
-              cause: `refusing symbolic-link pinned Expo root ${upstream} -> ${canonicalUpstream}`,
-            })
-          }
+          const canonicalUpstream = yield* resolveSourceRoot(request, upstream)
           const parsed = yield* fs.readFileString(record).pipe(
             Effect.flatMap((text) =>
               Effect.try({

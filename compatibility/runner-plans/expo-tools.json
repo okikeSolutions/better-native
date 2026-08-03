@@ -8,13 +8,13 @@
     {
       "command": "pnpm",
       "args": ["install", "--frozen-lockfile"],
-      "cwd": "vendor/expo",
+      "cwd": "{expoRoot}",
       "timeoutMillis": 1200000
     },
     {
       "command": "pnpm",
       "args": ["build"],
-      "cwd": "vendor/expo/tools",
+      "cwd": "{expoRoot}/tools",
       "timeoutMillis": 600000
     },
     {
@@ -27,10 +27,10 @@
       "args": [
         "--test",
         "--test-reporter=junit",
-        "--test-reporter-destination=../../../.artifacts/runs/expo-tools-node/external/report.xml",
+        "--test-reporter-destination={repositoryRoot}/.artifacts/runs/expo-tools-node/external/report.xml",
         "build/NpmOtp.test.js"
       ],
-      "cwd": "vendor/expo/tools",
+      "cwd": "{expoRoot}/tools",
       "timeoutMillis": 600000,
       "terminationGraceMillis": 30000
     }

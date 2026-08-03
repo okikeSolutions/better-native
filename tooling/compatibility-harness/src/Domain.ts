@@ -250,6 +250,15 @@ export const Runner = Schema.Literals([
   "detox",
   "workflow",
 ])
+export const ExecutionRunner = Schema.Literals([
+  "native-app",
+  "web-app",
+  "javascript-runner",
+  "xctest",
+  "gradle",
+  "build",
+  "unsupported",
+])
 export const Suite = Schema.Struct({
   id: SuiteId,
   platforms: Schema.Array(Schema.String),
@@ -304,6 +313,7 @@ export const RegistrySource = Schema.Struct({
   path: Schema.String,
   caseIds: Schema.Array(TestCaseId),
   runner: Runner,
+  execution: ExecutionRunner,
   platforms: Schema.Array(Schema.String),
   executability: Schema.Literals([
     "runnable",
@@ -352,13 +362,22 @@ export const DeviceRecord = Schema.Struct({
   osVersion: Schema.NullOr(Schema.String),
   runtimeVersion: Schema.NullOr(Schema.String),
 })
+/**
+ * One independently executable compatibility unit. This is harness metadata;
+ * it is deliberately not serialized into an app URL or passed to the app.
+ */
+export const ExecutionUnit = Schema.Struct({
+  id: Schema.String,
+  runner: ExecutionRunner,
+  platform: Platform,
+  sourceId: TestSourceId,
+})
 export const RunPlan = Schema.Struct({
   schemaVersion: Schema.Literal(1),
   id: RunId,
   buildId: BuildId,
   platform: Platform,
-  testCases: Schema.Array(TestCaseId),
-  testSources: Schema.Array(TestSourceId),
+  unit: ExecutionUnit,
   timeoutMillis: Schema.Int,
   retries: Schema.Int,
 })
@@ -578,6 +597,7 @@ export type Runner = Schema.Schema.Type<typeof Runner>
 export type RunId = Schema.Schema.Type<typeof RunId>
 export type RunAttempt = Schema.Schema.Type<typeof RunAttempt>
 export type RunPlan = Schema.Schema.Type<typeof RunPlan>
+export type ExecutionUnit = Schema.Schema.Type<typeof ExecutionUnit>
 export type RunRecord = Schema.Schema.Type<typeof RunRecord>
 export type RuntimeCaseObservation = Schema.Schema.Type<typeof RuntimeCaseObservation>
 export type Subpath = Schema.Schema.Type<typeof Subpath>

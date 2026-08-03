@@ -178,8 +178,7 @@ const supervisedWeb = Command.make(
     const corpus = yield* Suites.discover()
     const revision = yield* candidateRevision(mode)
     const metadata = yield* AppRegistry.loadMetadata()
-    const sourceIds = AppRegistry.runnableSourceIds(metadata, "web")
-    const caseIds = AppRegistry.runnableCaseIds(metadata, "web", sourceIds)
+    const units = AppRegistry.appExecutionUnits(metadata, "web")
     const build = yield* builds.build({
       id: buildId,
       mode,
@@ -188,17 +187,20 @@ const supervisedWeb = Command.make(
       candidateRevision: revision,
       timeoutMillis,
     })
-    const record = yield* web.run({
-      id: `${buildId}-run`,
-      build,
-      caseIds,
-      sourceIds,
-      port,
-      timeoutMillis,
-      corpus,
-    })
-    yield* requireSuccessfulRun(record)
-    yield* Console.log(JSON.stringify(record.finalInfrastructure))
+    const records = yield* Effect.forEach(units, (unit, index) =>
+      web.run({
+        id: `${buildId}-run-${unit.id}`,
+        build,
+        unit,
+        port: port + index,
+        timeoutMillis,
+        corpus,
+      }),
+    )
+    yield* Effect.forEach(records, requireSuccessfulRun, { discard: true })
+    yield* Console.log(
+      JSON.stringify(records.map(({ finalInfrastructure }) => finalInfrastructure)),
+    )
   }),
 ).pipe(Command.withDescription("Build and execute a production web compatibility run"))
 
@@ -212,8 +214,7 @@ const supervisedWebPair = Command.make(
     const corpus = yield* Suites.discover()
     const revision = yield* configuredCandidateRevision
     const metadata = yield* AppRegistry.loadMetadata()
-    const sourceIds = AppRegistry.runnableSourceIds(metadata, "web")
-    const caseIds = AppRegistry.runnableCaseIds(metadata, "web", sourceIds)
+    const units = AppRegistry.appExecutionUnits(metadata, "web")
     const pair = yield* builds.buildPair({
       materializationId: `${buildId}-expo`,
       upstream: {
@@ -233,30 +234,32 @@ const supervisedWebPair = Command.make(
         timeoutMillis,
       },
     })
-    const upstream = yield* web.run({
-      id: `${buildId}-upstream-run`,
-      build: pair.upstream,
-      caseIds,
-      sourceIds,
-      port,
-      timeoutMillis,
-      corpus,
-    })
-    yield* requireSuccessfulRun(upstream)
-    const candidate = yield* web.run({
-      id: `${buildId}-candidate-run`,
-      build: pair.candidate,
-      caseIds,
-      sourceIds,
-      port,
-      timeoutMillis,
-      corpus,
-    })
-    yield* requireSuccessfulRun(candidate)
+    const upstream = yield* Effect.forEach(units, (unit, index) =>
+      web.run({
+        id: `${buildId}-upstream-run-${unit.id}`,
+        build: pair.upstream,
+        unit,
+        port: port + index,
+        timeoutMillis,
+        corpus,
+      }),
+    )
+    yield* Effect.forEach(upstream, requireSuccessfulRun, { discard: true })
+    const candidate = yield* Effect.forEach(units, (unit, index) =>
+      web.run({
+        id: `${buildId}-candidate-run-${unit.id}`,
+        build: pair.candidate,
+        unit,
+        port: port + index,
+        timeoutMillis,
+        corpus,
+      }),
+    )
+    yield* Effect.forEach(candidate, requireSuccessfulRun, { discard: true })
     return yield* Console.log(
       JSON.stringify({
-        upstream: upstream.finalInfrastructure,
-        candidate: candidate.finalInfrastructure,
+        upstream: upstream.map(({ finalInfrastructure }) => finalInfrastructure),
+        candidate: candidate.map(({ finalInfrastructure }) => finalInfrastructure),
       }),
     )
   }),
@@ -347,33 +350,34 @@ const supervisedNative = Command.make(
     const builds = yield* BuildPipeline
     const native = yield* NativeSupervisor
     const metadata = yield* AppRegistry.loadMetadata()
-    const sourceIds = AppRegistry.runnableSourceIds(metadata, platform).filter(
+    const units = AppRegistry.appExecutionUnits(metadata, platform).filter(
       (_, index) => index % shardCount === shardIndex,
     )
-    const caseIds = AppRegistry.runnableCaseIds(metadata, platform, sourceIds)
-    if (sourceIds.length === 0) {
+    if (units.length === 0) {
       return yield* new HarnessError({
         operation: "select native shard",
         cause: `shard ${shardIndex} selected no ${platform} sources`,
       })
     }
     const build = yield* builds.load({ recordPath, binaryPath, platform })
-    const record = yield* native.run({
+    const device = {
+      platform,
+      id: deviceId,
+      applicationId: "dev.betternative.compatibility",
+      ...(platform === "android" ? { activity: ".MainActivity" } : {}),
+    } as const
+    const records = yield* native.runBatch({
       id: runId,
       build,
-      device: {
-        platform,
-        id: deviceId,
-        applicationId: "dev.betternative.compatibility",
-        ...(platform === "android" ? { activity: ".MainActivity" } : {}),
-      },
-      caseIds,
-      sourceIds,
+      device,
+      units,
       permissionState,
       timeoutMillis,
     })
-    yield* requireSuccessfulRun(record)
-    return yield* Console.log(JSON.stringify(record.finalInfrastructure))
+    yield* Effect.forEach(records, requireSuccessfulRun, { discard: true })
+    return yield* Console.log(
+      JSON.stringify(records.map(({ finalInfrastructure }) => finalInfrastructure)),
+    )
   }),
 ).pipe(
   Command.withDescription(
@@ -423,11 +427,10 @@ const supervisedNativePair = Command.make(
     const builds = yield* BuildPipeline
     const native = yield* NativeSupervisor
     const metadata = yield* AppRegistry.loadMetadata()
-    const sourceIds = AppRegistry.runnableSourceIds(metadata, platform).filter(
+    const units = AppRegistry.appExecutionUnits(metadata, platform).filter(
       (_, index) => index % shardCount === shardIndex,
     )
-    const caseIds = AppRegistry.runnableCaseIds(metadata, platform, sourceIds)
-    if (sourceIds.length === 0) {
+    if (units.length === 0) {
       return yield* new HarnessError({
         operation: "select native shard",
         cause: `shard ${shardIndex} selected no ${platform} sources`,
@@ -443,30 +446,28 @@ const supervisedNativePair = Command.make(
       applicationId: "dev.betternative.compatibility",
       ...(platform === "android" ? { activity: ".MainActivity" } : {}),
     } as const
-    const upstream = yield* native.run({
+    const upstream = yield* native.runBatch({
       id: `${runId}-upstream`,
       build: upstreamBuild,
       device,
-      caseIds,
-      sourceIds,
+      units,
       permissionState,
       timeoutMillis,
     })
-    yield* requireSuccessfulRun(upstream)
-    const candidate = yield* native.run({
+    yield* Effect.forEach(upstream, requireSuccessfulRun, { discard: true })
+    const candidate = yield* native.runBatch({
       id: `${runId}-candidate`,
       build: candidateBuild,
       device,
-      caseIds,
-      sourceIds,
+      units,
       permissionState,
       timeoutMillis,
     })
-    yield* requireSuccessfulRun(candidate)
+    yield* Effect.forEach(candidate, requireSuccessfulRun, { discard: true })
     return yield* Console.log(
       JSON.stringify({
-        upstream: upstream.finalInfrastructure,
-        candidate: candidate.finalInfrastructure,
+        upstream: upstream.map(({ finalInfrastructure }) => finalInfrastructure),
+        candidate: candidate.map(({ finalInfrastructure }) => finalInfrastructure),
       }),
     )
   }),

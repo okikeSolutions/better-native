@@ -2,6 +2,7 @@ import { runBuild } from "@expo/metro/metro"
 import { getDefaultConfig } from "@expo/metro-config"
 import * as NodeServices from "@effect/platform-node/NodeServices"
 import * as NodeRuntime from "@effect/platform-node/NodeRuntime"
+import * as Path from "node:path"
 // The pinned Expo CLI resolver-chain implementation is a behavioral oracle without declarations.
 // @ts-expect-error -- intentionally testing the exact installed Expo CLI implementation.
 import ExpoMetroResolvers from "@expo/cli/build/src/start/server/metro/withMetroResolvers"
@@ -29,7 +30,11 @@ class MetroBuildError extends Data.TaggedError("MetroBuildError")<{
 Effect.gen(function* () {
   const crypto = yield* Crypto.Crypto
   const events: Array<ResolutionEvent> = []
-  const betterNativeConfig = withBetterNative(getDefaultConfig(fixtureRoot), {
+  const metroConfig = getDefaultConfig(fixtureRoot)
+  // This fixture proves resolver behavior in isolation. Expo detects the Bun workspace as a
+  // monorepo and otherwise watches unrelated workspace package symlinks.
+  metroConfig.watchFolders = [fixtureRoot, Path.resolve(fixtureRoot, "../../../../../node_modules")]
+  const betterNativeConfig = withBetterNative(metroConfig, {
     buildId,
     runId,
     mode,

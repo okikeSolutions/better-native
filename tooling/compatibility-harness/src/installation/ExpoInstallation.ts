@@ -29,10 +29,13 @@ export const statusOf = (options: {
   readonly expectedVersion: string
   readonly declaredVersion: string | undefined
   readonly resolution: PackageResolution | null
+  readonly requiresDeclaration?: boolean
 }): InstalledPackage["status"] => {
   if (options.installedVersion === null) return "missing"
-  if (options.declaredVersion === undefined) return "not-declared"
-  if (options.declaredVersion !== options.expectedVersion) return "version-mismatch"
+  if (options.requiresDeclaration ?? true) {
+    if (options.declaredVersion === undefined) return "not-declared"
+    if (options.declaredVersion !== options.expectedVersion) return "version-mismatch"
+  }
   if (
     !semver.satisfies(options.installedVersion, options.expectedVersion, {
       includePrerelease: true,
@@ -74,6 +77,11 @@ export const inspect = Effect.fn("ExpoInstallation.inspect")(function* (catalog:
   )
   const lockfileHash = yield* repository.hashString(JSON.stringify(lock))
   const appRoot = path.join(repository.root, "apps/compatibility-suite")
+  const catalogRoot = path.join(repository.root, "tooling/expo-catalog")
+  const fixtureNodeModules = path.join(appRoot, "node_modules")
+  const catalogNodeModules = path.join(catalogRoot, "node_modules")
+  const repositoryNodeModules = path.join(repository.root, "node_modules")
+  const expoNodeModules = path.join(repository.expoRoot, "node_modules")
   const catalogByName = new Map(catalog.packages.map((entry) => [entry.name as string, entry]))
   const expoFiles = yield* repository.expoFiles
 
@@ -91,12 +99,28 @@ export const inspect = Effect.fn("ExpoInstallation.inspect")(function* (catalog:
           )
         }
         const targetSource = catalogPackage.manifestPath === null ? "installed-external" : "pinned"
-        const installed = yield* RegistryPackage.inspect(repository.root, appRoot, name, lock)
+        // Expo's normal installation is authoritative for packages that are bundled into the
+        // SDK but have no source directory in its repository. Keeping that installation ahead
+        // of the runner's dependencies preserves the complete Expo surface without turning one
+        // native fixture into an autolinked installation of every third-party module.
+        const installed = yield* RegistryPackage.inspect(
+          repository.root,
+          targetSource === "installed-external"
+            ? [expoNodeModules, catalogNodeModules, fixtureNodeModules, repositoryNodeModules]
+            : [fixtureNodeModules, catalogNodeModules, repositoryNodeModules, expoNodeModules],
+          name,
+          expectedVersion,
+          lock,
+        )
         const status = statusOf({
           installedVersion: installed?.version ?? null,
           expectedVersion,
           declaredVersion,
           resolution: installed?.resolution ?? null,
+          // The compatibility suite is deliberately a minimal fixture. The catalog verifies
+          // that every target can be resolved from its installation, not that every target is
+          // declared by this one native binary.
+          requiresDeclaration: false,
         })
         const pinnedDirectory =
           catalogPackage.manifestPath === null
@@ -107,7 +131,7 @@ export const inspect = Effect.fn("ExpoInstallation.inspect")(function* (catalog:
         const targetPackagePath =
           pinnedDirectory === null
             ? (installed?.packagePath ?? null)
-            : path.join(repository.upstreams.expo.path, pinnedDirectory)
+            : path.relative(repository.root, path.join(repository.expoRoot, pinnedDirectory))
         const targetFiles =
           pinnedDirectory === null
             ? (installed?.files ?? [])
@@ -179,7 +203,9 @@ export const issues = (installation: ExpoInstallation): ReadonlyArray<string> =>
 
 export const blockingIssues = (installation: ExpoInstallation): ReadonlyArray<string> =>
   installation.packages
-    .filter((entry) => entry.status !== "valid")
+    // A catalog target may intentionally be absent from the minimal runner. Its generated
+    // single-package or cohort fixture owns installation and resolution validation instead.
+    .filter((entry) => entry.status !== "valid" && entry.declaredVersion !== null)
     .flatMap((entry) => {
       const message = issue(entry)
       return message === undefined ? [] : [message]

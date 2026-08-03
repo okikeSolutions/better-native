@@ -31,12 +31,10 @@ describe("ExpoRepository path boundaries", () => {
         {
           repository: "https://example.invalid/expo.git",
           revision: "../../outside",
-          path: "vendor/expo",
         },
         {
           repository: "https://example.invalid/expo.git",
-          revision: "1".repeat(40),
-          path: "../outside",
+          revision: "1".repeat(39),
         },
       ]) {
         const result = yield* Schema.decodeUnknownEffect(Upstreams)({
@@ -61,7 +59,7 @@ describe("ExpoRepository path boundaries", () => {
         prefix: "better-native-artifact-outside-",
       })
       yield* fs.makeDirectory(`${root}/compatibility`, { recursive: true })
-      yield* fs.makeDirectory(`${root}/vendor/expo`, { recursive: true })
+      yield* fs.makeDirectory(`${root}/expo-source`, { recursive: true })
       yield* fs.makeDirectory(`${root}/vendor/effect`, { recursive: true })
       yield* fs.writeFileString(
         `${root}/compatibility/upstreams.json`,
@@ -75,7 +73,6 @@ describe("ExpoRepository path boundaries", () => {
           expo: {
             repository: "https://example.invalid/expo.git",
             revision: "1".repeat(40),
-            path: "vendor/expo",
           },
         }),
       )
@@ -84,7 +81,11 @@ describe("ExpoRepository path boundaries", () => {
       const directoryFailure = yield* Effect.gen(function* () {
         const repository = yield* ExpoRepository
         return yield* repository.writeArtifact("compatibility/catalog.json", "{}").pipe(Effect.flip)
-      }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(BunServices.layer))))
+      }).pipe(
+        Effect.provide(
+          layer(root, `${root}/expo-source`).pipe(Layer.provideMerge(BunServices.layer)),
+        ),
+      )
       assert.instanceOf(directoryFailure, HarnessError)
       assert.strictEqual(directoryFailure.operation, "validate artifact directory")
 
@@ -95,7 +96,11 @@ describe("ExpoRepository path boundaries", () => {
       const targetFailure = yield* Effect.gen(function* () {
         const repository = yield* ExpoRepository
         return yield* repository.writeArtifact("compatibility/catalog.json", "{}").pipe(Effect.flip)
-      }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(BunServices.layer))))
+      }).pipe(
+        Effect.provide(
+          layer(root, `${root}/expo-source`).pipe(Layer.provideMerge(BunServices.layer)),
+        ),
+      )
       assert.instanceOf(targetFailure, HarnessError)
       assert.strictEqual(targetFailure.operation, "validate artifact target")
     }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),

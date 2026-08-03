@@ -2,7 +2,7 @@ import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Ref from "effect/Ref"
-import { ArtifactId, BuildId, ContentHash, TestCaseId, type BuildRecord } from "../Domain.ts"
+import { ArtifactId, BuildId, ContentHash, TestSourceId, type BuildRecord } from "../Domain.ts"
 import type { BuildOutput } from "../build/BuildPipeline.ts"
 import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import { NativeSupervisor, NativeSupervisorError, layer } from "./NativeSupervisor.ts"
@@ -44,8 +44,12 @@ const request = {
   id: "native-run",
   build,
   device,
-  caseIds: [TestCaseId.make("suite#source#case@1")],
-  sourceIds: [],
+  unit: {
+    id: "ios-suite_source-1",
+    runner: "native-app" as const,
+    platform: "ios" as const,
+    sourceId: TestSourceId.make("suite#source"),
+  },
   permissionState: "granted" as const,
   timeoutMillis: 1_000,
 }
@@ -53,7 +57,14 @@ const request = {
 const evidence = Layer.succeed(
   EvidenceStore,
   EvidenceStore.of({
-    writeBytes: () => Effect.die("unexpected evidence write"),
+    writeBytes: (_collection, recordId, name) =>
+      Effect.succeed({
+        id: ArtifactId.make(`runs/${recordId}/${name}@${hash}`),
+        path: `.artifacts/runs/${recordId}/${name}`,
+        mediaType: "application/yaml",
+        size: 0,
+        hash,
+      }),
     writeJson: (_collection, recordId, name) =>
       Effect.succeed({
         id: ArtifactId.make(`runs/${recordId}/${name}@${hash}`),
@@ -71,7 +82,7 @@ const drivers = (overrides: Partial<DriverService>) => {
     grantPermissions: () => Effect.void,
     reset: () => Effect.void,
     launch: () => Effect.succeed({ alive: true, crashed: false, logs: [] }),
-    openUrl: () => Effect.void,
+    runMaestroFlow: () => Effect.succeed([]),
     isAlive: () => Effect.succeed(true),
     logs: () => Effect.succeed([]),
     result: () => Effect.succeed(null),
@@ -100,6 +111,85 @@ describe("NativeSupervisor fault injection", () => {
         ),
       )
       assert.isFalse(yield* Ref.get(granted))
+    }),
+  )
+
+  it.effect("installs and launches once while retaining separate Maestro evidence per source", () =>
+    Effect.gen(function* () {
+      const installations = yield* Ref.make(0)
+      const launches = yield* Ref.make(0)
+      const flows = yield* Ref.make(0)
+      const activeRun = yield* Ref.make("")
+      const records = yield* Effect.gen(function* () {
+        const supervisor = yield* NativeSupervisor
+        return yield* supervisor.runBatch({
+          id: "native-batch",
+          build,
+          device,
+          units: [
+            {
+              id: "one",
+              runner: "native-app",
+              platform: "ios",
+              sourceId: TestSourceId.make("suite#one"),
+            },
+            {
+              id: "two",
+              runner: "native-app",
+              platform: "ios",
+              sourceId: TestSourceId.make("suite#two"),
+            },
+          ],
+          permissionState: "granted",
+          timeoutMillis: 1_000,
+        })
+      }).pipe(
+        Effect.provide(
+          supervisorLayer({
+            install: () => Ref.update(installations, (count) => count + 1),
+            launch: () =>
+              Ref.update(launches, (count) => count + 1).pipe(
+                Effect.as({ alive: true, crashed: false, logs: [] }),
+              ),
+            runMaestroFlow: (_device, flowPath) =>
+              Ref.update(flows, (count) => count + 1).pipe(
+                Effect.andThen(Ref.set(activeRun, flowPath.split("/").at(-2) ?? "")),
+                Effect.as([]),
+              ),
+            result: () =>
+              Ref.get(activeRun).pipe(
+                Effect.map((runId) => {
+                  const sourceId = runId.endsWith("-one") ? "suite#one" : "suite#two"
+                  return JSON.stringify({
+                    schemaVersion: 1,
+                    runId,
+                    buildId: "native-build",
+                    mode: "candidate",
+                    results: [
+                      {
+                        schemaVersion: 1,
+                        runId,
+                        caseId: `${sourceId}#case@1`,
+                        attempt: 1,
+                        outcome: { _tag: "passed", durationMillis: 1 },
+                        artifacts: [],
+                      },
+                    ],
+                    runtimeDiscoveredCaseIds: [],
+                  })
+                }),
+              ),
+          }),
+        ),
+      )
+      assert.strictEqual(yield* Ref.get(installations), 1)
+      assert.strictEqual(yield* Ref.get(launches), 1)
+      assert.strictEqual(yield* Ref.get(flows), 2)
+      assert.lengthOf(records, 2)
+      assert.deepEqual(
+        records.map((runRecord) => runRecord.attempts[0]?.artifacts.length),
+        [1, 1],
+      )
     }),
   )
 

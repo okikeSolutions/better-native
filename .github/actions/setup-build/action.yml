@@ -16,5 +16,18 @@ runs:
       uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
       with:
         node-version: 24
-        cache: pnpm
-        cache-dependency-path: vendor/expo/pnpm-lock.yaml
+
+    - name: Setup external Expo source
+      uses: ./.github/actions/setup-expo-source
+
+    - name: Resolve pnpm store
+      id: expo-pnpm-store
+      shell: bash
+      run: echo "path=$(pnpm store path)" >> "$GITHUB_OUTPUT"
+
+    - name: Restore pinned Expo pnpm store
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.expo-pnpm-store.outputs.path }}
+        key: ${{ runner.os }}-${{ runner.arch }}-node-24-pnpm-10-expo-${{ hashFiles('compatibility/upstreams.json') }}
+        restore-keys: ${{ runner.os }}-${{ runner.arch }}-node-24-pnpm-10-expo-

@@ -37,10 +37,15 @@ const Upstream = Schema.Struct({
   path: RepositoryRelativePath,
 })
 
+const ExternalUpstream = Schema.Struct({
+  repository: Schema.String,
+  revision: GitRevision,
+})
+
 export const Upstreams = Schema.Struct({
   schemaVersion: Schema.Literal(1),
   effect: Upstream,
-  expo: Upstream,
+  expo: ExternalUpstream,
 })
 
 export type Upstreams = Schema.Schema.Type<typeof Upstreams>
@@ -77,6 +82,7 @@ const failure = (operation: string, path: string | undefined, cause: unknown): H
 
 export const layer = (
   root: string,
+  expoSourceRoot?: string,
 ): Layer.Layer<
   ExpoRepository,
   HarnessError,
@@ -159,8 +165,20 @@ export const layer = (
             ),
           ),
         )
-      const expoRoot = yield* resolveUpstream(upstreams.expo.path, "Expo")
       const effectRoot = yield* resolveUpstream(upstreams.effect.path, "Effect")
+      const configuredExpoRoot =
+        expoSourceRoot ?? process.env.EXPO_SOURCE_ROOT ?? path.join(root, "..", "expo")
+      const expoRoot = yield* fs
+        .realPath(configuredExpoRoot)
+        .pipe(
+          Effect.mapError((cause) =>
+            failure(
+              "resolve Expo source",
+              configuredExpoRoot,
+              `${String(cause)}; clone Expo next to this repository or set EXPO_SOURCE_ROOT`,
+            ),
+          ),
+        )
 
       const revision = (directory: string): Effect.Effect<string, HarnessError> =>
         childProcesses
