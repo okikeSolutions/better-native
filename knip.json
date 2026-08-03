@@ -21,6 +21,7 @@
       "ignoreIssues": {
         "package.json": ["dependencies", "devDependencies"]
       },
+      "ignoreDependencies": ["expo-updates"],
       "metro": {
         "config": []
       }
