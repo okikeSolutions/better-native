@@ -1,0 +1,34 @@
+name: Setup Maestro
+description: Install and verify the repository-pinned Maestro CLI release
+inputs:
+  version:
+    description: Reviewed Maestro CLI version for the target platform
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Install Maestro
+      shell: bash
+      run: |
+        set -euo pipefail
+        readonly maestro_version="${{ inputs.version }}"
+        case "$maestro_version" in
+          2.4.0) readonly maestro_sha256="aea22ce67ab6718997ec990c58652ede0c2be8f10ac4799039ca3dce3390d634" ;;
+          2.6.1) readonly maestro_sha256="3440825f514f537c6a96bcf5de995780c2a4a7f83a43208fdc95d4f1fecfad3b" ;;
+          *) echo "Refusing unreviewed Maestro version: $maestro_version"; exit 1 ;;
+        esac
+        readonly install_root="$(mktemp -d "${RUNNER_TEMP:?}/maestro-${maestro_version}.XXXXXX")"
+        readonly archive="${install_root}/maestro.zip"
+        case "$install_root" in
+          "$RUNNER_TEMP"/maestro-"$maestro_version".*) ;;
+          *) echo "Refusing unsafe Maestro install path: $install_root"; exit 1 ;;
+        esac
+        curl --fail --location --silent --show-error \
+          --proto '=https' --tlsv1.2 --retry 3 \
+          "https://github.com/mobile-dev-inc/Maestro/releases/download/cli-${maestro_version}/maestro.zip" \
+          --output "$archive"
+        printf '%s  %s\n' "$maestro_sha256" "$archive" | shasum -a 256 --check
+        unzip -q "$archive" -d "$install_root"
+        rm -- "$archive"
+        "$install_root/maestro/bin/maestro" --version
+        echo "$install_root/maestro/bin" >> "$GITHUB_PATH"

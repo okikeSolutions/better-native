@@ -1,0 +1,8278 @@
+{
+  "schemaVersion": 1,
+  "expoRevision": "534c99966e34580f56242eb92aac7689b9089cc7",
+  "probes": [
+    {
+      "specifier": "@expo/dom-webview/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@expo/fingerprint",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@expo/fingerprint/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@expo/metro-runtime",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@expo/metro-runtime/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@expo/metro-runtime/rsc/runtime",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@expo/metro-runtime/rsc/runtime.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@expo/ui/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@expo/vector-icons/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@react-native-async-storage/async-storage/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@react-native-community/datetimepicker/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@react-native-community/datetimepicker/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@react-native-community/netinfo/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@react-native-community/slider/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@react-native-community/viewpager/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@react-native-masked-view/masked-view/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@react-native-picker/picker/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@react-native-segmented-control/segmented-control/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@sentry/react-native/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@sentry/react-native/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@shopify/flash-list/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@shopify/react-native-skia/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@stripe/stripe-react-native/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "@stripe/stripe-react-native/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "eslint-config-expo",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "eslint-config-expo/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-analytics-amplitude/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-app-auth/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-app-auth/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-app-loader-provider",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-app-loader-provider/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-app-metrics/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-apple-authentication",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-apple-authentication/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-apple-authentication/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-application/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-asset/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-asset/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-asset/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-asset/plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-asset/tools/hashAssetFiles",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-audio",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-audio/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-audio/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-auth-session/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-background-fetch",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-background-fetch/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-background-fetch/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-background-task",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-background-task/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-background-task/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-battery",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-battery/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-blur",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-blur/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-brightness",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-brightness/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-brightness/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-brownfield/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-brownfield/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-brownfield/plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-build-properties/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-build-properties/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-calendar/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-calendar/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-calendar/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-calendar/plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-camera",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-camera/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-camera/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-cellular",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-cellular/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-cellular/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-checkbox",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-checkbox/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-clipboard",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-clipboard/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-constants/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-contacts/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-contacts/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-contacts/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-contacts/plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-crypto/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-dev-client",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-dev-client/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-dev-client/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-device",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-device/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-document-picker",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-document-picker/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-document-picker/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-eas-client",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-eas-client/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-file-system/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-file-system/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-file-system/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-file-system/plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-font/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-font/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-font/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-gl",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-gl/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-glass-effect/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-google-app-auth/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-haptics/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-image-loader",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-image-loader/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-image-manipulator/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-image-picker/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-image-picker/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-image/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-image/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-insights",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-insights/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-intent-launcher",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-intent-launcher/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-keep-awake/__tests__/index-test.native",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-keep-awake/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-linear-gradient",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-linear-gradient/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-linking/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-live-photo/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-local-authentication",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-local-authentication/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-local-authentication/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-localization",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-localization/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-localization/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-location",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-location/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-location/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-mail-composer",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-mail-composer/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-mail-composer/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-manifests/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-maps/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-maps/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-maps/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-mcp/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-media-library/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-media-library/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-media-library/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-media-library/plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-mesh-gradient/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-module-template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-module-template/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-modules-core/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-navigation-bar/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-navigation-bar/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-navigation-bar/plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-network",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-network/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-notifications",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-notifications/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-notifications/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-observe/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-print",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-print/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/_ctx-shared",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/_error.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/arrow_down.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/arrow_right.xml",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/checkmark.xml",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/error.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/file.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/forward.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/logotype.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/modal.module.css",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/native-tabs.module.css",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/pkg.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/drawer/toggle-drawer-icon.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/drawer/toggle-drawer-icon@1x.android.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/drawer/toggle-drawer-icon@1x.ios.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/drawer/toggle-drawer-icon@2x.android.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/drawer/toggle-drawer-icon@2x.ios.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/drawer/toggle-drawer-icon@3x.android.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/drawer/toggle-drawer-icon@3x.ios.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/drawer/toggle-drawer-icon@4x.android.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/drawer/toggle-drawer-icon@4x.ios.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/back-icon-mask.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/back-icon.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/back-icon@1x.android.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/back-icon@1x.ios.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/back-icon@2x.android.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/back-icon@2x.ios.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/back-icon@3x.android.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/back-icon@3x.ios.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/back-icon@4x.android.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/back-icon@4x.ios.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/clear-icon.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/clear-icon@1x.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/clear-icon@2x.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/clear-icon@3x.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/clear-icon@4x.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/close-icon.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/close-icon@1x.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/close-icon@2x.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/close-icon@3x.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/close-icon@4x.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/search-icon.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/search-icon@1x.android.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/search-icon@1x.ios.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/search-icon@2x.android.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/search-icon@2x.ios.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/search-icon@3x.android.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/search-icon@3x.ios.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/search-icon@4x.android.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/react-navigation/elements/search-icon@4x.ios.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/sitemap.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/assets/unmatched.png",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/context-stubs.test.node",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/context-stubs.test.node.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/getReactNavigationConfig.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/getReactNavigationConfig.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/getRoutes.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/getRoutes.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/getRoutes.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/getRoutes.test.web.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/LocationProvider.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/LocationProvider.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/matchers.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/matchers.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/modal-filter.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/modal-filter.test.web.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/platform-routes.test.node",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/platform-routes.test.node.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/platform-routes.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/platform-routes.test.web.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/require-context-ponyfill.test.node",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/require-context-ponyfill.test.node.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/Route.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/__tests__/Route.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/color/__tests__/color.test.android",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/color/__tests__/color.test.android.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/color/__tests__/color.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/color/__tests__/color.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fast-refresh",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fast-refresh.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/__tests__/extractPathFromURL.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/__tests__/extractPathFromURL.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/__tests__/getPathFromState-upstream.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/__tests__/getPathFromState-upstream.test.web.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/__tests__/getPathFromState.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/__tests__/getPathFromState.test.web.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/__tests__/getStateFromPath-upstream.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/__tests__/getStateFromPath-upstream.test.web.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/__tests__/getStateFromPath.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/__tests__/getStateFromPath.test.web.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/native-stack/composition-options/__tests__/mergeOptions.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/native-stack/composition-options/__tests__/mergeOptions.test.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/native-stack/composition-options/__tests__/registryReducer.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/native-stack/composition-options/__tests__/registryReducer.test.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/native-stack/composition-options/__tests__/useCompositionOption.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/fork/native-stack/composition-options/__tests__/useCompositionOption.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global-state/__tests__/getNavigationAction.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global-state/__tests__/getNavigationAction.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global-state/__tests__/getRouteInfoFromState.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global-state/__tests__/getRouteInfoFromState.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global-state/__tests__/routeInfoCache.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global-state/__tests__/routeInfoCache.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global-state/__tests__/router.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global-state/__tests__/router.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global-state/__tests__/routingQueue.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global-state/__tests__/routingQueue.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global-state/__tests__/stateUtils.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global-state/__tests__/stateUtils.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/global.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/link/__tests__/href.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/link/__tests__/href.test.web.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/loaders/__tests__/LoaderCache.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/loaders/__tests__/LoaderCache.test.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/loaders/__tests__/LoaderSuspenseStore.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/loaders/__tests__/LoaderSuspenseStore.test.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/loaders/__tests__/readLoaderData.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/loaders/__tests__/readLoaderData.test.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/loaders/__tests__/utils.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/loaders/__tests__/utils.test.web.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/native-tabs/utils/__tests__/label.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/native-tabs/utils/__tests__/label.test.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/react-navigation/native-stack/utils/__tests__/makePopAction.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/react-navigation/native-stack/utils/__tests__/makePopAction.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/testing-library/expect",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/testing-library/expect.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/testing-library/mocks",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/testing-library/mocks.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/ts-declarations/assets.d",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/ts-declarations/assets.d.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/ts-declarations/expect.d",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/ts-declarations/expect.d.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/ts-declarations/expo-global.d",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/ts-declarations/expo-global.d.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/ts-declarations/expo-router-internal-globals",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/ts-declarations/expo-router-internal-globals.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/ts-declarations/expo-router-internal.d",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/ts-declarations/expo-router-internal.d.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/types/cssmodule.d",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/types/cssmodule.d.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/utils/__tests__/color.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/utils/__tests__/color.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/utils/__tests__/url.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/utils/__tests__/url.test.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/utils/__tests__/url.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/build/utils/__tests__/url.test.web.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/entry",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/entry-classic",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/entry-classic.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/entry.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/rsc/entry",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-router/rsc/entry.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-screen-capture",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-screen-capture/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-screen-orientation",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-screen-orientation/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-screen-orientation/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-secure-store",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-secure-store/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-secure-store/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-sensors",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-sensors/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-sensors/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/adapter/__tests__/abstract.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/adapter/environment/__tests__/common.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/build/__tests__/ImmutableRequest.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/build/global.types",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/build/loaders/__tests__/helpers.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/build/runtime/__tests__/index.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/build/utils/__tests__/headers.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/build/utils/__tests__/importMetaRegistry.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/build/utils/__tests__/matchers.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/build/utils/__tests__/middleware.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/build/vendor/__tests__/abstract.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/build/vendor/environment/__tests__/common.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/runtime/__tests__/index.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/vendor/__tests__/abstract.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-server/vendor/environment/__tests__/common.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-sharing",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-sharing/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-sharing/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-sms",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-sms/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-speech",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-speech/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-splash-screen/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-splash-screen/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-splash-screen/plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-sqlite/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-sqlite/localStorage/install",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-sqlite/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-sqlite/plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-status-bar/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-status-bar/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-status-bar/plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-store-review",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-store-review/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-symbols/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-system-ui",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-system-ui/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-system-ui/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-task-manager",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-task-manager/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-task-manager/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-tracking-transparency",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-tracking-transparency/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-tracking-transparency/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/app.plugin.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/bin/cli",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/bin/cli.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/cli/__mocks__/fs",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/cli/__mocks__/fs.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/cli/jest.config",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/cli/jest.config.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/e2e-cli/jest.config",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/e2e-cli/jest.config.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/e2e/fixtures/project_files/maestro/tests/maestroUpdatesApi",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/e2e/fixtures/project_files/maestro/tests/maestroUpdatesApi.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/jest.config",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/jest.config.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/plugin/index",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/plugin/index.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/plugin/jest.config",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-updates/plugin/jest.config.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-video",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-video-thumbnails",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-video-thumbnails/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-video/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-video/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-web-browser/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-web-browser/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-widgets",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-widgets/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo-widgets/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/AppEntry",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/AppEntry.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/bin/autolinking",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/bin/cli",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/bin/fingerprint",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/bundledNativeModules.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/config",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/config-plugins",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/config/index",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/config/paths",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/devtools",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/dom/entry",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/dom/entry.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/expo-module.config.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/fetch",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/fingerprint",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/internal/async-require-module",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/internal/babel-preset",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/internal/unstable-autolinking-exports",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/internal/unstable-expo-updates-cli-exports",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/local-build-cache-provider",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/metro-config",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/react-native.config",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/requiresExtraSetup.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/scripts/compose-source-maps",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/scripts/compose-source-maps.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/scripts/resolveAppEntry",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/scripts/resolveAppEntry.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/__tests__/__fbBatchedBridgeConfig-test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/__tests__/__fbBatchedBridgeConfig-test.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/__tests__/url-builtin.test.native",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/__tests__/url-builtin.test.native.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/__tests__/asyncRequireModule.test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/__tests__/asyncRequireModule.test.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/__tests__/buildUrlForBundle.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/__tests__/buildUrlForBundle.test.web.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/__tests__/fetchAsync.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/__tests__/fetchAsync.test.web.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/__tests__/loadBundle.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/__tests__/loadBundle.test.ios.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/__tests__/loadBundle.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/__tests__/loadBundle.test.web.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/asyncRequireModule",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/asyncRequireModule.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/index",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/index.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/messageSocket",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/messageSocket.native",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/messageSocket.native.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/messageSocket.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/setup",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/setup.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/setupFastRefresh",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/setupFastRefresh.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/setupHMR",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/async-require/setupHMR.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/dom/__tests__/base-test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/dom/__tests__/base-test.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/dom/__tests__/webview-wrapper-test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/dom/__tests__/webview-wrapper-test.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/timer/polyfillNextTick",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/timer/polyfillNextTick.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/ts-declarations/console",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/ts-declarations/console.d",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/ts-declarations/console.d.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/ts-declarations/global",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/ts-declarations/global.d",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/ts-declarations/global.d.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/ts-declarations/react-native",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/ts-declarations/react-native.d",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/ts-declarations/react-native.d.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/ts-declarations/virtual",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/ts-declarations/virtual.d",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/ts-declarations/virtual.d.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/utils/__tests__/getBundleUrl.test.web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/utils/__tests__/getBundleUrl.test.web.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/AbortSignal.test.native",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/AbortSignal.test.native.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/DOMException.test.native",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/DOMException.test.native.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/FormData.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/FormData.test.ios.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/structuredClone.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/structuredClone.test.ios.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/TextDecoder.test.native",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/TextDecoder.test.native.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/TextDecoderStream.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/TextDecoderStream.test.ios.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/TextEncoderStream.test.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/__tests__/TextEncoderStream.test.ios.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/fetch/__tests__/convertFormData-test.native",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/fetch/__tests__/convertFormData-test.native.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/fetch/__tests__/FetchResponse-blob-test.native",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/fetch/__tests__/FetchResponse-blob-test.native.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/fetch/__tests__/FetchResponse-test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/fetch/__tests__/FetchResponse-test.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/fetch/__tests__/RequestUtils-test",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/fetch/__tests__/RequestUtils-test.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/index",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/index.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/runtime",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/runtime.native",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/runtime.native.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/src/winter/runtime.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/tsconfig.base.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/tsconfig.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/types",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/types/global",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/types/index",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/types/metro-require",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/types/react-native-web",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/virtual/rsc",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/virtual/rsc.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/virtual/streams",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "expo/virtual/streams.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "jest-expo/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "lottie-react-native/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/client",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/profiling",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/server",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/server.browser",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/server.bun",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/server.edge",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/server.node",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/static",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/static.browser",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/static.edge",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/static.node",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-dom/test-utils",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-bootsplash/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-bootsplash/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-gesture-handler/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-get-random-values",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-get-random-values/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-keyboard-controller/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-maps/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-maps/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-pager-view/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-reanimated/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-safe-area-context/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-screens/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-svg/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-view-shot/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-web/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-webview/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native-worklets/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/cli",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/cli.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/flow/console",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/flow/console.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/flow/global",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/flow/global.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/flow/HermesInternalType",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/flow/HermesInternalType.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/flow/Stringish",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/flow/Stringish.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/index",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/index.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/interface",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/interface.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/jest-preset",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/jest-preset.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Alert/RCTAlertManager",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Alert/RCTAlertManager.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Animated/Animated.d.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/checkNativeVersion",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/checkNativeVersion.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/Devtools/loadBundleFromServer",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/Devtools/loadBundleFromServer.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/InitializeCore",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/InitializeCore.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/polyfillPromise",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/polyfillPromise.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpAlert",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpAlert.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpBatchedBridge",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpBatchedBridge.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpDeveloperTools",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpDeveloperTools.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpErrorHandling",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpErrorHandling.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpGlobals",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpGlobals.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpNavigator",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpNavigator.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpPerformance",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpPerformance.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpReactDevTools",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpReactDevTools.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpReactRefresh",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpReactRefresh.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpRegeneratorRuntime",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpRegeneratorRuntime.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpTimers",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpTimers.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpXHR",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Core/setUpXHR.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/EventEmitter/NativeEventEmitter.d.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Image/Image.android",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Image/Image.android.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Image/Image.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Image/Image.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Image/RelativeImageStub",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Image/RelativeImageStub.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Renderer/implementations/ReactFabric-dev",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Renderer/implementations/ReactFabric-dev.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Renderer/implementations/ReactFabric-prod",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Renderer/implementations/ReactFabric-prod.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Renderer/implementations/ReactFabric-profiling",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Renderer/implementations/ReactFabric-profiling.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/StyleSheet/PlatformColorValueTypes.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Utilities/Platform.android",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Utilities/Platform.android.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Utilities/Platform.ios",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/Libraries/Utilities/Platform.ios.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/react-native.config",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/react-native.config.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/generate-nested-scroll-view",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/generate-nested-scroll-view.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/rn-get-polyfills",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/rn-get-polyfills.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/bundle",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/bundle.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/autolinking_utils.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/autolinking.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/codegen_script_phase_extractor.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/codegen_utils.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/codegen.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/fabric.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/helpers.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/jsengine.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/local_podspec_patch.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/new_architecture.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/privacy_manifest_utils.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/rncore.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/rndependencies.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/runtime.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/spm.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/cocoapods/utils.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/codegen-utils",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/codegen-utils.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/constants",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/constants.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateAppDependencyProvider",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateAppDependencyProvider.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateCustomURLHandlers",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateCustomURLHandlers.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateFBReactNativeSpecIOS",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateFBReactNativeSpecIOS.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateNativeCode",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateNativeCode.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generatePackageSwift",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generatePackageSwift.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateRCTModuleProviders",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateRCTModuleProviders.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateRCTThirdPartyComponents",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateRCTThirdPartyComponents.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateReactCodegenPodspec",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateReactCodegenPodspec.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateSchemaInfos",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateSchemaInfos.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateUnstableModulesRequiringMainQueueSetupProvider",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/generateUnstableModulesRequiringMainQueueSetupProvider.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/index",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/index.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/utils",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-artifacts-executor/utils.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-specs-cli-executor",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/generate-specs-cli-executor.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/Package.swift.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/RCTAppDependencyProviderH.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/RCTAppDependencyProviderMM.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/RCTModuleProvidersH.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/RCTModuleProvidersMM.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/RCTModulesConformingToProtocolsProviderH.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/RCTModulesConformingToProtocolsProviderMM.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/RCTThirdPartyComponentsProviderH.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/RCTThirdPartyComponentsProviderMM.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/RCTUnstableModulesRequiringMainQueueSetupProviderH.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/RCTUnstableModulesRequiringMainQueueSetupProviderMM.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/ReactAppDependencyProvider.podspec.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/codegen/templates/ReactCodegen.podspec.template",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/compose-source-maps",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/compose-source-maps.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/find-node-for-xcode.sh",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/generate-codegen-artifacts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/generate-codegen-artifacts.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/generate-provider-cli",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/generate-provider-cli.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/generate-specs-cli",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/generate-specs-cli.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/hermes/hermes-utils",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/hermes/hermes-utils.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/ios-configure-glog.sh",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/node-binary.sh",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/packager-reporter",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/packager-reporter.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/packager.sh",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/react_native_pods_utils/script_phases.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/react_native_pods_utils/script_phases.sh",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/react_native_pods.rb",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/react-native-xcode.sh",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/replace-rncore-version",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/replace-rncore-version.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/xcode/ccache-clang.sh",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/xcode/ccache-clang++.sh",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/xcode/ccache.conf",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/scripts/xcode/with-environment.sh",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/sdks/hermes-engine/utils/replace_hermes_version",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/sdks/hermes-engine/utils/replace_hermes_version.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/src/private/components/virtualview/logger/VirtualViewLogger",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/src/private/components/virtualview/logger/VirtualViewLogger.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/src/types/globals",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/third-party-podspecs/replace_dependencies_version",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/third-party-podspecs/replace_dependencies_version.js",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/types/modules/BatchedBridge",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/types/modules/BatchedBridge.d.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/types/modules/Codegen",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/types/modules/Codegen.d.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/types/modules/Devtools",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-native/types/modules/Devtools.d.ts",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/client",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/client.browser",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/client.edge",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/client.node",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/node-register",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/server",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/server.browser",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/server.edge",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/server.node",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/static",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/static.browser",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/static.edge",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react-server-dom-webpack/static.node",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react/compiler-runtime",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react/jsx-dev-runtime",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react/jsx-runtime",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "react/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "sentry-expo/app.plugin",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "sentry-expo/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "unimodules-app-loader",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "unimodules-app-loader/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "unimodules-image-loader-interface",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    },
+    {
+      "specifier": "unimodules-image-loader-interface/package.json",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "server",
+        "tvos",
+        "web"
+      ]
+    }
+  ]
+}
