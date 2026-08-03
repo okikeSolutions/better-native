@@ -136,6 +136,7 @@ describe("BuildPipeline imported products", () => {
       }
       yield* fs.writeFileString(`${root}/apps/compatibility-suite/package.json`, "{}")
       const calls: Array<ProcessSpec> = []
+      const evidenceNames: Array<string> = []
       const processes = Layer.succeed(
         ProcessSupervisor,
         ProcessSupervisor.of({
@@ -185,15 +186,33 @@ describe("BuildPipeline imported products", () => {
                 return { exitCode: 0, observations: [] }
               }
               if (spec.command === "git") {
+                const postBuildStatus =
+                  spec.args?.includes("status") === true &&
+                  calls.some(
+                    ({ command, args }) => command === "corepack" && args?.includes("turbo"),
+                  )
+                if (spec.args?.includes("rev-parse")) {
+                  return {
+                    exitCode: 0,
+                    observations: [
+                      {
+                        sequence: 0,
+                        timestampMillis: 0,
+                        stream: "stdout" as const,
+                        text: expoRevision,
+                      },
+                    ],
+                  }
+                }
                 return {
                   exitCode: 0,
-                  observations: spec.args?.includes("rev-parse")
+                  observations: postBuildStatus
                     ? [
                         {
                           sequence: 0,
                           timestampMillis: 0,
                           stream: "stdout" as const,
-                          text: expoRevision,
+                          text: " M packages/expo/build/Expo.js",
                         },
                       ]
                     : [],
@@ -211,12 +230,15 @@ describe("BuildPipeline imported products", () => {
         EvidenceStore,
         EvidenceStore.of({
           writeBytes: (_collection, recordId, name) =>
-            Effect.succeed({
-              id: ArtifactId.make(`builds/${recordId}/${name}@${"0".repeat(64)}`),
-              path: `.artifacts/builds/${recordId}/${name}`,
-              mediaType: "application/x-ndjson",
-              size: 0,
-              hash: ContentHash.make("0".repeat(64)),
+            Effect.sync(() => {
+              evidenceNames.push(name)
+              return {
+                id: ArtifactId.make(`builds/${recordId}/${name}@${"0".repeat(64)}`),
+                path: `.artifacts/builds/${recordId}/${name}`,
+                mediaType: "application/x-ndjson",
+                size: 0,
+                hash: ContentHash.make("0".repeat(64)),
+              }
             }),
           writeJson: () => Effect.die("unexpected evidence record"),
         }),
@@ -242,6 +264,8 @@ describe("BuildPipeline imported products", () => {
       )
       assert.instanceOf(failure, BuildPipelineError)
       assert.strictEqual(failure.phase, "build", String(failure.cause))
+      assert.include(evidenceNames, "upstream-source-status.ndjson")
+      assert.include(evidenceNames, "upstream-post-build-status.ndjson")
       assert.isTrue(
         yield* fs.exists(
           `${root}/.artifacts/upstreams/expo-${expoRevision}-failed-web-build/node_modules/.modules.yaml`,
@@ -251,6 +275,20 @@ describe("BuildPipeline imported products", () => {
         ({ command, args }) => command === "corepack" && args?.includes("turbo"),
       )
       assert.isDefined(upstreamBuild)
+      const sourceStatusIndex = calls.findIndex(
+        ({ command, args }) => command === "git" && args?.includes("status"),
+      )
+      const installIndex = calls.findIndex(
+        ({ command, args }) => command === "corepack" && args?.includes("install"),
+      )
+      const upstreamBuildIndex = calls.indexOf(upstreamBuild)
+      const postBuildStatusIndex = calls.findLastIndex(
+        ({ command, args }) => command === "git" && args?.includes("status"),
+      )
+      assert.isAtLeast(sourceStatusIndex, 0)
+      assert.isAbove(installIndex, sourceStatusIndex)
+      assert.isAbove(upstreamBuildIndex, installIndex)
+      assert.isAbove(postBuildStatusIndex, upstreamBuildIndex)
       for (const packageName of pinnedPluginPackages) {
         assert.isTrue(
           upstreamBuild.args?.includes(`${packageName}...`),

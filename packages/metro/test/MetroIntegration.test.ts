@@ -1,5 +1,6 @@
 import { assert, describe, it } from "@effect/vitest"
 import * as NodeServices from "@effect/platform-node/NodeServices"
+import { createRequire } from "node:module"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Schema from "effect/Schema"
@@ -8,8 +9,9 @@ import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawne
 
 const projectRoot = `${import.meta.dirname}/fixtures/paired`
 const buildProcess = `${projectRoot}/BuildProcess.ts`
-const nativeManifest = `${import.meta.dirname}/../../../node_modules/expo-network/package.json`
-const nativeRegistration = `${import.meta.dirname}/../../../node_modules/expo-network/expo-module.config.json`
+const fixtureRequire = createRequire(`${projectRoot}/package.json`)
+const nativeManifest = fixtureRequire.resolve("expo-network/package.json")
+const nativeRegistration = fixtureRequire.resolve("expo-network/expo-module.config.json")
 
 const NetworkEvent = Schema.Struct({
   runId: Schema.String,

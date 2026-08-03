@@ -355,43 +355,22 @@ export const layer = (
               cause: `refusing to reuse executable Expo materialization ${upstream}`,
             })
           }
-          yield* execute(request, "upstream", "upstream-worktree.ndjson", {
-            command: "git",
-            args: [
-              "-C",
-              path.join(root, "vendor", "expo"),
-              "worktree",
-              "add",
-              "--detach",
-              upstream,
-              request.expoRevision,
-            ],
-            cwd: root,
-            timeoutMillis: request.timeoutMillis,
-          })
-          yield* execute(request, "upstream", "upstream-install.ndjson", {
-            command: "corepack",
-            args: ["pnpm@10.33.0", "install", "--frozen-lockfile"],
-            env: { COREPACK_ENABLE_PROJECT_SPEC: "0" },
-            cwd: upstream,
-            timeoutMillis: request.timeoutMillis,
-          })
-          // Every build gets a fresh worktree, install, and build. Executable
-          // ignored outputs are never trusted across invocations.
-          yield* execute(request, "upstream", "upstream-build.ndjson", {
-            command: "corepack",
-            args: [
-              "pnpm@10.33.0",
-              "turbo",
-              "build",
-              "--filter",
-              "test-suite...",
-              ...pinnedPluginPackages.flatMap((packageName) => ["--filter", `${packageName}...`]),
-            ],
-            env: { COREPACK_ENABLE_PROJECT_SPEC: "0" },
-            cwd: upstream,
-            timeoutMillis: request.timeoutMillis,
-          })
+          const upstreamResults = [
+            yield* execute(request, "upstream", "upstream-worktree.ndjson", {
+              command: "git",
+              args: [
+                "-C",
+                path.join(root, "vendor", "expo"),
+                "worktree",
+                "add",
+                "--detach",
+                upstream,
+                request.expoRevision,
+              ],
+              cwd: root,
+              timeoutMillis: request.timeoutMillis,
+            }),
+          ]
           const canonicalUpstream = yield* fs.realPath(upstream)
           if (canonicalUpstream !== upstream) {
             return yield* new BuildPipelineError({
@@ -400,12 +379,14 @@ export const layer = (
               cause: `refusing symbolic-link pinned Expo workspace ${upstream} -> ${canonicalUpstream}`,
             })
           }
-          const revisionResult = yield* processes.run({
+          const revision = yield* execute(request, "upstream", "upstream-revision.ndjson", {
             command: "git",
             args: ["-C", canonicalUpstream, "rev-parse", "HEAD"],
             cwd: root,
             timeoutMillis: Math.min(request.timeoutMillis, 30_000),
           })
+          upstreamResults.push(revision)
+          const revisionResult = revision.result
           const actualRevision = revisionResult.observations
             .filter(({ stream }) => stream === "stdout")
             .map(({ text }) => text)
@@ -418,19 +399,67 @@ export const layer = (
               cause: `pinned Expo workspace HEAD ${actualRevision || "<unavailable>"} differs from ${request.expoRevision}`,
             })
           }
-          const cleanResult = yield* processes.run({
-            command: "git",
-            args: ["-C", canonicalUpstream, "diff-index", "--quiet", "HEAD", "--"],
-            cwd: root,
-            timeoutMillis: Math.min(request.timeoutMillis, 30_000),
-          })
-          if (cleanResult.exitCode !== 0) {
+          const sourceStatus = yield* execute(
+            request,
+            "upstream",
+            "upstream-source-status.ndjson",
+            {
+              command: "git",
+              args: ["-C", canonicalUpstream, "status", "--short", "--untracked-files=no"],
+              cwd: root,
+              timeoutMillis: Math.min(request.timeoutMillis, 30_000),
+            },
+          )
+          upstreamResults.push(sourceStatus)
+          if (
+            sourceStatus.result.observations.some(
+              ({ stream, text }) => stream === "stdout" && text.length > 0,
+            )
+          ) {
             return yield* new BuildPipelineError({
               phase: "upstream",
               request,
-              cause: "pinned Expo workspace contains modified tracked files",
+              cause: "pinned Expo source worktree contains modified tracked files",
             })
           }
+          upstreamResults.push(
+            yield* execute(request, "upstream", "upstream-install.ndjson", {
+              command: "corepack",
+              args: ["pnpm@10.33.0", "install", "--frozen-lockfile"],
+              env: { COREPACK_ENABLE_PROJECT_SPEC: "0" },
+              cwd: upstream,
+              timeoutMillis: request.timeoutMillis,
+            }),
+          )
+          // Every build gets a fresh worktree, install, and build. Executable
+          // ignored outputs are never trusted across invocations.
+          upstreamResults.push(
+            yield* execute(request, "upstream", "upstream-build.ndjson", {
+              command: "corepack",
+              args: [
+                "pnpm@10.33.0",
+                "turbo",
+                "build",
+                "--filter",
+                "test-suite...",
+                ...pinnedPluginPackages.flatMap((packageName) => ["--filter", `${packageName}...`]),
+              ],
+              env: { COREPACK_ENABLE_PROJECT_SPEC: "0" },
+              cwd: upstream,
+              timeoutMillis: request.timeoutMillis,
+            }),
+          )
+          // Expo's own build may refresh tracked generated output. Preserve the
+          // exact post-build status as hashed evidence without confusing it with
+          // source corruption, which was checked before scripts executed.
+          upstreamResults.push(
+            yield* execute(request, "upstream", "upstream-post-build-status.ndjson", {
+              command: "git",
+              args: ["-C", canonicalUpstream, "status", "--short", "--untracked-files=no"],
+              cwd: root,
+              timeoutMillis: Math.min(request.timeoutMillis, 30_000),
+            }),
+          )
           const required = [
             [path.join(upstream, "node_modules"), "Directory"],
             [path.join(upstream, "node_modules", ".modules.yaml"), "File"],
@@ -474,7 +503,11 @@ export const layer = (
               })
             }
           }
-          return { root: upstream, nodeModules: path.join(upstream, "node_modules") }
+          return {
+            root: upstream,
+            nodeModules: path.join(upstream, "node_modules"),
+            artifacts: upstreamResults.map(({ artifact }) => artifact),
+          }
         }).pipe(
           Effect.mapError((cause) =>
             cause instanceof BuildPipelineError
@@ -608,7 +641,10 @@ export const layer = (
               )
             }
           }
-          const artifacts = results.map(({ artifact }) => artifact)
+          const artifacts = [
+            ...pinnedUpstream.artifacts,
+            ...results.map(({ artifact }) => artifact),
+          ]
           const bundleHash = yield* hashOutput(output).pipe(
             Effect.mapError((cause) => new BuildPipelineError({ phase: "build", request, cause })),
           )
