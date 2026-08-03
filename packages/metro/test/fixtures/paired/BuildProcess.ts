@@ -17,7 +17,6 @@ if (mode !== "upstream" && mode !== "candidate") {
 }
 
 const fixtureRoot = import.meta.dirname
-const projectRoot = `${fixtureRoot}/../../..`
 const buildId = `${mode}-production-build`
 const runId = `${mode}-production-run`
 const { withMetroResolvers } = ExpoMetroResolvers
@@ -30,7 +29,7 @@ class MetroBuildError extends Data.TaggedError("MetroBuildError")<{
 Effect.gen(function* () {
   const crypto = yield* Crypto.Crypto
   const events: Array<ResolutionEvent> = []
-  const betterNativeConfig = withBetterNative(getDefaultConfig(projectRoot), {
+  const betterNativeConfig = withBetterNative(getDefaultConfig(fixtureRoot), {
     buildId,
     runId,
     mode,
