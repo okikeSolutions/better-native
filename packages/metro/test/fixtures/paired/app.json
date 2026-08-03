@@ -1,0 +1,8 @@
+{
+  "expo": {
+    "name": "better-native-metro-paired-fixture",
+    "slug": "better-native-metro-paired-fixture",
+    "version": "1.0.0",
+    "platforms": ["ios", "android", "web"]
+  }
+}

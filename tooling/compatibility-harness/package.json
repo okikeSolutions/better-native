@@ -1,0 +1,21 @@
+{
+  "name": "@better-native/compatibility-harness",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@effect/platform-bun": "4.0.0-beta.102",
+    "effect": "4.0.0-beta.102",
+    "playwright": "^1.59.0",
+    "semver": "7.7.4",
+    "typescript": "~6.0.3",
+    "xml2js": "0.6.0"
+  },
+  "devDependencies": {
+    "@types/semver": "7.7.1",
+    "@types/xml2js": "~0.4.11"
+  }
+}

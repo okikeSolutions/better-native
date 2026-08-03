@@ -1,0 +1,33 @@
+{
+  "name": "@better-native/metro",
+  "version": "0.0.0",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/BetterNativeMetroConfig.d.ts",
+      "import": "./dist/BetterNativeMetroConfig.js",
+      "require": "./dist/BetterNativeMetroConfig.cjs"
+    }
+  },
+  "scripts": {
+    "build": "bun run build:esm && bun run build:cjs && tsc -p tsconfig.build.json",
+    "build:esm": "bun build src/BetterNativeMetroConfig.ts --target=node --format=esm --external expo --external effect --outfile=dist/BetterNativeMetroConfig.js",
+    "build:cjs": "bun build src/BetterNativeMetroConfig.ts --target=node --format=cjs --external expo --external effect --outfile=dist/BetterNativeMetroConfig.cjs",
+    "check:dist": "bun run build && git diff --exit-code -- dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@effect/platform-node": "4.0.0-beta.102",
+    "@expo/metro-config": "57.0.7",
+    "effect": "4.0.0-beta.102"
+  },
+  "peerDependencies": {
+    "@expo/metro-config": ">=57.0.0 <58.0.0",
+    "effect": "4.0.0-beta.102",
+    "expo": ">=57.0.0 <58.0.0"
+  }
+}

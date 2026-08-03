@@ -1,0 +1,15 @@
+{
+  "name": "@better-native/metro-paired-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@effect/platform-node": "4.0.0-beta.102",
+    "@expo/cli": "57.0.11",
+    "@expo/metro": "56.0.0",
+    "@expo/metro-config": "57.0.7",
+    "effect": "4.0.0-beta.102",
+    "expo": "57.0.9",
+    "expo-network": "~57.0.1"
+  }
+}

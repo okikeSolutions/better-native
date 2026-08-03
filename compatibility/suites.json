@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 2,
+  "expoRevision": "534c99966e34580f56242eb92aac7689b9089cc7",
+  "suites": [
+    {
+      "id": "package-unit",
+      "platforms": ["host"],
+      "match": [
+        "^packages/.*(?:/__tests__/.*\\.(?:js|jsx|ts|tsx)|\\.(?:test|spec)\\.(?:js|jsx|ts|tsx))$"
+      ],
+      "runner": "jest",
+      "kind": "test",
+      "executability": "runnable",
+      "reason": null
+    },
+    {
+      "id": "tools-unit",
+      "platforms": ["host"],
+      "match": [
+        "^tools/.*(?:/__tests__/.*\\.(?:js|jsx|ts|tsx)|\\.(?:test|spec)\\.(?:js|jsx|ts|tsx))$"
+      ],
+      "runner": "node-test",
+      "kind": "test",
+      "executability": "delegated",
+      "reason": "Executed from the pinned Expo tools workspace so its package configuration and generated inputs remain authoritative."
+    },
+    {
+      "id": "apps-unit",
+      "platforms": ["host"],
+      "match": [
+        "^apps/.*(?:/__tests__/.*\\.(?:js|jsx|ts|tsx)|\\.(?:test|spec)\\.(?:js|jsx|ts|tsx))$"
+      ],
+      "runner": "jest",
+      "kind": "test",
+      "executability": "delegated",
+      "reason": "Executed from the owning pinned Expo application workspace so its Jest configuration and fixtures remain authoritative."
+    },
+    {
+      "id": "docs-unit",
+      "platforms": ["host"],
+      "match": [
+        "^docs/.*(?:/__tests__/.*\\.(?:js|jsx|ts|tsx)|\\.(?:test|spec)\\.(?:js|jsx|ts|tsx))$"
+      ],
+      "runner": "jest",
+      "kind": "test",
+      "executability": "delegated",
+      "reason": "Executed from the pinned Expo docs workspace; these tests cover SDK documentation tooling rather than an application runtime."
+    },
+    {
+      "id": "test-fixtures",
+      "platforms": ["host"],
+      "match": [
+        "^(?:packages|apps|docs|tools)/.*(?:/__tests__/(?:fixtures|__snapshots__)/|/fixtures/).*$"
+      ],
+      "runner": "workflow",
+      "kind": "configuration",
+      "executability": "non-executable",
+      "reason": "Fixture and snapshot inputs are consumed by their owning test runner and are not standalone tests."
+    },
+    {
+      "id": "eslint-test-tools",
+      "platforms": ["host"],
+      "match": [
+        "^packages/(?:eslint-config-expo|eslint-config-universe)(?:/flat)?/__tests__/tools/.*$"
+      ],
+      "runner": "workflow",
+      "kind": "configuration",
+      "executability": "non-executable",
+      "reason": "Lint subjects and helper modules under __tests__/tools are inputs imported by the owning Jest tests; they are not standalone test entrypoints."
+    },
+    {
+      "id": "expo-app-suite",
+      "platforms": ["android", "ios", "web"],
+      "match": ["^apps/test-suite/tests/.*\\.(?:js|jsx|ts|tsx)$"],
+      "runner": "expo-jasmine",
+      "kind": "test",
+      "executability": "runtime-discovery-required",
+      "reason": null
+    },
+    {
+      "id": "ios-native",
+      "platforms": ["ios"],
+      "match": ["^(?:packages|apps)/.*(?:/ios/Tests/|/Tests/).*\\.(?:m|mm|swift)$"],
+      "runner": "xctest",
+      "kind": "test",
+      "executability": "runtime-discovery-required",
+      "reason": null
+    },
+    {
+      "id": "android-unit",
+      "platforms": ["android"],
+      "match": ["^(?:packages|apps)/.*/src/test/.*\\.(?:java|kt)$"],
+      "runner": "gradle-unit",
+      "kind": "test",
+      "executability": "runtime-discovery-required",
+      "reason": null
+    },
+    {
+      "id": "android-instrumentation",
+      "platforms": ["android"],
+      "match": ["^(?:packages|apps)/.*/src/androidTest/.*\\.(?:java|kt)$"],
+      "runner": "gradle-instrumentation",
+      "kind": "test",
+      "executability": "runtime-discovery-required",
+      "reason": null
+    },
+    {
+      "id": "maestro",
+      "platforms": ["android", "ios"],
+      "match": ["^apps/.*(?:/\\.maestro/|/maestro/|/e2e/).*\\.ya?ml$"],
+      "runner": "maestro",
+      "kind": "test",
+      "executability": "runtime-discovery-required",
+      "reason": null
+    },
+    {
+      "id": "maestro-helper",
+      "platforms": ["android", "ios"],
+      "match": ["^apps/.*/e2e/_nested-flows/.*\\.ya?ml$"],
+      "runner": "maestro",
+      "kind": "configuration",
+      "executability": "non-executable",
+      "reason": "Nested Maestro flow included by executable parent flows; it is not an independent test case."
+    },
+    {
+      "id": "javascript-e2e-fixtures",
+      "platforms": ["host"],
+      "match": [
+        "^(?:packages|apps)/.*(?:/__e2e__/|/e2e/)(?:.*/)?__tests__/.*\\.(?:js|jsx|ts|tsx)$"
+      ],
+      "runner": "workflow",
+      "kind": "configuration",
+      "executability": "non-executable",
+      "reason": "JavaScript helpers inside an end-to-end __tests__ tree are consumed by the owning E2E runner and are not independent package unit tests."
+    },
+    {
+      "id": "javascript-e2e",
+      "platforms": ["host"],
+      "match": [
+        "^(?:packages|apps)/.*(?:/__e2e__/|/e2e/)(?:(?:.*/)?__tests__/.*(?:test|spec)|.*\\.(?:test|spec))\\.(?:js|jsx|ts|tsx)$"
+      ],
+      "runner": "jest",
+      "kind": "test",
+      "executability": "runtime-discovery-required",
+      "reason": "JavaScript end-to-end tests require their owning fixture, process lifecycle, credentials or platform setup; a package-level Jest source command is not standalone evidence."
+    },
+    {
+      "id": "playwright-e2e",
+      "platforms": ["web"],
+      "match": ["^(?:packages|apps)/.*/e2e/playwright/.*\\.(?:test|spec)\\.(?:js|jsx|ts|tsx)$"],
+      "runner": "playwright",
+      "kind": "test",
+      "executability": "runtime-discovery-required",
+      "reason": "Playwright sources require their owning fixture build, server lifecycle, browser configuration and setup hooks; a source-file command alone is not executable evidence."
+    },
+    {
+      "id": "router-maestro",
+      "platforms": ["android", "ios"],
+      "match": ["^apps/router-e2e/__e2e__/.*\\.ya?ml$"],
+      "runner": "maestro",
+      "kind": "test",
+      "executability": "runtime-discovery-required",
+      "reason": "Router end-to-end flows require their owning fixture application and a native simulator or emulator."
+    },
+    {
+      "id": "package-maestro",
+      "platforms": ["android", "ios"],
+      "match": ["^packages/.*/(?:e2e|maestro)/.*\\.ya?ml$"],
+      "runner": "maestro",
+      "kind": "test",
+      "executability": "runtime-discovery-required",
+      "reason": "Package-owned Maestro flows require the package's generated fixture application and native runner setup."
+    },
+    {
+      "id": "package-maestro-helper",
+      "platforms": ["android", "ios"],
+      "match": ["^packages/.*/_nested-flows/.*\\.ya?ml$"],
+      "runner": "maestro",
+      "kind": "configuration",
+      "executability": "non-executable",
+      "reason": "Nested Maestro flow included by executable package flows; it is not an independent test case."
+    },
+    {
+      "id": "detox-e2e",
+      "platforms": ["android", "ios"],
+      "match": ["^(?:packages|apps)/.*(?:/e2e/|\\.e2e\\.).*\\.e2e\\.(?:js|jsx|ts|tsx)$"],
+      "runner": "detox",
+      "kind": "test",
+      "executability": "runnable",
+      "reason": null
+    },
+    {
+      "id": "bun-e2e",
+      "platforms": ["host"],
+      "match": ["^apps/bare-expo/e2e/image-comparison/.*\\.test\\.(?:js|jsx|ts|tsx)$"],
+      "runner": "bun-test",
+      "kind": "test",
+      "executability": "runnable",
+      "reason": null
+    },
+    {
+      "id": "ci-workflows",
+      "platforms": ["ci"],
+      "match": ["^\\.github/workflows/.*test.*\\.ya?ml$"],
+      "runner": "workflow",
+      "kind": "workflow",
+      "executability": "non-executable",
+      "reason": "The workflow defines CI orchestration; its concrete commands are represented by their runner adapters."
+    }
+  ]
+}

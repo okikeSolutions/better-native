@@ -1,0 +1,39 @@
+{
+  "reviewed": true,
+  "id": "expo-tools-node",
+  "runner": "node-test",
+  "runId": "expo-tools-node-run",
+  "sourceId": "tools-unit#tools/src/NpmOtp.test.ts",
+  "commands": [
+    {
+      "command": "pnpm",
+      "args": ["install", "--frozen-lockfile"],
+      "cwd": "vendor/expo",
+      "timeoutMillis": 1200000
+    },
+    {
+      "command": "pnpm",
+      "args": ["build"],
+      "cwd": "vendor/expo/tools",
+      "timeoutMillis": 600000
+    },
+    {
+      "command": "mkdir",
+      "args": ["-p", ".artifacts/runs/expo-tools-node/external"],
+      "timeoutMillis": 10000
+    },
+    {
+      "command": "node",
+      "args": [
+        "--test",
+        "--test-reporter=junit",
+        "--test-reporter-destination=../../../.artifacts/runs/expo-tools-node/external/report.xml",
+        "build/NpmOtp.test.js"
+      ],
+      "cwd": "vendor/expo/tools",
+      "timeoutMillis": 600000,
+      "terminationGraceMillis": 30000
+    }
+  ],
+  "reportPath": ".artifacts/runs/expo-tools-node/external/report.xml"
+}

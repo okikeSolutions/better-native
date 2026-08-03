@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "effect": {
+    "repository": "https://github.com/Effect-TS/effect.git",
+    "revision": "de2a9a69099993087e57c64df58537c765ac0224",
+    "path": "vendor/effect"
+  },
+  "expo": {
+    "repository": "https://github.com/expo/expo.git",
+    "revision": "534c99966e34580f56242eb92aac7689b9089cc7",
+    "path": "vendor/expo"
+  }
+}

@@ -1,0 +1,426 @@
+import * as Effect from "effect/Effect"
+import * as FileSystem from "effect/FileSystem"
+import * as Path from "effect/Path"
+import * as Schema from "effect/Schema"
+import {
+  RegistryMetadata,
+  type CorpusSnapshot,
+  type RegistryMetadata as RegistryMetadataType,
+  type SurfaceSnapshot,
+  type TestCaseId,
+  type TestSource,
+  type TestSourceId,
+} from "../Domain.ts"
+import { ExpoRepository } from "../ExpoRepository.ts"
+import { HarnessError } from "../HarnessError.ts"
+import * as RunnerPlans from "./RunnerPlans.ts"
+
+const platforms = ["web", "ios", "android"] as const
+type Platform = (typeof platforms)[number]
+
+export const ReplacementManifest = Schema.Struct({
+  schemaVersion: Schema.Literal(1),
+  expoRevision: Schema.String,
+  ownershipFingerprint: Schema.String,
+  replacements: Schema.Array(
+    Schema.Struct({ source: Schema.NonEmptyString, target: Schema.NonEmptyString }),
+  ),
+  trackedSpecifiers: Schema.Array(Schema.String),
+})
+export type ReplacementManifest = Schema.Schema.Type<typeof ReplacementManifest>
+
+const platformVariant = (file: string): Platform | "native" | null => {
+  const match = file.match(/\.(android|ios|native|web)\.[^.]+$/)
+  switch (match?.[1]) {
+    case "android":
+    case "ios":
+    case "native":
+    case "web":
+      return match[1]
+    default:
+      return null
+  }
+}
+
+const logicalPath = (file: string): string =>
+  file.replace(/\.(android|ios|native|web)(?=\.[^.]+$)/, "")
+
+const moduleStem = (file: string): string => logicalPath(file).replace(/\.[^.]+$/, "")
+
+const upstreamTestModuleStems = (source: string): ReadonlySet<string> =>
+  new Set(
+    [...source.matchAll(/require\(\s*["']\.\/tests\/([^"']+)["']\s*\)/g)].map(
+      ([, test]) => `apps/test-suite/tests/${test}`,
+    ),
+  )
+
+const runtimeName = (source: string): string | null =>
+  source.match(/export\s+const\s+name\s*=\s*["'`]([^"'`]+)["'`]/)?.[1] ?? null
+
+const supportsPlatform = (file: string, platform: Platform): boolean => {
+  const variant = platformVariant(file)
+  return variant === null || variant === platform || (variant === "native" && platform !== "web")
+}
+
+const selectPlatformSources = (
+  sources: ReadonlyArray<TestSource>,
+  platform: Platform,
+): ReadonlyArray<TestSource> => {
+  const groups = new Map<string, Array<TestSource>>()
+  for (const source of sources) {
+    const key = logicalPath(source.path)
+    const entries = groups.get(key) ?? []
+    entries.push(source)
+    groups.set(key, entries)
+  }
+  const selected: Array<TestSource> = []
+  for (const entries of groups.values()) {
+    const exact = entries.find((source) => platformVariant(source.path) === platform)
+    const native = entries.find((source) => platformVariant(source.path) === "native")
+    const base = entries.find((source) => platformVariant(source.path) === null)
+    const source = exact ?? (platform === "web" ? undefined : native) ?? base
+    if (source !== undefined && supportsPlatform(source.path, platform)) selected.push(source)
+  }
+  return selected.toSorted((left, right) => left.id.localeCompare(right.id))
+}
+
+export const runnableSourceIds = (
+  metadata: RegistryMetadataType,
+  platform: Platform,
+): ReadonlyArray<TestSourceId> => {
+  const groups = new Map<string, Array<RegistryMetadataType["sources"][number]>>()
+  for (const source of metadata.sources.filter(({ registration }) => registration !== "external")) {
+    const key = logicalPath(source.path)
+    const entries = groups.get(key) ?? []
+    entries.push(source)
+    groups.set(key, entries)
+  }
+  const selected: Array<TestSourceId> = []
+  for (const entries of groups.values()) {
+    const exact = entries.find((source) => platformVariant(source.path) === platform)
+    const native = entries.find((source) => platformVariant(source.path) === "native")
+    const base = entries.find((source) => platformVariant(source.path) === null)
+    const source = exact ?? (platform === "web" ? undefined : native) ?? base
+    if (source !== undefined && supportsPlatform(source.path, platform)) {
+      selected.push(source.sourceId)
+    }
+  }
+  return selected.toSorted()
+}
+
+export const runnableCaseIds = (
+  metadata: RegistryMetadataType,
+  platform: Platform,
+  sourceIds: ReadonlyArray<TestSourceId> = runnableSourceIds(metadata, platform),
+): ReadonlyArray<TestCaseId> => {
+  const selected = new Set(sourceIds)
+  return metadata.sources
+    .filter(({ sourceId }) => selected.has(sourceId))
+    .flatMap(({ caseIds }) => caseIds)
+    .toSorted()
+}
+
+export const loadMetadata = Effect.fn("AppRegistry.loadMetadata")(function* () {
+  const repository = yield* ExpoRepository
+  return yield* repository.readJson(
+    "apps/compatibility-suite/src/generated/RegistryMetadata.json",
+    RegistryMetadata,
+  )
+})
+
+export const loadReplacementManifest = Effect.fn("AppRegistry.loadReplacementManifest")(
+  function* () {
+    const repository = yield* ExpoRepository
+    return yield* repository.readJson(
+      "apps/compatibility-suite/src/generated/Replacements.json",
+      ReplacementManifest,
+    )
+  },
+)
+
+export const loadRunnerPlanLedger = Effect.fn("AppRegistry.loadRunnerPlanLedger")(function* () {
+  const repository = yield* ExpoRepository
+  return yield* repository.readJson(
+    "apps/compatibility-suite/src/generated/RunnerPlanLedger.json",
+    RunnerPlans.RunnerPlanLedgerSchema,
+  )
+})
+
+const isEager = (source: TestSource): boolean =>
+  /\/(?:Location|TaskManager)(?:\.(?:android|ios|native|web))?\.[^.]+$/.test(source.path)
+
+const registration = (source: TestSource, appRunnable: boolean) => {
+  if (!appRunnable) return "external" as const
+  return isEager(source) ? ("eager" as const) : ("lazy" as const)
+}
+
+const expoTestModule = (source: TestSource): string => `../../../../vendor/expo/${source.path}`
+
+const specifierOf = (entry: SurfaceSnapshot["exports"][number]) =>
+  entry.subpath === "." ? entry.package : `${entry.package}/${entry.subpath.slice(2)}`
+
+const surfaceProbeSource = (): string =>
+  [
+    'import type { SurfaceProbes } from "../SurfaceProbes.ts"',
+    "",
+    "// The supervisor replaces this file only inside an isolated probe workspace.",
+    "export const surfaceProbes: SurfaceProbes = new Map()",
+    "",
+  ].join("\n")
+
+const upstreamSelectionSource = (): string =>
+  [
+    'import { configureUpstreamSelection } from "../Registry.ts"',
+    "",
+    "// Kept in an app-only module: invoking the pinned function preserves its",
+    "// platform, Expo Go, device-farm, WebGL, optional-module and eager-load gates.",
+    'const upstream: unknown = require("../../../../vendor/expo/apps/test-suite/TestModules")',
+    'const getter: unknown = typeof upstream === "object" && upstream !== null',
+    '  ? Reflect.get(upstream, "getTestModules")',
+    "  : undefined",
+    'if (typeof getter !== "function") throw new Error("Pinned Expo TestModules.getTestModules is unavailable")',
+    "const modules: unknown = Reflect.apply(getter, upstream, [])",
+    'if (!Array.isArray(modules)) throw new Error("Pinned Expo getTestModules returned a non-array")',
+    "const names = modules.flatMap((module: unknown) => {",
+    '  if (typeof module !== "object" || module === null) return []',
+    '  const name: unknown = Reflect.get(module, "name")',
+    '  return typeof name === "string" ? [name] : []',
+    "})",
+    "configureUpstreamSelection(names)",
+    "",
+  ].join("\n")
+
+const loaderSource = (
+  platform: Platform,
+  sources: ReadonlyArray<TestSource>,
+  jasmineSources: ReadonlySet<string>,
+): string => {
+  const selected = selectPlatformSources(
+    sources.filter((source) => jasmineSources.has(source.id)),
+    platform,
+  )
+  const entries = selected.map(
+    (source) =>
+      `  [${JSON.stringify(source.id)}, () => require(${JSON.stringify(expoTestModule(source))}) as unknown],`,
+  )
+  return [
+    'import type { RegistryLoaders } from "../Registry.ts"',
+    "",
+    "export const loaders: RegistryLoaders = new Map([",
+    ...entries,
+    "]) as RegistryLoaders",
+    "",
+  ].join("\n")
+}
+
+const eagerSource = (
+  platform: Platform,
+  sources: ReadonlyArray<TestSource>,
+  jasmineSources: ReadonlySet<string>,
+): string => {
+  const selected = selectPlatformSources(
+    sources.filter((source) => jasmineSources.has(source.id) && isEager(source)),
+    platform,
+  )
+  return [
+    ...selected.map((source) => `require(${JSON.stringify(expoTestModule(source))})`),
+    "",
+    `export const eagerSourceIds = ${JSON.stringify(selected.map(({ id }) => id))} as const`,
+    "",
+  ].join("\n")
+}
+
+const failure = (operation: string, path: string, cause: unknown): HarnessError =>
+  new HarnessError({ operation, path, cause })
+
+export const writeGeneratedOutputs = Effect.fn("AppRegistry.writeGeneratedOutputs")(function* (
+  directory: string,
+  outputs: ReadonlyMap<string, string>,
+) {
+  const fs = yield* FileSystem.FileSystem
+  const path = yield* Path.Path
+  const existing = yield* fs.readDirectory(directory)
+  for (const name of existing) {
+    if (outputs.has(name)) continue
+    const target = path.join(directory, name)
+    const info = yield* fs.stat(target)
+    if (info.type !== "File") {
+      return yield* failure(
+        "synchronize app registry",
+        target,
+        "obsolete generated entry is not a regular file",
+      )
+    }
+    yield* fs.remove(target)
+  }
+  yield* Effect.forEach(outputs, ([name, value]) => {
+    const output = path.join(directory, name)
+    return fs
+      .writeFileString(output, value)
+      .pipe(Effect.mapError((cause) => failure("write app registry", output, cause)))
+  })
+  return undefined
+})
+
+export const generate = Effect.fn("AppRegistry.generate")(function* (
+  corpus: CorpusSnapshot,
+  surface: SurfaceSnapshot,
+  replacements: ReadonlyArray<{ readonly source: string; readonly target: string }>,
+  ownershipFingerprint: string,
+) {
+  const repository = yield* ExpoRepository
+  const fs = yield* FileSystem.FileSystem
+  const path = yield* Path.Path
+  const appSources = corpus.sources.filter((source) => source.runner === "expo-jasmine")
+  const sourceText = yield* Effect.forEach(
+    appSources,
+    (source) =>
+      repository.readExpoText(source.path).pipe(Effect.map((text) => [source.id, text] as const)),
+    { concurrency: 16 },
+  )
+  const testModulesSource = yield* repository.readExpoText("apps/test-suite/TestModules.ts")
+  const authoritativeStems = upstreamTestModuleStems(testModulesSource)
+  const sourceTextById = new Map(sourceText)
+  const jasmineSources = new Set(
+    sourceText
+      .filter(([, text]) => /export\s+(?:async\s+)?function\s+test\b/.test(text))
+      .filter(([, text]) => /export\s+const\s+name\b/.test(text))
+      .map(([id]) => id),
+  )
+  const casesBySource = new Map<string, Array<TestCaseId>>()
+  for (const testCase of corpus.cases) {
+    const cases = casesBySource.get(testCase.sourceId) ?? []
+    cases.push(testCase.id)
+    casesBySource.set(testCase.sourceId, cases)
+  }
+  const metadata: RegistryMetadataType = {
+    schemaVersion: 1,
+    expoRevision: corpus.expoRevision,
+    corpusFingerprint: corpus.fingerprint,
+    surfaceFingerprint: surface.fingerprint,
+    trackedSpecifiers: [...new Set(surface.exports.map(specifierOf))].toSorted(),
+    sources: corpus.sources.map((source) => {
+      const appRunnable = jasmineSources.has(source.id)
+      const authority =
+        source.runner === "expo-jasmine" && authoritativeStems.has(moduleStem(source.path))
+          ? ("upstream-selected" as const)
+          : ("supplemental" as const)
+      return {
+        sourceId: source.id,
+        path: source.path,
+        caseIds: casesBySource.get(source.id) ?? [],
+        runner: source.runner,
+        platforms: source.platforms,
+        executability: source.executability,
+        registration: registration(source, appRunnable),
+        authority,
+        runtimeName: appRunnable ? runtimeName(sourceTextById.get(source.id) ?? "") : null,
+        reason: appRunnable
+          ? null
+          : (source.reason ?? `requires the ${source.runner} external runner adapter`),
+      }
+    }),
+  }
+  const runnerPlans = RunnerPlans.make(corpus, jasmineSources)
+  const runnerPlanIssues = RunnerPlans.issues(corpus, runnerPlans, jasmineSources)
+  if (runnerPlanIssues.length > 0) {
+    return yield* failure(
+      "generate runner plan ledger",
+      "compatibility/suites.json",
+      runnerPlanIssues,
+    )
+  }
+  const directory = path.join(repository.root, "apps/compatibility-suite/src/generated")
+  yield* fs
+    .makeDirectory(directory, { recursive: true })
+    .pipe(Effect.mapError((cause) => failure("create app registry directory", directory, cause)))
+  const outputs = new Map<string, string>([
+    ["RunnerPlanLedger.json", `${JSON.stringify(runnerPlans, null, 2)}\n`],
+    ["RegistryMetadata.json", `${JSON.stringify(metadata, null, 2)}\n`],
+    [
+      "RegistryMetadata.ts",
+      [
+        "export const metadata: {",
+        "  readonly schemaVersion: 1",
+        "  readonly expoRevision: string",
+        "  readonly corpusFingerprint: string",
+        "  readonly surfaceFingerprint: string",
+        "  readonly trackedSpecifiers: ReadonlyArray<string>",
+        "  readonly sources: ReadonlyArray<{",
+        "    readonly sourceId: string",
+        "    readonly path: string",
+        "    readonly caseIds: ReadonlyArray<string>",
+        "    readonly runner: string",
+        "    readonly platforms: ReadonlyArray<string>",
+        "    readonly executability: string",
+        '    readonly registration: "eager" | "lazy" | "external"',
+        '    readonly authority: "upstream-selected" | "supplemental"',
+        "    readonly runtimeName: string | null",
+        "    readonly reason: string | null",
+        "  }>",
+        `} = ${JSON.stringify(metadata, null, 2)}`,
+        "",
+      ].join("\n"),
+    ],
+    [
+      "Replacements.json",
+      `${JSON.stringify({ schemaVersion: 1, expoRevision: corpus.expoRevision, ownershipFingerprint, replacements, trackedSpecifiers: metadata.trackedSpecifiers }, null, 2)}\n`,
+    ],
+    [
+      "SurfaceProbeCatalog.json",
+      `${JSON.stringify(
+        {
+          schemaVersion: 1,
+          expoRevision: corpus.expoRevision,
+          probes: surface.exports
+            .filter(({ kind }) => kind === "opaque-module")
+            .map((entry) => ({ specifier: specifierOf(entry), platforms: entry.platforms }))
+            .filter(
+              (entry, index, entries) =>
+                entries.findIndex(({ specifier }) => specifier === entry.specifier) === index,
+            )
+            .toSorted((left, right) => left.specifier.localeCompare(right.specifier)),
+        },
+        null,
+        2,
+      )}\n`,
+    ],
+    ...platforms.map(
+      (platform) =>
+        [
+          `RegistryLoaders.${platform}.ts`,
+          loaderSource(platform, appSources, jasmineSources),
+        ] as const,
+    ),
+    ...platforms.map(
+      (platform) =>
+        [
+          `EagerRegistrations.${platform}.ts`,
+          eagerSource(platform, appSources, jasmineSources),
+        ] as const,
+    ),
+    ...platforms.map((platform) => [`SurfaceProbes.${platform}.ts`, surfaceProbeSource()] as const),
+    [
+      "RegistryLoaders.ts",
+      'import { loaders as webLoaders } from "./RegistryLoaders.web.ts"\n\nexport const loaders = webLoaders\n',
+    ],
+    [
+      "EagerRegistrations.ts",
+      'import { eagerSourceIds as webEagerSourceIds } from "./EagerRegistrations.web.ts"\n\nexport const eagerSourceIds = webEagerSourceIds\n',
+    ],
+    [
+      "SurfaceProbes.ts",
+      'import { surfaceProbes as webSurfaceProbes } from "./SurfaceProbes.web.ts"\n\nexport const surfaceProbes = webSurfaceProbes\n',
+    ],
+    ["UpstreamSelection.ts", upstreamSelectionSource()],
+  ])
+  yield* writeGeneratedOutputs(directory, outputs)
+  return {
+    directory,
+    sources: metadata.sources.length,
+    appRunnableSources: jasmineSources.size,
+    executableRunnerPlans: runnerPlans.entries.filter(({ status }) => status === "executable")
+      .length,
+    blockedRunnerPlans: runnerPlans.entries.filter(({ status }) => status === "blocked").length,
+  }
+})
