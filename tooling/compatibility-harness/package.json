@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

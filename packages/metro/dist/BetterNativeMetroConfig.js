@@ -119,19 +119,19 @@ var observerLayer = (options) => Layer.effect(ResolutionObserver)(Effect.try({
   catch: (cause) => new MetroConfigurationError({ cause })
 }));
 var layer = (options) => Layer.merge(policyLayer(options), observerLayer(options));
-var originPackage = (context) => {
+var originPackage = (context2) => {
   try {
-    return context.getPackageForModule(context.originModulePath)?.packageJson.name ?? null;
+    return context2.getPackageForModule(context2.originModulePath)?.packageJson.name ?? null;
   } catch {
     return null;
   }
 };
-var conditions = (context, platform) => [
-  ...context.unstable_conditionNames,
-  ...platform === null ? [] : context.unstable_conditionsByPlatform[platform] ?? []
+var conditions = (context2, platform) => [
+  ...context2.unstable_conditionNames,
+  ...platform === null ? [] : context2.unstable_conditionsByPlatform[platform] ?? []
 ];
-var environment = (context) => {
-  const value2 = context.customResolverOptions.environment;
+var environment = (context2) => {
+  const value2 = context2.customResolverOptions.environment;
   return typeof value2 === "string" ? value2 : null;
 };
 var outcomeOf = (resolution) => {
@@ -155,7 +155,7 @@ var resolvedTargetOf = (outcome) => Match.value(outcome).pipe(Match.discriminato
   empty: () => null,
   failure: () => null
 }));
-var resolvedPackageOf = (context, outcome) => {
+var resolvedPackageOf = (context2, outcome) => {
   const target = Match.value(outcome).pipe(Match.discriminatorsExhaustive("kind")({
     "source-file": ({ filePath }) => filePath,
     "asset-files": ({ filePaths }) => filePaths[0],
@@ -169,7 +169,7 @@ var resolvedPackageOf = (context, outcome) => {
   if (target === undefined)
     return null;
   try {
-    return context.getPackageForModule(target)?.packageJson.name ?? null;
+    return context2.getPackageForModule(target)?.packageJson.name ?? null;
   } catch {
     return null;
   }
@@ -196,7 +196,6 @@ var makeEvent = (options) => ({
   resolvedTarget: resolvedTargetOf(options.outcome),
   resolvedPackage: resolvedPackageOf(options.context, options.outcome)
 });
-var observe = (observer, event) => Effect.runSync(observer.observe(event).pipe(Effect.catchCause((cause) => Effect.logError("Resolution observer failed", { cause }))));
 var make = Effect.fn("BetterNativeMetroConfig.make")(function* (config) {
   if (config[configured] === true) {
     return yield* new MetroConfigurationError({
@@ -205,27 +204,30 @@ var make = Effect.fn("BetterNativeMetroConfig.make")(function* (config) {
   }
   const policy = yield* ResolutionPolicy;
   const observer = yield* ResolutionObserver;
+  const services = yield* Effect.context();
+  const runSync2 = Effect.runSyncWith(services);
+  const observe = (event) => runSync2(observer.observe(event).pipe(Effect.catchCause((cause) => Effect.logError("Resolution observer failed", { cause }))));
   const previous = config.resolver.resolveRequest;
   const configMode = policy.mode;
-  const resolveRequest = (context, specifier, platform) => {
-    const directive = Effect.runSync(policy.resolve({
+  const resolveRequest = (context2, specifier, platform) => {
+    const directive = runSync2(policy.resolve({
       mode: configMode,
       specifier,
-      originPackage: originPackage(context)
+      originPackage: originPackage(context2)
     }));
-    const next = previous ?? context.resolveRequest;
-    const resolutionContext = directive.decision === "unmanaged" || directive.decision === "candidate" ? context : {
-      ...context,
-      nodeModulesPaths: [policy.upstreamNodeModulesPath, ...context.nodeModulesPaths]
+    const next = previous ?? context2.resolveRequest;
+    const resolutionContext = directive.decision === "unmanaged" || directive.decision === "candidate" ? context2 : {
+      ...context2,
+      nodeModulesPaths: [policy.upstreamNodeModulesPath, ...context2.nodeModulesPaths]
     };
     let resolution;
     try {
       resolution = next(resolutionContext, directive.requestedSpecifier, platform);
     } catch (cause) {
-      observe(observer, makeEvent({
+      observe(makeEvent({
         buildId: policy.buildId,
         ownershipFingerprint: policy.ownershipFingerprint,
-        context,
+        context: context2,
         directive,
         mode: configMode,
         outcome: failureOf(cause),
@@ -235,10 +237,10 @@ var make = Effect.fn("BetterNativeMetroConfig.make")(function* (config) {
       }));
       throw cause;
     }
-    observe(observer, makeEvent({
+    observe(makeEvent({
       buildId: policy.buildId,
       ownershipFingerprint: policy.ownershipFingerprint,
-      context,
+      context: context2,
       directive,
       mode: configMode,
       outcome: outcomeOf(resolution),

@@ -88,8 +88,9 @@ describe("RunnerPlanExecution", () => {
       assert.deepEqual(JSON.parse(persisted), report)
     }).pipe(
       Effect.scoped,
-      Effect.provide(ExpoRepository.layer(process.cwd())),
-      Effect.provide(BunServices.layer),
+      Effect.provide(
+        ExpoRepository.layer(process.cwd()).pipe(Layer.provideMerge(BunServices.layer)),
+      ),
     ),
   )
 })

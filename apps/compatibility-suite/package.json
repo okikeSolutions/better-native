@@ -4,6 +4,7 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
+    "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
     "typecheck": "tsc --noEmit",
     "build:metro": "bun run --cwd ../../packages/metro build"
   },

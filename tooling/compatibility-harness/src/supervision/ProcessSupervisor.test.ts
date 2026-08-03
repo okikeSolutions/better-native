@@ -1,8 +1,10 @@
 import { assert, describe, it } from "@effect/vitest"
 import * as BunServices from "@effect/platform-bun/BunServices"
 import * as Deferred from "effect/Deferred"
+import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Fiber from "effect/Fiber"
+import * as Layer from "effect/Layer"
 import * as Ref from "effect/Ref"
 import * as Stream from "effect/Stream"
 import * as TestClock from "effect/testing/TestClock"
@@ -16,6 +18,12 @@ import {
 
 const spec = { command: "fake", timeoutMillis: 1_000 }
 const encoder = new TextEncoder()
+
+class TestProcessError extends Data.TaggedError("TestProcessError")<{
+  readonly message: string
+}> {}
+
+const testFailure = (message: string) => new TestProcessError({ message })
 
 describe("ProcessSupervisor", () => {
   it.effect("streams stdout and stderr before returning the exit code", () =>
@@ -80,7 +88,7 @@ describe("ProcessSupervisor", () => {
   )
 
   it.effect("classifies a missing binary as a spawn failure", () => {
-    const backend: ProcessBackend = { spawn: () => Effect.fail(new Error("ENOENT")) }
+    const backend: ProcessBackend = { spawn: () => Effect.fail(testFailure("ENOENT")) }
     return Effect.gen(function* () {
       const supervisor = yield* ProcessSupervisor
       const failure = yield* supervisor.run(spec).pipe(Effect.flip)
@@ -94,7 +102,7 @@ describe("ProcessSupervisor", () => {
       spawn: () =>
         Effect.succeed({
           stdout: Stream.make("before-failure").pipe(
-            Stream.concat(Stream.fail(new Error("stream exploded"))),
+            Stream.concat(Stream.fail(testFailure("stream exploded"))),
           ),
           stderr: Stream.empty,
           exitCode: Effect.succeed(1),
@@ -117,7 +125,7 @@ describe("ProcessSupervisor", () => {
       spawn: () =>
         Effect.succeed({
           stdout: Stream.make("before-failure").pipe(
-            Stream.concat(Stream.fail(new Error("started stream exploded"))),
+            Stream.concat(Stream.fail(testFailure("started stream exploded"))),
           ),
           stderr: Stream.empty,
           exitCode: Effect.succeed(1),
@@ -213,7 +221,7 @@ describe("ProcessSupervisor", () => {
           Effect.succeed({
             stdout: Stream.fromEffect(Deferred.await(finalOutput)),
             stderr: Stream.empty,
-            exitCode: Effect.fail(new Error("process exited by signal")),
+            exitCode: Effect.fail(testFailure("process exited by signal")),
             terminate: () => Effect.void,
           }),
       }
@@ -241,7 +249,7 @@ describe("ProcessSupervisor", () => {
       const backend: ProcessBackend = {
         spawn: () =>
           Effect.succeed({
-            stdout: Stream.fail(new Error("stdout exploded")),
+            stdout: Stream.fail(testFailure("stdout exploded")),
             stderr: Stream.fromEffect(Deferred.await(stderrTail)),
             exitCode: Effect.succeed(1),
             terminate: () => Effect.void,
@@ -272,11 +280,11 @@ describe("ProcessSupervisor", () => {
         spawn: () =>
           Effect.succeed({
             stdout: Stream.fromEffect(Deferred.await(finalOutput)).pipe(
-              Stream.concat(Stream.fail(new Error("stream cleanup failed"))),
+              Stream.concat(Stream.fail(testFailure("stream cleanup failed"))),
             ),
             stderr: Stream.empty,
             exitCode: Effect.never,
-            terminate: () => Effect.fail(new Error("termination exploded")),
+            terminate: () => Effect.fail(testFailure("termination exploded")),
           }),
       }
       yield* Effect.scoped(
@@ -319,8 +327,8 @@ describe("ProcessSupervisor", () => {
         Effect.succeed({
           stdout: Stream.make("started"),
           stderr: Stream.empty,
-          exitCode: Effect.fail(new Error("exit exploded")),
-          terminate: () => Effect.fail(new Error("termination exploded")),
+          exitCode: Effect.fail(testFailure("exit exploded")),
+          terminate: () => Effect.fail(testFailure("termination exploded")),
         }),
     }
     return Effect.scoped(
@@ -397,7 +405,7 @@ describe("ProcessSupervisor", () => {
           truncation?.text,
           "output truncated: omittedLines=1 omittedBytes=295905 retainedBytes=4095",
         )
-      }).pipe(Effect.provide(layer), Effect.provide(BunServices.layer)),
+      }).pipe(Effect.provide(layer.pipe(Layer.provideMerge(BunServices.layer)))),
     15_000,
   )
 })

@@ -69,16 +69,14 @@ export const withServerFailureEvidence = <A>(
           failure.cause instanceof BrowserDriverError ? failure.cause.console : [],
           timestampMillis,
         )
-        return yield* Effect.fail(
-          new WebSupervisorError({
-            phase: failure.phase,
-            request: failure.request,
-            cause: Exit.isFailure(cleanup)
-              ? { primary: failure.cause, cleanup: cleanup.cause }
-              : failure.cause,
-            observations,
-          }),
-        )
+        return yield* new WebSupervisorError({
+          phase: failure.phase,
+          request: failure.request,
+          cause: Exit.isFailure(cleanup)
+            ? { primary: failure.cause, cleanup: cleanup.cause }
+            : failure.cause,
+          observations,
+        })
       }),
     ),
   )
@@ -191,7 +189,7 @@ export const browserLayer = Layer.succeed(
       Effect.acquireUseRelease(
         Effect.tryPromise({
           try: () => chromium.launch({ headless: true }),
-          catch: (cause) => cause,
+          catch: (cause) => new BrowserDriverError({ cause, console: [] }),
         }),
         (browser) =>
           Effect.suspend(() => {
@@ -294,10 +292,14 @@ export const layer: Layer.Layer<
                 )
               const summary = yield* Effect.try({
                 try: () => JSON.parse(browserResult.resultJson) as unknown,
-                catch: (cause) => cause,
+                catch: (cause) => webFailure("protocol", request, cause),
               }).pipe(
                 Effect.flatMap(Schema.decodeUnknownEffect(AppRunSummary)),
-                Effect.mapError((cause) => webFailure("protocol", request, cause)),
+                Effect.mapError((cause) =>
+                  cause instanceof WebSupervisorError
+                    ? cause
+                    : webFailure("protocol", request, cause),
+                ),
               )
               yield* RunProtocol.validate(
                 {

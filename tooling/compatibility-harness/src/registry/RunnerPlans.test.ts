@@ -1,6 +1,7 @@
 import * as BunServices from "@effect/platform-bun/BunServices"
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
+import * as Layer from "effect/Layer"
 import * as ExpoRepository from "../ExpoRepository.ts"
 import * as RunnerPlans from "./RunnerPlans.ts"
 import * as AppRegistry from "./AppRegistry.ts"
@@ -24,7 +25,11 @@ describe("generated runner plan ledger", () => {
           entry.status === "executable" ? entry.command !== null : Boolean(entry.reason),
         ),
       )
-    }).pipe(Effect.provide(ExpoRepository.layer(process.cwd())), Effect.provide(BunServices.layer)),
+    }).pipe(
+      Effect.provide(
+        ExpoRepository.layer(process.cwd()).pipe(Layer.provideMerge(BunServices.layer)),
+      ),
+    ),
   )
 
   it.effect("emits runner-specific plans and explicit native blockers", () =>
@@ -118,6 +123,10 @@ describe("generated runner plan ledger", () => {
           .every(({ status }) => status === "blocked"),
         "lint subjects and test helpers remain inputs rather than executable plans",
       )
-    }).pipe(Effect.provide(ExpoRepository.layer(process.cwd())), Effect.provide(BunServices.layer)),
+    }).pipe(
+      Effect.provide(
+        ExpoRepository.layer(process.cwd()).pipe(Layer.provideMerge(BunServices.layer)),
+      ),
+    ),
   )
 })

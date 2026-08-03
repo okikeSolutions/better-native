@@ -203,11 +203,13 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
             const { json, logs } = yield* execution
             const summary = yield* Effect.try({
               try: () => JSON.parse(json) as unknown,
-              catch: (cause) => cause,
+              catch: (cause) => new NativeSupervisorError({ phase: "protocol", request, cause }),
             }).pipe(
               Effect.flatMap(Schema.decodeUnknownEffect(AppRunSummary)),
-              Effect.mapError(
-                (cause) => new NativeSupervisorError({ phase: "protocol", request, cause }),
+              Effect.mapError((cause) =>
+                cause instanceof NativeSupervisorError
+                  ? cause
+                  : new NativeSupervisorError({ phase: "protocol", request, cause }),
               ),
             )
             yield* RunProtocol.validate(

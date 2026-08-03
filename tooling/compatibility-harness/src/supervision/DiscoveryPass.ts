@@ -109,7 +109,10 @@ export const layer: Layer.Layer<DiscoveryPass, never, EvidenceStore> = Layer.eff
           .map(({ text }) => sentinelJson(text, "BETTER_NATIVE_RESOLUTION_V1="))
           .filter((value): value is string => value !== null)
         const resolutions = yield* Effect.forEach(resolutionJson, (json, index) =>
-          Effect.try({ try: () => JSON.parse(json) as unknown, catch: (cause) => cause }).pipe(
+          Effect.try({
+            try: () => JSON.parse(json) as unknown,
+            catch: (cause) => new DiscoveryError({ runId: input.runId, cause }),
+          }).pipe(
             Effect.flatMap(Schema.decodeUnknownEffect(ResolutionEvent)),
             Effect.flatMap((entry) =>
               Schema.decodeUnknownEffect(ResolutionObservation)({
@@ -118,11 +121,18 @@ export const layer: Layer.Layer<DiscoveryPass, never, EvidenceStore> = Layer.eff
                 ...entry,
               }),
             ),
-            Effect.mapError((cause) => new DiscoveryError({ runId: input.runId, cause })),
+            Effect.mapError((cause) =>
+              cause instanceof DiscoveryError
+                ? cause
+                : new DiscoveryError({ runId: input.runId, cause }),
+            ),
           ),
         )
         const probes = yield* Effect.forEach(input.exportProbeJson, (json, index) =>
-          Effect.try({ try: () => JSON.parse(json) as unknown, catch: (cause) => cause }).pipe(
+          Effect.try({
+            try: () => JSON.parse(json) as unknown,
+            catch: (cause) => new DiscoveryError({ runId: input.runId, cause }),
+          }).pipe(
             Effect.flatMap(Schema.decodeUnknownEffect(ProbeResult)),
             Effect.map((probe) => {
               const location = packageAndSubpath(probe.specifier)
@@ -139,7 +149,11 @@ export const layer: Layer.Layer<DiscoveryPass, never, EvidenceStore> = Layer.eff
                 detail: probe.detail,
               }
             }),
-            Effect.mapError((cause) => new DiscoveryError({ runId: input.runId, cause })),
+            Effect.mapError((cause) =>
+              cause instanceof DiscoveryError
+                ? cause
+                : new DiscoveryError({ runId: input.runId, cause }),
+            ),
           ),
         )
         const runtimeCaseIds = [

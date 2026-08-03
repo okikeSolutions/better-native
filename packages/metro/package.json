@@ -17,6 +17,7 @@
     "build": "bun run build:esm && bun run build:cjs && tsc -p tsconfig.build.json",
     "build:esm": "bun build src/BetterNativeMetroConfig.ts --target=node --format=esm --external expo --external effect --outfile=dist/BetterNativeMetroConfig.js",
     "build:cjs": "bun build src/BetterNativeMetroConfig.ts --target=node --format=cjs --external expo --external effect --outfile=dist/BetterNativeMetroConfig.cjs",
+    "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
     "check:dist": "bun run build && git diff --exit-code -- dist",
     "typecheck": "tsc --noEmit"
   },

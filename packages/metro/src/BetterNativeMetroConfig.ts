@@ -330,13 +330,6 @@ const makeEvent = (options: {
   resolvedPackage: resolvedPackageOf(options.context, options.outcome),
 })
 
-const observe = (observer: ResolutionObserver["Service"], event: ResolutionEvent): void =>
-  Effect.runSync(
-    observer
-      .observe(event)
-      .pipe(Effect.catchCause((cause) => Effect.logError("Resolution observer failed", { cause }))),
-  )
-
 export const make: (
   config: MetroConfig,
 ) => Effect.Effect<MetroConfig, MetroConfigurationError, ResolutionPolicy | ResolutionObserver> =
@@ -348,10 +341,20 @@ export const make: (
     }
     const policy = yield* ResolutionPolicy
     const observer = yield* ResolutionObserver
+    const services = yield* Effect.context<ResolutionPolicy | ResolutionObserver>()
+    const runSync = Effect.runSyncWith(services)
+    const observe = (event: ResolutionEvent): void =>
+      runSync(
+        observer
+          .observe(event)
+          .pipe(
+            Effect.catchCause((cause) => Effect.logError("Resolution observer failed", { cause })),
+          ),
+      )
     const previous = config.resolver.resolveRequest
     const configMode = policy.mode
     const resolveRequest: MetroResolver = (context, specifier, platform) => {
-      const directive = Effect.runSync(
+      const directive = runSync(
         policy.resolve({
           mode: configMode,
           specifier,
@@ -374,7 +377,6 @@ export const make: (
         resolution = next(resolutionContext, directive.requestedSpecifier, platform)
       } catch (cause) {
         observe(
-          observer,
           makeEvent({
             buildId: policy.buildId,
             ownershipFingerprint: policy.ownershipFingerprint,
@@ -390,7 +392,6 @@ export const make: (
         throw cause
       }
       observe(
-        observer,
         makeEvent({
           buildId: policy.buildId,
           ownershipFingerprint: policy.ownershipFingerprint,

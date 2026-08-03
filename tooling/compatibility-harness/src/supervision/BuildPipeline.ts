@@ -237,7 +237,7 @@ export const layer = (
             Effect.flatMap((text) =>
               Effect.try({
                 try: () => JSON.parse(text) as unknown,
-                catch: (cause) => cause,
+                catch: (cause) => new BuildPipelineError({ phase: "workspace", request, cause }),
               }),
             ),
           )
@@ -270,7 +270,10 @@ export const layer = (
             )
             const catalog = yield* fs.readFileString(catalogPath).pipe(
               Effect.flatMap((text) =>
-                Effect.try({ try: () => JSON.parse(text) as unknown, catch: (cause) => cause }),
+                Effect.try({
+                  try: () => JSON.parse(text) as unknown,
+                  catch: (cause) => new BuildPipelineError({ phase: "workspace", request, cause }),
+                }),
               ),
               Effect.flatMap(Schema.decodeUnknownEffect(ProbeCatalog)),
             )
@@ -663,7 +666,7 @@ export const layer = (
           const encoded = yield* fs.readFileString(request.recordPath)
           const parsed = yield* Effect.try({
             try: () => JSON.parse(encoded) as unknown,
-            catch: (cause) => cause,
+            catch: (cause) => new BuildImportError({ request, cause }),
           })
           const record = yield* Schema.decodeUnknownEffect(BuildRecord)(parsed)
           if (record.platform !== request.platform) {
@@ -709,7 +712,7 @@ export const layer = (
                   (line) =>
                     Effect.try({
                       try: () => JSON.parse(line) as unknown,
-                      catch: (cause) => cause,
+                      catch: (cause) => new BuildImportError({ request, cause }),
                     }).pipe(Effect.flatMap(Schema.decodeUnknownEffect(ProcessObservationSchema))),
                 )
               }),

@@ -146,9 +146,14 @@ const decodeJson = <A>(
   schema: Schema.Schema<A> & { readonly DecodingServices: never },
   input: string,
 ) =>
-  Effect.try({ try: () => JSON.parse(input) as unknown, catch: (cause) => cause }).pipe(
+  Effect.try({
+    try: () => JSON.parse(input) as unknown,
+    catch: (cause) => new RunnerOutputError({ runner, cause }),
+  }).pipe(
     Effect.flatMap(Schema.decodeUnknownEffect(schema)),
-    Effect.mapError((cause) => new RunnerOutputError({ runner, cause })),
+    Effect.mapError((cause) =>
+      cause instanceof RunnerOutputError ? cause : new RunnerOutputError({ runner, cause }),
+    ),
   )
 
 const caseId = (sourceId: TestSourceId, name: string, occurrence: number) =>

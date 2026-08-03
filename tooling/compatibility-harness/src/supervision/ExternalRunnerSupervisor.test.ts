@@ -39,7 +39,9 @@ describe("ExternalRunnerSupervisor", () => {
               .pipe(Effect.orDie, Effect.as({ exitCode: 1, observations: [] })),
         }),
       )
-      const dependencies = Layer.mergeAll(BunServices.layer, processes, EvidenceStore.layer(root))
+      const dependencies = Layer.mergeAll(processes, EvidenceStore.layer(root)).pipe(
+        Layer.provideMerge(BunServices.layer),
+      )
       const program = Effect.gen(function* () {
         const supervisor = yield* ExternalRunnerSupervisor
         const results = yield* supervisor.run({
@@ -69,7 +71,6 @@ describe("ExternalRunnerSupervisor", () => {
         prefix: "better-native-external-outside-",
       })
       const dependencies = Layer.mergeAll(
-        BunServices.layer,
         Layer.succeed(
           ProcessSupervisor,
           ProcessSupervisor.of({
@@ -78,7 +79,7 @@ describe("ExternalRunnerSupervisor", () => {
           }),
         ),
         EvidenceStore.layer(root),
-      )
+      ).pipe(Layer.provideMerge(BunServices.layer))
       const run = (command: string, cwd: string) =>
         Effect.gen(function* () {
           const supervisor = yield* ExternalRunnerSupervisor
@@ -123,7 +124,6 @@ describe("ExternalRunnerSupervisor", () => {
           yield* fs.writeFile(reportPath, new Uint8Array(16 * 1024 * 1024 + 1))
         }
         const dependencies = Layer.mergeAll(
-          BunServices.layer,
           Layer.succeed(
             ProcessSupervisor,
             ProcessSupervisor.of({
@@ -137,7 +137,7 @@ describe("ExternalRunnerSupervisor", () => {
             }),
           ),
           EvidenceStore.layer(root),
-        )
+        ).pipe(Layer.provideMerge(BunServices.layer))
         const failure = yield* Effect.gen(function* () {
           const supervisor = yield* ExternalRunnerSupervisor
           return yield* supervisor
@@ -165,7 +165,6 @@ describe("ExternalRunnerSupervisor", () => {
       const manifest = `${root}/package.json`
       yield* fs.writeFileString(manifest, "preserve-me")
       const dependencies = Layer.mergeAll(
-        BunServices.layer,
         Layer.succeed(
           ProcessSupervisor,
           ProcessSupervisor.of({
@@ -174,7 +173,7 @@ describe("ExternalRunnerSupervisor", () => {
           }),
         ),
         EvidenceStore.layer(root),
-      )
+      ).pipe(Layer.provideMerge(BunServices.layer))
       const run = (reportPath: string) =>
         Effect.gen(function* () {
           const supervisor = yield* ExternalRunnerSupervisor

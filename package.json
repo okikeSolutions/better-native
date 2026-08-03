@@ -9,14 +9,17 @@
   ],
   "type": "module",
   "scripts": {
-    "prepare": "effect-language-service patch",
+    "effect:patch": "effect-language-service patch",
+    "prepare": "bun run effect:patch",
     "better-native": "bun run tooling/compatibility-harness/src/main.ts",
     "generate": "bun run better-native generate",
     "compatibility": "bun run better-native validate",
     "matrix": "bun run better-native matrix",
     "bundle:web:upstream": "bun run generate && bun run better-native supervise-build --mode upstream --platform web --build-id local-upstream-web",
     "bundle:web:candidate": "bun run generate && bun run better-native supervise-build --mode candidate --platform web --build-id local-candidate-web",
+    "pretypecheck": "bun run effect:patch",
     "typecheck": "bun run --filter '@better-native/*' typecheck",
+    "check:effect": "bun run --filter '@better-native/*' check:effect",
     "lint": "oxlint --disable-nested-config --config .oxlintrc.json .",
     "format": "oxfmt --disable-nested-config --config .oxfmtrc.json --write .",
     "format:check": "oxfmt --disable-nested-config --config .oxfmtrc.json --check .",
@@ -26,7 +29,7 @@
     "security:audit": "bun run better-native security-audit",
     "landing:check": "bun run --filter 'apps-landing' build",
     "test": "vitest run",
-    "check": "bun run check:generated && bun run typecheck && bun run lint && bun run format:check && bun run knip && bun run security:audit && bun run test && bun run landing:check && bun run check:dist && bun run compatibility"
+    "check": "bun run check:generated && bun run typecheck && bun run check:effect && bun run lint && bun run format:check && bun run knip && bun run security:audit && bun run test && bun run landing:check && bun run check:dist && bun run compatibility"
   },
   "devDependencies": {
     "@effect/language-service": "0.87.1",
