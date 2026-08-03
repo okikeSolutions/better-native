@@ -3,8 +3,8 @@ import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Ref from "effect/Ref"
 import { ArtifactId, BuildId, ContentHash, TestCaseId, type BuildRecord } from "../Domain.ts"
-import type { BuildOutput } from "./BuildPipeline.ts"
-import { EvidenceStore } from "./EvidenceStore.ts"
+import type { BuildOutput } from "../build/BuildPipeline.ts"
+import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import { NativeSupervisor, NativeSupervisorError, layer } from "./NativeSupervisor.ts"
 import {
   PlatformDriverError,

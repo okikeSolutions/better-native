@@ -2,7 +2,6 @@ name: Compatibility
 
 on:
   schedule:
-    # Full paired host/web/native evidence once per week without charging every PR.
     - cron: "0 3 * * 1"
   push:
     branches: [main]
@@ -10,167 +9,170 @@ on:
   workflow_dispatch:
     inputs:
       platform:
-        description: Hosted compatibility target
+        description: Compatibility target
         required: true
         default: all
         type: choice
-        options:
-          - all
-          - web
-          - ios
-          - android
-          - host
+        options: [all, web, ios, android]
+      mode:
+        description: Run the upstream baseline or the upstream/candidate differential
+        required: true
+        default: baseline
+        type: choice
+        options: [baseline, pair]
 
 permissions:
   contents: read
-
-env:
-  # Corepack must not interpret this repository's Bun packageManager field
-  # while dispatching the explicitly pinned Expo pnpm toolchain.
-  COREPACK_ENABLE_PROJECT_SPEC: "0"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  host-runner-plans:
-    name: Host ${{ matrix.runner }} shard ${{ matrix.shard }}/${{ matrix.shard_count }}
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.platform == 'all' || inputs.platform == 'host'))
+  detect-platform-changes:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { runner: jest, shard: 0, shard_count: 4 }
-          - { runner: jest, shard: 1, shard_count: 4 }
-          - { runner: jest, shard: 2, shard_count: 4 }
-          - { runner: jest, shard: 3, shard_count: 4 }
-          - { runner: node-test, shard: 0, shard_count: 1 }
-          - { runner: bun-test, shard: 0, shard_count: 1 }
+    outputs:
+      web: ${{ steps.compatibility.outputs.should_run_web }}
+      ios: ${{ steps.compatibility.outputs.should_run_ios }}
+      android: ${{ steps.compatibility.outputs.should_run_android }}
+    steps:
+      - name: Detect build-relevant platform changes
+        id: compatibility
+        uses: ./.github/actions/detect-compatibility-change
+        with:
+          web-paths: >-
+            "apps/compatibility-suite/**/*.web.*",
+            "packages/metro/**",
+            "packages/**/src/**",
+            "tooling/compatibility-harness/src/{build,comparison,evidence,protocol,supervision}/**"
+          ios-paths: >-
+            "apps/compatibility-suite/ios/**",
+            "apps/compatibility-suite/**/*.{ios,native}.*",
+            "packages/**/ios/**",
+            "packages/**/plugin/**",
+            "tooling/compatibility-harness/src/{build,supervision}/**"
+          android-paths: >-
+            "apps/compatibility-suite/android/**",
+            "apps/compatibility-suite/**/*.{android,native}.*",
+            "packages/**/android/**",
+            "packages/**/plugin/**",
+            "tooling/compatibility-harness/src/{build,supervision}/**"
+          common-paths: >-
+            ".github/actions/**",
+            ".github/workflows/compatibility.yml",
+            "apps/compatibility-suite/**",
+            "compatibility/**",
+            "package.json",
+            "bun.lock",
+            "turbo.json",
+            "vendor/expo",
+            "tooling/compatibility-harness/src/**"
+
+  web-baseline:
+    name: Web upstream baseline
+    needs: detect-platform-changes
+    if: >-
+      (github.event_name != 'workflow_dispatch' || (inputs.platform == 'all' || inputs.platform == 'web')) &&
+      (github.event_name != 'schedule' && (github.event_name != 'workflow_dispatch' || inputs.mode == 'baseline')) &&
+      needs.detect-platform-changes.outputs.web == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-
-      - name: Setup project
-        uses: ./.github/actions/setup-project
-        with:
-          generate: "true"
-
-      - name: Install the exact pinned Expo workspace
-        run: corepack pnpm@10.33.0 --dir vendor/expo install --frozen-lockfile
-
-      - name: Build pinned Expo tools
-        if: matrix.runner == 'node-test'
-        run: corepack pnpm@10.33.0 --dir vendor/expo --filter expotools build
-
-      - name: Execute generated runner-plan shard
+      - name: Setup build profile
+        uses: ./.github/actions/setup-build
+      - name: Install Playwright Chromium
+        run: bun x playwright install --with-deps chromium
+      - name: Materialize pinned Expo
+        run: bun run expo:prepare
+      - name: Run upstream web baseline
         run: >-
-          bun run better-native supervise-runner-plans
-          --runner ${{ matrix.runner }}
-          --shard-index ${{ matrix.shard }}
-          --shard-count ${{ matrix.shard_count }}
-          --timeout-ms 900000
-          --report .artifacts/runner-plans/${{ matrix.runner }}-${{ matrix.shard }}.json
-
-      - name: Upload evidence
+          bun run better-native supervise-web
+          --mode upstream
+          --build-id ci-${{ github.run_id }}-${{ github.run_attempt }}-web-upstream
+          --timeout-ms 1500000
+          --port 8091
+      - name: Upload web baseline evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: compatibility-evidence-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.runner }}-${{ matrix.shard }}
+          name: compatibility-web-baseline-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            .artifacts/runner-plans/${{ matrix.runner }}-${{ matrix.shard }}.json
-            .artifacts/runs/ledger-${{ matrix.runner }}-${{ matrix.shard }}-*
+            .artifacts/builds/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-upstream
+            .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-upstream-run
           if-no-files-found: warn
           retention-days: ${{ job.status == 'success' && 3 || 7 }}
 
-  web:
-    name: Web (${{ matrix.mode }})
-    if: github.event_name != 'workflow_dispatch' || inputs.platform == 'all' || inputs.platform == 'web'
+  web-pair:
+    name: Web paired differential
+    needs: detect-platform-changes
+    if: >-
+      (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'pair')) &&
+      (github.event_name != 'workflow_dispatch' || (inputs.platform == 'all' || inputs.platform == 'web')) &&
+      (github.event_name == 'schedule' || needs.detect-platform-changes.outputs.web == 'true')
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
-    strategy:
-      fail-fast: false
-      matrix:
-        mode: [upstream, candidate]
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-
-      - name: Setup project
-        uses: ./.github/actions/setup-project
-        with:
-          generate: "true"
-
+      - name: Setup build profile
+        uses: ./.github/actions/setup-build
       - name: Install Playwright Chromium
         run: bun x playwright install --with-deps chromium
-
-      - name: Run supervised web compatibility
+      - name: Materialize pinned Expo
+        run: bun run expo:prepare
+      - name: Run paired web compatibility
         run: >-
-          bun run better-native supervise-web
-          --mode ${{ matrix.mode }}
-          --build-id ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-web
+          bun run better-native supervise-web-pair
+          --build-id ci-${{ github.run_id }}-${{ github.run_attempt }}-web
           --timeout-ms 1500000
           --port 8091
-
-      - name: Upload evidence
+      - name: Upload paired web evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: compatibility-evidence-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-web
+          name: compatibility-web-pair-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            .artifacts/builds/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-web
-            .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-web-run
+            .artifacts/builds/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-*
+            .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-*-run
           if-no-files-found: warn
           retention-days: ${{ job.status == 'success' && 3 || 7 }}
 
   web-compare:
     name: Web differential verdict
-    needs: web
-    if: always() && (github.event_name != 'workflow_dispatch' || inputs.platform == 'all' || inputs.platform == 'web')
+    needs: web-pair
+    if: always() && needs.web-pair.result == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
-
-      - name: Setup project
-        uses: ./.github/actions/setup-project
-
-      - name: Download upstream evidence
+      - name: Setup compare profile
+        uses: ./.github/actions/setup-compare
+      - name: Download paired web evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: compatibility-evidence-${{ github.run_id }}-${{ github.run_attempt }}-upstream-web
-          path: .artifacts/comparison/web/upstream
-
-      - name: Download candidate evidence
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: compatibility-evidence-${{ github.run_id }}-${{ github.run_attempt }}-candidate-web
-          path: .artifacts/comparison/web/candidate
-
-      - name: Compare paired evidence
+          name: compatibility-web-pair-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts
+      - name: Compare paired web evidence
         run: >-
           bun run better-native compare-runs
-          --upstream .artifacts/comparison/web/upstream
-          --candidate .artifacts/comparison/web/candidate
+          --upstream .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-upstream-run
+          --candidate .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-candidate-run
 
   ios-build:
-    name: iOS Release build (${{ matrix.mode }})
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.platform == 'all' || inputs.platform == 'ios'))
+    name: iOS Release build
+    needs: detect-platform-changes
+    if: >-
+      (github.event_name != 'workflow_dispatch' || (inputs.platform == 'all' || inputs.platform == 'ios')) &&
+      (github.event_name == 'schedule' || needs.detect-platform-changes.outputs.ios == 'true')
     runs-on: macos-26
-    timeout-minutes: 75
-    strategy:
-      fail-fast: false
-      matrix:
-        mode: [upstream, candidate]
+    timeout-minutes: 90
     env:
       NODE_ENV: production
       RCT_USE_PREBUILT_RNCORE: "1"
@@ -180,189 +182,187 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-
-      - name: Setup project
-        uses: ./.github/actions/setup-project
-        with:
-          generate: "true"
-
+      - name: Setup build profile
+        uses: ./.github/actions/setup-build
       - name: Setup Ruby
         uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
         with:
           ruby-version: 3.2.2
-
       - name: Select Xcode
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
-
       - name: Install pinned CocoaPods
         run: gem install cocoapods --version 1.16.2 --no-document
-
-      - name: Build iOS simulator application
-        run: >-
-          bun run better-native supervise-build
-          --mode ${{ matrix.mode }}
-          --platform ios
-          --build-id ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios
-          --timeout-ms 3600000
-
-      - name: Package iOS build product
+      - name: Setup ccache
+        uses: ./.github/actions/setup-ccache
+        with:
+          platform: ios
+      - name: Restore Expo caches
+        uses: ./.github/actions/setup-expo-caches
+        with:
+          platform: ios
+      - name: Materialize pinned Expo
+        run: bun run expo:prepare
+      - name: Build upstream or paired applications
+        env:
+          COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
+          BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-ios
+        shell: bash
         run: |
-          mkdir -p .artifacts/products/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios
-          tar -czf .artifacts/products/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios/BetterNativeCompatibility.app.tar.gz \
-            -C .artifacts/workspaces/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios/derived-data/Build/Products/Release-iphonesimulator \
-            BetterNativeCompatibility.app
-
-      - name: Upload iOS build product
+          set -euo pipefail
+          if [ "$COMPATIBILITY_MODE" = pair ]; then
+            bun run better-native supervise-build-pair --platform ios --build-id "$BUILD_ID" --timeout-ms 3600000
+          else
+            bun run better-native supervise-build --mode upstream --platform ios --build-id "$BUILD_ID" --timeout-ms 3600000
+          fi
+      - name: Package iOS build products
+        env:
+          COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
+          BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-ios
+        shell: bash
+        run: |
+          set -euo pipefail
+          modes=(upstream)
+          [ "$COMPATIBILITY_MODE" = pair ] && modes+=(candidate)
+          for mode in "${modes[@]}"; do
+            [ "$COMPATIBILITY_MODE" = pair ] && workspace="${BUILD_ID}-${mode}" || workspace="$BUILD_ID"
+            destination=".artifacts/products/${BUILD_ID}/${mode}"
+            mkdir -p "$destination"
+            tar -czf "$destination/BetterNativeCompatibility.app.tar.gz" \
+              -C ".artifacts/workspaces/${workspace}/derived-data/Build/Products/Release-iphonesimulator" \
+              BetterNativeCompatibility.app
+          done
+      - name: Upload iOS products
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: compatibility-build-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios
-          path: .artifacts/products/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios/BetterNativeCompatibility.app.tar.gz
+          name: compatibility-ios-products-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/products/ci-${{ github.run_id }}-${{ github.run_attempt }}-ios
           if-no-files-found: error
           retention-days: 3
-
       - name: Upload iOS build evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: compatibility-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios
-          path: .artifacts/builds/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios
+          name: compatibility-ios-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/builds/ci-${{ github.run_id }}-${{ github.run_attempt }}-ios*
           if-no-files-found: warn
           retention-days: ${{ job.status == 'success' && 3 || 7 }}
 
   ios-test:
-    name: iOS simulator (${{ matrix.mode }}, shard ${{ matrix.shard }})
+    name: iOS device test
     needs: ios-build
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.platform == 'all' || inputs.platform == 'ios'))
+    if: needs.ios-build.result == 'success'
     runs-on: macos-26
     timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        mode: [upstream, candidate]
-        shard: [0, 1, 2, 3]
+    env:
+      COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
+      BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-ios
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
-
-      - name: Setup project
-        uses: ./.github/actions/setup-project
-        with:
-          generate: "true"
-
+      - name: Setup device-test profile
+        uses: ./.github/actions/setup-device-test
       - name: Select Xcode
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
-
       - name: Setup Maestro
         uses: ./.github/actions/setup-maestro
         with:
           version: 2.6.1
-
-      - name: Download iOS build product
+      - name: Download iOS products
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: compatibility-build-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios
-          path: .artifacts/imports/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios/product
-
-      - name: Download iOS build record
+          name: compatibility-ios-products-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/products/${{ env.BUILD_ID }}
+      - name: Download iOS build evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: compatibility-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios
-          path: .artifacts/imports/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios/evidence
-
-      - name: Extract iOS build product
+          name: compatibility-ios-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/builds
+      - name: Extract iOS products
+        shell: bash
         run: |
           set -euo pipefail
-          readonly archive=".artifacts/imports/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios/product/BetterNativeCompatibility.app.tar.gz"
-          while IFS= read -r entry; do
-            case "$entry" in
-              /*|..|../*|*/../*|*/..) echo "Refusing unsafe archive entry: $entry"; exit 1 ;;
-            esac
-          done < <(tar -tzf "$archive")
-          if ! tar -tvzf "$archive" | awk '{ if (substr($1, 1, 1) != "-" && substr($1, 1, 1) != "d") exit 1 }'; then
-            echo "Refusing archive containing links or special files"
-            exit 1
-          fi
-          mkdir -p .artifacts/imports/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios/application
-          tar -xzf "$archive" \
-            --no-same-owner --no-same-permissions \
-            -C .artifacts/imports/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios/application
-
+          modes=(upstream)
+          [ "$COMPATIBILITY_MODE" = pair ] && modes+=(candidate)
+          for mode in "${modes[@]}"; do
+            archive=".artifacts/products/${BUILD_ID}/${mode}/BetterNativeCompatibility.app.tar.gz"
+            destination=".artifacts/imports/${BUILD_ID}/${mode}"
+            while IFS= read -r entry; do
+              case "$entry" in
+                /*|..|../*|*/../*|*/..) echo "Refusing unsafe archive entry: $entry"; exit 1 ;;
+              esac
+            done < <(tar -tzf "$archive")
+            if ! tar -tvzf "$archive" | awk '{ if (substr($1, 1, 1) != "-" && substr($1, 1, 1) != "d") exit 1 }'; then
+              echo "Refusing archive containing links or special files"
+              exit 1
+            fi
+            mkdir -p "$destination"
+            tar -xzf "$archive" --no-same-owner --no-same-permissions -C "$destination"
+          done
       - name: Boot iOS simulator
+        shell: bash
         run: |
+          set -euo pipefail
           DEVICE_ID=$(xcrun simctl list devices available --json | jq -r '[.devices[][] | select(.isAvailable == true and (.name | startswith("iPhone")))] | first | .udid')
           test -n "${DEVICE_ID:?}"
           xcrun simctl boot "$DEVICE_ID" || true
           xcrun simctl bootstatus "$DEVICE_ID" -b
           echo "BETTER_NATIVE_DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
-
-      - name: Run iOS compatibility shard
-        run: >-
-          bun run better-native supervise-native
-          --platform ios
-          --record .artifacts/imports/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios/evidence/record.json
-          --binary .artifacts/imports/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios/application/BetterNativeCompatibility.app
-          --device-id "$BETTER_NATIVE_DEVICE_ID"
-          --run-id ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios-${{ matrix.shard }}
-          --shard-index ${{ matrix.shard }}
-          --shard-count 4
-          --timeout-ms 1200000
-
+      - name: Run upstream or paired iOS tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$COMPATIBILITY_MODE" = pair ]; then
+            upstream_record=".artifacts/builds/${BUILD_ID}-upstream/record.json"
+          else
+            upstream_record=".artifacts/builds/${BUILD_ID}/record.json"
+          fi
+          upstream_binary=".artifacts/imports/${BUILD_ID}/upstream/BetterNativeCompatibility.app"
+          if [ "$COMPATIBILITY_MODE" = pair ]; then
+            bun run better-native supervise-native-pair --platform ios --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/imports/${BUILD_ID}/candidate/BetterNativeCompatibility.app" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID" --timeout-ms 1200000
+          else
+            bun run better-native supervise-native --platform ios --record "$upstream_record" --binary "$upstream_binary" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID-upstream" --timeout-ms 1200000
+          fi
       - name: Upload iOS run evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: compatibility-evidence-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios-${{ matrix.shard }}
-          path: .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-ios-${{ matrix.shard }}
+          name: compatibility-ios-run-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-ios*
           if-no-files-found: warn
           retention-days: ${{ job.status == 'success' && 3 || 7 }}
-
-      - name: Shutdown iOS simulator
-        if: always()
-        run: |
-          if [ -n "${BETTER_NATIVE_DEVICE_ID:-}" ]; then
-            xcrun simctl shutdown "$BETTER_NATIVE_DEVICE_ID" || true
-          fi
 
   ios-compare:
     name: iOS differential verdict
     needs: ios-test
-    if: always() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.platform == 'all' || inputs.platform == 'ios')))
+    if: >-
+      always() && needs.ios-test.result == 'success' &&
+      (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'pair'))
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
-      - name: Setup project
-        uses: ./.github/actions/setup-project
-      - name: Download upstream shards
+      - name: Setup compare profile
+        uses: ./.github/actions/setup-compare
+      - name: Download iOS run evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          pattern: compatibility-evidence-${{ github.run_id }}-${{ github.run_attempt }}-upstream-ios-*
-          path: .artifacts/comparison/ios/upstream
-      - name: Download candidate shards
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          pattern: compatibility-evidence-${{ github.run_id }}-${{ github.run_attempt }}-candidate-ios-*
-          path: .artifacts/comparison/ios/candidate
-      - name: Compare paired evidence
+          name: compatibility-ios-run-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/runs
+      - name: Compare paired iOS evidence
         run: >-
           bun run better-native compare-runs
-          --upstream .artifacts/comparison/ios/upstream
-          --candidate .artifacts/comparison/ios/candidate
+          --upstream .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-ios-upstream
+          --candidate .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-ios-candidate
 
   android-build:
-    name: Android Release build (${{ matrix.mode }})
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.platform == 'all' || inputs.platform == 'android'))
+    name: Android Release build
+    needs: detect-platform-changes
+    if: >-
+      (github.event_name != 'workflow_dispatch' || (inputs.platform == 'all' || inputs.platform == 'android')) &&
+      (github.event_name == 'schedule' || needs.detect-platform-changes.outputs.android == 'true')
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        mode: [upstream, candidate]
+    timeout-minutes: 75
     env:
       NODE_ENV: production
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
@@ -372,97 +372,99 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-
       - name: Cleanup Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
-
-      - name: Setup project
-        uses: ./.github/actions/setup-project
-        with:
-          generate: "true"
-
+      - name: Setup build profile
+        uses: ./.github/actions/setup-build
       - name: Setup JDK 17
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: temurin
           java-version: "17"
-
-      - name: Build Android application
-        run: >-
-          bun run better-native supervise-build
-          --mode ${{ matrix.mode }}
-          --platform android
-          --build-id ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android
-          --timeout-ms 2700000
-
-      - name: Upload Android build product
+      - name: Setup ccache
+        uses: ./.github/actions/setup-ccache
+        with:
+          platform: android
+      - name: Restore Expo caches
+        uses: ./.github/actions/setup-expo-caches
+        with:
+          platform: android
+      - name: Materialize pinned Expo
+        run: bun run expo:prepare
+      - name: Build upstream or paired applications
+        env:
+          COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
+          BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-android
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$COMPATIBILITY_MODE" = pair ]; then
+            bun run better-native supervise-build-pair --platform android --build-id "$BUILD_ID" --timeout-ms 2700000
+          else
+            bun run better-native supervise-build --mode upstream --platform android --build-id "$BUILD_ID" --timeout-ms 2700000
+          fi
+      - name: Package Android build products
+        env:
+          COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
+          BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-android
+        shell: bash
+        run: |
+          set -euo pipefail
+          modes=(upstream)
+          [ "$COMPATIBILITY_MODE" = pair ] && modes+=(candidate)
+          for mode in "${modes[@]}"; do
+            [ "$COMPATIBILITY_MODE" = pair ] && workspace="${BUILD_ID}-${mode}" || workspace="$BUILD_ID"
+            destination=".artifacts/products/${BUILD_ID}/${mode}"
+            mkdir -p "$destination"
+            cp ".artifacts/workspaces/${workspace}/apps/compatibility-suite/android/app/build/outputs/apk/release/app-release.apk" "$destination/app-release.apk"
+          done
+      - name: Upload Android products
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: compatibility-build-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android
-          path: .artifacts/workspaces/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android/apps/compatibility-suite/android/app/build/outputs/apk/release/app-release.apk
+          name: compatibility-android-products-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/products/ci-${{ github.run_id }}-${{ github.run_attempt }}-android
           if-no-files-found: error
           retention-days: 3
-
       - name: Upload Android build evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: compatibility-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android
-          path: .artifacts/builds/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android
+          name: compatibility-android-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/builds/ci-${{ github.run_id }}-${{ github.run_attempt }}-android*
           if-no-files-found: warn
           retention-days: ${{ job.status == 'success' && 3 || 7 }}
 
   android-test:
-    name: Android emulator (${{ matrix.mode }}, shard ${{ matrix.shard }})
+    name: Android device test
     needs: android-build
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.platform == 'all' || inputs.platform == 'android'))
+    if: needs.android-build.result == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        mode: [upstream, candidate]
-        shard: [0, 1, 2, 3]
+    env:
+      COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
+      BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-android
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
-
       - name: Cleanup Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
-
-      - name: Setup project
-        uses: ./.github/actions/setup-project
-        with:
-          generate: "true"
-
-      - name: Setup JDK 17
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
-        with:
-          distribution: temurin
-          java-version: "17"
-
+      - name: Setup device-test profile
+        uses: ./.github/actions/setup-device-test
       - name: Setup Maestro
         uses: ./.github/actions/setup-maestro
         with:
-          # Match pinned Expo: 2.5+ changed Android emulator transport and
-          # fails against this CI topology.
           version: 2.4.0
-
-      - name: Download Android build product
+      - name: Download Android products
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: compatibility-build-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android
-          path: .artifacts/imports/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android/product
-
-      - name: Download Android build record
+          name: compatibility-android-products-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/products/${{ env.BUILD_ID }}
+      - name: Download Android build evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: compatibility-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android
-          path: .artifacts/imports/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android/evidence
-
-      - name: Run Android compatibility shard
+          name: compatibility-android-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/builds
+      - name: Run upstream or paired Android tests
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: 36
@@ -472,103 +474,48 @@ jobs:
           disable-animations: true
           disk-size: 4G
           emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
-          script: >-
-            bun run better-native supervise-native
-            --platform android
-            --record .artifacts/imports/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android/evidence/record.json
-            --binary .artifacts/imports/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android/product/app-release.apk
-            --device-id emulator-5554
-            --run-id ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android-${{ matrix.shard }}
-            --shard-index ${{ matrix.shard }}
-            --shard-count 4
-            --timeout-ms 1200000
-
+          script: |
+            set -euo pipefail
+            if [ "$COMPATIBILITY_MODE" = pair ]; then
+              upstream_record=".artifacts/builds/${BUILD_ID}-upstream/record.json"
+            else
+              upstream_record=".artifacts/builds/${BUILD_ID}/record.json"
+            fi
+            upstream_binary=".artifacts/products/${BUILD_ID}/upstream/app-release.apk"
+            if [ "$COMPATIBILITY_MODE" = pair ]; then
+              bun run better-native supervise-native-pair --platform android --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/products/${BUILD_ID}/candidate/app-release.apk" --device-id emulator-5554 --run-id "$BUILD_ID" --timeout-ms 1200000
+            else
+              bun run better-native supervise-native --platform android --record "$upstream_record" --binary "$upstream_binary" --device-id emulator-5554 --run-id "$BUILD_ID-upstream" --timeout-ms 1200000
+            fi
       - name: Upload Android run evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: compatibility-evidence-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android-${{ matrix.shard }}
-          path: .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.mode }}-android-${{ matrix.shard }}
+          name: compatibility-android-run-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-android*
           if-no-files-found: warn
           retention-days: ${{ job.status == 'success' && 3 || 7 }}
 
   android-compare:
     name: Android differential verdict
     needs: android-test
-    if: always() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.platform == 'all' || inputs.platform == 'android')))
+    if: >-
+      always() && needs.android-test.result == 'success' &&
+      (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'pair'))
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
-      - name: Setup project
-        uses: ./.github/actions/setup-project
-      - name: Download upstream shards
+      - name: Setup compare profile
+        uses: ./.github/actions/setup-compare
+      - name: Download Android run evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          pattern: compatibility-evidence-${{ github.run_id }}-${{ github.run_attempt }}-upstream-android-*
-          path: .artifacts/comparison/android/upstream
-      - name: Download candidate shards
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          pattern: compatibility-evidence-${{ github.run_id }}-${{ github.run_attempt }}-candidate-android-*
-          path: .artifacts/comparison/android/candidate
-      - name: Compare paired evidence
+          name: compatibility-android-run-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/runs
+      - name: Compare paired Android evidence
         run: >-
           bun run better-native compare-runs
-          --upstream .artifacts/comparison/android/upstream
-          --candidate .artifacts/comparison/android/candidate
-
-  compatibility-gate:
-    name: Compatibility gate
-    needs: [host-runner-plans, web-compare, ios-compare, android-compare]
-    if: always()
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    env:
-      EVENT_NAME: ${{ github.event_name }}
-      SELECTED_PLATFORM: ${{ inputs.platform || '' }}
-      HOST_RESULT: ${{ needs.host-runner-plans.result }}
-      WEB_RESULT: ${{ needs.web-compare.result }}
-      IOS_RESULT: ${{ needs.ios-compare.result }}
-      ANDROID_RESULT: ${{ needs.android-compare.result }}
-    steps:
-      - name: Enforce the applicable compatibility verdicts
-        shell: bash
-        run: |
-          set -euo pipefail
-          require_success() {
-            local name="$1"
-            local result="$2"
-            if [ "$result" != "success" ]; then
-              echo "$name compatibility result was $result"
-              exit 1
-            fi
-          }
-
-          case "$EVENT_NAME" in
-            schedule)
-              require_success host "$HOST_RESULT"
-              require_success web "$WEB_RESULT"
-              require_success ios "$IOS_RESULT"
-              require_success android "$ANDROID_RESULT"
-              ;;
-            workflow_dispatch)
-              case "$SELECTED_PLATFORM" in
-                all)
-                  require_success host "$HOST_RESULT"
-                  require_success web "$WEB_RESULT"
-                  require_success ios "$IOS_RESULT"
-                  require_success android "$ANDROID_RESULT"
-                  ;;
-                host) require_success host "$HOST_RESULT" ;;
-                web) require_success web "$WEB_RESULT" ;;
-                ios) require_success ios "$IOS_RESULT" ;;
-                android) require_success android "$ANDROID_RESULT" ;;
-                *) echo "Unknown compatibility platform: $SELECTED_PLATFORM"; exit 1 ;;
-              esac
-              ;;
-            *) require_success web "$WEB_RESULT" ;;
-          esac
+          --upstream .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-android-upstream
+          --candidate .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-android-candidate

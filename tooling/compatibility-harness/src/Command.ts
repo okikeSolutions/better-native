@@ -12,15 +12,16 @@ import * as RunnerPlanExecution from "./registry/RunnerPlanExecution.ts"
 import * as AuditPolicy from "./security/AuditPolicy.ts"
 import * as Expectations from "./policy/Expectations.ts"
 import * as Suites from "./suites/Suites.ts"
-import { BuildPipeline } from "./supervision/BuildPipeline.ts"
-import * as ExternalRunProtocol from "./supervision/ExternalRunProtocol.ts"
+import { BuildPipeline } from "./build/BuildPipeline.ts"
+import { ExpoToolchain } from "./build/ExpoToolchain.ts"
+import * as ExternalRunProtocol from "./protocol/ExternalRunProtocol.ts"
 import {
   ExternalRunnerSupervisor,
   ExternalRunRequest,
 } from "./supervision/ExternalRunnerSupervisor.ts"
 import { NativeSupervisor } from "./supervision/NativeSupervisor.ts"
 import { WebSupervisor } from "./supervision/WebSupervisor.ts"
-import * as RunComparison from "./supervision/RunComparison.ts"
+import * as RunComparison from "./comparison/RunComparison.ts"
 
 const requireSuccessfulRun = (record: {
   readonly plan: { readonly id: string }
@@ -73,6 +74,31 @@ const configuredCandidateRevision = Config.string("GITHUB_SHA").pipe(
 const candidateRevision = (mode: "upstream" | "candidate") =>
   mode === "candidate" ? configuredCandidateRevision : Effect.succeed(null)
 
+const prepareExpo = Command.make(
+  "prepare-expo",
+  { timeoutMillis: timeoutMillisFlag },
+  Effect.fn("Command.prepareExpo")(function* ({ timeoutMillis }) {
+    const repository = yield* ExpoRepository
+    const toolchain = yield* ExpoToolchain
+    const revision = repository.upstreams.expo.revision
+    const prepared = yield* toolchain.ensure({
+      id: `expo-${revision.slice(0, 12)}`,
+      mode: "upstream",
+      platform: "web",
+      expoRevision: revision,
+      candidateRevision: null,
+      timeoutMillis,
+    })
+    yield* Console.log(
+      JSON.stringify({ revision, root: prepared.root, artifacts: prepared.artifacts.length }),
+    )
+  }),
+).pipe(
+  Command.withDescription(
+    "Prepare and validate the pinned Expo toolchain before compatibility builds",
+  ),
+)
+
 const supervisedBuild = Command.make(
   "supervise-build",
   {
@@ -96,6 +122,50 @@ const supervisedBuild = Command.make(
     yield* Console.log(JSON.stringify(output.record, null, 2))
   }),
 ).pipe(Command.withDescription("Create an isolated production web or Release native build"))
+
+const supervisedBuildPair = Command.make(
+  "supervise-build-pair",
+  {
+    platform: buildPlatform,
+    buildId: buildIdFlag,
+    timeoutMillis: timeoutMillisFlag,
+  },
+  Effect.fn("Command.superviseBuildPair")(function* ({ platform, buildId, timeoutMillis }) {
+    const repository = yield* ExpoRepository
+    const builds = yield* BuildPipeline
+    const revision = yield* configuredCandidateRevision
+    const output = yield* builds.buildPair({
+      materializationId: `${buildId}-expo`,
+      upstream: {
+        id: `${buildId}-upstream`,
+        mode: "upstream",
+        platform,
+        expoRevision: repository.upstreams.expo.revision,
+        candidateRevision: null,
+        timeoutMillis,
+      },
+      candidate: {
+        id: `${buildId}-candidate`,
+        mode: "candidate",
+        platform,
+        expoRevision: repository.upstreams.expo.revision,
+        candidateRevision: revision,
+        timeoutMillis,
+      },
+    })
+    yield* Console.log(
+      JSON.stringify(
+        { upstream: output.upstream.record, candidate: output.candidate.record },
+        null,
+        2,
+      ),
+    )
+  }),
+).pipe(
+  Command.withDescription(
+    "Create paired isolated builds from one verified pinned Expo materialization",
+  ),
+)
 
 const webPort = Flag.integer("port").pipe(Flag.withDefault(8091))
 const supervisedWeb = Command.make(
@@ -131,6 +201,70 @@ const supervisedWeb = Command.make(
     yield* Console.log(JSON.stringify(record.finalInfrastructure))
   }),
 ).pipe(Command.withDescription("Build and execute a production web compatibility run"))
+
+const supervisedWebPair = Command.make(
+  "supervise-web-pair",
+  { buildId: buildIdFlag, timeoutMillis: timeoutMillisFlag, port: webPort },
+  Effect.fn("Command.superviseWebPair")(function* ({ buildId, timeoutMillis, port }) {
+    const repository = yield* ExpoRepository
+    const builds = yield* BuildPipeline
+    const web = yield* WebSupervisor
+    const corpus = yield* Suites.discover()
+    const revision = yield* configuredCandidateRevision
+    const metadata = yield* AppRegistry.loadMetadata()
+    const sourceIds = AppRegistry.runnableSourceIds(metadata, "web")
+    const caseIds = AppRegistry.runnableCaseIds(metadata, "web", sourceIds)
+    const pair = yield* builds.buildPair({
+      materializationId: `${buildId}-expo`,
+      upstream: {
+        id: `${buildId}-upstream`,
+        mode: "upstream",
+        platform: "web",
+        expoRevision: repository.upstreams.expo.revision,
+        candidateRevision: null,
+        timeoutMillis,
+      },
+      candidate: {
+        id: `${buildId}-candidate`,
+        mode: "candidate",
+        platform: "web",
+        expoRevision: repository.upstreams.expo.revision,
+        candidateRevision: revision,
+        timeoutMillis,
+      },
+    })
+    const upstream = yield* web.run({
+      id: `${buildId}-upstream-run`,
+      build: pair.upstream,
+      caseIds,
+      sourceIds,
+      port,
+      timeoutMillis,
+      corpus,
+    })
+    yield* requireSuccessfulRun(upstream)
+    const candidate = yield* web.run({
+      id: `${buildId}-candidate-run`,
+      build: pair.candidate,
+      caseIds,
+      sourceIds,
+      port,
+      timeoutMillis,
+      corpus,
+    })
+    yield* requireSuccessfulRun(candidate)
+    return yield* Console.log(
+      JSON.stringify({
+        upstream: upstream.finalInfrastructure,
+        candidate: candidate.finalInfrastructure,
+      }),
+    )
+  }),
+).pipe(
+  Command.withDescription(
+    "Build and execute paired production web runs from one pinned Expo materialization",
+  ),
+)
 
 const probeSpecifier = Flag.string("specifier")
 const probeWeb = Command.make(
@@ -244,6 +378,101 @@ const supervisedNative = Command.make(
 ).pipe(
   Command.withDescription(
     "Execute one generated Expo source shard against an imported native build",
+  ),
+)
+
+const upstreamRecordPathFlag = Flag.string("upstream-record")
+const upstreamBinaryPathFlag = Flag.string("upstream-binary")
+const candidateRecordPathFlag = Flag.string("candidate-record")
+const candidateBinaryPathFlag = Flag.string("candidate-binary")
+
+const supervisedNativePair = Command.make(
+  "supervise-native-pair",
+  {
+    platform: nativePlatform,
+    upstreamRecordPath: upstreamRecordPathFlag,
+    upstreamBinaryPath: upstreamBinaryPathFlag,
+    candidateRecordPath: candidateRecordPathFlag,
+    candidateBinaryPath: candidateBinaryPathFlag,
+    deviceId: deviceIdFlag,
+    runId: runIdFlag,
+    shardIndex: shardIndexFlag,
+    shardCount: shardCountFlag,
+    permissionState: permissionStateFlag,
+    timeoutMillis: timeoutMillisFlag,
+  },
+  Effect.fn("Command.superviseNativePair")(function* ({
+    platform,
+    upstreamRecordPath,
+    upstreamBinaryPath,
+    candidateRecordPath,
+    candidateBinaryPath,
+    deviceId,
+    runId,
+    shardIndex,
+    shardCount,
+    permissionState,
+    timeoutMillis,
+  }) {
+    if (shardCount < 1 || shardIndex < 0 || shardIndex >= shardCount) {
+      return yield* new HarnessError({
+        operation: "validate native shard",
+        cause: `shard ${shardIndex} is outside shard count ${shardCount}`,
+      })
+    }
+    const builds = yield* BuildPipeline
+    const native = yield* NativeSupervisor
+    const metadata = yield* AppRegistry.loadMetadata()
+    const sourceIds = AppRegistry.runnableSourceIds(metadata, platform).filter(
+      (_, index) => index % shardCount === shardIndex,
+    )
+    const caseIds = AppRegistry.runnableCaseIds(metadata, platform, sourceIds)
+    if (sourceIds.length === 0) {
+      return yield* new HarnessError({
+        operation: "select native shard",
+        cause: `shard ${shardIndex} selected no ${platform} sources`,
+      })
+    }
+    const [upstreamBuild, candidateBuild] = yield* Effect.all([
+      builds.load({ recordPath: upstreamRecordPath, binaryPath: upstreamBinaryPath, platform }),
+      builds.load({ recordPath: candidateRecordPath, binaryPath: candidateBinaryPath, platform }),
+    ])
+    const device = {
+      platform,
+      id: deviceId,
+      applicationId: "dev.betternative.compatibility",
+      ...(platform === "android" ? { activity: ".MainActivity" } : {}),
+    } as const
+    const upstream = yield* native.run({
+      id: `${runId}-upstream`,
+      build: upstreamBuild,
+      device,
+      caseIds,
+      sourceIds,
+      permissionState,
+      timeoutMillis,
+    })
+    yield* requireSuccessfulRun(upstream)
+    const candidate = yield* native.run({
+      id: `${runId}-candidate`,
+      build: candidateBuild,
+      device,
+      caseIds,
+      sourceIds,
+      permissionState,
+      timeoutMillis,
+    })
+    yield* requireSuccessfulRun(candidate)
+    return yield* Console.log(
+      JSON.stringify({
+        upstream: upstream.finalInfrastructure,
+        candidate: candidate.finalInfrastructure,
+      }),
+    )
+  }),
+).pipe(
+  Command.withDescription(
+    "Execute paired upstream and candidate shards sequentially on one reset native device",
   ),
 )
 
@@ -391,10 +620,14 @@ export const command = Command.make("better-native").pipe(
     doctor,
     securityAudit,
     updateSurfaceLock,
+    prepareExpo,
     supervisedBuild,
+    supervisedBuildPair,
     supervisedWeb,
+    supervisedWebPair,
     probeWeb,
     supervisedNative,
+    supervisedNativePair,
     supervisedExternal,
     supervisedRunnerPlans,
     compareRuns,

@@ -72,8 +72,12 @@ vite.config.ts.timestamp-*
 
 # better-native compatibility artifacts
 .artifacts/
+.turbo/
 .playwright-mcp/
 apps/compatibility-suite/.expo/
 apps/compatibility-suite/android/
 apps/compatibility-suite/ios/
 apps/landing/dist/
+
+# Turborepo
+.turbo

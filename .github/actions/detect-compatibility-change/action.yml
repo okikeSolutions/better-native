@@ -1,0 +1,58 @@
+name: Detect compatibility platform change
+description: Adapted from pinned Expo CI to classify web, iOS, and Android compatibility work
+
+inputs:
+  web-paths:
+    description: Paths that trigger web compatibility
+    required: true
+  android-paths:
+    description: Paths that trigger Android compatibility
+    required: true
+  ios-paths:
+    description: Paths that trigger iOS compatibility
+    required: true
+  common-paths:
+    description: Paths that trigger every compatibility platform
+    required: true
+  shared-ignores:
+    description: Paths to ignore for all platforms
+    required: false
+    default: >-
+      "!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/oxlint.config.*,**/.oxfmtrc*,**/.gitattributes,**/.watchmanconfig}"
+
+outputs:
+  should_run_web:
+    value: ${{ steps.changes.outputs.web_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
+  should_run_android:
+    value: ${{ steps.changes.outputs.android_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
+  should_run_ios:
+    value: ${{ steps.changes.outputs.ios_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      with:
+        fetch-depth: 1000
+        filter: blob:none
+
+    - name: Classify changed paths
+      id: changes
+      uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47.0.0
+      with:
+        fetch_depth: 1000
+        files_yaml: |
+          web: [ ${{ inputs.web-paths }}, ${{ inputs.shared-ignores }} ]
+          ios: [ ${{ inputs.ios-paths }}, ${{ inputs.shared-ignores }} ]
+          android: [ ${{ inputs.android-paths }}, ${{ inputs.shared-ignores }} ]
+          common: [ ${{ inputs.common-paths }}, ${{ inputs.shared-ignores }} ]
+
+    - name: Print detection summary
+      shell: bash
+      run: |
+        echo "### Compatibility platform detection"
+        echo "web=${{ steps.changes.outputs.web_any_changed }}"
+        echo "ios=${{ steps.changes.outputs.ios_any_changed }}"
+        echo "android=${{ steps.changes.outputs.android_any_changed }}"
+        echo "common=${{ steps.changes.outputs.common_any_changed }}"

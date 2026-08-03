@@ -21,11 +21,11 @@ import {
   type TestCaseId,
   type TestSourceId,
 } from "../Domain.ts"
-import type { BuildOutput } from "./BuildPipeline.ts"
-import { EvidenceStore } from "./EvidenceStore.ts"
-import { DiscoveryPass } from "./DiscoveryPass.ts"
+import type { BuildOutput } from "../build/BuildPipeline.ts"
+import { DiscoveryPass } from "../evidence/DiscoveryPass.ts"
+import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import { ProcessSupervisor, type RunningProcess } from "./ProcessSupervisor.ts"
-import * as RunProtocol from "./RunProtocol.ts"
+import * as RunProtocol from "../protocol/RunProtocol.ts"
 
 export interface WebRunRequest {
   readonly id: string

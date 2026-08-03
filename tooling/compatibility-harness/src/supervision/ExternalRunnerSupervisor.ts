@@ -7,8 +7,8 @@ import * as Option from "effect/Option"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
 import { CaseResult, RunId, TestSourceId, type CaseResult as CaseResultType } from "../Domain.ts"
-import { EvidenceStore } from "./EvidenceStore.ts"
-import * as ExternalRunnerAdapters from "./ExternalRunnerAdapters.ts"
+import { EvidenceStore } from "../evidence/EvidenceStore.ts"
+import * as ExternalRunnerAdapters from "../runners/ExternalRunnerAdapters.ts"
 import { ProcessSupervisor, type ProcessSpec } from "./ProcessSupervisor.ts"
 
 export const ExternalRunRequest = Schema.Struct({

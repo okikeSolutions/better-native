@@ -5,7 +5,7 @@ import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
 import { ExpoRepository } from "../ExpoRepository.ts"
 import { HarnessError } from "../HarnessError.ts"
-import * as ExternalRunProtocol from "../supervision/ExternalRunProtocol.ts"
+import * as ExternalRunProtocol from "../protocol/ExternalRunProtocol.ts"
 import {
   ExternalRunnerSupervisor,
   ExternalRunRequest,

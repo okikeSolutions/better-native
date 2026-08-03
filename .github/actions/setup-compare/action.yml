@@ -1,0 +1,8 @@
+name: Setup compare profile
+description: Install only the Bun workspace required to compare downloaded compatibility evidence
+
+runs:
+  using: composite
+  steps:
+    - name: Setup static profile
+      uses: ./.github/actions/setup-static

@@ -4,7 +4,7 @@ import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import { RunId, TestSourceId } from "../Domain.ts"
-import * as EvidenceStore from "./EvidenceStore.ts"
+import * as EvidenceStore from "../evidence/EvidenceStore.ts"
 import { ExternalRunnerSupervisor, layer } from "./ExternalRunnerSupervisor.ts"
 import { ProcessSupervisor } from "./ProcessSupervisor.ts"
 

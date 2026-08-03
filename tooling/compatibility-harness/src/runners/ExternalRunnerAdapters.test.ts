@@ -1,7 +1,7 @@
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import { RunId, TestCaseId, TestSourceId } from "../Domain.ts"
-import * as ExternalRunProtocol from "./ExternalRunProtocol.ts"
+import * as ExternalRunProtocol from "../protocol/ExternalRunProtocol.ts"
 import {
   jestCaseName,
   parseJest,

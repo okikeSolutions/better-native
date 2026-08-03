@@ -13,10 +13,39 @@ import {
   layer,
   pinnedPluginPackages,
 } from "./BuildPipeline.ts"
-import { EvidenceStore } from "./EvidenceStore.ts"
-import { ProcessSupervisor, type ProcessSpec } from "./ProcessSupervisor.ts"
+import { layer as buildCommandLayer } from "./BuildCommand.ts"
+import type { BuildRequest } from "./BuildModel.ts"
+import { ExpoToolchain, layer as expoToolchainLayer } from "./ExpoToolchain.ts"
+import { EvidenceStore } from "../evidence/EvidenceStore.ts"
+import { ProcessSupervisor, type ProcessSpec } from "../supervision/ProcessSupervisor.ts"
 
 const expoRevision = "1".repeat(40)
+
+const preparePinnedExpoFixture = (root: string) =>
+  Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem
+    const upstream = `${root}/vendor/expo`
+    yield* fs.makeDirectory(`${upstream}/node_modules`, { recursive: true })
+    yield* fs.makeDirectory(`${upstream}/packages/expo/build`, { recursive: true })
+    yield* fs.makeDirectory(`${upstream}/packages/@expo/cli/build/src`, { recursive: true })
+    yield* fs.writeFileString(`${upstream}/node_modules/.modules.yaml`, "fresh")
+    yield* fs.writeFileString(`${upstream}/packages/expo/build/Expo.js`, "export {}")
+    yield* fs.writeFileString(`${upstream}/packages/expo/build/Expo.d.ts`, "export {}")
+    yield* fs.writeFileString(`${upstream}/packages/@expo/cli/build/src/index.js`, "export {}")
+    for (const packageName of pinnedPluginPackages) {
+      yield* fs.makeDirectory(`${upstream}/packages/${packageName}/plugin/build`, {
+        recursive: true,
+      })
+      yield* fs.writeFileString(
+        `${upstream}/packages/${packageName}/app.plugin.js`,
+        "module.exports = require('./plugin/build/index')",
+      )
+      yield* fs.writeFileString(
+        `${upstream}/packages/${packageName}/plugin/build/index.js`,
+        "module.exports = {}",
+      )
+    }
+  })
 
 const unusedProcesses = Layer.succeed(
   ProcessSupervisor,
@@ -35,6 +64,24 @@ const unusedEvidence = Layer.succeed(
 )
 
 const dependencies = Layer.mergeAll(BunServices.layer, unusedProcesses, unusedEvidence)
+
+const buildPipelineLayer = (root: string) => {
+  const commands = buildCommandLayer
+  const toolchain = expoToolchainLayer(root).pipe(Layer.provide(commands))
+  return layer(root).pipe(Layer.provide(Layer.mergeAll(commands, toolchain)))
+}
+
+const prepareToolchain = (root: string, request: BuildRequest) =>
+  Effect.gen(function* () {
+    const toolchain = yield* ExpoToolchain
+    return yield* toolchain.prepare(request)
+  }).pipe(Effect.provide(expoToolchainLayer(root).pipe(Layer.provideMerge(buildCommandLayer))))
+
+const ensureToolchain = (root: string, request: BuildRequest) =>
+  Effect.gen(function* () {
+    const toolchain = yield* ExpoToolchain
+    return yield* toolchain.ensure(request)
+  }).pipe(Effect.provide(expoToolchainLayer(root).pipe(Layer.provideMerge(buildCommandLayer))))
 
 describe("BuildPipeline imported products", () => {
   it.effect("accepts a hash-matched Release product and rejects tampering", () =>
@@ -74,7 +121,7 @@ describe("BuildPipeline imported products", () => {
           .pipe(Effect.flip)
         assert.instanceOf(failure, BuildImportError)
         assert.match(String(failure.cause), /hash/)
-      }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(dependencies))))
+      }).pipe(Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))))
       yield* program
     }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
   )
@@ -107,7 +154,10 @@ describe("BuildPipeline imported products", () => {
       const externalFailure = yield* Effect.gen(function* () {
         const builds = yield* BuildPipeline
         return yield* builds.load({ recordPath, binaryPath, platform: "ios" })
-      }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(dependencies))), Effect.flip)
+      }).pipe(
+        Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))),
+        Effect.flip,
+      )
       assert.instanceOf(externalFailure, BuildImportError)
       assert.match(String(externalFailure.cause), /symbolic link/)
 
@@ -116,7 +166,10 @@ describe("BuildPipeline imported products", () => {
       const cyclicFailure = yield* Effect.gen(function* () {
         const builds = yield* BuildPipeline
         return yield* builds.load({ recordPath, binaryPath, platform: "ios" })
-      }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(dependencies))), Effect.flip)
+      }).pipe(
+        Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))),
+        Effect.flip,
+      )
       assert.instanceOf(cyclicFailure, BuildImportError)
       assert.match(String(cyclicFailure.cause), /symbolic link/)
     }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
@@ -129,11 +182,11 @@ describe("BuildPipeline imported products", () => {
       for (const directory of [
         `${root}/apps/compatibility-suite`,
         `${root}/node_modules`,
-        `${root}/vendor`,
         `${root}/packages`,
       ]) {
         yield* fs.makeDirectory(directory, { recursive: true })
       }
+      yield* preparePinnedExpoFixture(root)
       yield* fs.writeFileString(`${root}/apps/compatibility-suite/package.json`, "{}")
       const calls: Array<ProcessSpec> = []
       const evidenceNames: Array<string> = []
@@ -142,55 +195,9 @@ describe("BuildPipeline imported products", () => {
         ProcessSupervisor.of({
           start: () => Effect.die("unexpected process start"),
           run: (spec) =>
-            Effect.gen(function* () {
+            Effect.sync(() => {
               calls.push(spec)
-              if (spec.command === "git" && spec.args?.includes("worktree")) {
-                const upstream = spec.args.at(-2)
-                if (upstream === undefined) return yield* Effect.die("missing worktree path")
-                yield* fs
-                  .makeDirectory(`${upstream}/node_modules`, { recursive: true })
-                  .pipe(Effect.orDie)
-                yield* fs
-                  .makeDirectory(`${upstream}/packages/expo/build`, {
-                    recursive: true,
-                  })
-                  .pipe(Effect.orDie)
-                yield* fs
-                  .writeFileString(`${upstream}/node_modules/.modules.yaml`, "fresh")
-                  .pipe(Effect.orDie)
-                yield* fs
-                  .writeFileString(`${upstream}/packages/expo/build/Expo.js`, "export {}")
-                  .pipe(Effect.orDie)
-                yield* fs
-                  .writeFileString(`${upstream}/packages/expo/build/Expo.d.ts`, "export {}")
-                  .pipe(Effect.orDie)
-                for (const packageName of pinnedPluginPackages) {
-                  yield* fs
-                    .makeDirectory(`${upstream}/packages/${packageName}/plugin/build`, {
-                      recursive: true,
-                    })
-                    .pipe(Effect.orDie)
-                  yield* fs
-                    .writeFileString(
-                      `${upstream}/packages/${packageName}/app.plugin.js`,
-                      "module.exports = require('./plugin/build/index')",
-                    )
-                    .pipe(Effect.orDie)
-                  yield* fs
-                    .writeFileString(
-                      `${upstream}/packages/${packageName}/plugin/build/index.js`,
-                      "module.exports = {}",
-                    )
-                    .pipe(Effect.orDie)
-                }
-                return { exitCode: 0, observations: [] }
-              }
               if (spec.command === "git") {
-                const postBuildStatus =
-                  spec.args?.includes("status") === true &&
-                  calls.some(
-                    ({ command, args }) => command === "corepack" && args?.includes("turbo"),
-                  )
                 if (spec.args?.includes("rev-parse")) {
                   return {
                     exitCode: 0,
@@ -206,16 +213,7 @@ describe("BuildPipeline imported products", () => {
                 }
                 return {
                   exitCode: 0,
-                  observations: postBuildStatus
-                    ? [
-                        {
-                          sequence: 0,
-                          timestampMillis: 0,
-                          stream: "stdout" as const,
-                          text: " M packages/expo/build/Expo.js",
-                        },
-                      ]
-                    : [],
+                  observations: [],
                 }
               }
               if (spec.command === "corepack") return { exitCode: 0, observations: [] }
@@ -244,6 +242,14 @@ describe("BuildPipeline imported products", () => {
         }),
       )
       const failure = yield* Effect.gen(function* () {
+        yield* prepareToolchain(root, {
+          id: "failed-expo",
+          mode: "upstream",
+          platform: "web",
+          expoRevision,
+          candidateRevision: null,
+          timeoutMillis: 1_000,
+        })
         const builds = yield* BuildPipeline
         return yield* builds
           .build({
@@ -257,7 +263,7 @@ describe("BuildPipeline imported products", () => {
           .pipe(Effect.flip)
       }).pipe(
         Effect.provide(
-          layer(root).pipe(
+          buildPipelineLayer(root).pipe(
             Layer.provideMerge(Layer.mergeAll(BunServices.layer, processes, evidence)),
           ),
         ),
@@ -266,35 +272,23 @@ describe("BuildPipeline imported products", () => {
       assert.strictEqual(failure.phase, "build", String(failure.cause))
       assert.include(evidenceNames, "upstream-source-status.ndjson")
       assert.include(evidenceNames, "upstream-post-build-status.ndjson")
-      assert.isTrue(
-        yield* fs.exists(
-          `${root}/.artifacts/upstreams/expo-${expoRevision}-failed-web-build/node_modules/.modules.yaml`,
-        ),
-      )
-      const upstreamBuild = calls.find(
-        ({ command, args }) => command === "corepack" && args?.includes("turbo"),
-      )
-      assert.isDefined(upstreamBuild)
+      assert.isTrue(yield* fs.exists(`${root}/vendor/expo/node_modules/.modules.yaml`))
       const sourceStatusIndex = calls.findIndex(
         ({ command, args }) => command === "git" && args?.includes("status"),
       )
       const installIndex = calls.findIndex(
         ({ command, args }) => command === "corepack" && args?.includes("install"),
       )
-      const upstreamBuildIndex = calls.indexOf(upstreamBuild)
+      const install = calls[installIndex]
+      assert.isFalse(install?.args?.includes("--ignore-scripts") === true)
+      assert.isFalse(calls.some(({ args }) => args?.includes("rebuild") === true))
+      assert.isFalse(calls.some(({ args }) => args?.includes("turbo") === true))
       const postBuildStatusIndex = calls.findLastIndex(
         ({ command, args }) => command === "git" && args?.includes("status"),
       )
       assert.isAtLeast(sourceStatusIndex, 0)
       assert.isAbove(installIndex, sourceStatusIndex)
-      assert.isAbove(upstreamBuildIndex, installIndex)
-      assert.isAbove(postBuildStatusIndex, upstreamBuildIndex)
-      for (const packageName of pinnedPluginPackages) {
-        assert.isTrue(
-          upstreamBuild.args?.includes(`${packageName}...`),
-          `${packageName} must be materialized before config evaluation`,
-        )
-      }
+      assert.isAbove(postBuildStatusIndex, installIndex)
       const configIndex = calls.findIndex(
         ({ command, args }) => command === "node" && args?.includes("config"),
       )
@@ -322,52 +316,145 @@ describe("BuildPipeline imported products", () => {
             timeoutMillis: 1_000,
           })
           .pipe(Effect.flip)
-      }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(dependencies))))
+      }).pipe(Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))))
       assert.instanceOf(failure, BuildPipelineError)
       assert.strictEqual(failure.phase, "upstream")
       assert.match(String(failure.cause), /40-character/)
     }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
   )
 
-  it.effect(
-    "rejects pre-existing executable materializations instead of trusting ignored output",
-    () =>
-      Effect.gen(function* () {
-        const fs = yield* FileSystem.FileSystem
-        const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-tampered-cache-" })
-        const upstream = `${root}/.artifacts/upstreams/expo-${expoRevision}-tampered-cache`
-        yield* fs.makeDirectory(`${upstream}/node_modules`, { recursive: true })
-        yield* fs.writeFileString(`${upstream}/node_modules/payload.js`, "malicious")
-        const failure = yield* Effect.gen(function* () {
-          const builds = yield* BuildPipeline
-          return yield* builds
-            .build({
-              id: "tampered-cache",
-              mode: "upstream",
-              platform: "web",
-              expoRevision,
-              candidateRevision: null,
-              timeoutMillis: 1_000,
-            })
-            .pipe(Effect.flip)
-        }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(dependencies))))
-        assert.instanceOf(failure, BuildPipelineError)
-        assert.strictEqual(failure.phase, "upstream")
-        assert.match(String(failure.cause), /refusing to reuse executable Expo materialization/)
-        assert.strictEqual(
-          yield* fs.readFileString(`${upstream}/node_modules/payload.js`),
-          "malicious",
-        )
-      }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+  it.effect("prepares pinned Expo once before a paired web build", () =>
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem
+      const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-build-pair-" })
+      for (const directory of [
+        `${root}/apps/compatibility-suite`,
+        `${root}/node_modules`,
+        `${root}/packages`,
+      ]) {
+        yield* fs.makeDirectory(directory, { recursive: true })
+      }
+      yield* preparePinnedExpoFixture(root)
+      yield* fs.writeFileString(`${root}/apps/compatibility-suite/package.json`, "{}")
+      const calls: Array<ProcessSpec> = []
+      const processes = Layer.succeed(
+        ProcessSupervisor,
+        ProcessSupervisor.of({
+          start: () => Effect.die("unexpected process start"),
+          run: (spec) =>
+            Effect.gen(function* () {
+              calls.push(spec)
+              if (spec.command === "git" && spec.args?.includes("rev-parse")) {
+                return {
+                  exitCode: 0,
+                  observations: [
+                    {
+                      sequence: 0,
+                      timestampMillis: 0,
+                      stream: "stdout" as const,
+                      text: expoRevision,
+                    },
+                  ],
+                }
+              }
+              if (spec.command === "node" && spec.args?.includes("export")) {
+                const outputIndex = spec.args.indexOf("--output-dir")
+                const output = spec.args[outputIndex + 1]
+                if (output === undefined) return yield* Effect.die("missing web output path")
+                yield* fs.makeDirectory(output, { recursive: true })
+                yield* fs.writeFileString(
+                  `${output}/index.html`,
+                  spec.env?.BETTER_NATIVE_MODE ?? "",
+                )
+              }
+              return { exitCode: 0, observations: [] }
+            }).pipe(Effect.orDie),
+        }),
+      )
+      const evidence = Layer.succeed(
+        EvidenceStore,
+        EvidenceStore.of({
+          writeBytes: (_collection, recordId, name) =>
+            Effect.succeed({
+              id: ArtifactId.make(`builds/${recordId}/${name}@${"0".repeat(64)}`),
+              path: `.artifacts/builds/${recordId}/${name}`,
+              mediaType: "application/x-ndjson",
+              size: 0,
+              hash: ContentHash.make("0".repeat(64)),
+            }),
+          writeJson: (_collection, recordId, name) =>
+            Effect.succeed({
+              id: ArtifactId.make(`builds/${recordId}/${name}@${"0".repeat(64)}`),
+              path: `.artifacts/builds/${recordId}/${name}`,
+              mediaType: "application/json",
+              size: 0,
+              hash: ContentHash.make("0".repeat(64)),
+            }),
+        }),
+      )
+      const pair = yield* Effect.gen(function* () {
+        const preparation = {
+          id: "paired-expo",
+          mode: "upstream",
+          platform: "web",
+          expoRevision,
+          candidateRevision: null,
+          timeoutMillis: 1_000,
+        } as const
+        yield* prepareToolchain(root, preparation)
+        yield* ensureToolchain(root, preparation)
+        const builds = yield* BuildPipeline
+        return yield* builds.buildPair({
+          materializationId: "paired-expo",
+          upstream: {
+            id: "paired-upstream",
+            mode: "upstream",
+            platform: "web",
+            expoRevision,
+            candidateRevision: null,
+            timeoutMillis: 1_000,
+          },
+          candidate: {
+            id: "paired-candidate",
+            mode: "candidate",
+            platform: "web",
+            expoRevision,
+            candidateRevision: "candidate-revision",
+            timeoutMillis: 1_000,
+          },
+        })
+      }).pipe(
+        Effect.provide(
+          buildPipelineLayer(root).pipe(
+            Layer.provideMerge(Layer.mergeAll(BunServices.layer, processes, evidence)),
+          ),
+        ),
+      )
+      assert.strictEqual(pair.upstream.record.mode, "upstream")
+      assert.strictEqual(pair.candidate.record.mode, "candidate")
+      assert.strictEqual(
+        calls.filter(({ command, args }) => command === "git" && args?.includes("worktree")).length,
+        0,
+      )
+      assert.strictEqual(
+        calls.filter(({ command, args }) => command === "corepack" && args?.includes("install"))
+          .length,
+        1,
+      )
+      assert.strictEqual(
+        calls.filter(({ command, args }) => command === "node" && args?.includes("export")).length,
+        2,
+      )
+    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
   )
 
-  it.effect("rejects a symbolic-link pinned workspace", () =>
+  it.effect("rejects a symbolic-link pinned Expo root", () =>
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem
       const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-cache-link-" })
       const outside = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-cache-outside-" })
-      yield* fs.makeDirectory(`${root}/.artifacts/upstreams`, { recursive: true })
-      yield* fs.symlink(outside, `${root}/.artifacts/upstreams/expo-${expoRevision}-linked-cache`)
+      yield* fs.makeDirectory(`${root}/vendor`, { recursive: true })
+      yield* fs.symlink(outside, `${root}/vendor/expo`)
       const failure = yield* Effect.gen(function* () {
         const builds = yield* BuildPipeline
         return yield* builds
@@ -380,9 +467,9 @@ describe("BuildPipeline imported products", () => {
             timeoutMillis: 1_000,
           })
           .pipe(Effect.flip)
-      }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(dependencies))))
+      }).pipe(Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))))
       assert.instanceOf(failure, BuildPipelineError)
-      assert.match(String(failure.cause), /symbolic-link pinned Expo workspace/)
+      assert.match(String(failure.cause), /symbolic-link pinned Expo root/)
     }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
   )
 })

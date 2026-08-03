@@ -1,0 +1,8 @@
+name: Setup device-test profile
+description: Install only the Bun workspace and device-test tools needed to consume immutable build products
+
+runs:
+  using: composite
+  steps:
+    - name: Setup static profile
+      uses: ./.github/actions/setup-static

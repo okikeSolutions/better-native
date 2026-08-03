@@ -24,8 +24,12 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Setup project
-        uses: ./.github/actions/setup-project
+      - name: Setup static profile
+        uses: ./.github/actions/setup-static
 
       - name: Check
         run: bun run check
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+          TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}

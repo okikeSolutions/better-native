@@ -15,7 +15,6 @@
         "app/**/*.{ts,tsx}",
         "src/generated/**/*.{ts,tsx}",
         "src/**/*.test.ts",
-        "babel.config.cjs",
         "metro.config.cjs"
       ],
       "project": ["app/**/*.{ts,tsx}", "src/**/*.{ts,tsx}", "*.{ts,cjs}"],

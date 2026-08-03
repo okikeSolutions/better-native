@@ -58,6 +58,48 @@ vendor/expo                    Pinned Expo source and behavioral oracle
 .artifacts                     Disposable catalogs, reports, builds, logs, and screenshots
 ```
 
+The harness source is divided by responsibility:
+
+```text
+src/build       Expo toolchain preparation, isolated CNG workspaces, builds, and product import
+src/supervision Scoped processes plus web, simulator, emulator, and external-runner lifecycles
+src/evidence    Immutable evidence storage and runtime discovery
+src/protocol    Cross-process run protocols
+src/comparison  Upstream/candidate differential verdicts
+src/runners     Upstream runner adapters
+```
+
+`BuildPipeline` now only coordinates prepared toolchains with build execution and product import.
+It does not install Expo or own process lifecycle behavior.
+
+### Build service ownership
+
+`main.ts` constructs each shared build service once. `BuildPipeline` receives the shared
+`BuildCommand` and `ExpoToolchain` services; it never creates another materialization path. This
+makes the pinned Expo installation a real dependency-graph invariant.
+
+```mermaid
+flowchart TB
+  Main["main.ts"]
+  Process["ProcessSupervisor"]
+  Evidence["EvidenceStore"]
+  Command["BuildCommand"]
+  Toolchain["ExpoToolchain"]
+  Pipeline["BuildPipeline"]
+  Executor["AppBuildExecutor"]
+  Importer["AppBuildImporter"]
+
+  Main --> Process
+  Main --> Evidence
+  Process --> Command
+  Evidence --> Command
+  Command --> Toolchain
+  Command --> Pipeline
+  Toolchain --> Pipeline
+  Executor --> Pipeline
+  Importer --> Pipeline
+```
+
 External runner plans are executable-code manifests, not untrusted data. Every plan is reviewed
 like source code, declares `"reviewed": true`, remains inside the repository, and uses only the
 narrow command set associated with its runner. The supervisor confines working directories and
@@ -104,22 +146,70 @@ The following are deterministic and reviewed in version control:
 - expectations and upstream overlays;
 - harness schemas and code.
 
-Build products, test reports, logs, screenshots, simulator state, and temporary upstream worktrees belong under `.artifacts` and are not committed.
-Each build materializes a unique detached Expo worktree, performs a fresh frozen install, and
-rebuilds its dependency closure. Executable ignored outputs are never reused across invocations or
-trust boundaries.
+Build products, test reports, logs, screenshots, and simulator state belong under `.artifacts` and
+are not committed. The repository root owns only its own Turbo configuration through `turbo.json`.
+Pinned Expo is materialized by the harness with Expo's normal `pnpm install --frozen-lockfile`
+lifecycle. The harness does not suppress lifecycle scripts, curate a replacement rebuild list, or
+inject a Turbo endpoint into `vendor/expo`. This is the same runnable-workspace model used by
+Expo's test-suite workflows. Compatibility build services consume that one verified
+materialization and create separate upstream and candidate CNG workspaces only when a differential
+run is requested.
+
+Root checks may use this repository's signed remote Turbo cache when credentials are configured.
+Compatibility jobs deliberately do not pass those credentials to pinned Expo. Missing cache
+credentials affect speed only, never correctness.
 
 ## Hosted execution
 
-Compatibility execution is hosted by GitHub Actions. Developer machines are not the default native build or device-test environment.
+Compatibility execution is hosted by GitHub Actions. Developer machines are not the default native
+build or device-test environment. Its topology is adapted directly from Expo:
 
-- `.github/workflows/check.yml` runs the complete repository check on pushes and pull requests.
-- `.github/workflows/compatibility.yml` runs paired upstream and candidate web vectors on relevant pushes and pull requests.
-- The compatibility workflow exposes manual `host`, `web`, `ios`, `android`, and `all` targets. Native targets create Release simulator or emulator binaries on the same operating systems used by the pinned Expo test suite. Host execution uses Expo's Node 24 baseline, installs the exact pinned Expo workspace, and executes generated, sharded Jest, Node test-runner, and Bun plans only when the owning workspace has an authoritative compatible command. Workspace setup, custom Jest projects, platform requirements, Playwright, Maestro, and native lifecycles remain explicit blockers until their complete upstream invocation can be supervised. Every ledger entry receives a `passed`, `failed`, `blocked`, or `not-run` disposition.
-- Every job uses an ephemeral workspace, a bounded job timeout, a bounded Effect process timeout, and concurrency cancellation.
-- Release build products are retained for three days. Successful build and run evidence is retained for three days; failed or cancelled job evidence is retained for seven days. GitHub expires artifacts automatically, and generated CNG workspaces are never uploaded wholesale.
+```mermaid
+flowchart TB
+  Change["Detect platform changes"]
+  Static["Repository checks<br/>setup-static"]
+  Change --> Static
 
-Build and execution are separate compatibility phases. Hosted native build jobs produce immutable paired build inputs; sharded device jobs consume those products, verify the build-record hash, and emit validated run evidence. The native result protocol uses Maestro's accessibility hierarchy, matching Expo's Release-test approach without requiring a debuggable application sandbox.
+  Mode{"Baseline or pair?"}
+  Change --> Mode
+
+  Baseline["Pull request / push<br/>upstream baseline"]
+  Pair["Weekly schedule / manual pair<br/>upstream + candidate"]
+  Mode --> Baseline
+  Mode --> Pair
+
+  WebBaseline["Web build and run<br/>setup-build"]
+  NativeBuild["iOS / Android Release build<br/>setup-build"]
+  Device["Simulator / emulator test<br/>setup-device-test"]
+  PairWeb["Paired web build and run<br/>setup-build"]
+  PairBuild["Paired native Release build<br/>setup-build"]
+  PairDevice["Paired device test<br/>setup-device-test"]
+  Compare["Differential verdict<br/>setup-compare"]
+
+  Baseline --> WebBaseline
+  Baseline --> NativeBuild --> Device
+  Pair --> PairWeb --> Compare
+  Pair --> PairBuild --> PairDevice --> Compare
+
+  WebBaseline --> BaselineEvidence["Upstream evidence"]
+  Device --> BaselineEvidence
+  Compare --> PairEvidence["Paired verdict and evidence"]
+```
+
+`setup-static`, `setup-build`, `setup-device-test`, and `setup-compare` are explicit job profiles.
+Only the build profile installs Node and pnpm and materializes pinned Expo. Device jobs consume
+immutable products; comparison jobs consume downloaded evidence and never install Expo or generate
+the catalog. Pull requests and pushes run the upstream baseline for affected platforms. The weekly
+schedule and manual `pair` mode run upstream and candidate through the same build and device paths;
+candidate mode changes only Metro resolution. Differential verdicts are emitted in their own
+lightweight jobs.
+
+The copied Expo primitives retain platform change classification, ccache configuration, Gradle and
+React Native download cache boundaries, Xcode-version invalidation, runner cleanup, and the pinned
+Maestro versions. Release products and successful evidence are retained for three days; failures
+are retained for seven. Native fingerprinting, repacking, reusable native shells, and timing-based
+sharding are intentionally outside this baseline. They may only be introduced after paired runs are
+stable and each has a dedicated invariant and fault-injection test.
 
 ## Validation rules
 

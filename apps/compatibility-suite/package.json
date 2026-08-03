@@ -145,9 +145,11 @@
     "unimodules-image-loader-interface": "~6.1.0"
   },
   "devDependencies": {
+    "@babel/plugin-transform-object-rest-spread": "^7.24.7",
     "@types/jasmine": "^5.1.15",
     "@types/lodash": "^4.17.20",
-    "@types/react": "~19.2.0"
+    "@types/react": "~19.2.0",
+    "babel-preset-expo": "~57.0.5"
   },
   "browserslist": [
     ">0.2%",

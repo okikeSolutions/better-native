@@ -1,0 +1,51 @@
+name: Setup Expo caches
+description: Restore cache layers with the same ownership and invalidation boundaries as pinned Expo CI
+
+inputs:
+  platform:
+    description: Native platform whose compiler caches should be restored
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Get Xcode version for iOS ccache key
+      if: inputs.platform == 'ios'
+      id: xcode-version
+      shell: bash
+      run: echo "hash=$(xcodebuild -version | md5)" >> "$GITHUB_OUTPUT"
+
+    - name: Restore ccache for iOS
+      if: inputs.platform == 'ios'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ runner.temp }}/.ccache
+        key: ${{ runner.os }}-ccache-${{ steps.xcode-version.outputs.hash }}-${{ hashFiles('vendor/expo/pnpm-lock.yaml', 'vendor/expo/packages/**/*.c', 'vendor/expo/packages/**/*.cpp', 'vendor/expo/packages/**/*.h', 'vendor/expo/packages/**/*.m', 'vendor/expo/packages/**/*.mm') }}
+        restore-keys: ${{ runner.os }}-ccache-${{ steps.xcode-version.outputs.hash }}-
+
+    - name: Restore ccache for Android
+      if: inputs.platform == 'android'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ runner.temp }}/.ccache
+        key: ${{ runner.os }}-ccache-${{ hashFiles('vendor/expo/pnpm-lock.yaml') }}-${{ hashFiles('vendor/expo/packages/**/*.c', 'vendor/expo/packages/**/*.cpp', 'vendor/expo/packages/**/*.h', 'vendor/expo/packages/**/build.gradle', 'vendor/expo/packages/**/build.gradle.kts', 'vendor/expo/packages/**/settings.gradle', 'vendor/expo/packages/**/settings.gradle.kts') }}
+        restore-keys: ${{ runner.os }}-ccache-${{ hashFiles('vendor/expo/pnpm-lock.yaml') }}-
+
+    - name: Restore Gradle cache
+      if: inputs.platform == 'android'
+      uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+      with:
+        cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+    - name: Configure React Native download cache
+      if: inputs.platform == 'android'
+      shell: bash
+      run: echo "REACT_NATIVE_DOWNLOADS_DIR=$HOME/.gradle/react-native-downloads" >> "$GITHUB_ENV"
+
+    - name: Restore React Native Gradle downloads
+      if: inputs.platform == 'android'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ env.REACT_NATIVE_DOWNLOADS_DIR }}
+        key: gradle-downloads-${{ hashFiles('vendor/expo/pnpm-lock.yaml') }}
+        restore-keys: gradle-downloads-

@@ -4,7 +4,7 @@ import * as Match from "effect/Match"
 import * as Schema from "effect/Schema"
 import { parseStringPromise } from "xml2js"
 import { TestCaseId, type CaseResult, type RunId, type TestSourceId } from "../Domain.ts"
-import type { ProcessSpec } from "./ProcessSupervisor.ts"
+import type { ProcessSpec } from "../supervision/ProcessSupervisor.ts"
 
 export class RunnerOutputError extends Data.TaggedError("RunnerOutputError")<{
   readonly runner:

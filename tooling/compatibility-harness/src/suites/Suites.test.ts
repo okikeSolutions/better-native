@@ -4,7 +4,7 @@ import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as ExpoRepository from "../ExpoRepository.ts"
 import * as Suites from "./Suites.ts"
-import { jestCaseName } from "../supervision/ExternalRunnerAdapters.ts"
+import { jestCaseName } from "../runners/ExternalRunnerAdapters.ts"
 
 describe("Suites", () => {
   it.effect(

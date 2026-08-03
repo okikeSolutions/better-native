@@ -17,10 +17,10 @@ import {
   type TestCaseId,
   type TestSourceId,
 } from "../Domain.ts"
-import type { BuildOutput } from "./BuildPipeline.ts"
-import { EvidenceStore } from "./EvidenceStore.ts"
+import type { BuildOutput } from "../build/BuildPipeline.ts"
+import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import { PlatformDrivers, type NativeDevice } from "./PlatformDrivers.ts"
-import * as RunProtocol from "./RunProtocol.ts"
+import * as RunProtocol from "../protocol/RunProtocol.ts"
 
 export interface NativeRunRequest {
   readonly id: string

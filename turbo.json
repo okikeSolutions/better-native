@@ -1,0 +1,49 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "stream",
+  "globalDependencies": ["compatibility/upstreams.json", "bun.lock"],
+  "globalPassThroughEnv": [
+    "CI",
+    "GITHUB_SHA",
+    "TURBO_TOKEN",
+    "TURBO_TEAM",
+    "TURBO_REMOTE_CACHE_SIGNATURE_KEY"
+  ],
+  "remoteCache": {
+    "signature": true
+  },
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "!dist/**"],
+      "outputs": ["dist/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": []
+    },
+    "check:effect": {
+      "dependsOn": ["typecheck"],
+      "outputs": []
+    },
+    "check:dist": {
+      "dependsOn": ["build"],
+      "outputs": []
+    },
+    "//#compatibility:web": {
+      "cache": false,
+      "dependsOn": ["//#expo:toolchain", "@better-native/metro#build"],
+      "outputs": []
+    },
+    "//#expo:toolchain": {
+      "cache": false,
+      "inputs": [
+        "compatibility/upstreams.json",
+        "vendor/expo/pnpm-lock.yaml",
+        "vendor/expo/pnpm-workspace.yaml",
+        "tooling/compatibility-harness/src/build/**"
+      ],
+      "outputs": []
+    }
+  }
+}

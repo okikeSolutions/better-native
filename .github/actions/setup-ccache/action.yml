@@ -1,0 +1,60 @@
+name: Setup ccache
+description: Install and configure ccache using the pinned Expo CI settings
+
+inputs:
+  platform:
+    description: Native platform that will compile source
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install ccache on macOS
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: brew install ccache
+
+    - name: Configure ccache for iOS
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: |
+        set -euo pipefail
+        readonly bin_dir="${RUNNER_TEMP:?}/ccache-bin"
+        mkdir -p "$bin_dir"
+        ln -sf "$(command -v ccache)" "$bin_dir/clang"
+        ln -sf "$(command -v ccache)" "$bin_dir/clang++"
+        ln -sf "$(command -v ccache)" "$bin_dir/cc"
+        ln -sf "$(command -v ccache)" "$bin_dir/c++"
+        echo "$bin_dir" >> "$GITHUB_PATH"
+        echo "CC=$bin_dir/clang" >> "$GITHUB_ENV"
+        echo "CXX=$bin_dir/clang++" >> "$GITHUB_ENV"
+        echo "LD=$bin_dir/clang++" >> "$GITHUB_ENV"
+        echo "LDPLUSPLUS=$bin_dir/clang++" >> "$GITHUB_ENV"
+        echo "CCACHE_DIR=${RUNNER_TEMP}/.ccache" >> "$GITHUB_ENV"
+        echo "CCACHE_COMPILERCHECK=content" >> "$GITHUB_ENV"
+        echo "CCACHE_SLOPPINESS=include_file_mtime,include_file_ctime,time_macros,modules,clang_index_store,system_headers,ivfsoverlay,pch_defines" >> "$GITHUB_ENV"
+        echo "CCACHE_BASEDIR=${GITHUB_WORKSPACE}" >> "$GITHUB_ENV"
+        echo "CCACHE_DEPEND=true" >> "$GITHUB_ENV"
+        echo "CCACHE_FILECLONE=true" >> "$GITHUB_ENV"
+
+    - name: Install ccache on Linux
+      if: inputs.platform == 'android'
+      shell: bash
+      run: |
+        set -euo pipefail
+        sudo apt-get update
+        sudo apt-get install -y ccache
+
+    - name: Configure ccache for Android
+      if: inputs.platform == 'android'
+      shell: bash
+      run: |
+        set -euo pipefail
+        echo "CCACHE_DIR=${RUNNER_TEMP}/.ccache" >> "$GITHUB_ENV"
+        echo "CCACHE_COMPILERCHECK=content" >> "$GITHUB_ENV"
+        echo "CCACHE_BASEDIR=${GITHUB_WORKSPACE}" >> "$GITHUB_ENV"
+        echo "CCACHE_MAXSIZE=1G" >> "$GITHUB_ENV"
+        echo "CCACHE_SLOPPINESS=include_file_ctime,include_file_mtime,time_macros,system_headers,pch_defines" >> "$GITHUB_ENV"
+        echo "CCACHE_DEPEND=true" >> "$GITHUB_ENV"
+        echo "CMAKE_C_COMPILER_LAUNCHER=$(command -v ccache)" >> "$GITHUB_ENV"
+        echo "CMAKE_CXX_COMPILER_LAUNCHER=$(command -v ccache)" >> "$GITHUB_ENV"
