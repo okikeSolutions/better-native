@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  "options": {
+    "typeAware": true
+  },
+  "rules": {
+    "no-nested-ternary": "error",
+    "no-throw-literal": "error",
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allow": ["_tag"]
+      }
+    ]
+  },
+  "ignorePatterns": [
+    ".artifacts/**",
+    "vendor/**",
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/src/generated/**"
+  ]
+}

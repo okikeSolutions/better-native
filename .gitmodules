@@ -1,0 +1,6 @@
+[submodule "vendor/effect"]
+	path = vendor/effect
+	url = https://github.com/Effect-TS/effect.git
+[submodule "vendor/expo"]
+	path = vendor/expo
+	url = https://github.com/expo/expo.git

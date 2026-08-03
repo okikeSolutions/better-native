@@ -1,0 +1,15 @@
+{
+  "name": "@better-native/typescript-config",
+  "version": "0.0.0",
+  "private": true,
+  "files": [
+    "base.json",
+    "expo.json",
+    "tooling.json"
+  ],
+  "exports": {
+    "./base": "./base.json",
+    "./expo": "./expo.json",
+    "./tooling": "./tooling.json"
+  }
+}

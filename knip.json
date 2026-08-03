@@ -1,0 +1,43 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignore": ["vendor/**"],
+  "treatConfigHintsAsErrors": true,
+  "rules": {
+    "exports": "off",
+    "types": "off"
+  },
+  "workspaces": {
+    ".": {
+      "project": ["*.ts"]
+    },
+    "apps/compatibility-suite": {
+      "entry": [
+        "app/**/*.{ts,tsx}",
+        "src/generated/**/*.{ts,tsx}",
+        "src/**/*.test.ts",
+        "babel.config.cjs",
+        "metro.config.cjs"
+      ],
+      "project": ["app/**/*.{ts,tsx}", "src/**/*.{ts,tsx}", "*.{ts,cjs}"],
+      "ignoreIssues": {
+        "package.json": ["dependencies", "devDependencies"]
+      },
+      "metro": {
+        "config": []
+      }
+    },
+    "packages/metro": {
+      "entry": ["src/BetterNativeMetroConfig.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.test.ts"]
+    },
+    "packages/metro/test/fixtures/paired": {
+      "entry": ["BuildProcess.ts", "index.js"],
+      "project": ["*.{ts,js}"],
+      "expo": false
+    },
+    "tooling/compatibility-harness": {
+      "entry": ["src/main.ts", "src/checkGenerated.ts", "src/**/*.test.ts"],
+      "project": ["src/**/*.ts"]
+    }
+  }
+}

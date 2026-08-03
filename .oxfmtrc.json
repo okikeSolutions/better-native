@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "ignorePatterns": [
+    ".artifacts/**",
+    "vendor/**",
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/src/generated/**",
+    "compatibility/catalog/**",
+    "compatibility/ownership/**",
+    "compatibility/suites/**"
+  ]
+}
