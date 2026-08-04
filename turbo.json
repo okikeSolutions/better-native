@@ -4,6 +4,7 @@
   "globalDependencies": ["compatibility/upstreams.json", "bun.lock"],
   "globalPassThroughEnv": [
     "CI",
+    "EXPO_SOURCE_ROOT",
     "GITHUB_SHA",
     "TURBO_TOKEN",
     "TURBO_TEAM",
