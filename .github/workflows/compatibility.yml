@@ -106,7 +106,7 @@ jobs:
           name: compatibility-web-baseline-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             .artifacts/builds/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-upstream
-            .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-upstream-run
+            .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-upstream-run-*
           if-no-files-found: warn
           retention-days: ${{ job.status == 'success' && 3 || 7 }}
 
@@ -143,7 +143,7 @@ jobs:
           name: compatibility-web-pair-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             .artifacts/builds/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-*
-            .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-*-run
+            .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-*-run-*
           if-no-files-found: warn
           retention-days: ${{ job.status == 'success' && 3 || 7 }}
 
@@ -469,15 +469,10 @@ jobs:
           name: compatibility-android-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}
           path: .artifacts/builds
       - name: Run upstream or paired Android tests
-        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        uses: ./.github/actions/use-android-emulator
         with:
-          api-level: 36
-          arch: x86_64
-          target: google_apis
-          profile: pixel_7_pro
-          disable-animations: true
-          disk-size: 4G
-          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          avd-api: 36
+          avd-name: compatibility-api-36
           script: |
             set -eu
             if [ "$COMPATIBILITY_MODE" = pair ]; then

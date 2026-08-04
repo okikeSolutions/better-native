@@ -13,6 +13,7 @@ import * as AuditPolicy from "./security/AuditPolicy.ts"
 import * as Expectations from "./policy/Expectations.ts"
 import * as Suites from "./suites/Suites.ts"
 import { BuildPipeline } from "./build/BuildPipeline.ts"
+import { AppBuildImporter } from "./build/AppBuildImporter.ts"
 import { ExpoToolchain } from "./build/ExpoToolchain.ts"
 import * as ExternalRunProtocol from "./protocol/ExternalRunProtocol.ts"
 import {
@@ -168,17 +169,40 @@ const supervisedBuildPair = Command.make(
 )
 
 const webPort = Flag.integer("port").pipe(Flag.withDefault(8091))
+const webSource = Flag.string("source").pipe(Flag.optional)
+
+const selectWebUnits = (
+  units: ReadonlyArray<ReturnType<typeof AppRegistry.appExecutionUnits>[number]>,
+  source: Option.Option<string>,
+) =>
+  Option.match(source, {
+    onNone: () => units,
+    onSome: (sourceId) => units.filter((unit) => unit.sourceId === sourceId),
+  })
+
 const supervisedWeb = Command.make(
   "supervise-web",
-  { mode: buildMode, buildId: buildIdFlag, timeoutMillis: timeoutMillisFlag, port: webPort },
-  Effect.fn("Command.superviseWeb")(function* ({ mode, buildId, timeoutMillis, port }) {
+  {
+    mode: buildMode,
+    buildId: buildIdFlag,
+    source: webSource,
+    timeoutMillis: timeoutMillisFlag,
+    port: webPort,
+  },
+  Effect.fn("Command.superviseWeb")(function* ({ mode, buildId, source, timeoutMillis, port }) {
     const repository = yield* ExpoRepository
     const builds = yield* BuildPipeline
     const web = yield* WebSupervisor
     const corpus = yield* Suites.discover()
     const revision = yield* candidateRevision(mode)
     const metadata = yield* AppRegistry.loadMetadata()
-    const units = AppRegistry.appExecutionUnits(metadata, "web")
+    const units = selectWebUnits(AppRegistry.appExecutionUnits(metadata, "web"), source)
+    if (units.length === 0) {
+      return yield* new HarnessError({
+        operation: "select web source",
+        cause: `source ${Option.getOrElse(source, () => "<all>")} is not web-app executable`,
+      })
+    }
     const build = yield* builds.build({
       id: buildId,
       mode,
@@ -198,7 +222,7 @@ const supervisedWeb = Command.make(
       }),
     )
     yield* Effect.forEach(records, requireSuccessfulRun, { discard: true })
-    yield* Console.log(
+    return yield* Console.log(
       JSON.stringify(records.map(({ finalInfrastructure }) => finalInfrastructure)),
     )
   }),
@@ -206,15 +230,21 @@ const supervisedWeb = Command.make(
 
 const supervisedWebPair = Command.make(
   "supervise-web-pair",
-  { buildId: buildIdFlag, timeoutMillis: timeoutMillisFlag, port: webPort },
-  Effect.fn("Command.superviseWebPair")(function* ({ buildId, timeoutMillis, port }) {
+  { buildId: buildIdFlag, source: webSource, timeoutMillis: timeoutMillisFlag, port: webPort },
+  Effect.fn("Command.superviseWebPair")(function* ({ buildId, source, timeoutMillis, port }) {
     const repository = yield* ExpoRepository
     const builds = yield* BuildPipeline
     const web = yield* WebSupervisor
     const corpus = yield* Suites.discover()
     const revision = yield* configuredCandidateRevision
     const metadata = yield* AppRegistry.loadMetadata()
-    const units = AppRegistry.appExecutionUnits(metadata, "web")
+    const units = selectWebUnits(AppRegistry.appExecutionUnits(metadata, "web"), source)
+    if (units.length === 0) {
+      return yield* new HarnessError({
+        operation: "select web source",
+        cause: `source ${Option.getOrElse(source, () => "<all>")} is not web-app executable`,
+      })
+    }
     const pair = yield* builds.buildPair({
       materializationId: `${buildId}-expo`,
       upstream: {
@@ -347,7 +377,7 @@ const supervisedNative = Command.make(
         cause: `shard ${shardIndex} is outside shard count ${shardCount}`,
       })
     }
-    const builds = yield* BuildPipeline
+    const builds = yield* AppBuildImporter
     const native = yield* NativeSupervisor
     const metadata = yield* AppRegistry.loadMetadata()
     const units = AppRegistry.appExecutionUnits(metadata, platform).filter(
@@ -424,7 +454,7 @@ const supervisedNativePair = Command.make(
         cause: `shard ${shardIndex} is outside shard count ${shardCount}`,
       })
     }
-    const builds = yield* BuildPipeline
+    const builds = yield* AppBuildImporter
     const native = yield* NativeSupervisor
     const metadata = yield* AppRegistry.loadMetadata()
     const units = AppRegistry.appExecutionUnits(metadata, platform).filter(

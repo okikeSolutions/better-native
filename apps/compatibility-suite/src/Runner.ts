@@ -254,15 +254,51 @@ const runSource = (
       })
       const jasmine = jasmineRequire.interface(jasmineCore, jasmineEnv)
       jasmine.jasmine.DEFAULT_TIMEOUT_INTERVAL = 10_000
+      let registeredSpecCount = 0
       for (const key of ["it", "xit", "fit"] as const) {
         const original = jasmine[key]
         jasmine[key] = (
           description: string,
           assertion: (...args: ReadonlyArray<unknown>) => unknown,
           timeout?: number,
-        ) => original(description, wrapSpec(assertion), timeout)
+        ) => {
+          const spec = original(description, wrapSpec(assertion), timeout)
+          registeredSpecCount += 1
+          return spec
+        }
       }
-      await testModule.test(jasmine, tools)
+      const platformSkipped = () => {
+        const caseIds =
+          selectedCaseIds.size > 0
+            ? [...selectedCaseIds]
+            : [`${source.sourceId}#<not-applicable>@1`]
+        return {
+          results: caseIds.map((caseId) =>
+            skipped(selection.runId, caseId, "source registered no cases for this platform"),
+          ),
+          runtimeDiscoveredCaseIds: selectedCaseIds.size === 0 ? caseIds : [],
+        }
+      }
+      try {
+        await testModule.test(jasmine, tools)
+      } catch (cause) {
+        if (
+          registeredSpecCount === 0 &&
+          cause instanceof Error &&
+          cause.message.startsWith("describe with no children (describe() or it())")
+        ) {
+          return platformSkipped()
+        }
+        const caseIds =
+          selectedCaseIds.size > 0
+            ? [...selectedCaseIds]
+            : [`${source.sourceId}#<registration failure>@1`]
+        return {
+          results: caseIds.map((caseId) => failed(selection.runId, caseId, cause)),
+          runtimeDiscoveredCaseIds: selectedCaseIds.size === 0 ? caseIds : [],
+        }
+      }
+      if (registeredSpecCount === 0) return platformSkipped()
       const done = Schema.decodeUnknownSync(JasmineDone)(await jasmineEnv.execute())
       if (
         done.overallStatus !== "passed" &&

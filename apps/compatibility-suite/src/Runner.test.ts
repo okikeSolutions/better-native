@@ -106,6 +106,49 @@ describe("compatibility runner", () => {
       )
   })
 
+  it.effect("skips a source that registers no cases for the current platform", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      load: () => ({
+        name: "Platform-specific empty source",
+        test: (jasmine: { describe: (name: string, body: () => void) => void }) => {
+          jasmine.describe("FileSystem (legacy)", () => undefined)
+        },
+      }),
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.strictEqual(summary.results.length, source.caseIds.length)
+          assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "skipped"))
+          assert.match(JSON.stringify(summary), /registered no cases for this platform/)
+        }),
+      )
+  })
+
+  it.effect("records a registration exception as failed source results", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      load: () => ({
+        name: "Broken registration",
+        test: () => {
+          throw new Error("injected registration failure")
+        },
+      }),
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "failed"))
+          assert.match(JSON.stringify(summary), /injected registration failure/)
+        }),
+      )
+  })
+
   it.effect("reports a selected case that is absent at runtime", () => {
     const source: RegistryEntry = {
       ...basic,

@@ -19,6 +19,7 @@ describe("hosted compatibility workflow", () => {
         ccacheSetup,
         cacheSetup,
         maestroSetup,
+        androidEmulator,
         turboConfig,
         rootPackage,
         harnessPackage,
@@ -34,6 +35,7 @@ describe("hosted compatibility workflow", () => {
         fs.readFileString(".github/actions/setup-ccache/action.yml"),
         fs.readFileString(".github/actions/setup-expo-caches/action.yml"),
         fs.readFileString(".github/actions/setup-maestro/action.yml"),
+        fs.readFileString(".github/actions/use-android-emulator/action.yml"),
         fs.readFileString("turbo.json"),
         fs.readFileString("package.json"),
         fs.readFileString("tooling/compatibility-harness/package.json"),
@@ -84,13 +86,35 @@ describe("hosted compatibility workflow", () => {
       assert.match(workflow, /^  ios-compare:$/m)
       assert.match(workflow, /^  android-compare:$/m)
       assert.strictEqual(workflow.match(/supervise-web-pair/g)?.length, 1)
+      assert.match(workflow, /web-upstream-run-\*/)
+      assert.match(workflow, /web-\*-run-\*/)
       assert.strictEqual(workflow.match(/supervise-build-pair/g)?.length, 2)
       assert.strictEqual(workflow.match(/supervise-native-pair/g)?.length, 2)
       assert.match(
         workflow,
-        /uses: reactivecircus\/android-emulator-runner@[\s\S]*?script: \|\n\s+set -eu\n/,
+        /uses: \.\/\.github\/actions\/use-android-emulator[\s\S]*?script: \|\n\s+set -eu\n/,
       )
+      assert.notMatch(workflow, /uses: reactivecircus\/android-emulator-runner@/)
       assert.notMatch(workflow, /script: \|\n\s+set -euo pipefail/)
+      assert.match(androidEmulator, /99-kvm4all\.rules/)
+      assert.match(androidEmulator, /\[ ! -r \/dev\/kvm \] \|\| \[ ! -w \/dev\/kvm \]/)
+      assert.strictEqual(
+        androidEmulator.match(/reactivecircus\/android-emulator-runner@/g)?.length,
+        3,
+      )
+      assert.strictEqual(androidEmulator.match(/profile: pixel_7_pro/g)?.length, 3)
+      assert.strictEqual(
+        androidEmulator.match(/api-level: \$\{\{ inputs\.avd-api \}\}/g)?.length,
+        3,
+      )
+      assert.match(
+        androidEmulator,
+        /steps\.attempt-1\.outcome == 'failure' && hashFiles\('\.artifacts\/runs\/\*\*\/flow\.yaml'\) == ''/,
+      )
+      assert.match(
+        androidEmulator,
+        /steps\.attempt-1\.outcome == 'failure' && hashFiles\('\.artifacts\/runs\/\*\*\/flow\.yaml'\) != ''/,
+      )
       assert.strictEqual(workflow.match(/run: bun run expo:prepare/g)?.length, 4)
       assert.match(workflow, /Setup device-test profile/)
       assert.match(workflow, /Setup compare profile/)

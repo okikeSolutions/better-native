@@ -14,15 +14,17 @@ import {
   RunId,
   RunPlan,
   RunRecord,
+  ProcessObservation as ProcessObservationSchema,
   type RunRecord as RunRecordType,
   type CorpusSnapshot,
   type DiscoveryRecord,
   type ProcessObservation,
   type ExecutionUnit,
+  type RunPlan as RunPlanType,
 } from "../Domain.ts"
 import type { BuildOutput } from "../build/BuildPipeline.ts"
 import { DiscoveryPass } from "../evidence/DiscoveryPass.ts"
-import { EvidenceStore } from "../evidence/EvidenceStore.ts"
+import { EvidenceStore, type Service as EvidenceStoreService } from "../evidence/EvidenceStore.ts"
 import { ProcessSupervisor, type RunningProcess } from "./ProcessSupervisor.ts"
 import * as RunProtocol from "../protocol/RunProtocol.ts"
 
@@ -88,6 +90,45 @@ export class BrowserDriverError extends Data.TaggedError("BrowserDriverError")<{
   readonly cause: unknown
   readonly console: ReadonlyArray<string>
 }> {}
+
+const WebRunFailure = Schema.Struct({
+  schemaVersion: Schema.Literal(1),
+  plan: RunPlan,
+  phase: Schema.Literals(["serve", "browser", "protocol", "evidence"]),
+  message: Schema.String,
+  observations: Schema.Array(ProcessObservationSchema),
+})
+
+/** @internal */
+export const diagnosticMessage = (value: unknown, depth = 0): string => {
+  if (depth >= 4) return String(value)
+  if (typeof value === "object" && value !== null) {
+    const tag = "_tag" in value ? String(Reflect.get(value, "_tag")) : null
+    const reason = "reason" in value ? Reflect.get(value, "reason") : undefined
+    if (typeof reason === "string") return tag === null ? reason : `${tag}: ${reason}`
+    const cause = "cause" in value ? Reflect.get(value, "cause") : undefined
+    if (cause !== undefined) {
+      const detail = diagnosticMessage(cause, depth + 1)
+      return tag === null ? detail : `${tag}: ${detail}`
+    }
+  }
+  return value instanceof Error ? `${value.name}: ${value.message}` : String(value)
+}
+
+/** @internal */
+export const persistWebRunFailure = (
+  evidence: EvidenceStoreService,
+  requestId: string,
+  plan: RunPlanType,
+  failure: WebSupervisorError,
+) =>
+  evidence.writeJson("runs", requestId, "failure.json", WebRunFailure, {
+    schemaVersion: 1,
+    plan,
+    phase: failure.phase,
+    message: diagnosticMessage(failure.cause),
+    observations: failure.observations,
+  })
 
 const maximumBrowserConsoleCharacters = 256 * 1024
 const maximumBrowserConsoleEntries = 1_000
@@ -401,6 +442,23 @@ export const layer: Layer.Layer<
                 .pipe(Effect.mapError((cause) => webFailure("evidence", request, cause)))
               return record
             }),
+          ).pipe(
+            Effect.catch((failure) =>
+              Effect.gen(function* () {
+                yield* persistWebRunFailure(evidence, request.id, plan, failure).pipe(
+                  Effect.mapError(
+                    (cause) =>
+                      new WebSupervisorError({
+                        phase: "evidence",
+                        request,
+                        cause: { primary: failure, evidence: cause },
+                        observations: failure.observations,
+                      }),
+                  ),
+                )
+                return yield* failure
+              }),
+            ),
           )
         }),
       )

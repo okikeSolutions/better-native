@@ -168,13 +168,14 @@ export const layer = (
       const effectRoot = yield* resolveUpstream(upstreams.effect.path, "Effect")
       const configuredExpoRoot =
         expoSourceRoot ?? process.env.EXPO_SOURCE_ROOT ?? path.join(root, "..", "expo")
-      const expoRoot = yield* fs
-        .realPath(configuredExpoRoot)
+      const expoRoot = path.resolve(configuredExpoRoot)
+      const resolveExpoRoot = fs
+        .realPath(expoRoot)
         .pipe(
           Effect.mapError((cause) =>
             failure(
               "resolve Expo source",
-              configuredExpoRoot,
+              expoRoot,
               `${String(cause)}; clone Expo next to this repository or set EXPO_SOURCE_ROOT`,
             ),
           ),
@@ -189,8 +190,9 @@ export const layer = (
           )
 
       const verify = Effect.gen(function* () {
+        const canonicalExpoRoot = yield* resolveExpoRoot
         for (const [name, directory, expected] of [
-          ["Expo", expoRoot, upstreams.expo.revision],
+          ["Expo", canonicalExpoRoot, upstreams.expo.revision],
           ["Effect", effectRoot, upstreams.effect.revision],
         ] as const) {
           const actual = yield* revision(directory)
@@ -215,28 +217,35 @@ export const layer = (
             Effect.flatMap((absolutePath) => decodeJson(absolutePath, schema)),
           ),
         readExpoJson: (relativePath, schema) =>
-          resolveWithin(expoRoot, relativePath, "resolve Expo JSON").pipe(
+          resolveExpoRoot.pipe(
+            Effect.flatMap((canonicalExpoRoot) =>
+              resolveWithin(canonicalExpoRoot, relativePath, "resolve Expo JSON"),
+            ),
             Effect.flatMap((absolutePath) => decodeJson(absolutePath, schema)),
           ),
         readExpoText: (relativePath) =>
-          resolveWithin(expoRoot, relativePath, "resolve Expo source").pipe(
+          resolveExpoRoot.pipe(
+            Effect.flatMap((canonicalExpoRoot) =>
+              resolveWithin(canonicalExpoRoot, relativePath, "resolve Expo source"),
+            ),
             Effect.flatMap((absolutePath) =>
               fs
                 .readFileString(absolutePath)
                 .pipe(Effect.mapError((cause) => failure("read Expo source", absolutePath, cause))),
             ),
           ),
-        expoFiles: childProcesses
-          .string(ChildProcess.make("git", ["-C", expoRoot, "ls-files"]))
-          .pipe(
-            Effect.map((output) =>
-              output
-                .split("\n")
-                .filter((file) => file.length > 0)
-                .toSorted(),
-            ),
-            Effect.mapError((cause) => failure("list Expo source", expoRoot, cause)),
+        expoFiles: resolveExpoRoot.pipe(
+          Effect.flatMap((canonicalExpoRoot) =>
+            childProcesses.string(ChildProcess.make("git", ["-C", canonicalExpoRoot, "ls-files"])),
           ),
+          Effect.map((output) =>
+            output
+              .split("\n")
+              .filter((file) => file.length > 0)
+              .toSorted(),
+          ),
+          Effect.mapError((cause) => failure("list Expo source", expoRoot, cause)),
+        ),
         hashString: (value) =>
           crypto.digest("SHA-256", new TextEncoder().encode(value)).pipe(
             Effect.map(Encoding.encodeHex),

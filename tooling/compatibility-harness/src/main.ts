@@ -6,6 +6,8 @@ import * as Command from "effect/unstable/cli/Command"
 import { command } from "./Command.ts"
 import * as ExpoRepository from "./ExpoRepository.ts"
 import * as BuildPipeline from "./build/BuildPipeline.ts"
+import * as AppBuildImporter from "./build/AppBuildImporter.ts"
+import * as BuildProducts from "./build/BuildProducts.ts"
 import * as BuildCommand from "./build/BuildCommand.ts"
 import * as ExpoToolchain from "./build/ExpoToolchain.ts"
 import * as EvidenceStore from "./evidence/EvidenceStore.ts"
@@ -24,6 +26,10 @@ const BuildCommandLayer = BuildCommand.layer.pipe(
   Layer.provideMerge(Layer.mergeAll(ProcessLayer, EvidenceLayer)),
 )
 const ExpoToolchainLayer = ExpoToolchain.layer(root).pipe(Layer.provide(BuildCommandLayer))
+const BuildProductsLayer = BuildProducts.layer.pipe(Layer.provide(BaseLayer))
+const BuildImporterLayer = AppBuildImporter.layer(root).pipe(
+  Layer.provide(Layer.mergeAll(BaseLayer, BuildProductsLayer)),
+)
 const DiscoveryLayer = DiscoveryPass.layer.pipe(Layer.provideMerge(EvidenceLayer))
 const BuildLayer = BuildPipeline.layer(root).pipe(
   Layer.provide(Layer.mergeAll(BaseLayer, EvidenceLayer, BuildCommandLayer, ExpoToolchainLayer)),
@@ -47,6 +53,7 @@ const MainLayer = Layer.mergeAll(
   EvidenceLayer,
   DiscoveryLayer,
   BuildLayer,
+  BuildImporterLayer,
   BuildCommandLayer,
   ExpoToolchainLayer,
   WebLayer,

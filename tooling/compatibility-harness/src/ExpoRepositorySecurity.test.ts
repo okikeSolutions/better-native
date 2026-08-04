@@ -8,6 +8,40 @@ import { ExpoRepository, Upstreams, layer } from "./ExpoRepository.ts"
 import { HarnessError } from "./HarnessError.ts"
 
 describe("ExpoRepository path boundaries", () => {
+  it.effect("does not require the external Expo checkout for local repository operations", () =>
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem
+      const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-local-only-" })
+      yield* fs.makeDirectory(`${root}/compatibility`, { recursive: true })
+      yield* fs.makeDirectory(`${root}/vendor/effect`, { recursive: true })
+      yield* fs.writeFileString(
+        `${root}/compatibility/upstreams.json`,
+        JSON.stringify({
+          schemaVersion: 1,
+          effect: {
+            repository: "https://example.invalid/effect.git",
+            revision: "2".repeat(40),
+            path: "vendor/effect",
+          },
+          expo: {
+            repository: "https://example.invalid/expo.git",
+            revision: "1".repeat(40),
+          },
+        }),
+      )
+      const missingExpo = `${root}/external-expo-is-not-installed`
+      const result = yield* Effect.gen(function* () {
+        const repository = yield* ExpoRepository
+        const upstreams = yield* repository.readJson("compatibility/upstreams.json", Upstreams)
+        const expoFailure = yield* repository.readExpoText("package.json").pipe(Effect.flip)
+        return { upstreams, expoFailure }
+      }).pipe(Effect.provide(layer(root, missingExpo).pipe(Layer.provideMerge(NodeServices.layer))))
+      assert.strictEqual(result.upstreams.expo.revision, "1".repeat(40))
+      assert.instanceOf(result.expoFailure, HarnessError)
+      assert.strictEqual(result.expoFailure.operation, "resolve Expo source")
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+  )
+
   it.effect("rejects absolute and parent-relative repository paths", () =>
     Effect.gen(function* () {
       const repository = yield* ExpoRepository

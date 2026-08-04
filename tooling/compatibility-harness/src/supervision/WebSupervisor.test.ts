@@ -1,12 +1,18 @@
+import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
+import * as FileSystem from "effect/FileSystem"
+import * as Layer from "effect/Layer"
 import * as Ref from "effect/Ref"
-import { BuildId, ContentHash, TestSourceId, type ProcessObservation } from "../Domain.ts"
+import { BuildId, ContentHash, RunId, TestSourceId, type ProcessObservation } from "../Domain.ts"
+import { EvidenceStore, layer as evidenceLayer } from "../evidence/EvidenceStore.ts"
 import { ProcessFailure, type RunningProcess } from "./ProcessSupervisor.ts"
 import {
   appendBrowserConsoleObservations,
   BrowserDriverError,
+  diagnosticMessage,
   makeBoundedConsoleCollector,
+  persistWebRunFailure,
   validateBrowserResultPayload,
   webRunUrl,
   WebSupervisorError,
@@ -53,6 +59,59 @@ const request: WebRunRequest = {
 }
 
 describe("WebSupervisor failure evidence", () => {
+  it("retains structured Effect error reasons", () => {
+    assert.strictEqual(
+      diagnosticMessage({
+        _tag: "BrowserDriverError",
+        cause: { _tag: "RunSelectionError", reason: "source registered no cases" },
+      }),
+      "BrowserDriverError: RunSelectionError: source registered no cases",
+    )
+  })
+
+  it.effect("persists a structured failure record for unsuccessful browser runs", () =>
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem
+      const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-web-failure-" })
+      const failure = new WebSupervisorError({
+        phase: "browser",
+        request,
+        cause: new BrowserDriverError({
+          cause: { _tag: "RunSelectionError", reason: "injected selection failure" },
+          console: [],
+        }),
+        observations: [
+          { sequence: 0, timestampMillis: 1, stream: "stderr", text: "browser failed" },
+        ],
+      })
+      const plan = {
+        schemaVersion: 1 as const,
+        id: RunId.make(request.id),
+        buildId: request.build.record.id,
+        platform: "web" as const,
+        unit: request.unit,
+        timeoutMillis: request.timeoutMillis,
+        retries: 0,
+      }
+      yield* Effect.gen(function* () {
+        const evidence = yield* EvidenceStore
+        yield* persistWebRunFailure(evidence, request.id, plan, failure)
+      }).pipe(Effect.provide(evidenceLayer(root).pipe(Layer.provideMerge(NodeServices.layer))))
+      const persisted: unknown = JSON.parse(
+        yield* fs.readFileString(`${root}/.artifacts/runs/${request.id}/failure.json`),
+      )
+      if (typeof persisted !== "object" || persisted === null) {
+        throw new Error("persisted web failure is not an object")
+      }
+      const message = Reflect.get(persisted, "message")
+      const observations = Reflect.get(persisted, "observations")
+      assert.isString(message)
+      assert.match(message, /RunSelectionError: injected selection failure/)
+      assert.isArray(observations)
+      assert.strictEqual(observations.length, 1)
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+  )
+
   it("uses one short source selection in the web URL", () => {
     const url = webRunUrl(8_081, request.id, request.unit.sourceId)
     assert.strictEqual(url, "http://127.0.0.1:8081/run?runId=web-failure&source=source+one")

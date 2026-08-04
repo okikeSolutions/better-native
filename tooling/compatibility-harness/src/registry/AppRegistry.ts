@@ -138,10 +138,25 @@ export const appExecutionUnits = (
   }))
 
 export const loadMetadata = Effect.fn("AppRegistry.loadMetadata")(function* () {
-  const repository = yield* ExpoRepository
-  return yield* repository.readJson(
-    "apps/compatibility-suite/src/generated/RegistryMetadata.json",
-    RegistryMetadata,
+  const fs = yield* FileSystem.FileSystem
+  const file = "apps/compatibility-suite/src/generated/RegistryMetadata.json"
+  return yield* fs.readFileString(file).pipe(
+    Effect.mapError(
+      (cause) => new HarnessError({ operation: "read registry metadata", path: file, cause }),
+    ),
+    Effect.flatMap((text) =>
+      Effect.try({
+        try: () => JSON.parse(text) as unknown,
+        catch: (cause) =>
+          new HarnessError({ operation: "parse registry metadata", path: file, cause }),
+      }),
+    ),
+    Effect.flatMap(Schema.decodeUnknownEffect(RegistryMetadata)),
+    Effect.mapError((cause) =>
+      cause instanceof HarnessError
+        ? cause
+        : new HarnessError({ operation: "decode registry metadata", path: file, cause }),
+    ),
   )
 })
 

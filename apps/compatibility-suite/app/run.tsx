@@ -20,6 +20,15 @@ const selectionFor = (runId: string, sourceId: string | undefined): unknown => {
   throw new Error("the static compatibility registry has no interactive smoke source")
 }
 
+export const formatRunError = (cause: unknown): string => {
+  if (typeof cause === "object" && cause !== null && "reason" in cause) {
+    const reason = Reflect.get(cause, "reason")
+    const tag = "_tag" in cause ? Reflect.get(cause, "_tag") : "CompatibilityError"
+    if (typeof reason === "string") return `${String(tag)}: ${reason}`
+  }
+  return cause instanceof Error ? (cause.stack ?? cause.message) : String(cause)
+}
+
 export default function Run() {
   const params = useLocalSearchParams<{
     runId?: string
@@ -50,8 +59,7 @@ export default function Run() {
         if (active) setSummary(result)
       })
       .catch((cause: unknown) => {
-        if (active)
-          setError(cause instanceof Error ? (cause.stack ?? cause.message) : String(cause))
+        if (active) setError(formatRunError(cause))
       })
     return () => {
       active = false
