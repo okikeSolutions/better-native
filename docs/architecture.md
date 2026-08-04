@@ -22,6 +22,9 @@ Published Expo packages are comparison evidence only. They never redefine or fil
 
 ## Compatibility contract
 
+The test layers, coverage gate, and native-parity evidence standard are defined in
+[the testing strategy](./testing.md).
+
 Compatibility covers:
 
 - package and subpath resolution;
