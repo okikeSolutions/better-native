@@ -68,6 +68,17 @@ const upstreamTestModuleStems = (source: string): ReadonlySet<string> =>
     ),
   )
 
+export const upstreamNativeE2eNames = (source: string): ReadonlySet<string> => {
+  const tests = source.match(/\bconst\s+TESTS\s*=\s*\[([\s\S]*?)\]\s*;/)?.[1]
+  if (tests === undefined) return new Set()
+  const uncommented = tests.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "")
+  return new Set(
+    [...uncommented.matchAll(/["'`]([^"'`]+)["'`]/g)].flatMap((match) =>
+      match[1] === undefined ? [] : [match[1]],
+    ),
+  )
+}
+
 const runtimeName = (source: string): string | null =>
   source.match(/export\s+const\s+name\s*=\s*["'`]([^"'`]+)["'`]/)?.[1] ?? null
 
@@ -103,7 +114,11 @@ export const runnableSourceIds = (
   platform: Platform,
 ): ReadonlyArray<TestSourceId> => {
   const groups = new Map<string, Array<RegistryMetadataType["sources"][number]>>()
-  for (const source of metadata.sources.filter(({ registration }) => registration !== "external")) {
+  const nativeE2eSourceIds = new Set(metadata.nativeE2eSourceIds)
+  for (const source of metadata.sources.filter(
+    ({ sourceId, registration }) =>
+      registration !== "external" && (platform === "web" || nativeE2eSourceIds.has(sourceId)),
+  )) {
     const key = logicalPath(source.path)
     const entries = groups.get(key) ?? []
     entries.push(source)
@@ -339,7 +354,11 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
     { concurrency: 16 },
   )
   const testModulesSource = yield* repository.readExpoText("apps/test-suite/TestModules.ts")
+  const nativeE2eSource = yield* repository.readExpoText(
+    "apps/bare-expo/e2e/TestSuite-test.native.js",
+  )
   const authoritativeStems = upstreamTestModuleStems(testModulesSource)
+  const nativeE2eNames = upstreamNativeE2eNames(nativeE2eSource)
   const sourceTextById = new Map(sourceText)
   const jasmineSources = new Set(
     sourceText
@@ -353,34 +372,56 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
     cases.push(testCase.id)
     casesBySource.set(testCase.sourceId, cases)
   }
+  const sources: RegistryMetadataType["sources"] = corpus.sources.map((source) => {
+    const appRunnable = jasmineSources.has(source.id)
+    const name = appRunnable ? runtimeName(sourceTextById.get(source.id) ?? "") : null
+    const authority =
+      source.runner === "expo-jasmine" && authoritativeStems.has(moduleStem(source.path))
+        ? ("upstream-selected" as const)
+        : ("supplemental" as const)
+    return {
+      sourceId: source.id,
+      path: source.path,
+      caseIds: casesBySource.get(source.id) ?? [],
+      runner: source.runner,
+      execution: execution(source, appRunnable),
+      platforms: source.platforms,
+      executability: source.executability,
+      registration: registration(source, appRunnable),
+      authority,
+      runtimeName: name,
+      reason: appRunnable
+        ? null
+        : (source.reason ?? `requires the ${source.runner} external runner adapter`),
+    }
+  })
+  const matchedNativeE2eNames = new Set(
+    sources.flatMap(({ runtimeName: name }) =>
+      name !== null && nativeE2eNames.has(name) ? [name] : [],
+    ),
+  )
+  const missingNativeE2eNames = [...nativeE2eNames].filter(
+    (name) => !matchedNativeE2eNames.has(name),
+  )
+  if (nativeE2eNames.size === 0 || missingNativeE2eNames.length > 0) {
+    return yield* failure(
+      "derive pinned Expo native E2E cohort",
+      "apps/bare-expo/e2e/TestSuite-test.native.js",
+      nativeE2eNames.size === 0
+        ? "the upstream TESTS list is empty or could not be parsed"
+        : `unregistered test modules: ${missingNativeE2eNames.join(", ")}`,
+    )
+  }
   const metadata: RegistryMetadataType = {
     schemaVersion: 1,
     expoRevision: corpus.expoRevision,
     corpusFingerprint: corpus.fingerprint,
     surfaceFingerprint: surface.fingerprint,
     trackedSpecifiers: [...new Set(surface.exports.map(specifierOf))].toSorted(),
-    sources: corpus.sources.map((source) => {
-      const appRunnable = jasmineSources.has(source.id)
-      const authority =
-        source.runner === "expo-jasmine" && authoritativeStems.has(moduleStem(source.path))
-          ? ("upstream-selected" as const)
-          : ("supplemental" as const)
-      return {
-        sourceId: source.id,
-        path: source.path,
-        caseIds: casesBySource.get(source.id) ?? [],
-        runner: source.runner,
-        execution: execution(source, appRunnable),
-        platforms: source.platforms,
-        executability: source.executability,
-        registration: registration(source, appRunnable),
-        authority,
-        runtimeName: appRunnable ? runtimeName(sourceTextById.get(source.id) ?? "") : null,
-        reason: appRunnable
-          ? null
-          : (source.reason ?? `requires the ${source.runner} external runner adapter`),
-      }
-    }),
+    nativeE2eSourceIds: sources
+      .filter(({ runtimeName: name }) => name !== null && nativeE2eNames.has(name))
+      .map(({ sourceId }) => sourceId),
+    sources,
   }
   const runnerPlans = RunnerPlans.make(corpus, jasmineSources)
   const runnerPlanIssues = RunnerPlans.issues(corpus, runnerPlans, jasmineSources)
@@ -407,6 +448,7 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
         "  readonly corpusFingerprint: string",
         "  readonly surfaceFingerprint: string",
         "  readonly trackedSpecifiers: ReadonlyArray<string>",
+        "  readonly nativeE2eSourceIds: ReadonlyArray<string>",
         "  readonly sources: ReadonlyArray<{",
         "    readonly sourceId: string",
         "    readonly path: string",

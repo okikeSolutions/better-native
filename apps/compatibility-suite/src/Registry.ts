@@ -22,6 +22,7 @@ export interface TestTools {
 export type RegistryLoaders = ReadonlyMap<string, () => unknown>
 
 export const metadata = generatedMetadata
+export const nativeE2eSourceIds: ReadonlySet<string> = new Set(metadata.nativeE2eSourceIds)
 export const registry = metadata.sources.map((source) => ({
   ...source,
   load: loaders.get(source.sourceId) ?? null,

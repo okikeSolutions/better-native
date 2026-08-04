@@ -1,6 +1,7 @@
 import * as Context from "effect/Context"
 import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
+import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
 import * as Ref from "effect/Ref"
@@ -59,6 +60,8 @@ export interface Service {
 export class PlatformDrivers extends Context.Service<PlatformDrivers, Service>()(
   "@better-native/compatibility-harness/PlatformDrivers",
 ) {}
+
+type Requirements = ProcessSupervisor | FileSystem.FileSystem
 
 const command = (
   device: NativeDevice,
@@ -136,15 +139,21 @@ export const resultFromHierarchy = (stdout: string): string | null => {
   }
 }
 
+export const maestroJUnitPassed = (report: string): boolean =>
+  /<testsuites?\b/.test(report) &&
+  !/<(?:failure|error)\b/.test(report) &&
+  !/\b(?:failures|errors)="[1-9]\d*"/.test(report)
+
 const stopArgs = (device: NativeDevice) =>
   device.platform === "ios"
     ? ["terminate", device.id, device.applicationId]
     : ["shell", "am", "force-stop", device.applicationId]
 
-export const layer: Layer.Layer<PlatformDrivers, never, ProcessSupervisor> = Layer.effect(
+export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.effect(
   PlatformDrivers,
   Effect.gen(function* () {
     const processes = yield* ProcessSupervisor
+    const fs = yield* FileSystem.FileSystem
     const processIds = yield* Ref.make<ReadonlyMap<string, number>>(new Map())
     const clearProcessId = (device: NativeDevice) =>
       Ref.update(processIds, (current) => {
@@ -229,7 +238,7 @@ export const layer: Layer.Layer<PlatformDrivers, never, ProcessSupervisor> = Lay
       processes
         .run({
           command: "maestro",
-          args: [`--platform=${device.platform}`, "hierarchy"],
+          args: ["--device", device.id, "hierarchy"],
           timeoutMillis: 30_000,
         })
         .pipe(
@@ -364,32 +373,73 @@ export const layer: Layer.Layer<PlatformDrivers, never, ProcessSupervisor> = Lay
           }),
         )
       },
-      runMaestroFlow: (device, flowPath, timeoutMillis) =>
-        processes
-          .run({
-            command: "maestro",
-            args: ["test", flowPath],
-            timeoutMillis,
-            terminationGraceMillis: 5_000,
-          })
-          .pipe(
-            Effect.flatMap((flowResult) =>
-              flowResult.exitCode === 0
-                ? Effect.succeed(flowResult.observations)
-                : Effect.fail(
-                    new PlatformDriverError({
-                      operation: "maestro",
-                      device,
-                      cause: `maestro flow exited ${flowResult.exitCode}: ${output(flowResult)}`,
-                    }),
+      runMaestroFlow: (device, flowPath, timeoutMillis) => {
+        const reportPath = `${flowPath}.junit.xml`
+        return Effect.scoped(
+          Effect.gen(function* () {
+            if (yield* fs.exists(reportPath)) yield* fs.remove(reportPath)
+            const running = yield* processes.start({
+              command: "maestro",
+              args: [
+                "--device",
+                device.id,
+                "test",
+                "--format",
+                "junit",
+                "--output",
+                reportPath,
+                flowPath,
+              ],
+              timeoutMillis,
+              terminationGraceMillis: 5_000,
+            })
+            yield* Effect.gen(function* () {
+              while (!(yield* fs.exists(reportPath))) yield* Effect.sleep(1_000)
+              yield* Effect.sleep(60_000)
+              yield* running.terminate
+            }).pipe(Effect.forkScoped)
+            const exitCode = yield* running.exitCode.pipe(
+              Effect.timeoutOrElse({
+                duration: timeoutMillis,
+                orElse: () =>
+                  running.terminate.pipe(
+                    Effect.andThen(
+                      Effect.fail(
+                        new PlatformDriverError({
+                          operation: "maestro",
+                          device,
+                          cause: `maestro exceeded ${timeoutMillis}ms without completing`,
+                        }),
+                      ),
+                    ),
                   ),
-            ),
-            Effect.mapError((cause) =>
-              cause instanceof PlatformDriverError
-                ? cause
-                : new PlatformDriverError({ operation: "maestro", device, cause }),
-            ),
+              }),
+            )
+            const observations = yield* running.observations
+            if (exitCode === 0) return observations
+            const report = (yield* fs.exists(reportPath))
+              ? yield* fs.readFileString(reportPath)
+              : null
+            if (report !== null && maestroJUnitPassed(report)) {
+              yield* Effect.logWarning(
+                "Maestro wrote a passing JUnit report but did not exit cleanly; accepting the completed flow",
+              )
+              return observations
+            }
+            return yield* new PlatformDriverError({
+              operation: "maestro",
+              device,
+              cause: `maestro flow exited ${exitCode}: ${observations.map(({ text }) => text).join("\n")}`,
+            })
+          }),
+        ).pipe(
+          Effect.mapError((cause) =>
+            cause instanceof PlatformDriverError
+              ? cause
+              : new PlatformDriverError({ operation: "maestro", device, cause }),
           ),
+        )
+      },
       isAlive,
       logs,
       result,

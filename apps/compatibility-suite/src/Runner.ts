@@ -6,7 +6,13 @@ import * as Schema from "effect/Schema"
 // @ts-expect-error -- compatibility adapter for the pinned upstream runner.
 import jasmineRequire from "jasmine-core/lib/jasmine-core/jasmine"
 import { CompatibilityConfiguration } from "./Configuration.ts"
-import { registry, type ExpoTestModule, type RegistryEntry, type TestTools } from "./Registry.ts"
+import {
+  nativeE2eSourceIds,
+  registry,
+  type ExpoTestModule,
+  type RegistryEntry,
+  type TestTools,
+} from "./Registry.ts"
 
 /** The only execution data accepted over a deep link or browser URL. */
 const RunSelection = Schema.Struct({
@@ -14,6 +20,12 @@ const RunSelection = Schema.Struct({
   runId: Schema.NonEmptyString,
   sourceId: Schema.NonEmptyString,
 })
+const NativeE2eSelection = Schema.Struct({
+  schemaVersion: Schema.Literal(1),
+  runId: Schema.NonEmptyString,
+  cohort: Schema.Literal("native-e2e"),
+})
+const AnyRunSelection = Schema.Union([RunSelection, NativeE2eSelection])
 const Passed = Schema.TaggedStruct("passed", { durationMillis: Schema.Number })
 const Failed = Schema.TaggedStruct("failed", {
   durationMillis: Schema.Number,
@@ -39,7 +51,7 @@ const RunSummary = Schema.Struct({
   runtimeDiscoveredCaseIds: Schema.Array(Schema.String),
 })
 
-export type RunSelection = Schema.Schema.Type<typeof RunSelection>
+export type RunSelection = Schema.Schema.Type<typeof AnyRunSelection>
 export type RunSummary = Schema.Schema.Type<typeof RunSummary>
 export type CaseResult = Schema.Schema.Type<typeof CaseResult>
 
@@ -335,10 +347,10 @@ const runSource = (
   })
 
 const decodeRunSelectionWith = (entries: ReadonlyArray<RegistryEntry>, input: unknown) =>
-  Schema.decodeUnknownEffect(RunSelection)(input).pipe(
+  Schema.decodeUnknownEffect(AnyRunSelection)(input).pipe(
     Effect.mapError((cause) => new RunSelectionError({ reason: String(cause) })),
     Effect.flatMap((selection) =>
-      entries.some((entry) => entry.sourceId === selection.sourceId)
+      "cohort" in selection || entries.some((entry) => entry.sourceId === selection.sourceId)
         ? Effect.succeed(selection)
         : Effect.fail(
             new RunSelectionError({ reason: `unknown source ID: ${selection.sourceId}` }),
@@ -351,11 +363,19 @@ export const make = (entries: ReadonlyArray<RegistryEntry>) => {
   const run = Effect.fn("CompatibilityRunner.run")(function* (input: unknown, tools: TestTools) {
     const selection = yield* decodeRunSelection(input)
     const configuration = yield* CompatibilityConfiguration
-    const source = entries.find((entry) => entry.sourceId === selection.sourceId)
-    if (source === undefined) {
-      return yield* new RunSelectionError({ reason: `unknown source ID: ${selection.sourceId}` })
+    const selectedEntries =
+      "cohort" in selection
+        ? entries.filter(({ sourceId }) => nativeE2eSourceIds.has(sourceId))
+        : entries.filter((entry) => entry.sourceId === selection.sourceId)
+    if (selectedEntries.length === 0) {
+      return yield* new RunSelectionError({
+        reason:
+          "cohort" in selection
+            ? "the pinned Expo native E2E cohort is empty"
+            : `unknown source ID: ${selection.sourceId}`,
+      })
     }
-    const groups = yield* Effect.forEach([source], (entry) =>
+    const groups = yield* Effect.forEach(selectedEntries, (entry) =>
       runSource(selection, entry, new Set(entry.caseIds), true, tools),
     )
     const summary = yield* Schema.decodeUnknownEffect(RunSummary)({

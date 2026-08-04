@@ -31,3 +31,28 @@ export const make = (request: NativeRunRequest): string => {
     "",
   ].join("\n")
 }
+
+export const makeBatch = (request: NativeRunRequest): string => {
+  const link = `better-native://run?${new URLSearchParams({
+    runId: request.id,
+    cohort: "native-e2e",
+  }).toString()}`
+  return [
+    `appId: ${request.device.applicationId}`,
+    "jsEngine: graaljs",
+    "---",
+    "- clearState",
+    `- openLink: ${yamlString(link)}`,
+    "- extendedWaitUntil:",
+    "    visible:",
+    '      id: "compatibility_run"',
+    "    timeout: 30000",
+    "- extendedWaitUntil:",
+    "    visible:",
+    '      id: "compatibility_run_complete"',
+    `    timeout: ${Math.max(30_000, request.timeoutMillis)}`,
+    "- assertNotVisible:",
+    '    id: "compatibility_run_error"',
+    "",
+  ].join("\n")
+}

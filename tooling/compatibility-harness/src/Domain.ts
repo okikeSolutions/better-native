@@ -332,6 +332,7 @@ export const RegistryMetadata = Schema.Struct({
   corpusFingerprint: Schema.String,
   surfaceFingerprint: Schema.String,
   trackedSpecifiers: Schema.Array(Schema.String),
+  nativeE2eSourceIds: Schema.Array(TestSourceId),
   sources: Schema.Array(RegistrySource),
 })
 

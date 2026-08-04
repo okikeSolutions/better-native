@@ -4,6 +4,7 @@ export const metadata: {
   readonly corpusFingerprint: string
   readonly surfaceFingerprint: string
   readonly trackedSpecifiers: ReadonlyArray<string>
+  readonly nativeE2eSourceIds: ReadonlyArray<string>
   readonly sources: ReadonlyArray<{
     readonly sourceId: string
     readonly path: string
@@ -3010,6 +3011,18 @@ export const metadata: {
     "unimodules-app-loader/package.json",
     "unimodules-image-loader-interface",
     "unimodules-image-loader-interface/package.json"
+  ],
+  "nativeE2eSourceIds": [
+    "expo-app-suite#apps/test-suite/tests/AppMetrics.ts",
+    "expo-app-suite#apps/test-suite/tests/Basic.js",
+    "expo-app-suite#apps/test-suite/tests/Constants.js",
+    "expo-app-suite#apps/test-suite/tests/Crypto.js",
+    "expo-app-suite#apps/test-suite/tests/Fetch.ts",
+    "expo-app-suite#apps/test-suite/tests/FileSystem.ts",
+    "expo-app-suite#apps/test-suite/tests/Haptics.js",
+    "expo-app-suite#apps/test-suite/tests/KeepAwake.js",
+    "expo-app-suite#apps/test-suite/tests/Localization.js",
+    "expo-app-suite#apps/test-suite/tests/SQLite.ts"
   ],
   "sources": [
     {

@@ -101,10 +101,14 @@ accepted only while regeneration preserves the reviewed surface lock and all com
 continue to pass.
 
 An execution unit selects exactly one source and names its runner and platform. The harness retains
-the complete unit manifest as evidence, but an application receives only
-`run?runId=<id>&source=<source-id>`. Its static registry expands that source to its cases locally.
-This keeps complete compatibility plans out of HTTP headers and native deep links while retaining
-case-level results and source-level attribution.
+the complete unit manifest as evidence. Browser runs receive only
+`run?runId=<id>&source=<source-id>`. Native device runs receive the equally short
+`run?runId=<id>&cohort=native-e2e`; the compiled registry expands that cohort from Expo's active
+`apps/bare-expo/e2e/TestSuite-test.native.js` list. This keeps compatibility plans out of HTTP
+headers and deep links while retaining case-level results and source-level attribution. Maestro
+writes JUnit evidence; a report-grace watchdog accepts a passing report if the pinned Android
+Maestro process wedges during shutdown, while the process supervisor still enforces the hard run
+timeout and termination escalation.
 
 The harness source is divided by responsibility:
 
@@ -283,7 +287,7 @@ Static extraction is deliberately honest about uncertainty: entrypoints whose na
 
 The paired resolver is implemented in `@better-native/metro`. One Expo application can select `upstream` or `candidate` mode without uninstalling or modifying its native Expo packages. Exact candidate mappings, self-import bypass, configuration validation, and resolution observations are Effect services. Metro requires `resolveRequest` to synchronously return a resolution, so `withBetterNative` is the reviewed synchronous runner boundary; it delegates to an existing resolver or `context.resolveRequest` and preserves the original Metro result or failure. The caller supplies run and build identities, and the mode is also supplied to Metro as a custom resolver option so it participates in graph identity. Paired production builds run in isolated processes. The web and native supervisors validate protocol closure, preserve bounded process evidence, and persist normalized run records for differential comparison.
 
-The compatibility suite is a production-bundleable Expo Router application generated from the complete test corpus. Every source is explicitly classified as `native-app`, `web-app`, `javascript-runner`, `xctest`, `gradle`, `build`, or `unsupported`; non-app sources receive an external runner plan or a reviewed blocker. Platform loaders statically import eligible pinned Expo Jasmine modules, and background-task registrations are emitted as eager module-scope imports. A source-sized selection runs by stable catalog ID through one application `ManagedRuntime`, with build identity decoded from Expo configuration and Schema-validated case results emitted to the UI and console. Upstream and candidate web exports are separate Metro graphs. Native supervisors install and launch once per shard, generate one Expo-style Maestro flow per source (`clearState`, deep link, readiness, result), retry a failed flow once, and persist per-source evidence; simulator and emulator jobs remain the live conformance boundary.
+The compatibility suite is a production-bundleable Expo Router application generated from the complete test corpus. Every source is explicitly classified as `native-app`, `web-app`, `javascript-runner`, `xctest`, `gradle`, `build`, or `unsupported`; non-app sources receive an external runner plan or a reviewed blocker. Platform loaders statically import eligible pinned Expo Jasmine modules, and background-task registrations are emitted as eager module-scope imports. A source-sized selection runs by stable catalog ID through one application `ManagedRuntime`, with build identity decoded from Expo configuration and Schema-validated case results emitted to the UI and console. Upstream and candidate web exports are separate Metro graphs. For native devices, generation derives Expo's curated E2E cohort from the pinned source revision. The supervisor installs and launches once, executes that cohort through one Expo-style Maestro flow, validates one aggregate result, and partitions it into per-source evidence. Simulator and emulator jobs remain the live conformance boundary; the complete catalogue continues through its classified runner adapters rather than being forced through Maestro.
 
 ## Dependency security policy
 

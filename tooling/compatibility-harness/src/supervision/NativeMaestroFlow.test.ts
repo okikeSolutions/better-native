@@ -1,7 +1,7 @@
 import { assert, describe, it } from "@effect/vitest"
 import { BuildId, ContentHash, TestSourceId, type BuildRecord } from "../Domain.ts"
 import type { BuildOutput } from "../build/BuildPipeline.ts"
-import { make } from "./NativeMaestroFlow.ts"
+import { make, makeBatch } from "./NativeMaestroFlow.ts"
 import type { NativeRunRequest } from "./NativeSupervisor.ts"
 
 const record: BuildRecord = {
@@ -49,5 +49,13 @@ describe("NativeMaestroFlow", () => {
     assert.include(flow, "source=expo-app-suite%23apps%2Ftest-suite%2Ftests%2FNetwork.js")
     assert.notInclude(flow, "caseIds")
     assert.notInclude(flow, "case=")
+  })
+
+  it("uses one short cohort selector for the pinned Expo native E2E batch", () => {
+    const flow = makeBatch(request)
+    assert.include(flow, "- clearState")
+    assert.include(flow, "cohort=native-e2e")
+    assert.notInclude(flow, "source=")
+    assert.notInclude(flow, "caseIds")
   })
 })

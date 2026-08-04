@@ -12,6 +12,7 @@ import {
   iosLaunchProcessId,
   iosLivenessSpec,
   iosLogPredicate,
+  maestroJUnitPassed,
   resultFromHierarchy,
   type NativeDevice,
   type Service as DriverService,
@@ -131,12 +132,11 @@ describe("NativeSupervisor fault injection", () => {
     }),
   )
 
-  it.effect("installs and launches once while retaining separate Maestro evidence per source", () =>
+  it.effect("runs one native cohort while retaining separate evidence per source", () =>
     Effect.gen(function* () {
       const installations = yield* Ref.make(0)
       const launches = yield* Ref.make(0)
       const flows = yield* Ref.make(0)
-      const activeRun = yield* Ref.make("")
       const records = yield* Effect.gen(function* () {
         const supervisor = yield* NativeSupervisor
         return yield* supervisor.runBatch({
@@ -168,32 +168,23 @@ describe("NativeSupervisor fault injection", () => {
               Ref.update(launches, (count) => count + 1).pipe(
                 Effect.as({ alive: true, crashed: false, logs: [] }),
               ),
-            runMaestroFlow: (_device, flowPath) =>
-              Ref.update(flows, (count) => count + 1).pipe(
-                Effect.andThen(Ref.set(activeRun, flowPath.split("/").at(-2) ?? "")),
-                Effect.as([]),
-              ),
+            runMaestroFlow: () => Ref.update(flows, (count) => count + 1).pipe(Effect.as([])),
             result: () =>
-              Ref.get(activeRun).pipe(
-                Effect.map((runId) => {
-                  const sourceId = runId.endsWith("-one") ? "suite#one" : "suite#two"
-                  return JSON.stringify({
+              Effect.succeed(
+                JSON.stringify({
+                  schemaVersion: 1,
+                  runId: "native-batch",
+                  buildId: "native-build",
+                  mode: "candidate",
+                  results: ["suite#one", "suite#two"].map((sourceId) => ({
                     schemaVersion: 1,
-                    runId,
-                    buildId: "native-build",
-                    mode: "candidate",
-                    results: [
-                      {
-                        schemaVersion: 1,
-                        runId,
-                        caseId: `${sourceId}#case@1`,
-                        attempt: 1,
-                        outcome: { _tag: "passed", durationMillis: 1 },
-                        artifacts: [],
-                      },
-                    ],
-                    runtimeDiscoveredCaseIds: [],
-                  })
+                    runId: "native-batch",
+                    caseId: `${sourceId}#case@1`,
+                    attempt: 1,
+                    outcome: { _tag: "passed", durationMillis: 1 },
+                    artifacts: [],
+                  })),
+                  runtimeDiscoveredCaseIds: [],
                 }),
               ),
           }),
@@ -201,7 +192,7 @@ describe("NativeSupervisor fault injection", () => {
       )
       assert.strictEqual(yield* Ref.get(installations), 1)
       assert.strictEqual(yield* Ref.get(launches), 1)
-      assert.strictEqual(yield* Ref.get(flows), 2)
+      assert.strictEqual(yield* Ref.get(flows), 1)
       assert.lengthOf(records, 2)
       assert.deepEqual(
         records.map((runRecord) => runRecord.attempts[0]?.artifacts.length),
@@ -229,6 +220,20 @@ describe("NativeSupervisor fault injection", () => {
       result,
     )
     assert.isNull(resultFromHierarchy("not json"))
+  })
+
+  it("accepts only complete, passing Maestro JUnit reports", () => {
+    assert.isTrue(
+      maestroJUnitPassed(
+        '<testsuites><testsuite tests="1" failures="0" errors="0" /></testsuites>',
+      ),
+    )
+    assert.isFalse(
+      maestroJUnitPassed(
+        '<testsuites><testsuite tests="1" failures="1"><testcase><failure /></testcase></testsuite></testsuites>',
+      ),
+    )
+    assert.isFalse(maestroJUnitPassed("not a JUnit report"))
   })
 
   it.effect("classifies a native launch crash", () =>

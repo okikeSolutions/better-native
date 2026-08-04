@@ -74,6 +74,49 @@ export const validate = Effect.fn("RunProtocol.validate")(function* (
   return summary
 })
 
+export const validateBatch = Effect.fn("RunProtocol.validateBatch")(function* (
+  expected: Omit<ExpectedRun, "sourceId"> & { readonly sourceIds: ReadonlyArray<TestSourceId> },
+  summary: AppRunSummary,
+) {
+  if (
+    summary.runId !== expected.runId ||
+    summary.buildId !== expected.buildId ||
+    summary.mode !== expected.mode
+  ) {
+    return yield* new RunProtocolError({
+      reason: "in-app batch result does not match the requested run, build, and mode",
+    })
+  }
+  const resultIds = summary.results.map(({ caseId }) => caseId)
+  const duplicateResults = duplicates(resultIds)
+  const sourceIds = new Set(expected.sourceIds)
+  const sourceOf = (caseId: string) => [...sourceIds].find((id) => caseId.startsWith(`${id}#`))
+  const outsideCohort = resultIds.filter((caseId) => sourceOf(caseId) === undefined)
+  const missingSources = [...sourceIds].filter(
+    (sourceId) => !resultIds.some((caseId) => caseId.startsWith(`${sourceId}#`)),
+  )
+  const invalidResults = summary.results.filter(
+    ({ runId, attempt }) => runId !== expected.runId || attempt !== 1,
+  )
+  const runtimeIds = summary.runtimeDiscoveredCaseIds
+  const invalidRuntimeIds = runtimeIds.filter(
+    (caseId) => !resultIds.includes(caseId) || sourceOf(caseId) === undefined,
+  )
+  if (
+    duplicateResults.length > 0 ||
+    outsideCohort.length > 0 ||
+    missingSources.length > 0 ||
+    invalidResults.length > 0 ||
+    duplicates(runtimeIds).length > 0 ||
+    invalidRuntimeIds.length > 0
+  ) {
+    return yield* new RunProtocolError({
+      reason: `in-app batch result does not close over its cohort (duplicates: ${duplicateResults.join(", ") || "none"}; outside: ${outsideCohort.join(", ") || "none"}; missing: ${missingSources.join(", ") || "none"})`,
+    })
+  }
+  return summary
+})
+
 /** A protocol-valid application summary proves that the runner completed.
  * Case outcomes are behavioral evidence and are compared separately.
  */

@@ -39,7 +39,9 @@ const WebLayer = WebSupervisor.layer.pipe(
     Layer.mergeAll(WebSupervisor.browserLayer, ProcessLayer, EvidenceLayer, DiscoveryLayer),
   ),
 )
-const DriverLayer = PlatformDrivers.layer.pipe(Layer.provideMerge(ProcessLayer))
+const DriverLayer = PlatformDrivers.layer.pipe(
+  Layer.provideMerge(Layer.merge(ProcessLayer, BaseLayer)),
+)
 const ExternalLayer = ExternalRunnerSupervisor.layer(root).pipe(
   Layer.provideMerge(Layer.mergeAll(ProcessLayer, EvidenceLayer, BaseLayer)),
 )

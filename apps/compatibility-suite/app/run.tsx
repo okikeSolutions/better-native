@@ -14,8 +14,13 @@ const smokeSourceId = registry.find(({ caseIds }) =>
   caseIds.some((caseId) => smokeCaseIds.includes(caseId)),
 )?.sourceId
 
-const selectionFor = (runId: string, sourceId: string | undefined): unknown => {
+const selectionFor = (
+  runId: string,
+  sourceId: string | undefined,
+  cohort: string | undefined,
+): unknown => {
   if (sourceId !== undefined) return { schemaVersion: 1, runId, sourceId }
+  if (cohort === "native-e2e") return { schemaVersion: 1, runId, cohort }
   if (smokeSourceId !== undefined) return { schemaVersion: 1, runId, sourceId: smokeSourceId }
   throw new Error("the static compatibility registry has no interactive smoke source")
 }
@@ -33,16 +38,18 @@ export default function Run() {
   const params = useLocalSearchParams<{
     runId?: string
     source?: string
+    cohort?: string
   }>()
   const [summary, setSummary] = useState<RunSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [portalChild, setPortalChild] = useState<ReactNode>(null)
   const runId = params.runId ?? "interactive-run"
   const sourceId = typeof params.source === "string" ? params.source : undefined
+  const cohort = typeof params.cohort === "string" ? params.cohort : undefined
 
   useEffect(() => {
     let active = true
-    Promise.resolve(selectionFor(runId, sourceId))
+    Promise.resolve(selectionFor(runId, sourceId, cohort))
       .then((input) =>
         runtime.runPromise(
           run(input, {
@@ -64,7 +71,7 @@ export default function Run() {
     return () => {
       active = false
     }
-  }, [params.runId, runId, sourceId])
+  }, [cohort, params.runId, runId, sourceId])
 
   const failed =
     summary?.results.filter(({ outcome }) =>
