@@ -308,7 +308,9 @@ jobs:
           set -euo pipefail
           DEVICE_ID=$(xcrun simctl list devices available --json | jq -r '[.devices[][] | select(.isAvailable == true and (.name | startswith("iPhone")))] | first | .udid')
           test -n "${DEVICE_ID:?}"
-          xcrun simctl boot "$DEVICE_ID" || true
+          xcrun simctl shutdown "$DEVICE_ID" || true
+          xcrun simctl erase "$DEVICE_ID"
+          xcrun simctl boot "$DEVICE_ID"
           xcrun simctl bootstatus "$DEVICE_ID" -b
           echo "BETTER_NATIVE_DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
       - name: Run upstream or paired iOS tests

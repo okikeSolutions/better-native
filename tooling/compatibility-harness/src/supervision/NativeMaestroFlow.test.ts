@@ -39,9 +39,9 @@ const request: NativeRunRequest = {
 }
 
 describe("NativeMaestroFlow", () => {
-  it("uses one short source selection with Expo-style reset and readiness assertions", () => {
+  it("uses one short source selection without resetting the prepared app", () => {
     const flow = make(request)
-    assert.include(flow, "- clearState")
+    assert.notInclude(flow, "clearState")
     assert.include(flow, "- openLink:")
     assert.include(flow, 'id: "compatibility_run"')
     assert.include(flow, 'id: "compatibility_run_complete"')
@@ -53,7 +53,7 @@ describe("NativeMaestroFlow", () => {
 
   it("uses one short cohort selector for the pinned Expo native E2E batch", () => {
     const flow = makeBatch(request)
-    assert.include(flow, "- clearState")
+    assert.notInclude(flow, "clearState")
     assert.include(flow, "cohort=native-e2e")
     assert.notInclude(flow, "source=")
     assert.notInclude(flow, "caseIds")

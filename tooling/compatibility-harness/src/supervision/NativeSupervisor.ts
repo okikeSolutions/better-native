@@ -19,7 +19,7 @@ import {
 } from "../Domain.ts"
 import type { BuildOutput } from "../build/BuildPipeline.ts"
 import { EvidenceStore } from "../evidence/EvidenceStore.ts"
-import { PlatformDrivers, type NativeDevice } from "./PlatformDrivers.ts"
+import { PlatformDriverError, PlatformDrivers, type NativeDevice } from "./PlatformDrivers.ts"
 import * as RunProtocol from "../protocol/RunProtocol.ts"
 import * as NativeMaestroFlow from "./NativeMaestroFlow.ts"
 
@@ -46,7 +46,7 @@ export interface NativeBatchRequest {
 }
 
 export class NativeSupervisorError extends Data.TaggedError("NativeSupervisorError")<{
-  readonly phase: "device" | "crash" | "protocol" | "timeout" | "evidence"
+  readonly phase: "device" | "crash" | "protocol" | "timeout" | "runner" | "evidence"
   readonly request: NativeRunRequest
   readonly cause: unknown
 }> {}
@@ -102,6 +102,10 @@ const failureOutcome = (error: NativeSupervisorError): RunRecordType["finalInfra
       message: String(error.cause),
     })),
     Match.when("evidence", () => ({
+      _tag: "runner-failed" as const,
+      message: String(error.cause),
+    })),
+    Match.when("runner", () => ({
       _tag: "runner-failed" as const,
       message: String(error.cause),
     })),
@@ -462,7 +466,14 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
             Effect.mapError((cause) =>
               cause instanceof NativeSupervisorError
                 ? cause
-                : new NativeSupervisorError({ phase: "device", request: batchRequest, cause }),
+                : new NativeSupervisorError({
+                    phase:
+                      cause instanceof PlatformDriverError && cause.operation === "maestro"
+                        ? "runner"
+                        : "device",
+                    request: batchRequest,
+                    cause,
+                  }),
             ),
           )
           const execution = yield* Effect.exit(program)

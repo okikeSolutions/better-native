@@ -236,6 +236,36 @@ describe("NativeSupervisor fault injection", () => {
     assert.isFalse(maestroJUnitPassed("not a JUnit report"))
   })
 
+  it.effect("classifies a Maestro assertion as a runner failure", () =>
+    Effect.gen(function* () {
+      const supervisor = yield* NativeSupervisor
+      const failure = yield* supervisor
+        .runBatch({
+          id: "native-batch",
+          build,
+          device,
+          units: [request.unit],
+          permissionState: "granted",
+          timeoutMillis: 1_000,
+        })
+        .pipe(Effect.flip)
+      assert.strictEqual(failure.phase, "runner")
+    }).pipe(
+      Effect.provide(
+        supervisorLayer({
+          runMaestroFlow: () =>
+            Effect.fail(
+              new PlatformDriverError({
+                operation: "maestro",
+                device,
+                cause: "injected assertion failure",
+              }),
+            ),
+        }),
+      ),
+    ),
+  )
+
   it.effect("classifies a native launch crash", () =>
     Effect.gen(function* () {
       const supervisor = yield* NativeSupervisor

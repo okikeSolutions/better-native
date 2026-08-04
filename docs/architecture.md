@@ -104,7 +104,9 @@ An execution unit selects exactly one source and names its runner and platform. 
 the complete unit manifest as evidence. Browser runs receive only
 `run?runId=<id>&source=<source-id>`. Native device runs receive the equally short
 `run?runId=<id>&cohort=native-e2e`; the compiled registry expands that cohort from Expo's active
-`apps/bare-expo/e2e/TestSuite-test.native.js` list. This keeps compatibility plans out of HTTP
+`apps/bare-expo/e2e/TestSuite-test.native.js` list. The Effect supervisor owns reset, installation,
+permissions, and launch exactly once; Maestro only navigates and asserts, so it cannot invalidate
+the prepared lifecycle or tracked process identity. This keeps compatibility plans out of HTTP
 headers and deep links while retaining case-level results and source-level attribution. Maestro
 writes JUnit evidence; a report-grace watchdog accepts a passing report if the pinned Android
 Maestro process wedges during shutdown, while the process supervisor still enforces the hard run

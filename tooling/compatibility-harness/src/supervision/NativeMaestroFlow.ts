@@ -3,9 +3,8 @@ import type { NativeRunRequest } from "./NativeSupervisor.ts"
 const yamlString = (value: string): string => JSON.stringify(value)
 
 /**
- * Mirrors Expo's generated test-suite flow, but selects one static registry
- * source. The source is expanded by the application; no case list crosses the
- * native deep-link boundary.
+ * Selects one static registry source after the Effect supervisor has reset,
+ * installed, granted permissions to, and launched the application.
  */
 export const make = (request: NativeRunRequest): string => {
   const link = `better-native://run?${new URLSearchParams({
@@ -16,7 +15,6 @@ export const make = (request: NativeRunRequest): string => {
     `appId: ${request.device.applicationId}`,
     "jsEngine: graaljs",
     "---",
-    "- clearState",
     `- openLink: ${yamlString(link)}`,
     "- extendedWaitUntil:",
     "    visible:",
@@ -41,7 +39,6 @@ export const makeBatch = (request: NativeRunRequest): string => {
     `appId: ${request.device.applicationId}`,
     "jsEngine: graaljs",
     "---",
-    "- clearState",
     `- openLink: ${yamlString(link)}`,
     "- extendedWaitUntil:",
     "    visible:",

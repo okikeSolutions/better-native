@@ -207,9 +207,18 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
           )
     const logs: Service["logs"] = (device) => {
       if (device.platform === "android") {
-        return invoke("logs", device, ["logcat", "-d", "-v", "epoch"]).pipe(
-          Effect.map(({ observations }) => observations),
-        )
+        return invoke("logs", device, [
+          "logcat",
+          "-d",
+          "-v",
+          "epoch",
+          "ReactNativeJS:V",
+          "ReactNative:V",
+          "AndroidRuntime:E",
+          "ActivityTaskManager:I",
+          "Expo:V",
+          "*:S",
+        ]).pipe(Effect.map(({ observations }) => observations))
       }
       return Ref.get(processIds).pipe(
         Effect.flatMap((current) => {
@@ -268,12 +277,30 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
         return invoke("install", device, args).pipe(Effect.asVoid)
       },
       reset: (device) => {
-        const clearArgs =
+        const clearState =
           device.platform === "ios"
-            ? ["uninstall", device.id, device.applicationId]
-            : ["shell", "pm", "clear", device.applicationId]
+            ? invoke(
+                "reset",
+                device,
+                ["get_app_container", device.id, device.applicationId, "data"],
+                [0, 1, 2, 3],
+              ).pipe(
+                Effect.flatMap(({ exitCode }) =>
+                  exitCode === 0
+                    ? invoke("reset", device, ["uninstall", device.id, device.applicationId]).pipe(
+                        Effect.asVoid,
+                      )
+                    : Effect.void,
+                ),
+              )
+            : invoke("reset", device, ["shell", "pm", "clear", device.applicationId], [0, 1])
         return invoke("reset", device, stopArgs(device), [0, 3, 4]).pipe(
-          Effect.andThen(invoke("reset", device, clearArgs, [0, 1])),
+          Effect.andThen(clearState),
+          Effect.andThen(
+            device.platform === "android"
+              ? invoke("reset", device, ["logcat", "-c"]).pipe(Effect.asVoid)
+              : Effect.void,
+          ),
           Effect.andThen(clearProcessId(device)),
           Effect.asVoid,
         )
@@ -286,7 +313,21 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
             "grant",
             "all",
             device.applicationId,
-          ]).pipe(Effect.asVoid)
+          ]).pipe(
+            Effect.andThen(
+              invoke("permissions", device, [
+                "spawn",
+                device.id,
+                "defaults",
+                "write",
+                "com.apple.launchservices.schemeapproval",
+                "com.apple.CoreSimulator.CoreSimulatorBridge-->better-native",
+                "-string",
+                device.applicationId,
+              ]),
+            ),
+            Effect.asVoid,
+          )
         }
         const permissions = [
           "android.permission.ACCESS_COARSE_LOCATION",
