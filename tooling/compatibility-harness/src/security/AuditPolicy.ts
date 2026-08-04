@@ -32,13 +32,7 @@ export class SecurityAuditError extends Data.TaggedError("SecurityAuditError")<{
   readonly issues: ReadonlyArray<string>
 }> {}
 
-const reviewed: ReadonlyArray<ReviewedException> = [
-  {
-    owner: { lockKey: "xcode", identifier: "xcode@3.0.1" },
-    dependency: { lockKey: "xcode/uuid", name: "uuid", version: "7.0.3" },
-    advisories: ["GHSA-w5hq-g745-h8pq"],
-  },
-]
+const reviewed: ReadonlyArray<ReviewedException> = []
 
 const advisoryId = (url: string): string => url.slice(url.lastIndexOf("/") + 1)
 
@@ -162,8 +156,6 @@ export const run = Effect.fn("AuditPolicy.run")(function* () {
     yield* Console.error(issues.join("\n"))
     return yield* new SecurityAuditError({ issues })
   }
-  yield* Console.log(
-    `Dependency audit accepted ${Object.values(report).flat().length} reviewed findings`,
-  )
+  yield* Console.log(`Dependency audit accepted ${Object.values(report).flat().length} findings`)
   return undefined
 })

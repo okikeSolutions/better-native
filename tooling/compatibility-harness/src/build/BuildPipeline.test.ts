@@ -1,4 +1,4 @@
-import * as BunServices from "@effect/platform-bun/BunServices"
+import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, describe, it } from "@effect/vitest"
 import * as Crypto from "effect/Crypto"
 import * as Effect from "effect/Effect"
@@ -64,7 +64,7 @@ const unusedEvidence = Layer.succeed(
   }),
 )
 
-const dependencies = Layer.mergeAll(BunServices.layer, unusedProcesses, unusedEvidence)
+const dependencies = Layer.mergeAll(NodeServices.layer, unusedProcesses, unusedEvidence)
 
 const buildPipelineLayer = (root: string) => {
   const commands = buildCommandLayer
@@ -132,7 +132,7 @@ describe("BuildPipeline imported products", () => {
         assert.match(String(failure.cause), /hash/)
       }).pipe(Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))))
       yield* program
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 
   it.effect("rejects external and cyclic symbolic links in imported build trees", () =>
@@ -181,7 +181,7 @@ describe("BuildPipeline imported products", () => {
       )
       assert.instanceOf(cyclicFailure, BuildImportError)
       assert.match(String(cyclicFailure.cause), /symbolic link/)
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 
   it.effect("preserves the process build phase when a command exits unsuccessfully", () =>
@@ -226,6 +226,14 @@ describe("BuildPipeline imported products", () => {
                 }
               }
               if (spec.command === "corepack") return { exitCode: 0, observations: [] }
+              if (
+                spec.command === "node" &&
+                spec.args?.some((argument) =>
+                  argument.endsWith("verify-expo-package-resolution.mjs"),
+                )
+              ) {
+                return { exitCode: 0, observations: [] }
+              }
               if (spec.command === "node" && spec.args?.includes("config")) {
                 return { exitCode: 0, observations: [] }
               }
@@ -273,7 +281,7 @@ describe("BuildPipeline imported products", () => {
       }).pipe(
         Effect.provide(
           buildPipelineLayer(root).pipe(
-            Layer.provideMerge(Layer.mergeAll(BunServices.layer, processes, evidence)),
+            Layer.provideMerge(Layer.mergeAll(NodeServices.layer, processes, evidence)),
           ),
         ),
       )
@@ -301,12 +309,32 @@ describe("BuildPipeline imported products", () => {
       const configIndex = calls.findIndex(
         ({ command, args }) => command === "node" && args?.includes("config"),
       )
+      const packageResolutionIndex = calls.findIndex(
+        ({ command, args }) =>
+          command === "node" &&
+          args?.some((argument) => argument.endsWith("verify-expo-package-resolution.mjs")),
+      )
       const exportIndex = calls.findIndex(
         ({ command, args }) => command === "node" && args?.includes("export"),
       )
+      assert.strictEqual(
+        calls[exportIndex]?.env?.BETTER_NATIVE_UPSTREAM_NODE_MODULES,
+        `${root}/.artifacts/workspaces/failed-web-build/node_modules`,
+        "Metro must resolve against the selective app materialization",
+      )
+      assert.isAtLeast(
+        packageResolutionIndex,
+        0,
+        "pinned package resolution must be verified before CNG",
+      )
+      assert.isAbove(
+        configIndex,
+        packageResolutionIndex,
+        "package resolution must be verified before config evaluation",
+      )
       assert.isAtLeast(configIndex, 0, "the pinned Expo CLI config command must execute")
       assert.isAbove(exportIndex, configIndex, "config evaluation must precede bundling")
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 
   it.effect("rejects invalid revisions before constructing a cache path", () =>
@@ -329,7 +357,7 @@ describe("BuildPipeline imported products", () => {
       assert.instanceOf(failure, BuildPipelineError)
       assert.strictEqual(failure.phase, "upstream")
       assert.match(String(failure.cause), /40-character/)
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 
   it.effect("prepares pinned Expo once before a paired web build", () =>
@@ -435,7 +463,7 @@ describe("BuildPipeline imported products", () => {
       }).pipe(
         Effect.provide(
           buildPipelineLayer(root).pipe(
-            Layer.provideMerge(Layer.mergeAll(BunServices.layer, processes, evidence)),
+            Layer.provideMerge(Layer.mergeAll(NodeServices.layer, processes, evidence)),
           ),
         ),
       )
@@ -454,7 +482,7 @@ describe("BuildPipeline imported products", () => {
         calls.filter(({ command, args }) => command === "node" && args?.includes("export")).length,
         2,
       )
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 
   it.effect("rejects a symbolic-link external Expo root", () =>
@@ -478,6 +506,6 @@ describe("BuildPipeline imported products", () => {
       }).pipe(Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))))
       assert.instanceOf(failure, BuildPipelineError)
       assert.match(String(failure.cause), /symbolic-link Expo source root/)
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 })

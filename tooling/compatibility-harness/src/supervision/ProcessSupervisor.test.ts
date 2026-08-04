@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import * as BunServices from "@effect/platform-bun/BunServices"
+import * as NodeServices from "@effect/platform-node/NodeServices"
 import * as Deferred from "effect/Deferred"
 import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
@@ -405,7 +405,7 @@ describe("ProcessSupervisor", () => {
           truncation?.text,
           "output truncated: omittedLines=1 omittedBytes=295905 retainedBytes=4095",
         )
-      }).pipe(Effect.provide(layer.pipe(Layer.provideMerge(BunServices.layer)))),
+      }).pipe(Effect.provide(layer.pipe(Layer.provideMerge(NodeServices.layer)))),
     15_000,
   )
 })

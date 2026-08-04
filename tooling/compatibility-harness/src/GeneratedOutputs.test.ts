@@ -1,4 +1,4 @@
-import * as BunServices from "@effect/platform-bun/BunServices"
+import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
@@ -21,7 +21,7 @@ describe("generated output synchronization", () => {
         "RegistryMetadata.json",
         "RunnerPlanLedger.json",
       ])
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 
   it.effect("rejects an obsolete non-file entry instead of deleting it recursively", () =>
@@ -31,6 +31,6 @@ describe("generated output synchronization", () => {
       yield* fs.makeDirectory(`${directory}/obsolete-directory`)
       const failure = yield* writeGeneratedOutputs(directory, new Map()).pipe(Effect.flip)
       assert.match(String(failure.cause), /not a regular file/)
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 })

@@ -102,7 +102,7 @@ export const layer = (
   const shared = Layer.mergeAll(buildProductsLayer, appWorkspaceLayer(root))
   const dependencies = Layer.mergeAll(
     shared,
-    appBuildExecutorLayer.pipe(Layer.provideMerge(shared)),
+    appBuildExecutorLayer(root).pipe(Layer.provideMerge(shared)),
     appBuildImporterLayer(root).pipe(Layer.provideMerge(buildProductsLayer)),
   )
   return serviceLayer.pipe(Layer.provide(dependencies))

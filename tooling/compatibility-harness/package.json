@@ -8,7 +8,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/platform-bun": "4.0.0-beta.102",
+    "@effect/platform-node": "4.0.0-beta.102",
     "effect": "4.0.0-beta.102",
     "playwright": "^1.59.0",
     "semver": "7.7.4",

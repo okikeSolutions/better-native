@@ -1,6 +1,5 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignore": ["vendor/**"],
   "treatConfigHintsAsErrors": true,
   "rules": {
     "exports": "off",
@@ -36,7 +35,7 @@
       "expo": false
     },
     "tooling/compatibility-harness": {
-      "entry": ["src/main.ts", "src/checkGenerated.ts", "src/**/*.test.ts"],
+      "entry": ["src/checkGenerated.ts", "src/**/*.test.ts"],
       "project": ["src/**/*.ts"]
     },
     "tooling/expo-catalog": {

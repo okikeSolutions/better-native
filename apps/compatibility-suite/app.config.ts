@@ -10,7 +10,7 @@ const config: ExpoConfig = {
   android: { package: "dev.betternative.compatibility" },
   web: { bundler: "metro", output: "static" },
   plugins: ["expo-router"],
-  experiments: { typedRoutes: true },
+  experiments: { autolinkingModuleResolution: true, typedRoutes: true },
   extra: {
     betterNativeMode: process.env.BETTER_NATIVE_MODE,
     betterNativeBuildId: process.env.BETTER_NATIVE_BUILD_ID,

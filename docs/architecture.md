@@ -66,12 +66,26 @@ manifest contains the runner's curated source/test dependency closure, not every
 package. The Expo catalog and ownership ledger retain every discovered package and export,
 including packages that cannot coexist in one native binary.
 
-`AppWorkspace` copies the fixture manifest unchanged. In particular, it must not inject the
-repository or pinned Expo `node_modules` directories into Expo Autolinking `searchPaths`: doing so
-would turn every installed native module into a build input. Native package coverage is instead
-added through generated single-package or explicitly compatible-cohort fixtures. An upstream
-failure of such a fixture is recorded as an upstream result; it is never hidden by omitting the
-package from the catalog.
+`AppWorkspace` preserves the source fixture manifest. Its disposable copy receives one generated,
+platform-specific Expo Autolinking `searchPaths` entry only after an initial native discovery pass.
+That entry points to a narrow overlay containing the discovered native Expo closure from the pinned
+checkout. It never points at the repository or complete pinned `node_modules`, because either would
+turn unrelated installed native modules into build inputs. Native package coverage is added through
+generated single-package or explicitly compatible-cohort fixtures. An upstream failure of such a
+fixture is recorded as an upstream result; it is never hidden by omitting the package from the
+catalog.
+
+The isolated workspace links every Expo workspace package to its directory in the authoritative
+pinned checkout and links declared bundled third-party dependencies to the repository installation.
+The initial Expo Autolinking result selects the platform overlay; a second Expo Modules and React
+Native Autolinking pass must resolve every known Expo and direct dependency path to that
+materialization before CNG runs. This gives CocoaPods and Gradle the same package roots. The app
+explicitly enables Expo's `autolinkingModuleResolution` experiment because a disposable workspace is
+not detected as a monorepo; Metro therefore consumes the same native module map, while the paired
+resolver prioritizes the isolated workspace's `node_modules` for every tracked upstream import. A
+Node prebuild assertion also verifies and records every pinned Expo workspace link, so an
+identically versioned app-local or repository registry package cannot silently replace pinned
+source.
 
 For bundled third-party packages absent from Expo's source tree, declaration extraction reads the
 normal installation of the pinned external Expo checkout. When that installation does not
@@ -80,12 +94,11 @@ materialize an artifact, the current implementation falls back to the non-native
 separately, so a fixture's dependency set cannot redefine the catalog. Native coverage becomes
 blocking only in the generated fixture that declares the relevant package.
 
-The fallback is a temporary implementation boundary, not a publishable dependency or a second
-Expo target. It restores the complete, locked surface denominator without autolinking every
-third-party package into the runner. However, it currently brings some legacy package dependency
-trees into the root Bun lockfile; the security audit rejects those trees. The catalog must move to
-verified declaration artifacts (or another isolated, integrity-checked artifact source) before
-the root security gate can be considered green.
+The fallback is a private implementation boundary, not a publishable dependency or a second Expo
+target. It restores the complete, locked surface denominator without autolinking every third-party
+package into the runner. Patched transitive resolutions are enforced at the root and may be
+accepted only while regeneration preserves the reviewed surface lock and all compatibility tests
+continue to pass.
 
 An execution unit selects exactly one source and names its runner and platform. The harness retains
 the complete unit manifest as evidence, but an application receives only
@@ -187,8 +200,8 @@ Pinned Expo is materialized by the harness with Expo's normal `pnpm install --fr
 lifecycle. The harness does not suppress lifecycle scripts, curate a replacement rebuild list, or
 inject a Turbo endpoint into the external Expo checkout. This is the same runnable-workspace model used by
 Expo's test-suite workflows. Compatibility build services consume that one verified
-materialization and create separate upstream and candidate CNG workspaces only when a differential
-run is requested.
+materialization, selectively link declared Expo dependencies to its source packages, and create
+separate upstream and candidate CNG workspaces only when a differential run is requested.
 
 Root checks may use this repository's signed remote Turbo cache when credentials are configured.
 Compatibility jobs deliberately do not pass those credentials to pinned Expo. Missing cache
@@ -232,9 +245,11 @@ flowchart TB
 ```
 
 `setup-static`, `setup-build`, `setup-device-test`, and `setup-compare` are explicit job profiles.
-Only the build profile installs Node and pnpm and materializes pinned Expo. Device jobs consume
-immutable products; comparison jobs consume downloaded evidence and never install Expo or generate
-the catalog. Pull requests and pushes run the upstream baseline for affected platforms. The weekly
+Every profile pins Node 24 because the Effect compatibility harness uses `NodeRuntime` and
+`NodeServices`; Bun remains the workspace package manager and test/script orchestrator. Only the
+build profile installs pnpm and materializes pinned Expo. Device jobs consume immutable products;
+comparison jobs consume downloaded evidence and never install Expo or generate the catalog. Pull
+requests and pushes run the upstream baseline for affected platforms. The weekly
 schedule and manual `pair` mode run upstream and candidate through the same build and device paths;
 candidate mode changes only Metro resolution. Differential verdicts are emitted in their own
 lightweight jobs.
@@ -277,10 +292,9 @@ allowed only when it identifies the exact owner, locked dependency path, version
 the audit policy also fails if that path changes or the exception becomes stale. Exceptions are
 never allowed for publishable `@better-native/*` runtime packages.
 
-At present, the only reviewed exception is Expo's build-time `xcode@3.0.1 → uuid@7.0.3` path
-(`GHSA-w5hq-g745-h8pq`). The current `tooling/expo-catalog` fallback introduces additional legacy
-transitive dependencies—including old Sentry, XML, image-processing, and React Server Component
-trees—which are intentionally **not** suppressed. Consequently, `bun run security:audit` and the
-root `bun run check` remain red until that fallback is replaced or isolated with a verified
-declaration-artifact design. This is a correctness requirement: keeping the full Expo surface
-must not silently weaken the repository's supply-chain gate.
+There are currently no reviewed advisory exceptions. Root-level Bun overrides resolve vulnerable
+Sentry, XML, image-processing, UUID, and React Server Component transitive packages to patched
+versions. `bun audit` must report zero vulnerabilities; `bun run security:audit` additionally
+rejects unreviewed findings and stale exceptions. Every override remains subject to generated
+surface-lock, type, test, and compatibility validation so that a security update cannot silently
+change the pinned Expo contract.

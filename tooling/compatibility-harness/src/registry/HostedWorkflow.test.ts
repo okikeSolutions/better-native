@@ -1,4 +1,4 @@
-import * as BunServices from "@effect/platform-bun/BunServices"
+import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
@@ -20,6 +20,8 @@ describe("hosted compatibility workflow", () => {
         cacheSetup,
         maestroSetup,
         turboConfig,
+        rootPackage,
+        harnessPackage,
       ] = yield* Effect.all([
         fs.readFileString(".github/workflows/compatibility.yml"),
         fs.readFileString(".github/workflows/check.yml"),
@@ -33,10 +35,13 @@ describe("hosted compatibility workflow", () => {
         fs.readFileString(".github/actions/setup-expo-caches/action.yml"),
         fs.readFileString(".github/actions/setup-maestro/action.yml"),
         fs.readFileString("turbo.json"),
+        fs.readFileString("package.json"),
+        fs.readFileString("tooling/compatibility-harness/package.json"),
       ])
+      assert.match(staticSetup, /node-version: 24/)
       assert.match(staticSetup, /bun install --frozen-lockfile/)
       assert.notMatch(staticSetup, /ignore-scripts/)
-      assert.match(buildSetup, /node-version: 24/)
+      assert.notMatch(buildSetup, /node-version: 24/)
       assert.match(buildSetup, /version: 10\.33\.0/)
       assert.match(buildSetup, /setup-expo-source/)
       assert.match(buildSetup, /pnpm store path/)
@@ -81,6 +86,11 @@ describe("hosted compatibility workflow", () => {
       assert.strictEqual(workflow.match(/supervise-web-pair/g)?.length, 1)
       assert.strictEqual(workflow.match(/supervise-build-pair/g)?.length, 2)
       assert.strictEqual(workflow.match(/supervise-native-pair/g)?.length, 2)
+      assert.match(
+        workflow,
+        /uses: reactivecircus\/android-emulator-runner@[\s\S]*?script: \|\n\s+set -eu\n/,
+      )
+      assert.notMatch(workflow, /script: \|\n\s+set -euo pipefail/)
       assert.strictEqual(workflow.match(/run: bun run expo:prepare/g)?.length, 4)
       assert.match(workflow, /Setup device-test profile/)
       assert.match(workflow, /Setup compare profile/)
@@ -88,6 +98,9 @@ describe("hosted compatibility workflow", () => {
       assert.match(workflow, /Refusing unsafe archive entry/)
       assert.match(workflow, /\$\{BUILD_ID\}-upstream\/record\.json/)
       assert.notMatch(workflow, /COMPATIBILITY_MODE:\+-upstream/)
-    }).pipe(Effect.provide(BunServices.layer)),
+      assert.match(rootPackage, /"better-native": "node --experimental-strip-types/)
+      assert.match(harnessPackage, /"@effect\/platform-node": "4\.0\.0-beta\.102"/)
+      assert.notMatch(harnessPackage, /@effect\/platform-bun/)
+    }).pipe(Effect.provide(NodeServices.layer)),
   )
 })

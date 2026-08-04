@@ -1,5 +1,5 @@
-import * as BunRuntime from "@effect/platform-bun/BunRuntime"
-import * as BunServices from "@effect/platform-bun/BunServices"
+import * as NodeRuntime from "@effect/platform-node/NodeRuntime"
+import * as NodeServices from "@effect/platform-node/NodeServices"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Command from "effect/unstable/cli/Command"
@@ -17,7 +17,7 @@ import * as ProcessSupervisor from "./supervision/ProcessSupervisor.ts"
 import * as WebSupervisor from "./supervision/WebSupervisor.ts"
 
 const root = process.cwd()
-const BaseLayer = BunServices.layer
+const BaseLayer = NodeServices.layer
 const ProcessLayer = ProcessSupervisor.layer.pipe(Layer.provideMerge(BaseLayer))
 const EvidenceLayer = EvidenceStore.layer(root).pipe(Layer.provideMerge(BaseLayer))
 const BuildCommandLayer = BuildCommand.layer.pipe(
@@ -56,4 +56,4 @@ const MainLayer = Layer.mergeAll(
   RepositoryLayer,
 )
 
-Command.run(command, { version: "0.0.0" }).pipe(Effect.provide(MainLayer), BunRuntime.runMain)
+Command.run(command, { version: "0.0.0" }).pipe(Effect.provide(MainLayer), NodeRuntime.runMain)

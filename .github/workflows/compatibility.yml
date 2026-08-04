@@ -479,7 +479,7 @@ jobs:
           disk-size: 4G
           emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
           script: |
-            set -euo pipefail
+            set -eu
             if [ "$COMPATIBILITY_MODE" = pair ]; then
               upstream_record=".artifacts/builds/${BUILD_ID}-upstream/record.json"
             else

@@ -1,4 +1,4 @@
-import * as BunServices from "@effect/platform-bun/BunServices"
+import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
@@ -34,7 +34,7 @@ describe("EvidenceStore", () => {
         assert.strictEqual(failure.operation, "preserve immutable evidence")
       }).pipe(Effect.provide(layer(root)))
       yield* program
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 
   it.effect("rejects evidence directories redirected through symbolic links", () =>
@@ -56,6 +56,6 @@ describe("EvidenceStore", () => {
       assert.instanceOf(failure, EvidenceError)
       assert.strictEqual(failure.operation, "validate evidence directory")
       assert.isFalse(yield* fs.exists(`${outside}/record.json`))
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 })

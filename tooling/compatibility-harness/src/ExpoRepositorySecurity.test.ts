@@ -1,4 +1,4 @@
-import * as BunServices from "@effect/platform-bun/BunServices"
+import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
@@ -22,7 +22,7 @@ describe("ExpoRepository path boundaries", () => {
         .pipe(Effect.flip)
       assert.instanceOf(writeFailure, HarnessError)
       assert.strictEqual(writeFailure.operation, "resolve artifact path")
-    }).pipe(Effect.provide(layer(process.cwd()).pipe(Layer.provideMerge(BunServices.layer)))),
+    }).pipe(Effect.provide(layer(process.cwd()).pipe(Layer.provideMerge(NodeServices.layer)))),
   )
 
   it.effect("rejects unsafe upstream revisions and paths during decoding", () =>
@@ -83,7 +83,7 @@ describe("ExpoRepository path boundaries", () => {
         return yield* repository.writeArtifact("compatibility/catalog.json", "{}").pipe(Effect.flip)
       }).pipe(
         Effect.provide(
-          layer(root, `${root}/expo-source`).pipe(Layer.provideMerge(BunServices.layer)),
+          layer(root, `${root}/expo-source`).pipe(Layer.provideMerge(NodeServices.layer)),
         ),
       )
       assert.instanceOf(directoryFailure, HarnessError)
@@ -98,11 +98,11 @@ describe("ExpoRepository path boundaries", () => {
         return yield* repository.writeArtifact("compatibility/catalog.json", "{}").pipe(Effect.flip)
       }).pipe(
         Effect.provide(
-          layer(root, `${root}/expo-source`).pipe(Layer.provideMerge(BunServices.layer)),
+          layer(root, `${root}/expo-source`).pipe(Layer.provideMerge(NodeServices.layer)),
         ),
       )
       assert.instanceOf(targetFailure, HarnessError)
       assert.strictEqual(targetFailure.operation, "validate artifact target")
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 })

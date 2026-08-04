@@ -1,4 +1,4 @@
-import * as BunServices from "@effect/platform-bun/BunServices"
+import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
@@ -40,7 +40,7 @@ describe("ExternalRunnerSupervisor", () => {
         }),
       )
       const dependencies = Layer.mergeAll(processes, EvidenceStore.layer(root)).pipe(
-        Layer.provideMerge(BunServices.layer),
+        Layer.provideMerge(NodeServices.layer),
       )
       const program = Effect.gen(function* () {
         const supervisor = yield* ExternalRunnerSupervisor
@@ -60,7 +60,7 @@ describe("ExternalRunnerSupervisor", () => {
         )
       }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(dependencies))))
       yield* program
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 
   it.effect("rejects unapproved commands and paths outside the reviewed repository", () =>
@@ -79,7 +79,7 @@ describe("ExternalRunnerSupervisor", () => {
           }),
         ),
         EvidenceStore.layer(root),
-      ).pipe(Layer.provideMerge(BunServices.layer))
+      ).pipe(Layer.provideMerge(NodeServices.layer))
       const run = (command: string, cwd: string) =>
         Effect.gen(function* () {
           const supervisor = yield* ExternalRunnerSupervisor
@@ -100,7 +100,7 @@ describe("ExternalRunnerSupervisor", () => {
       assert.match(String(commandFailure.cause), /not an allowed/)
       const pathFailure = yield* run("jest", outside)
       assert.match(String(pathFailure.cause), /escapes/)
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 
   it.effect("rejects symbolic-link and oversized reports", () =>
@@ -137,7 +137,7 @@ describe("ExternalRunnerSupervisor", () => {
             }),
           ),
           EvidenceStore.layer(root),
-        ).pipe(Layer.provideMerge(BunServices.layer))
+        ).pipe(Layer.provideMerge(NodeServices.layer))
         const failure = yield* Effect.gen(function* () {
           const supervisor = yield* ExternalRunnerSupervisor
           return yield* supervisor
@@ -155,7 +155,7 @@ describe("ExternalRunnerSupervisor", () => {
         assert.strictEqual(failure.phase, "report")
         assert.match(String(failure.cause), scenario === "link" ? /symbolic link/ : /no larger/)
       }
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 
   it.effect("rejects repository source targets without deleting them", () =>
@@ -173,7 +173,7 @@ describe("ExternalRunnerSupervisor", () => {
           }),
         ),
         EvidenceStore.layer(root),
-      ).pipe(Layer.provideMerge(BunServices.layer))
+      ).pipe(Layer.provideMerge(NodeServices.layer))
       const run = (reportPath: string) =>
         Effect.gen(function* () {
           const supervisor = yield* ExternalRunnerSupervisor
@@ -201,6 +201,6 @@ describe("ExternalRunnerSupervisor", () => {
       assert.strictEqual(extensionFailure.phase, "report")
       assert.match(String(extensionFailure.cause), /\.json/)
       assert.strictEqual(yield* fs.readFileString(manifest), "preserve-me")
-    }).pipe(Effect.scoped, Effect.provide(BunServices.layer)),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   )
 })

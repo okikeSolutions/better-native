@@ -26,6 +26,10 @@ const lock: BunLock = {
 const report: AuditReport = { vulnerable: [advisory] }
 
 describe("dependency audit policy", () => {
+  it("accepts an empty audit without exceptions", () => {
+    assert.deepEqual(validate({}, lock, []), [])
+  })
+
   it("accepts only the exact reviewed owner, version, path and advisory", () => {
     assert.deepEqual(validate(report, lock, policy), [])
   })
