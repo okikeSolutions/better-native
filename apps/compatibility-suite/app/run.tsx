@@ -2,17 +2,8 @@ import { useLocalSearchParams } from "expo-router"
 import { type ReactNode, useEffect, useState } from "react"
 import { ScrollView, StyleSheet, Text, View } from "react-native"
 import * as Match from "effect/Match"
-import { registry } from "../src/Registry.ts"
 import { run, type RunSummary } from "../src/Runner.ts"
 import { runtime } from "../src/Runtime.ts"
-
-const smokeCaseIds = registry
-  .filter(({ path }) => /\/tests\/(?:Basic|Network)\.[^.]+$/.test(path))
-  .flatMap(({ caseIds }) => caseIds)
-
-const smokeSourceId = registry.find(({ caseIds }) =>
-  caseIds.some((caseId) => smokeCaseIds.includes(caseId)),
-)?.sourceId
 
 const selectionFor = (
   runId: string,
@@ -21,8 +12,7 @@ const selectionFor = (
 ): unknown => {
   if (sourceId !== undefined) return { schemaVersion: 1, runId, sourceId }
   if (cohort === "native-e2e") return { schemaVersion: 1, runId, cohort }
-  if (smokeSourceId !== undefined) return { schemaVersion: 1, runId, sourceId: smokeSourceId }
-  throw new Error("the static compatibility registry has no interactive smoke source")
+  return { schemaVersion: 1, runId, cohort: "interactive-smoke" }
 }
 
 export const formatRunError = (cause: unknown): string => {
@@ -46,7 +36,7 @@ export default function Run() {
   const runId = params.runId ?? "interactive-run"
   const sourceId = typeof params.source === "string" ? params.source : undefined
   const cohort = typeof params.cohort === "string" ? params.cohort : undefined
-  const selectionIdentity = sourceId ?? cohort ?? smokeSourceId ?? "unavailable"
+  const selectionIdentity = sourceId ?? cohort ?? "interactive-smoke"
 
   useEffect(() => {
     let active = true

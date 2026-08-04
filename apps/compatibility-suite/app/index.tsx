@@ -11,7 +11,7 @@ export default function Index() {
       <Text style={styles.metric}>{registry.length.toLocaleString()} indexed sources</Text>
       <Text style={styles.detail}>{appRunnable} app-runnable sources on this platform</Text>
       <Link href="/run" style={styles.link}>
-        Run Basic and Network smoke cases
+        Run Basic, Battery, and Network smoke cases
       </Link>
     </View>
   )

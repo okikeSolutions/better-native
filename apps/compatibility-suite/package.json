@@ -9,7 +9,9 @@
     "build:metro": "bun run --cwd ../../packages/metro build"
   },
   "dependencies": {
+    "@better-native/battery": "workspace:*",
     "@better-native/metro": "workspace:*",
+    "@better-native/network": "workspace:*",
     "@expo/html-elements": "57.0.0",
     "@expo/styleguide-base": "^1.0.1",
     "@expo/vector-icons": "^15.0.2",

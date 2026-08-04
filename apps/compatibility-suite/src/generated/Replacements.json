@@ -1,8 +1,17 @@
 {
   "schemaVersion": 1,
   "expoRevision": "534c99966e34580f56242eb92aac7689b9089cc7",
-  "ownershipFingerprint": "632b05c954eb4cdb96251e5b0c03da57f29752459e2364d10a4deaee80776f00",
-  "replacements": [],
+  "ownershipFingerprint": "12999631782174e811d021fc36573d5e6687dc6b9e37627ab11d8043b0fe6674",
+  "replacements": [
+    {
+      "source": "expo-battery",
+      "target": "@better-native/battery/expo"
+    },
+    {
+      "source": "expo-network",
+      "target": "@better-native/network/expo"
+    }
+  ],
   "trackedSpecifiers": [
     "@expo/dom-webview",
     "@expo/dom-webview/package.json",

@@ -7,6 +7,7 @@ import * as Schema from "effect/Schema"
 import jasmineRequire from "jasmine-core/lib/jasmine-core/jasmine"
 import { CompatibilityConfiguration } from "./Configuration.ts"
 import {
+  interactiveSmokeSourceIds,
   nativeE2eSourceIds,
   registry,
   type ExpoTestModule,
@@ -25,7 +26,12 @@ const NativeE2eSelection = Schema.Struct({
   runId: Schema.NonEmptyString,
   cohort: Schema.Literal("native-e2e"),
 })
-const AnyRunSelection = Schema.Union([RunSelection, NativeE2eSelection])
+const InteractiveSmokeSelection = Schema.Struct({
+  schemaVersion: Schema.Literal(1),
+  runId: Schema.NonEmptyString,
+  cohort: Schema.Literal("interactive-smoke"),
+})
+const AnyRunSelection = Schema.Union([RunSelection, NativeE2eSelection, InteractiveSmokeSelection])
 const Passed = Schema.TaggedStruct("passed", { durationMillis: Schema.Number })
 const Failed = Schema.TaggedStruct("failed", {
   durationMillis: Schema.Number,
@@ -91,6 +97,7 @@ const JasmineDone = Schema.Struct({
     ),
   ),
 })
+type JasmineDone = Schema.Schema.Type<typeof JasmineDone>
 
 const wrapSpec = (assertion: (...args: ReadonlyArray<unknown>) => unknown) => () => assertion()
 
@@ -138,11 +145,43 @@ const skipped = (runId: string, caseId: string, reason: string): CaseResult => (
   artifacts: [],
 })
 
+export const recordJasmineCompletion = ({
+  done,
+  results,
+  selectedCaseIds,
+  sourceId,
+  runId,
+  runtimeDiscoveredCaseIds,
+}: {
+  readonly done: JasmineDone
+  readonly results: Array<CaseResult>
+  readonly selectedCaseIds: ReadonlySet<string>
+  readonly sourceId: string
+  readonly runId: string
+  readonly runtimeDiscoveredCaseIds: Array<string>
+}): void => {
+  if (done.overallStatus === "passed" || results.some(({ outcome }) => outcome._tag === "failed")) {
+    return
+  }
+  const detail =
+    done.failedExpectations?.find(({ message }) => message !== undefined)?.message ??
+    done.incompleteReason ??
+    `Jasmine completed with status ${done.overallStatus ?? "unknown"}`
+  const first = results[0]
+  if (first !== undefined) {
+    results[0] = failed(runId, first.caseId, new Error(detail))
+    return
+  }
+  const selected = [...selectedCaseIds][0]
+  const caseId = selected ?? `${sourceId}#<suite failure>@1`
+  results.push(failed(runId, caseId, new Error(detail)))
+  if (selected === undefined) runtimeDiscoveredCaseIds.push(caseId)
+}
+
 const runSource = (
   selection: RunSelection,
   source: RegistryEntry,
   selectedCaseIds: ReadonlySet<string>,
-  discovery: boolean,
   tools: TestTools,
 ) =>
   Effect.tryPromise({
@@ -219,13 +258,12 @@ const runSource = (
           registrationOccurrences.set(name, occurrence)
           const caseId = staticCaseIds.get(`${name}@${occurrence}`)
           if (caseId !== undefined) caseIdBySpecId.set(spec.id, caseId)
-          return discovery || (caseId !== undefined && selectedCaseIds.has(caseId))
+          return true
         },
       })
       const results: Array<CaseResult> = []
       const runtimeDiscoveredCaseIds: Array<string> = []
       const occurrences = new Map<string, number>()
-      const knownCaseIds = new Set<string>(source.caseIds)
       jasmineEnv.addReporter({
         specDone(result: {
           id: string
@@ -239,12 +277,7 @@ const runSource = (
           occurrences.set(name, occurrence)
           const discoveredCaseId = `${source.sourceId}#${name}@${occurrence}`
           const caseId = caseIdBySpecId.get(result.id) ?? discoveredCaseId
-          if (result.status === "excluded" && !selectedCaseIds.has(caseId) && !discovery) return
-          if (discovery) {
-            runtimeDiscoveredCaseIds.push(caseId)
-          } else if (!knownCaseIds.has(caseId)) {
-            runtimeDiscoveredCaseIds.push(discoveredCaseId)
-          }
+          runtimeDiscoveredCaseIds.push(caseId)
           const durationMillis = result.duration ?? 0
           const outcome = Match.value(result.status).pipe(
             Match.when("passed", () => ({ _tag: "passed" as const, durationMillis })),
@@ -314,32 +347,14 @@ const runSource = (
       }
       if (registeredSpecCount === 0) return platformSkipped()
       const done = Schema.decodeUnknownSync(JasmineDone)(await jasmineEnv.execute())
-      if (
-        done.overallStatus !== "passed" &&
-        !results.some(({ outcome }) => outcome._tag === "failed")
-      ) {
-        const detail =
-          done.failedExpectations?.find(({ message }) => message !== undefined)?.message ??
-          done.incompleteReason ??
-          `Jasmine completed with status ${done.overallStatus ?? "unknown"}`
-        const first = results[0]
-        if (first !== undefined) {
-          results[0] = failed(selection.runId, first.caseId, new Error(detail))
-        } else {
-          const selected = [...selectedCaseIds][0]
-          const caseId = selected ?? `${source.sourceId}#<suite failure>@1`
-          results.push(failed(selection.runId, caseId, new Error(detail)))
-          if (selected === undefined) runtimeDiscoveredCaseIds.push(caseId)
-        }
-      }
-      if (!discovery) {
-        const observed = new Set(results.map(({ caseId }) => caseId))
-        for (const caseId of selectedCaseIds) {
-          if (!observed.has(caseId)) {
-            results.push(notRun(selection.runId, caseId, "case was not registered at runtime"))
-          }
-        }
-      }
+      recordJasmineCompletion({
+        done,
+        results,
+        selectedCaseIds,
+        sourceId: source.sourceId,
+        runId: selection.runId,
+        runtimeDiscoveredCaseIds,
+      })
       return { results, runtimeDiscoveredCaseIds }
     },
     catch: (cause) =>
@@ -365,18 +380,22 @@ export const make = (entries: ReadonlyArray<RegistryEntry>) => {
     const configuration = yield* CompatibilityConfiguration
     const selectedEntries =
       "cohort" in selection
-        ? entries.filter(({ sourceId }) => nativeE2eSourceIds.has(sourceId))
+        ? entries.filter(({ sourceId }) =>
+            selection.cohort === "native-e2e"
+              ? nativeE2eSourceIds.has(sourceId)
+              : interactiveSmokeSourceIds.has(sourceId),
+          )
         : entries.filter((entry) => entry.sourceId === selection.sourceId)
     if (selectedEntries.length === 0) {
       return yield* new RunSelectionError({
         reason:
           "cohort" in selection
-            ? "the pinned Expo native E2E cohort is empty"
+            ? `the pinned Expo ${selection.cohort} cohort is empty`
             : `unknown source ID: ${selection.sourceId}`,
       })
     }
     const groups = yield* Effect.forEach(selectedEntries, (entry) =>
-      runSource(selection, entry, new Set(entry.caseIds), true, tools),
+      runSource(selection, entry, new Set(entry.caseIds), tools),
     )
     const summary = yield* Schema.decodeUnknownEffect(RunSummary)({
       schemaVersion: 1,

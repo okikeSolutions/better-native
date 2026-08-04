@@ -1,5 +1,24 @@
 {
   "schemaVersion": 1,
   "expoRevision": "534c99966e34580f56242eb92aac7689b9089cc7",
-  "overrides": []
+  "overrides": [
+    {
+      "package": "expo-battery",
+      "subpath": ".",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/battery/expo",
+      "reason": "Bootstrap candidate routing through the @better-native/battery Expo-compatible entrypoint before individual exports are promoted to effect ownership.",
+      "issue": "bootstrap-battery"
+    },
+    {
+      "package": "expo-network",
+      "subpath": ".",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/network/expo",
+      "reason": "Bootstrap candidate routing through the @better-native/network Expo-compatible entrypoint before individual exports are promoted to effect ownership.",
+      "issue": "bootstrap-network"
+    }
+  ]
 }
