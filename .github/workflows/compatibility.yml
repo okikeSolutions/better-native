@@ -24,6 +24,11 @@ on:
 permissions:
   contents: read
 
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  BETTER_NATIVE_FORCE_COLD_BUILD: ${{ github.event_name == 'schedule' && 'true' || 'false' }}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
@@ -194,6 +199,13 @@ jobs:
           ruby-version: 3.2.2
       - name: Select Xcode
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
+      - name: Select iOS build simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          device_id=$(xcrun simctl list devices available --json | jq -r '[.devices[][] | select(.isAvailable == true and (.name | startswith("iPhone")))] | first | .udid')
+          test -n "${device_id:?}"
+          echo "BETTER_NATIVE_IOS_DESTINATION=platform=iOS Simulator,id=$device_id" >> "$GITHUB_ENV"
       - name: Install pinned CocoaPods
         run: gem install cocoapods --version 1.16.2 --no-document
       - name: Setup ccache
@@ -228,7 +240,7 @@ jobs:
           modes=(upstream)
           [ "$COMPATIBILITY_MODE" = pair ] && modes+=(candidate)
           for mode in "${modes[@]}"; do
-            [ "$COMPATIBILITY_MODE" = pair ] && workspace="${BUILD_ID}-${mode}" || workspace="$BUILD_ID"
+            workspace="ios-${mode}"
             destination=".artifacts/products/${BUILD_ID}/${mode}"
             mkdir -p "$destination"
             tar -czf "$destination/BetterNativeCompatibility.app.tar.gz" \
@@ -312,6 +324,10 @@ jobs:
           xcrun simctl erase "$DEVICE_ID"
           xcrun simctl boot "$DEVICE_ID"
           xcrun simctl bootstatus "$DEVICE_ID" -b
+          xcrun simctl spawn "$DEVICE_ID" defaults write \
+            com.apple.launchservices.schemeapproval \
+            'com.apple.CoreSimulator.CoreSimulatorBridge-->better-native' \
+            -string dev.betternative.compatibility
           echo "BETTER_NATIVE_DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
       - name: Run upstream or paired iOS tests
         shell: bash
@@ -419,7 +435,7 @@ jobs:
           modes=(upstream)
           [ "$COMPATIBILITY_MODE" = pair ] && modes+=(candidate)
           for mode in "${modes[@]}"; do
-            [ "$COMPATIBILITY_MODE" = pair ] && workspace="${BUILD_ID}-${mode}" || workspace="$BUILD_ID"
+            workspace="android-${mode}"
             destination=".artifacts/products/${BUILD_ID}/${mode}"
             mkdir -p "$destination"
             cp ".artifacts/workspaces/${workspace}/apps/compatibility-suite/android/app/build/outputs/apk/release/app-release.apk" "$destination/app-release.apk"

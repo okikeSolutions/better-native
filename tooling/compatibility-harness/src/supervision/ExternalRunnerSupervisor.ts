@@ -3,6 +3,7 @@ import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
+import * as Match from "effect/Match"
 import * as Option from "effect/Option"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
@@ -73,6 +74,26 @@ const executableNames: Readonly<Record<ExternalRunRequest["runner"], ReadonlySet
   detox: new Set(["bun", "detox", "jest", "mkdir", "node", "npx", "pnpm"]),
   workflow: new Set(["bun", "mkdir", "node", "pnpm"]),
 }
+
+const reportExtensionFor = (runner: ExternalRunRequest["runner"]): ".json" | ".xml" =>
+  Match.value(runner).pipe(
+    Match.whenOr("jest", "xctest", () => ".json" as const),
+    Match.orElse(() => ".xml" as const),
+  )
+
+const parseReport = (
+  runner: ExternalRunRequest["runner"],
+  runId: RunId,
+  sourceId: TestSourceId,
+  report: string,
+) =>
+  Match.value(runner).pipe(
+    Match.when("jest", () => ExternalRunnerAdapters.parseJest(runId, sourceId, report)),
+    Match.when("xctest", () => ExternalRunnerAdapters.parseXcTest(runId, sourceId, report)),
+    Match.orElse((junitRunner) =>
+      ExternalRunnerAdapters.parseJunit(junitRunner, runId, sourceId, report),
+    ),
+  )
 
 export const layer = (
   root: string,
@@ -207,8 +228,7 @@ export const layer = (
         )
       const run: Service["run"] = (request) =>
         Effect.gen(function* () {
-          const reportExtension =
-            request.runner === "jest" || request.runner === "xctest" ? ".json" : ".xml"
+          const reportExtension = reportExtensionFor(request.runner)
           const initialReport = yield* resolveReport(
             request.reportPath,
             request.id,
@@ -295,20 +315,7 @@ export const layer = (
               (cause) => new ExternalRunnerError({ request, phase: "report", cause }),
             ),
           )
-          const parse = (() => {
-            if (request.runner === "jest") {
-              return ExternalRunnerAdapters.parseJest(request.runId, request.sourceId, report)
-            }
-            if (request.runner === "xctest") {
-              return ExternalRunnerAdapters.parseXcTest(request.runId, request.sourceId, report)
-            }
-            return ExternalRunnerAdapters.parseJunit(
-              request.runner,
-              request.runId,
-              request.sourceId,
-              report,
-            )
-          })()
+          const parse = parseReport(request.runner, request.runId, request.sourceId, report)
           const results = yield* parse.pipe(
             Effect.mapError(
               (cause) => new ExternalRunnerError({ request, phase: "report", cause }),

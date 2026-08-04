@@ -29,7 +29,7 @@ const request: WebRunRequest = {
   id: "web-failure",
   build: {
     record: {
-      schemaVersion: 1,
+      schemaVersion: 2,
       id: BuildId.make("web-build"),
       mode: "upstream",
       platform: "web",
@@ -38,6 +38,11 @@ const request: WebRunRequest = {
       configurationHash: ContentHash.make("configuration-hash"),
       bundleHash: ContentHash.make("bundle-hash"),
       nativeBinaryHash: null,
+      nativeFingerprint: null,
+      toolchainFingerprint: null,
+      buildDecision: "bundle",
+      nativeArtifact: null,
+      performance: { architecture: "test", phases: [], caches: [] },
       artifacts: [],
     },
     workspace: "/workspace",

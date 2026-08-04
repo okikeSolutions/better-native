@@ -1,5 +1,7 @@
 import type { ExpoConfig } from "expo/config"
 
+const compatibilityProjectId = "00000000-0000-4000-8000-000000000000"
+
 const config: ExpoConfig = {
   name: "Better Native Compatibility",
   slug: "better-native-compatibility",
@@ -12,6 +14,7 @@ const config: ExpoConfig = {
   plugins: ["expo-router"],
   experiments: { autolinkingModuleResolution: true, typedRoutes: true },
   extra: {
+    eas: { projectId: compatibilityProjectId },
     betterNativeMode: process.env.BETTER_NATIVE_MODE,
     betterNativeBuildId: process.env.BETTER_NATIVE_BUILD_ID,
   },

@@ -5,6 +5,7 @@ import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import { TestCaseId } from "../Domain.ts"
 import * as ExpoRepository from "../ExpoRepository.ts"
+import * as HarnessConfig from "../HarnessConfig.ts"
 import * as RunnerPlanExecution from "./RunnerPlanExecution.ts"
 import * as Suites from "../suites/Suites.ts"
 import { ExternalRunnerSupervisor } from "../supervision/ExternalRunnerSupervisor.ts"
@@ -89,7 +90,14 @@ describe("RunnerPlanExecution", () => {
     }).pipe(
       Effect.scoped,
       Effect.provide(
-        ExpoRepository.layer(process.cwd()).pipe(Layer.provideMerge(NodeServices.layer)),
+        ExpoRepository.layer(process.cwd()).pipe(
+          Layer.provideMerge(
+            Layer.merge(
+              NodeServices.layer,
+              HarnessConfig.layer(process.cwd()).pipe(Layer.provide(NodeServices.layer)),
+            ),
+          ),
+        ),
       ),
     ),
   )

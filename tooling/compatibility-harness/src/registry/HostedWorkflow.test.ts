@@ -2,6 +2,7 @@ import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
+import { environmentKeys } from "../HarnessConfig.ts"
 
 describe("hosted compatibility workflow", () => {
   it.effect("uses Expo-derived job ownership and profiles", () =>
@@ -23,6 +24,9 @@ describe("hosted compatibility workflow", () => {
         turboConfig,
         rootPackage,
         harnessPackage,
+        appBuildExecutor,
+        cacheHygiene,
+        envExample,
       ] = yield* Effect.all([
         fs.readFileString(".github/workflows/compatibility.yml"),
         fs.readFileString(".github/workflows/check.yml"),
@@ -39,6 +43,9 @@ describe("hosted compatibility workflow", () => {
         fs.readFileString("turbo.json"),
         fs.readFileString("package.json"),
         fs.readFileString("tooling/compatibility-harness/package.json"),
+        fs.readFileString("tooling/compatibility-harness/src/build/AppBuildExecutor.ts"),
+        fs.readFileString(".github/workflows/cache-hygiene.yml"),
+        fs.readFileString(".env.example"),
       ])
       assert.match(staticSetup, /node-version: 24/)
       assert.match(staticSetup, /bun install --frozen-lockfile/)
@@ -58,7 +65,8 @@ describe("hosted compatibility workflow", () => {
       assert.match(cacheSetup, /xcodebuild -version/)
       assert.match(cacheSetup, /gradle\/actions\/setup-gradle/)
       assert.notMatch(workflow, /TURBO_API/)
-      assert.notMatch(workflow, /TURBO_TOKEN/)
+      assert.match(workflow, /TURBO_TOKEN: \$\{\{ secrets\.TURBO_TOKEN \}\}/)
+      assert.match(workflow, /TURBO_TEAM: \$\{\{ vars\.TURBO_TEAM \}\}/)
       assert.notMatch(workflow, /setup-project/)
       assert.notMatch(workflow, /setup-native-build-cache/)
       assert.match(checkWorkflow, /setup-build/)
@@ -133,6 +141,18 @@ describe("hosted compatibility workflow", () => {
       assert.match(workflow, /Setup device-test profile/)
       assert.match(workflow, /Setup compare profile/)
       assert.match(workflow, /Materialize pinned Expo/)
+      assert.match(workflow, /workspace="ios-\$\{mode\}"/)
+      assert.match(workflow, /workspace="android-\$\{mode\}"/)
+      assert.match(cacheSetup, /native-v1-/)
+      assert.match(cacheSetup, /pods-v1-release-/)
+      assert.notMatch(cacheSetup, /apps\/compatibility-suite\/\*\*/)
+      assert.match(cacheHygiene, /CACHE_BUDGET_BYTES: "8589934592"/)
+      assert.match(workflow, /BETTER_NATIVE_FORCE_COLD_BUILD:/)
+      assert.match(workflow, /BETTER_NATIVE_IOS_DESTINATION=platform=iOS Simulator,id=/)
+      assert.match(appBuildExecutor, /"--build-cache",\s+"--no-configuration-cache"/)
+      for (const name of Object.values(environmentKeys)) {
+        assert.match(envExample, new RegExp(`^#? ?${name}=`, "m"), `${name} must be documented`)
+      }
       assert.match(workflow, /Refusing unsafe archive entry/)
       assert.match(workflow, /\$\{BUILD_ID\}-upstream\/record\.json/)
       assert.notMatch(workflow, /COMPATIBILITY_MODE:\+-upstream/)

@@ -2,9 +2,13 @@ import * as Context from "effect/Context"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
+import * as Match from "effect/Match"
+import * as Option from "effect/Option"
 import * as Path from "effect/Path"
+import * as Redacted from "effect/Redacted"
 import * as Schema from "effect/Schema"
-import { Artifact } from "../Domain.ts"
+import { Artifact, BuildCacheEvidence, BuildPhaseEvidence } from "../Domain.ts"
+import { HarnessConfig } from "../HarnessConfig.ts"
 import { ProcessSupervisor } from "../supervision/ProcessSupervisor.ts"
 import { BuildCommand, type BuildCommandResult } from "./BuildCommand.ts"
 import {
@@ -17,11 +21,21 @@ import {
 } from "./BuildModel.ts"
 
 const ToolchainRecord = Schema.Struct({
-  schemaVersion: Schema.Literal(2),
+  schemaVersion: Schema.Literal(3),
   lifecycle: Schema.Literal("expo-normal-install-v1"),
   expoRevision: Schema.String,
   artifacts: Schema.Array(Artifact),
+  phases: Schema.Array(BuildPhaseEvidence),
+  caches: Schema.Array(BuildCacheEvidence),
 })
+
+const remoteCacheStatus = (enabled: boolean, hits: number, misses: number) =>
+  Match.value({ enabled, hasHits: hits > 0, hasMisses: misses > 0 }).pipe(
+    Match.when({ enabled: false }, () => "disabled" as const),
+    Match.when({ hasHits: true, hasMisses: true }, () => "partial" as const),
+    Match.when({ hasHits: true }, () => "hit" as const),
+    Match.orElse(() => "miss" as const),
+  )
 
 interface Service {
   readonly prepare: (
@@ -60,7 +74,7 @@ export const layer = (
 ): Layer.Layer<
   ExpoToolchain,
   never,
-  BuildCommand | ProcessSupervisor | FileSystem.FileSystem | Path.Path
+  BuildCommand | ProcessSupervisor | FileSystem.FileSystem | Path.Path | HarnessConfig
 > =>
   Layer.effect(
     ExpoToolchain,
@@ -69,11 +83,31 @@ export const layer = (
       const path = yield* Path.Path
       const commands = yield* BuildCommand
       const processes = yield* ProcessSupervisor
-      const configuredExpoRoot =
-        expoSourceRoot ?? process.env.EXPO_SOURCE_ROOT ?? path.join(root, "..", "expo")
+      const config = yield* HarnessConfig
+      const turboToken = Option.map(config.turboToken, Redacted.value)
+      const remoteCacheEnabled = Option.isSome(turboToken) && config.turboTeam !== null
+      const installCaches = (install: BuildCommandResult) => {
+        const output = install.result.observations.map(({ text }) => text).join("\n")
+        const remoteHits = (output.match(/cache hit/gi) ?? []).length
+        const remoteMisses = (output.match(/cache miss/gi) ?? []).length
+        return [
+          {
+            name: "expo-pnpm-store",
+            status: config.caches.pnpmStore.status,
+            key: config.caches.pnpmStore.key,
+            detail: null,
+          },
+          {
+            name: "expo-turbo-remote",
+            status: remoteCacheStatus(remoteCacheEnabled, remoteHits, remoteMisses),
+            key: config.turboTeam,
+            detail: remoteCacheEnabled ? `${remoteHits} hit(s), ${remoteMisses} miss(es)` : null,
+          },
+        ]
+      }
 
       const locations = (revision: string) => {
-        const upstream = configuredExpoRoot
+        const upstream = expoSourceRoot ?? config.expoSourceRoot
         return {
           upstream,
           nodeModules: path.join(upstream, "node_modules"),
@@ -240,15 +274,21 @@ export const layer = (
               cause: "external Expo source contains modified tracked files",
             })
           }
-          results.push(
-            yield* commands.run(request, "upstream", "upstream-install.ndjson", {
-              command: "corepack",
-              args: ["pnpm@10.33.0", "install", "--frozen-lockfile"],
-              env: { COREPACK_ENABLE_PROJECT_SPEC: "0" },
-              cwd: canonicalUpstream,
-              timeoutMillis: request.timeoutMillis,
-            }),
-          )
+          const install = yield* commands.run(request, "upstream", "upstream-install.ndjson", {
+            command: "corepack",
+            args: ["pnpm@10.33.0", "install", "--frozen-lockfile"],
+            env: {
+              COREPACK_ENABLE_PROJECT_SPEC: "0",
+              ...Option.match(turboToken, {
+                onNone: () => ({}),
+                onSome: (value) => ({ TURBO_TOKEN: value }),
+              }),
+              ...(config.turboTeam === null ? {} : { TURBO_TEAM: config.turboTeam }),
+            },
+            cwd: canonicalUpstream,
+            timeoutMillis: request.timeoutMillis,
+          })
+          results.push(install)
           results.push(
             yield* commands.run(request, "upstream", "upstream-post-build-status.ndjson", {
               command: "git",
@@ -259,12 +299,16 @@ export const layer = (
           )
           yield* validateFiles(request, canonicalUpstream)
           const artifacts = results.map(({ artifact }) => artifact)
+          const phases = results.map(({ phase }) => phase)
+          const caches = installCaches(install)
           yield* fs.makeDirectory(path.dirname(record), { recursive: true })
           const encoded = yield* Schema.encodeEffect(ToolchainRecord)({
-            schemaVersion: 2,
+            schemaVersion: 3,
             lifecycle: "expo-normal-install-v1",
             expoRevision: request.expoRevision,
             artifacts,
+            phases,
+            caches,
           })
           const temporary = yield* fs.makeTempFile({
             directory: path.dirname(record),
@@ -278,6 +322,7 @@ export const layer = (
             nodeModules,
             artifacts,
             observations: results.flatMap(({ result }) => result.observations),
+            performance: { architecture: process.arch, phases, caches },
           }
         }).pipe(
           Effect.mapError((cause) =>
@@ -323,6 +368,11 @@ export const layer = (
             nodeModules,
             artifacts: parsed.artifacts,
             observations: [],
+            performance: {
+              architecture: process.arch,
+              phases: parsed.phases,
+              caches: parsed.caches,
+            },
           }
         }).pipe(
           Effect.mapError((cause) =>
@@ -335,7 +385,11 @@ export const layer = (
       const ensure: Service["ensure"] = (request) =>
         validateRequest(request).pipe(
           Effect.andThen(fs.exists(locations(request.expoRevision).record)),
-          Effect.flatMap((exists) => (exists ? load(request) : prepare(request))),
+          Effect.flatMap((exists) =>
+            exists
+              ? load(request).pipe(Effect.catchTag("BuildPipelineError", () => prepare(request)))
+              : prepare(request),
+          ),
           Effect.mapError((cause) =>
             cause instanceof BuildPipelineError
               ? cause

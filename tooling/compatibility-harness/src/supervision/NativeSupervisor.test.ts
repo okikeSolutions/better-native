@@ -5,12 +5,10 @@ import * as Ref from "effect/Ref"
 import { ArtifactId, BuildId, ContentHash, TestSourceId, type BuildRecord } from "../Domain.ts"
 import type { BuildOutput } from "../build/BuildPipeline.ts"
 import { EvidenceStore } from "../evidence/EvidenceStore.ts"
-import { NativeSupervisor, NativeSupervisorError, layer } from "./NativeSupervisor.ts"
+import { NativeSupervisor, layer } from "./NativeSupervisor.ts"
 import {
   PlatformDriverError,
   PlatformDrivers,
-  iosLaunchProcessId,
-  iosLivenessSpec,
   iosLogPredicate,
   maestroJUnitPassed,
   resultFromHierarchy,
@@ -20,7 +18,7 @@ import {
 
 const hash = ContentHash.make("0".repeat(64))
 const record: BuildRecord = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   id: BuildId.make("native-build"),
   mode: "candidate",
   platform: "ios",
@@ -29,6 +27,11 @@ const record: BuildRecord = {
   configurationHash: hash,
   bundleHash: hash,
   nativeBinaryHash: hash,
+  nativeFingerprint: null,
+  toolchainFingerprint: null,
+  buildDecision: "full-build",
+  nativeArtifact: null,
+  performance: { architecture: "test", phases: [], caches: [] },
   artifacts: [],
 }
 const build: BuildOutput = {
@@ -54,7 +57,6 @@ const request = {
     platform: "ios" as const,
     sourceId: TestSourceId.make("suite#source"),
   },
-  permissionState: "granted" as const,
   timeoutMillis: 1_000,
 }
 
@@ -83,14 +85,10 @@ const evidence = Layer.succeed(
 const drivers = (overrides: Partial<DriverService>) => {
   const service: DriverService = {
     install: () => Effect.void,
-    grantPermissions: () => Effect.void,
-    reset: () => Effect.void,
-    launch: () => Effect.succeed({ alive: true, crashed: false, logs: [] }),
     runMaestroFlow: () => Effect.succeed([]),
     isAlive: () => Effect.succeed(true),
     logs: () => Effect.succeed([]),
     result: () => Effect.succeed(null),
-    cleanup: () => Effect.void,
     ...overrides,
   }
   return Layer.succeed(PlatformDrivers, PlatformDrivers.of(service))
@@ -100,43 +98,18 @@ const supervisorLayer = (service: Partial<DriverService>) =>
   layer.pipe(Layer.provideMerge(Layer.merge(drivers(service), evidence)))
 
 describe("NativeSupervisor fault injection", () => {
-  it("tracks iOS simulator liveness by the host PID reported by simctl", () => {
-    assert.strictEqual(iosLaunchProcessId("dev.betternative.compatibility: 96141"), 96141)
-    assert.isNull(iosLaunchProcessId("dev.betternative.compatibility: not-a-pid"))
-    assert.deepEqual(iosLivenessSpec(96141), {
-      command: "/bin/kill",
-      args: ["-0", "96141"],
-      timeoutMillis: 5_000,
-    })
+  it("collects React Native and host-process errors without a launch PID registry", () => {
     assert.strictEqual(
-      iosLogPredicate(96141),
-      'eventMessage CONTAINS "BETTER_NATIVE_" OR (processIdentifier == 96141 AND (messageType == "Error" OR messageType == "Fault"))',
+      iosLogPredicate,
+      'eventMessage CONTAINS "BETTER_NATIVE_" OR subsystem == "com.facebook.react.log" OR (process == "BetterNativeCompatibility" AND (messageType == "Error" OR messageType == "Fault"))',
     )
   })
-
-  it.effect("keeps permissions reset when that scenario is requested", () =>
-    Effect.gen(function* () {
-      const granted = yield* Ref.make(false)
-      yield* Effect.gen(function* () {
-        const supervisor = yield* NativeSupervisor
-        yield* supervisor.run({ ...request, permissionState: "reset" }).pipe(Effect.ignore)
-      }).pipe(
-        Effect.provide(
-          supervisorLayer({
-            grantPermissions: () => Ref.set(granted, true),
-            launch: () => Effect.succeed({ alive: false, crashed: true, logs: [] }),
-          }),
-        ),
-      )
-      assert.isFalse(yield* Ref.get(granted))
-    }),
-  )
 
   it.effect("runs one native cohort while retaining separate evidence per source", () =>
     Effect.gen(function* () {
       const installations = yield* Ref.make(0)
-      const launches = yield* Ref.make(0)
       const flows = yield* Ref.make(0)
+      const nativeLogs = yield* Ref.make(0)
       const records = yield* Effect.gen(function* () {
         const supervisor = yield* NativeSupervisor
         return yield* supervisor.runBatch({
@@ -157,18 +130,14 @@ describe("NativeSupervisor fault injection", () => {
               sourceId: TestSourceId.make("suite#two"),
             },
           ],
-          permissionState: "granted",
           timeoutMillis: 1_000,
         })
       }).pipe(
         Effect.provide(
           supervisorLayer({
             install: () => Ref.update(installations, (count) => count + 1),
-            launch: () =>
-              Ref.update(launches, (count) => count + 1).pipe(
-                Effect.as({ alive: true, crashed: false, logs: [] }),
-              ),
             runMaestroFlow: () => Ref.update(flows, (count) => count + 1).pipe(Effect.as([])),
+            logs: () => Ref.update(nativeLogs, (count) => count + 1).pipe(Effect.as([])),
             result: () =>
               Effect.succeed(
                 JSON.stringify({
@@ -191,13 +160,98 @@ describe("NativeSupervisor fault injection", () => {
         ),
       )
       assert.strictEqual(yield* Ref.get(installations), 1)
-      assert.strictEqual(yield* Ref.get(launches), 1)
       assert.strictEqual(yield* Ref.get(flows), 1)
+      assert.strictEqual(yield* Ref.get(nativeLogs), 0)
       assert.lengthOf(records, 2)
       assert.deepEqual(
         records.map((runRecord) => runRecord.attempts[0]?.artifacts.length),
         [1, 1],
       )
+    }),
+  )
+
+  it.effect("pairs two products as install-flow-install-flow on one device", () =>
+    Effect.gen(function* () {
+      const events = yield* Ref.make<ReadonlyArray<string>>([])
+      const summaries = yield* Ref.make([
+        JSON.stringify({
+          schemaVersion: 1,
+          runId: "pair-upstream",
+          buildId: "upstream-build",
+          mode: "upstream",
+          results: [
+            {
+              schemaVersion: 1,
+              runId: "pair-upstream",
+              caseId: "suite#source#case@1",
+              attempt: 1,
+              outcome: { _tag: "passed", durationMillis: 1 },
+              artifacts: [],
+            },
+          ],
+          runtimeDiscoveredCaseIds: [],
+        }),
+        JSON.stringify({
+          schemaVersion: 1,
+          runId: "pair-candidate",
+          buildId: "native-build",
+          mode: "candidate",
+          results: [
+            {
+              schemaVersion: 1,
+              runId: "pair-candidate",
+              caseId: "suite#source#case@1",
+              attempt: 1,
+              outcome: { _tag: "passed", durationMillis: 1 },
+              artifacts: [],
+            },
+          ],
+          runtimeDiscoveredCaseIds: [],
+        }),
+      ])
+      const upstreamBuild: BuildOutput = {
+        ...build,
+        output: "/workspace/Upstream.app",
+        record: {
+          ...record,
+          id: BuildId.make("upstream-build"),
+          mode: "upstream",
+          candidateRevision: null,
+        },
+      }
+      yield* Effect.gen(function* () {
+        const supervisor = yield* NativeSupervisor
+        yield* supervisor.runBatch({
+          id: "pair-upstream",
+          build: upstreamBuild,
+          device,
+          units: [request.unit],
+          timeoutMillis: 1_000,
+        })
+        yield* supervisor.runBatch({
+          id: "pair-candidate",
+          build,
+          device,
+          units: [request.unit],
+          timeoutMillis: 1_000,
+        })
+      }).pipe(
+        Effect.provide(
+          supervisorLayer({
+            install: (_device, binary) =>
+              Ref.update(events, (current) => [...current, `install:${binary}`]),
+            runMaestroFlow: () =>
+              Ref.update(events, (current) => [...current, "flow"]).pipe(Effect.as([])),
+            result: () => Ref.modify(summaries, ([head, ...tail]) => [head ?? null, tail] as const),
+          }),
+        ),
+      )
+      assert.deepStrictEqual(yield* Ref.get(events), [
+        "install:/workspace/Upstream.app",
+        "flow",
+        "install:/workspace/App.app",
+        "flow",
+      ])
     }),
   )
 
@@ -245,7 +299,6 @@ describe("NativeSupervisor fault injection", () => {
           build,
           device,
           units: [request.unit],
-          permissionState: "granted",
           timeoutMillis: 1_000,
         })
         .pipe(Effect.flip)
@@ -266,22 +319,7 @@ describe("NativeSupervisor fault injection", () => {
     ),
   )
 
-  it.effect("classifies a native launch crash", () =>
-    Effect.gen(function* () {
-      const supervisor = yield* NativeSupervisor
-      const failure = yield* supervisor.run(request).pipe(Effect.flip)
-      assert.instanceOf(failure, NativeSupervisorError)
-      assert.strictEqual(failure.phase, "crash")
-    }).pipe(
-      Effect.provide(
-        supervisorLayer({
-          launch: () => Effect.succeed({ alive: false, crashed: true, logs: [] }),
-        }),
-      ),
-    ),
-  )
-
-  it.effect("persists evidence when a native batch crashes during launch", () =>
+  it.effect("persists evidence when the app crashes during a Maestro flow", () =>
     Effect.gen(function* () {
       const writtenRecords = yield* Ref.make<ReadonlyArray<string>>([])
       const recordingEvidence = Layer.succeed(
@@ -315,7 +353,6 @@ describe("NativeSupervisor fault injection", () => {
             build,
             device,
             units: [request.unit],
-            permissionState: "granted",
             timeoutMillis: 1_000,
           })
           .pipe(Effect.flip)
@@ -325,7 +362,15 @@ describe("NativeSupervisor fault injection", () => {
             Layer.provideMerge(
               Layer.merge(
                 drivers({
-                  launch: () => Effect.succeed({ alive: false, crashed: true, logs: [] }),
+                  runMaestroFlow: () =>
+                    Effect.fail(
+                      new PlatformDriverError({
+                        operation: "maestro",
+                        device,
+                        cause: "application disappeared",
+                      }),
+                    ),
+                  isAlive: () => Effect.succeed(false),
                 }),
                 recordingEvidence,
               ),
@@ -337,27 +382,6 @@ describe("NativeSupervisor fault injection", () => {
       assert.deepEqual(yield* Ref.get(writtenRecords), ["native-batch/record.json"])
     }),
   )
-
-  it.effect("does not hide cleanup failures", () => {
-    const cleanupFailure = new PlatformDriverError({
-      operation: "cleanup",
-      device,
-      cause: "injected cleanup failure",
-    })
-    return Effect.gen(function* () {
-      const supervisor = yield* NativeSupervisor
-      const failure = yield* supervisor.run(request).pipe(Effect.flip)
-      assert.strictEqual(failure.phase, "device")
-      assert.match(String(failure.cause), /cleanup/i)
-    }).pipe(
-      Effect.provide(
-        supervisorLayer({
-          launch: () => Effect.succeed({ alive: false, crashed: true, logs: [] }),
-          cleanup: () => Effect.fail(cleanupFailure),
-        }),
-      ),
-    )
-  })
 
   it.effect("rejects malformed in-app protocol output", () =>
     Effect.gen(function* () {
@@ -373,18 +397,29 @@ describe("NativeSupervisor fault injection", () => {
     ),
   )
 
-  it.effect("classifies a crash after deep-link launch instead of waiting for timeout", () =>
+  it.effect("checks liveness only after Maestro fails", () =>
     Effect.gen(function* () {
-      const supervisor = yield* NativeSupervisor
-      const failure = yield* supervisor.run(request).pipe(Effect.flip)
+      const livenessChecks = yield* Ref.make(0)
+      const failure = yield* Effect.gen(function* () {
+        const supervisor = yield* NativeSupervisor
+        return yield* supervisor.run(request).pipe(Effect.flip)
+      }).pipe(
+        Effect.provide(
+          supervisorLayer({
+            runMaestroFlow: () =>
+              Effect.fail(
+                new PlatformDriverError({
+                  operation: "maestro",
+                  device,
+                  cause: "deep-link launch failed",
+                }),
+              ),
+            isAlive: () => Ref.update(livenessChecks, (count) => count + 1).pipe(Effect.as(false)),
+          }),
+        ),
+      )
       assert.strictEqual(failure.phase, "crash")
-    }).pipe(
-      Effect.provide(
-        supervisorLayer({
-          result: () => Effect.succeed(null),
-          isAlive: () => Effect.succeed(false),
-        }),
-      ),
-    ),
+      assert.strictEqual(yield* Ref.get(livenessChecks), 1)
+    }),
   )
 })

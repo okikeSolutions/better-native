@@ -1,0 +1,50 @@
+name: Compatibility cache hygiene
+
+on:
+  schedule:
+    - cron: "0 3 * * 0"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  prune:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Keep Better Native caches below 8 GiB
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CACHE_BUDGET_BYTES: "8589934592"
+        shell: bash
+        run: |
+          set -euo pipefail
+          cache_json=$(gh api --paginate "repos/$REPOSITORY/actions/caches?per_page=100" --slurp)
+          mapfile -t owned < <(
+            jq -r '
+              [.[].actions_caches[]]
+              | map(select(.key | test("^(native-v1-|pods-v1-|.*-ccache-(ios|android)-|gradle-|gradle-downloads-)")))
+              | sort_by(.last_accessed_at)
+              | .[]
+              | [.id, .size_in_bytes, .key] | @tsv
+            ' <<<"$cache_json"
+          )
+          total=0
+          for entry in "${owned[@]}"; do
+            IFS=$'\t' read -r _ size _ <<<"$entry"
+            total=$((total + size))
+          done
+          remaining=${#owned[@]}
+          for entry in "${owned[@]}"; do
+            if (( total <= CACHE_BUDGET_BYTES || remaining <= 1 )); then
+              break
+            fi
+            IFS=$'\t' read -r id size key <<<"$entry"
+            echo "Deleting obsolete cache $key ($size bytes)"
+            gh api --method DELETE "repos/$REPOSITORY/actions/caches/$id"
+            total=$((total - size))
+            remaining=$((remaining - 1))
+          done
+          echo "Owned cache total after pruning: $total bytes across $remaining entries"

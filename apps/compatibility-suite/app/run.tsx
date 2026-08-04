@@ -46,6 +46,7 @@ export default function Run() {
   const runId = params.runId ?? "interactive-run"
   const sourceId = typeof params.source === "string" ? params.source : undefined
   const cohort = typeof params.cohort === "string" ? params.cohort : undefined
+  const selectionIdentity = sourceId ?? cohort ?? smokeSourceId ?? "unavailable"
 
   useEffect(() => {
     let active = true
@@ -83,6 +84,7 @@ export default function Run() {
   return (
     <ScrollView contentContainerStyle={styles.container} testID="compatibility_run">
       <Text style={styles.title}>Run {runId}</Text>
+      <Text testID="compatibility_run_selection">{selectionIdentity}</Text>
       {error ? <Text testID="compatibility_run_error">{error}</Text> : null}
       {summary === null && error === null ? (
         <Text testID="compatibility_run_running">Loading compatibility run…</Text>

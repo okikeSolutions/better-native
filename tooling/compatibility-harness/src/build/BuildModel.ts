@@ -54,6 +54,7 @@ export interface PinnedExpoToolchain {
   readonly nodeModules: string
   readonly artifacts: ReadonlyArray<BuildRecord["artifacts"][number]>
   readonly observations: ReadonlyArray<ProcessObservation>
+  readonly performance: BuildRecord["performance"]
 }
 
 export const safeBuildId = /^[A-Za-z0-9][A-Za-z0-9._-]*$/

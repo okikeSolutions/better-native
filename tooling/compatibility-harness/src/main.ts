@@ -5,6 +5,7 @@ import * as Layer from "effect/Layer"
 import * as Command from "effect/unstable/cli/Command"
 import { command } from "./Command.ts"
 import * as ExpoRepository from "./ExpoRepository.ts"
+import * as HarnessConfig from "./HarnessConfig.ts"
 import * as BuildPipeline from "./build/BuildPipeline.ts"
 import * as AppBuildImporter from "./build/AppBuildImporter.ts"
 import * as BuildProducts from "./build/BuildProducts.ts"
@@ -20,19 +21,24 @@ import * as WebSupervisor from "./supervision/WebSupervisor.ts"
 
 const root = process.cwd()
 const BaseLayer = NodeServices.layer
+const ConfigLayer = HarnessConfig.layer(root).pipe(Layer.provide(BaseLayer))
 const ProcessLayer = ProcessSupervisor.layer.pipe(Layer.provideMerge(BaseLayer))
 const EvidenceLayer = EvidenceStore.layer(root).pipe(Layer.provideMerge(BaseLayer))
 const BuildCommandLayer = BuildCommand.layer.pipe(
   Layer.provideMerge(Layer.mergeAll(ProcessLayer, EvidenceLayer)),
 )
-const ExpoToolchainLayer = ExpoToolchain.layer(root).pipe(Layer.provide(BuildCommandLayer))
+const ExpoToolchainLayer = ExpoToolchain.layer(root).pipe(
+  Layer.provide(Layer.merge(BuildCommandLayer, ConfigLayer)),
+)
 const BuildProductsLayer = BuildProducts.layer.pipe(Layer.provide(BaseLayer))
 const BuildImporterLayer = AppBuildImporter.layer(root).pipe(
   Layer.provide(Layer.mergeAll(BaseLayer, BuildProductsLayer)),
 )
 const DiscoveryLayer = DiscoveryPass.layer.pipe(Layer.provideMerge(EvidenceLayer))
 const BuildLayer = BuildPipeline.layer(root).pipe(
-  Layer.provide(Layer.mergeAll(BaseLayer, EvidenceLayer, BuildCommandLayer, ExpoToolchainLayer)),
+  Layer.provide(
+    Layer.mergeAll(BaseLayer, ConfigLayer, EvidenceLayer, BuildCommandLayer, ExpoToolchainLayer),
+  ),
 )
 const WebLayer = WebSupervisor.layer.pipe(
   Layer.provideMerge(
@@ -48,9 +54,12 @@ const ExternalLayer = ExternalRunnerSupervisor.layer(root).pipe(
 const NativeLayer = NativeSupervisor.layer.pipe(
   Layer.provideMerge(Layer.mergeAll(DriverLayer, EvidenceLayer)),
 )
-const RepositoryLayer = ExpoRepository.layer(root).pipe(Layer.provideMerge(BaseLayer))
+const RepositoryLayer = ExpoRepository.layer(root).pipe(
+  Layer.provideMerge(Layer.merge(BaseLayer, ConfigLayer)),
+)
 const MainLayer = Layer.mergeAll(
   BaseLayer,
+  ConfigLayer,
   ProcessLayer,
   EvidenceLayer,
   DiscoveryLayer,

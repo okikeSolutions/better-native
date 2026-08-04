@@ -2,7 +2,6 @@ import * as Clock from "effect/Clock"
 import * as Context from "effect/Context"
 import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
-import * as Exit from "effect/Exit"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
 import * as Schedule from "effect/Schedule"
@@ -30,10 +29,7 @@ export interface NativeRunRequest {
   readonly build: BuildOutput
   readonly device: NativeDevice
   readonly unit: ExecutionUnit
-  readonly permissionState: "granted" | "reset"
   readonly timeoutMillis: number
-  /** @internal A batch owns setup and cleanup for prepared source runs. */
-  readonly session?: "isolated" | "prepared"
 }
 
 export interface NativeBatchRequest {
@@ -41,7 +37,6 @@ export interface NativeBatchRequest {
   readonly build: BuildOutput
   readonly device: NativeDevice
   readonly units: ReadonlyArray<ExecutionUnit>
-  readonly permissionState: "granted" | "reset"
   readonly timeoutMillis: number
 }
 
@@ -75,7 +70,11 @@ const makePlan = (request: NativeRunRequest, runId: RunId): RunRecordType["plan"
 const makeDevice = (request: NativeRunRequest): RunRecordType["device"] => ({
   id: DeviceId.make(request.device.id),
   platform: request.device.platform,
-  kind: request.device.platform === "ios" ? "simulator" : "emulator",
+  kind: Match.value(request.device.platform).pipe(
+    Match.when("ios", () => "simulator" as const),
+    Match.when("android", () => "emulator" as const),
+    Match.exhaustive,
+  ),
   name: request.device.id,
   osVersion: null,
   runtimeVersion: null,
@@ -112,12 +111,41 @@ const failureOutcome = (error: NativeSupervisorError): RunRecordType["finalInfra
     Match.exhaustive,
   )
 
+const failurePhase = (cause: unknown): NativeSupervisorError["phase"] =>
+  Match.value(cause).pipe(
+    Match.when(
+      (value: unknown): value is PlatformDriverError =>
+        value instanceof PlatformDriverError && value.operation === "maestro",
+      () => "runner" as const,
+    ),
+    Match.orElse(() => "device" as const),
+  )
+
 export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | EvidenceStore> =
   Layer.effect(
     NativeSupervisor,
     Effect.gen(function* () {
       const drivers = yield* PlatformDrivers
       const evidence = yield* EvidenceStore
+      const runMaestro = (request: NativeRunRequest, flowPath: string) =>
+        drivers.runMaestroFlow(request.device, flowPath, request.timeoutMillis).pipe(
+          Effect.retry(Schedule.recurs(maestroFlowRetries)),
+          Effect.catch((cause) =>
+            drivers.isAlive(request.device).pipe(
+              Effect.orElseSucceed(() => true),
+              Effect.flatMap((alive) => {
+                const failure: PlatformDriverError | NativeSupervisorError = alive
+                  ? cause
+                  : new NativeSupervisorError({
+                      phase: "crash",
+                      request,
+                      cause: "application exited while Maestro was running",
+                    })
+                return Effect.fail(failure)
+              }),
+            ),
+          ),
+        )
       const persistFailure = (
         request: NativeRunRequest,
         startedAtMillis: number,
@@ -177,41 +205,14 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
             )
           const program = Effect.gen(function* () {
             const execute = Effect.gen(function* () {
-              if (request.session !== "prepared") {
-                yield* drivers.reset(request.device)
-                yield* drivers.install(request.device, request.build.output)
-                if (request.permissionState === "granted") {
-                  yield* drivers.grantPermissions(request.device)
-                }
-                const launch = yield* drivers.launch(request.device)
-                if (launch.crashed) {
-                  return yield* new NativeSupervisorError({
-                    phase: "crash",
-                    request,
-                    cause: "application crashed during launch",
-                  })
-                }
-              }
-              const maestroObservations = yield* drivers
-                .runMaestroFlow(request.device, flowArtifact.path, request.timeoutMillis)
-                .pipe(Effect.retry(Schedule.recurs(maestroFlowRetries)))
+              yield* drivers.install(request.device, request.build.output)
+              const maestroObservations = yield* runMaestro(request, flowArtifact.path)
               const poll = Effect.gen(function* () {
                 const json = yield* drivers.result(request.device)
-                if (json !== null)
-                  return {
-                    json,
-                    logs: [...maestroObservations, ...(yield* drivers.logs(request.device))],
-                  }
-                if (!(yield* drivers.isAlive(request.device))) {
-                  return yield* new NativeSupervisorError({
-                    phase: "crash",
-                    request,
-                    cause: "application exited before emitting its result",
-                  })
-                }
+                if (json !== null) return json
                 return yield* Effect.fail("result sentinel not observed")
               })
-              return yield* poll.pipe(
+              const json = yield* poll.pipe(
                 Effect.retry({
                   schedule: Schedule.spaced(500).pipe(
                     Schedule.upTo({ times: Math.max(1, Math.floor(request.timeoutMillis / 500)) }),
@@ -230,25 +231,15 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
                     ),
                 }),
               )
+              return { json, maestroObservations }
             }).pipe(
               Effect.mapError((cause) =>
                 cause instanceof NativeSupervisorError
                   ? cause
-                  : new NativeSupervisorError({ phase: "device", request, cause }),
+                  : new NativeSupervisorError({ phase: failurePhase(cause), request, cause }),
               ),
             )
-            const execution = yield* Effect.exit(execute)
-            const cleanup = yield* Effect.exit(
-              request.session === "prepared" ? Effect.void : drivers.cleanup(request.device),
-            )
-            if (Exit.isFailure(cleanup)) {
-              return yield* new NativeSupervisorError({
-                phase: "device",
-                request,
-                cause: cleanup.cause,
-              })
-            }
-            const { json, logs } = yield* execution
+            const { json, maestroObservations } = yield* execute
             const summary = yield* Effect.try({
               try: () => JSON.parse(json) as unknown,
               catch: (cause) => new NativeSupervisorError({ phase: "protocol", request, cause }),
@@ -291,7 +282,7 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
                   finishedAtMillis,
                   infrastructure,
                   results: summary.results,
-                  observations: [...request.build.observations, ...logs],
+                  observations: [...request.build.observations, ...maestroObservations],
                   artifacts: [flowArtifact.id],
                 },
               ],
@@ -347,35 +338,14 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
               ),
             )
           const program = Effect.gen(function* () {
-            yield* drivers.reset(request.device)
             yield* drivers.install(request.device, request.build.output)
-            if (request.permissionState === "granted") {
-              yield* drivers.grantPermissions(request.device)
-            }
-            const launch = yield* drivers.launch(request.device)
-            if (launch.crashed) {
-              return yield* new NativeSupervisorError({
-                phase: "crash",
-                request: batchRequest,
-                cause: "application crashed during launch",
-              })
-            }
             yield* Effect.logInfo(
               `Running ${request.units.length} pinned Expo native E2E sources in one Maestro cohort`,
             )
-            const maestroObservations = yield* drivers
-              .runMaestroFlow(request.device, flowArtifact.path, request.timeoutMillis)
-              .pipe(Effect.retry(Schedule.recurs(maestroFlowRetries)))
+            const maestroObservations = yield* runMaestro(batchRequest, flowArtifact.path)
             const json = yield* Effect.gen(function* () {
               const observed = yield* drivers.result(request.device)
               if (observed !== null) return observed
-              if (!(yield* drivers.isAlive(request.device))) {
-                return yield* new NativeSupervisorError({
-                  phase: "crash",
-                  request: batchRequest,
-                  cause: "application exited before emitting its cohort result",
-                })
-              }
               return yield* Effect.fail("result sentinel not observed")
             }).pipe(
               Effect.retry({
@@ -427,7 +397,6 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
               ),
             )
             const finishedAtMillis = yield* Clock.currentTimeMillis
-            const logs = [...maestroObservations, ...(yield* drivers.logs(request.device))]
             return yield* Effect.forEach(request.units, (unit) =>
               Effect.gen(function* () {
                 const unitId = `${request.id}-${unit.id}`
@@ -452,7 +421,7 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
                       results: summary.results
                         .filter(({ caseId }) => belongsToUnit(caseId))
                         .map((result) => ({ ...result, runId: unitRunId })),
-                      observations: [...request.build.observations, ...logs],
+                      observations: [...request.build.observations, ...maestroObservations],
                       artifacts: [flowArtifact.id],
                     },
                   ],
@@ -467,25 +436,13 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
               cause instanceof NativeSupervisorError
                 ? cause
                 : new NativeSupervisorError({
-                    phase:
-                      cause instanceof PlatformDriverError && cause.operation === "maestro"
-                        ? "runner"
-                        : "device",
+                    phase: failurePhase(cause),
                     request: batchRequest,
                     cause,
                   }),
             ),
           )
-          const execution = yield* Effect.exit(program)
-          const cleanup = yield* Effect.exit(drivers.cleanup(request.device))
-          if (Exit.isFailure(cleanup)) {
-            return yield* new NativeSupervisorError({
-              phase: "device",
-              request: batchRequest,
-              cause: cleanup.cause,
-            })
-          }
-          return yield* execution.pipe(
+          return yield* program.pipe(
             Effect.tapError((error) =>
               persistFailure(batchRequest, startedAtMillis, error, [flowArtifact.id]),
             ),

@@ -343,8 +343,32 @@ export const Artifact = Schema.Struct({
   size: Schema.Int,
   hash: ContentHash,
 })
+export const BuildPhaseEvidence = Schema.Struct({
+  name: Schema.String,
+  startedAtMillis: Schema.Int,
+  finishedAtMillis: Schema.Int,
+  durationMillis: Schema.Int,
+})
+export const BuildCacheEvidence = Schema.Struct({
+  name: Schema.String,
+  status: Schema.Literals(["hit", "miss", "partial", "disabled", "unknown"]),
+  key: Schema.NullOr(Schema.String),
+  detail: Schema.NullOr(Schema.String),
+})
+export const BuildPerformanceEvidence = Schema.Struct({
+  architecture: Schema.String,
+  phases: Schema.Array(BuildPhaseEvidence),
+  caches: Schema.Array(BuildCacheEvidence),
+})
+export const NativeArtifactEvidence = Schema.Struct({
+  cacheKey: Schema.String,
+  source: Schema.Literals(["full-build", "native-cache"]),
+  sourceBuildId: BuildId,
+  artifactHash: ContentHash,
+  validated: Schema.Boolean,
+})
 export const BuildRecord = Schema.Struct({
-  schemaVersion: Schema.Literal(1),
+  schemaVersion: Schema.Literal(2),
   id: BuildId,
   mode: Mode,
   platform: Platform,
@@ -353,6 +377,11 @@ export const BuildRecord = Schema.Struct({
   configurationHash: ContentHash,
   bundleHash: ContentHash,
   nativeBinaryHash: Schema.NullOr(ContentHash),
+  nativeFingerprint: Schema.NullOr(Schema.String),
+  toolchainFingerprint: Schema.NullOr(ContentHash),
+  buildDecision: Schema.Literals(["bundle", "full-build", "repack"]),
+  nativeArtifact: Schema.NullOr(NativeArtifactEvidence),
+  performance: BuildPerformanceEvidence,
   artifacts: Schema.Array(Artifact),
 })
 export const DeviceRecord = Schema.Struct({

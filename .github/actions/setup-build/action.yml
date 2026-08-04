@@ -21,8 +21,18 @@ runs:
       run: echo "path=$(pnpm store path)" >> "$GITHUB_OUTPUT"
 
     - name: Restore pinned Expo pnpm store
+      id: expo-pnpm-store-cache
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ steps.expo-pnpm-store.outputs.path }}
         key: ${{ runner.os }}-${{ runner.arch }}-node-24-pnpm-10-expo-${{ hashFiles('compatibility/upstreams.json') }}
         restore-keys: ${{ runner.os }}-${{ runner.arch }}-node-24-pnpm-10-expo-
+
+    - name: Record Expo install cache evidence
+      shell: bash
+      env:
+        CACHE_HIT: ${{ steps.expo-pnpm-store-cache.outputs.cache-hit }}
+        CACHE_KEY: ${{ runner.os }}-${{ runner.arch }}-node-24-pnpm-10-expo-${{ hashFiles('compatibility/upstreams.json') }}
+      run: |
+        echo "BETTER_NATIVE_PNPM_STORE_CACHE_HIT=${CACHE_HIT:-false}" >> "$GITHUB_ENV"
+        echo "BETTER_NATIVE_PNPM_STORE_CACHE_KEY=$CACHE_KEY" >> "$GITHUB_ENV"

@@ -1,4 +1,5 @@
 import * as Effect from "effect/Effect"
+import * as Match from "effect/Match"
 import * as RegExp from "effect/RegExp"
 import * as ts from "typescript"
 import {
@@ -261,22 +262,23 @@ export const discover = Effect.fn("Suites.discover")(function* () {
   const analyses = yield* Effect.forEach(
     sources.filter((source) => /\.[cm]?[jt]sx?$/.test(source.path)),
     (source) =>
-      repository
-        .readExpoText(source.path)
-        .pipe(
-          Effect.map(
-            (text) =>
-              [
+      repository.readExpoText(source.path).pipe(
+        Effect.map(
+          (text) =>
+            [
+              source.id,
+              analyzeCases(
                 source.id,
-                analyzeCases(
-                  source.id,
-                  source.path,
-                  text,
-                  source.runner === "expo-jasmine" ? "test" : undefined,
+                source.path,
+                text,
+                Match.value(source.runner).pipe(
+                  Match.when("expo-jasmine", () => "test" as const),
+                  Match.orElse(() => undefined),
                 ),
-              ] as const,
-          ),
+              ),
+            ] as const,
         ),
+      ),
     { concurrency: 16 },
   )
   const evidence = new Map(analyses)

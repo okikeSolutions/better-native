@@ -6,6 +6,7 @@ import * as Encoding from "effect/Encoding"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import { ArtifactId, BuildId, ContentHash, type BuildRecord } from "../Domain.ts"
+import * as HarnessConfig from "../HarnessConfig.ts"
 import {
   BuildImportError,
   BuildPipeline,
@@ -64,12 +65,17 @@ const unusedEvidence = Layer.succeed(
   }),
 )
 
+const harnessConfig = (root: string) =>
+  HarnessConfig.layer(root).pipe(Layer.provide(NodeServices.layer))
 const dependencies = Layer.mergeAll(NodeServices.layer, unusedProcesses, unusedEvidence)
 
 const buildPipelineLayer = (root: string) => {
   const commands = buildCommandLayer
-  const toolchain = expoToolchainLayer(root, expoSourceRoot(root)).pipe(Layer.provide(commands))
-  return layer(root).pipe(Layer.provide(Layer.mergeAll(commands, toolchain)))
+  const config = harnessConfig(root)
+  const toolchain = expoToolchainLayer(root, expoSourceRoot(root)).pipe(
+    Layer.provide(Layer.merge(commands, config)),
+  )
+  return layer(root).pipe(Layer.provide(Layer.mergeAll(commands, toolchain, config)))
 }
 
 const prepareToolchain = (root: string, request: BuildRequest) =>
@@ -78,7 +84,9 @@ const prepareToolchain = (root: string, request: BuildRequest) =>
     return yield* toolchain.prepare(request)
   }).pipe(
     Effect.provide(
-      expoToolchainLayer(root, expoSourceRoot(root)).pipe(Layer.provideMerge(buildCommandLayer)),
+      expoToolchainLayer(root, expoSourceRoot(root)).pipe(
+        Layer.provide(Layer.merge(buildCommandLayer, harnessConfig(root))),
+      ),
     ),
   )
 
@@ -88,7 +96,9 @@ const ensureToolchain = (root: string, request: BuildRequest) =>
     return yield* toolchain.ensure(request)
   }).pipe(
     Effect.provide(
-      expoToolchainLayer(root, expoSourceRoot(root)).pipe(Layer.provideMerge(buildCommandLayer)),
+      expoToolchainLayer(root, expoSourceRoot(root)).pipe(
+        Layer.provide(Layer.merge(buildCommandLayer, harnessConfig(root))),
+      ),
     ),
   )
 
@@ -106,7 +116,7 @@ describe("BuildPipeline imported products", () => {
         .digest("SHA-256", bytes)
         .pipe(Effect.map((digest) => ContentHash.make(Encoding.encodeHex(digest))))
       const record: BuildRecord = {
-        schemaVersion: 1,
+        schemaVersion: 2,
         id: BuildId.make("imported-build"),
         mode: "candidate",
         platform: "android",
@@ -115,6 +125,11 @@ describe("BuildPipeline imported products", () => {
         configurationHash: nativeBinaryHash,
         bundleHash: nativeBinaryHash,
         nativeBinaryHash,
+        nativeFingerprint: null,
+        toolchainFingerprint: null,
+        buildDecision: "full-build",
+        nativeArtifact: null,
+        performance: { architecture: "test", phases: [], caches: [] },
         artifacts: [],
       }
       yield* fs.writeFileString(recordPath, JSON.stringify(record))
@@ -147,7 +162,7 @@ describe("BuildPipeline imported products", () => {
       const recordPath = `${root}/record.json`
       const placeholder = ContentHash.make("0".repeat(64))
       const record: BuildRecord = {
-        schemaVersion: 1,
+        schemaVersion: 2,
         id: BuildId.make("linked-build"),
         mode: "candidate",
         platform: "ios",
@@ -156,6 +171,11 @@ describe("BuildPipeline imported products", () => {
         configurationHash: placeholder,
         bundleHash: placeholder,
         nativeBinaryHash: placeholder,
+        nativeFingerprint: null,
+        toolchainFingerprint: null,
+        buildDecision: "full-build",
+        nativeArtifact: null,
+        performance: { architecture: "test", phases: [], caches: [] },
         artifacts: [],
       }
       yield* fs.writeFileString(recordPath, JSON.stringify(record))
@@ -319,7 +339,7 @@ describe("BuildPipeline imported products", () => {
       )
       assert.strictEqual(
         calls[exportIndex]?.env?.BETTER_NATIVE_UPSTREAM_NODE_MODULES,
-        `${root}/.artifacts/workspaces/failed-web-build/node_modules`,
+        `${root}/.artifacts/workspaces/web-candidate/node_modules`,
         "Metro must resolve against the selective app materialization",
       )
       assert.isAtLeast(

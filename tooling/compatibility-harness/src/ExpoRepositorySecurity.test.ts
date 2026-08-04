@@ -4,8 +4,19 @@ import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Schema from "effect/Schema"
-import { ExpoRepository, Upstreams, layer } from "./ExpoRepository.ts"
+import { ExpoRepository, Upstreams, layer as expoRepositoryLayer } from "./ExpoRepository.ts"
+import * as HarnessConfig from "./HarnessConfig.ts"
 import { HarnessError } from "./HarnessError.ts"
+
+const repositoryLayer = (root: string, expoSourceRoot?: string) =>
+  expoRepositoryLayer(root, expoSourceRoot).pipe(
+    Layer.provideMerge(
+      Layer.merge(
+        NodeServices.layer,
+        HarnessConfig.layer(root).pipe(Layer.provide(NodeServices.layer)),
+      ),
+    ),
+  )
 
 describe("ExpoRepository path boundaries", () => {
   it.effect("does not require the external Expo checkout for local repository operations", () =>
@@ -35,7 +46,7 @@ describe("ExpoRepository path boundaries", () => {
         const upstreams = yield* repository.readJson("compatibility/upstreams.json", Upstreams)
         const expoFailure = yield* repository.readExpoText("package.json").pipe(Effect.flip)
         return { upstreams, expoFailure }
-      }).pipe(Effect.provide(layer(root, missingExpo).pipe(Layer.provideMerge(NodeServices.layer))))
+      }).pipe(Effect.provide(repositoryLayer(root, missingExpo)))
       assert.strictEqual(result.upstreams.expo.revision, "1".repeat(40))
       assert.instanceOf(result.expoFailure, HarnessError)
       assert.strictEqual(result.expoFailure.operation, "resolve Expo source")
@@ -56,7 +67,7 @@ describe("ExpoRepository path boundaries", () => {
         .pipe(Effect.flip)
       assert.instanceOf(writeFailure, HarnessError)
       assert.strictEqual(writeFailure.operation, "resolve artifact path")
-    }).pipe(Effect.provide(layer(process.cwd()).pipe(Layer.provideMerge(NodeServices.layer)))),
+    }).pipe(Effect.provide(repositoryLayer(process.cwd()))),
   )
 
   it.effect("rejects unsafe upstream revisions and paths during decoding", () =>
@@ -115,11 +126,7 @@ describe("ExpoRepository path boundaries", () => {
       const directoryFailure = yield* Effect.gen(function* () {
         const repository = yield* ExpoRepository
         return yield* repository.writeArtifact("compatibility/catalog.json", "{}").pipe(Effect.flip)
-      }).pipe(
-        Effect.provide(
-          layer(root, `${root}/expo-source`).pipe(Layer.provideMerge(NodeServices.layer)),
-        ),
-      )
+      }).pipe(Effect.provide(repositoryLayer(root, `${root}/expo-source`)))
       assert.instanceOf(directoryFailure, HarnessError)
       assert.strictEqual(directoryFailure.operation, "validate artifact directory")
 
@@ -130,11 +137,7 @@ describe("ExpoRepository path boundaries", () => {
       const targetFailure = yield* Effect.gen(function* () {
         const repository = yield* ExpoRepository
         return yield* repository.writeArtifact("compatibility/catalog.json", "{}").pipe(Effect.flip)
-      }).pipe(
-        Effect.provide(
-          layer(root, `${root}/expo-source`).pipe(Layer.provideMerge(NodeServices.layer)),
-        ),
-      )
+      }).pipe(Effect.provide(repositoryLayer(root, `${root}/expo-source`)))
       assert.instanceOf(targetFailure, HarnessError)
       assert.strictEqual(targetFailure.operation, "validate artifact target")
     }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),

@@ -2,9 +2,17 @@ import type { NativeRunRequest } from "./NativeSupervisor.ts"
 
 const yamlString = (value: string): string => JSON.stringify(value)
 
+const selectionAssertion = (identity: string): ReadonlyArray<string> => [
+  "- extendedWaitUntil:",
+  "    visible:",
+  '      id: "compatibility_run_selection"',
+  `      text: ${yamlString(identity)}`,
+  "    timeout: 30000",
+]
+
 /**
- * Selects one static registry source after the Effect supervisor has reset,
- * installed, granted permissions to, and launched the application.
+ * Selects one static registry source after the Effect supervisor installs the
+ * application. Maestro owns state reset and cold launch, matching Expo's suite.
  */
 export const make = (request: NativeRunRequest): string => {
   const link = `better-native://run?${new URLSearchParams({
@@ -15,11 +23,9 @@ export const make = (request: NativeRunRequest): string => {
     `appId: ${request.device.applicationId}`,
     "jsEngine: graaljs",
     "---",
+    "- clearState",
     `- openLink: ${yamlString(link)}`,
-    "- extendedWaitUntil:",
-    "    visible:",
-    '      id: "compatibility_run"',
-    "    timeout: 30000",
+    ...selectionAssertion(request.unit.sourceId),
     "- extendedWaitUntil:",
     "    visible:",
     '      id: "compatibility_run_complete"',
@@ -39,11 +45,9 @@ export const makeBatch = (request: NativeRunRequest): string => {
     `appId: ${request.device.applicationId}`,
     "jsEngine: graaljs",
     "---",
+    "- clearState",
     `- openLink: ${yamlString(link)}`,
-    "- extendedWaitUntil:",
-    "    visible:",
-    '      id: "compatibility_run"',
-    "    timeout: 30000",
+    ...selectionAssertion("native-e2e"),
     "- extendedWaitUntil:",
     "    visible:",
     '      id: "compatibility_run_complete"',

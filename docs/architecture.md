@@ -59,6 +59,20 @@ vendor/effect                  Pinned Effect source
 .artifacts                     Disposable catalogs, reports, builds, logs, and screenshots
 ```
 
+## Harness configuration
+
+`HarnessConfig` is the single host-side environment boundary. It loads all harness inputs once
+with Effect `Config`, applies typed defaults, validates booleans, and keeps the Turbo token
+redacted until the child-process environment is assembled. `main.ts` provides that one Layer to
+the repository, toolchain, build, cache, and command services; those services do not read
+`process.env` directly.
+
+The `BETTER_NATIVE_MODE`, build/run identity, pinned Expo root, and upstream `node_modules` values
+are a separate child-process protocol produced by the build executor. Expo's synchronous app and
+Metro configuration consume that protocol at their required Node boundary. Every host input is
+listed in `environmentKeys`, and a repository test requires a corresponding entry in
+`.env.example`.
+
 ## Fixture boundary
 
 The compatibility suite is a runner, not an application that installs the complete Expo SDK. Its
@@ -104,13 +118,19 @@ An execution unit selects exactly one source and names its runner and platform. 
 the complete unit manifest as evidence. Browser runs receive only
 `run?runId=<id>&source=<source-id>`. Native device runs receive the equally short
 `run?runId=<id>&cohort=native-e2e`; the compiled registry expands that cohort from Expo's active
-`apps/bare-expo/e2e/TestSuite-test.native.js` list. The Effect supervisor owns reset, installation,
-permissions, and launch exactly once; Maestro only navigates and asserts, so it cannot invalidate
-the prepared lifecycle or tracked process identity. This keeps compatibility plans out of HTTP
-headers and deep links while retaining case-level results and source-level attribution. Maestro
-writes JUnit evidence; a report-grace watchdog accepts a passing report if the pinned Android
-Maestro process wedges during shutdown, while the process supervisor still enforces the hard run
-timeout and termination escalation.
+`apps/bare-expo/e2e/TestSuite-test.native.js` list. The Effect supervisor installs each Release
+product once. The generated Maestro flow then clears application state, cold-launches through the
+short deep link, and asserts selection and completion exactly as Expo's native suite does. The
+supervisor neither pregrants permissions nor prelaunches or cleans up a successful run; it checks
+liveness and collects native logs only after a runner failure. This keeps compatibility plans out
+of HTTP headers and deep links while retaining case-level results and source-level attribution.
+Maestro writes JUnit evidence; a report-grace watchdog accepts a passing report if the pinned
+Android Maestro process wedges during shutdown, while the process supervisor still enforces the
+hard run timeout and termination escalation.
+
+The fixture carries a reserved synthetic EAS project identity because `expo-observe` requires one
+during native initialization. Its root configures Observe with dispatch disabled, so compatibility
+measurements never become application telemetry.
 
 The harness source is divided by responsibility:
 
@@ -210,8 +230,27 @@ materialization, selectively link declared Expo dependencies to its source packa
 separate upstream and candidate CNG workspaces only when a differential run is requested.
 
 Root checks may use this repository's signed remote Turbo cache when credentials are configured.
-Compatibility jobs deliberately do not pass those credentials to pinned Expo. Missing cache
-credentials affect speed only, never correctness.
+The pinned Expo install receives `TURBO_TOKEN` and `TURBO_TEAM` when trusted workflow credentials
+are available. Forks and local runs omit empty credentials and perform the same normal install
+without remote caching. Missing cache credentials affect speed only, never correctness.
+
+Native compilation workspaces are named by platform and mode (`ios-upstream`,
+`android-candidate`), never by GitHub run identity. `CCACHE_BASEDIR` is that stable workspace.
+Every build records dependency-install, prebuild, compiler, repack, and statistics phase durations,
+the host architecture, and cache decisions in `BuildRecord` version 2.
+
+After CNG, the harness computes the platform fingerprint with the pinned Expo
+`@expo/fingerprint` implementation and persists both its hash and complete source evidence. The
+native artifact index is keyed by platform, architecture, compiler-toolchain hash, and native
+fingerprint. Before reuse, metadata and the complete APK or `.app` hash are validated. A valid hit
+is repacked with Expo's `@expo/repack-app`; malformed metadata, missing or tampered products,
+toolchain drift, fingerprint drift, and repack failure all fall through to a full native build.
+The full build atomically republishes the index entry.
+
+Because mode and run identity are not native inputs, equal upstream and candidate fingerprints
+share one native shell and produce two independently repacked products. Unequal fingerprints
+produce independent native builds. Generated Pods use the same Xcode/toolchain/native-fingerprint
+boundary and are accepted only when `Podfile.lock` equals `Pods/Manifest.lock`.
 
 ## Hosted execution
 
@@ -263,9 +302,27 @@ lightweight jobs.
 The copied Expo primitives retain platform change classification, ccache configuration, Gradle and
 React Native download cache boundaries, Xcode-version invalidation, runner cleanup, and the pinned
 Maestro versions. Release products and successful evidence are retained for three days; failures
-are retained for seven. Native fingerprinting, repacking, reusable native shells, and timing-based
-sharding are intentionally outside this baseline. They may only be introduced after paired runs are
-stable and each has a dedicated invariant and fault-injection test.
+are retained for seven. ccache keys exclude JavaScript, tests, and generated compatibility data;
+Gradle runs with its build cache and without configuration cache; iOS compiles only the selected
+simulator architecture. A weekly hygiene workflow bounds owned native caches to 8 GiB, below
+GitHub's default 10 GiB repository limit. Pull requests may restore and repack validated native
+artifacts. The weekly scheduled compatibility run forces cold native builds, proving that the
+non-cached path remains healthy.
+
+```mermaid
+flowchart LR
+  NativeInputs["CNG native inputs"] --> Fingerprint["Expo native fingerprint"]
+  Toolchain["Xcode or JDK + architecture"] --> CacheKey["Native artifact key"]
+  Fingerprint --> CacheKey
+  CacheKey --> Lookup{"Validated artifact?"}
+  Lookup -->|"yes"| Repack["Expo repack current JS/assets"]
+  Lookup -->|"no / poisoned / cold policy"| Full["Full Release build"]
+  Full --> Publish["Atomic artifact + metadata publish"]
+  Publish --> Product["Hashed .app or APK"]
+  Repack --> Product
+  Product --> Device["Simulator / emulator tests"]
+  Product --> Record["BuildRecord timings, cache evidence, provenance"]
+```
 
 ## Validation rules
 
@@ -289,7 +346,7 @@ Static extraction is deliberately honest about uncertainty: entrypoints whose na
 
 The paired resolver is implemented in `@better-native/metro`. One Expo application can select `upstream` or `candidate` mode without uninstalling or modifying its native Expo packages. Exact candidate mappings, self-import bypass, configuration validation, and resolution observations are Effect services. Metro requires `resolveRequest` to synchronously return a resolution, so `withBetterNative` is the reviewed synchronous runner boundary; it delegates to an existing resolver or `context.resolveRequest` and preserves the original Metro result or failure. The caller supplies run and build identities, and the mode is also supplied to Metro as a custom resolver option so it participates in graph identity. Paired production builds run in isolated processes. The web and native supervisors validate protocol closure, preserve bounded process evidence, and persist normalized run records for differential comparison.
 
-The compatibility suite is a production-bundleable Expo Router application generated from the complete test corpus. Every source is explicitly classified as `native-app`, `web-app`, `javascript-runner`, `xctest`, `gradle`, `build`, or `unsupported`; non-app sources receive an external runner plan or a reviewed blocker. Platform loaders statically import eligible pinned Expo Jasmine modules, and background-task registrations are emitted as eager module-scope imports. A source-sized selection runs by stable catalog ID through one application `ManagedRuntime`, with build identity decoded from Expo configuration and Schema-validated case results emitted to the UI and console. Upstream and candidate web exports are separate Metro graphs. For native devices, generation derives Expo's curated E2E cohort from the pinned source revision. The supervisor installs and launches once, executes that cohort through one Expo-style Maestro flow, validates one aggregate result, and partitions it into per-source evidence. Simulator and emulator jobs remain the live conformance boundary; the complete catalogue continues through its classified runner adapters rather than being forced through Maestro.
+The compatibility suite is a production-bundleable Expo Router application generated from the complete test corpus. Every source is explicitly classified as `native-app`, `web-app`, `javascript-runner`, `xctest`, `gradle`, `build`, or `unsupported`; non-app sources receive an external runner plan or a reviewed blocker. Platform loaders statically import eligible pinned Expo Jasmine modules, and background-task registrations are emitted as eager module-scope imports. A source-sized selection runs by stable catalog ID through one application `ManagedRuntime`, with build identity decoded from Expo configuration and Schema-validated case results emitted to the UI and console. Upstream and candidate web exports are separate Metro graphs. For native devices, generation derives Expo's curated E2E cohort from the pinned source revision. The supervisor installs once and delegates state reset, cold launch, and navigation to one Expo-style Maestro flow, then validates one aggregate result and partitions it into per-source evidence. Simulator and emulator jobs remain the live conformance boundary; the complete catalogue continues through its classified runner adapters rather than being forced through Maestro.
 
 ## Dependency security policy
 

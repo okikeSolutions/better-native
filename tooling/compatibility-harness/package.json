@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@effect/platform-node": "4.0.0-beta.102",
+    "@expo/fingerprint": "0.20.6",
+    "@expo/repack-app": "0.7.2",
     "effect": "4.0.0-beta.102",
     "playwright": "^1.59.0",
     "semver": "7.7.4",

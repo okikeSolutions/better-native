@@ -1,4 +1,5 @@
 import * as Context from "effect/Context"
+import * as Clock from "effect/Clock"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import type { BuildRecord, ProcessObservation } from "../Domain.ts"
@@ -13,6 +14,7 @@ import { BuildPipelineError, type BuildRequest } from "./BuildModel.ts"
 export interface BuildCommandResult {
   readonly result: ProcessResult
   readonly artifact: BuildRecord["artifacts"][number]
+  readonly phase: BuildRecord["performance"]["phases"][number]
 }
 
 interface Service {
@@ -59,6 +61,7 @@ export const layer: Layer.Layer<BuildCommand, never, ProcessSupervisor | Evidenc
 
       const run: Service["run"] = (request, phase, name, spec) =>
         Effect.gen(function* () {
+          const startedAtMillis = yield* Clock.currentTimeMillis
           const result = yield* processes
             .run(spec)
             .pipe(
@@ -80,7 +83,17 @@ export const layer: Layer.Layer<BuildCommand, never, ProcessSupervisor | Evidenc
               cause: `command exited ${result.exitCode}\n${detail}`,
             })
           }
-          return { result, artifact }
+          const finishedAtMillis = yield* Clock.currentTimeMillis
+          return {
+            result,
+            artifact,
+            phase: {
+              name,
+              startedAtMillis,
+              finishedAtMillis,
+              durationMillis: finishedAtMillis - startedAtMillis,
+            },
+          }
         }).pipe(
           Effect.mapError((cause) =>
             cause instanceof BuildPipelineError

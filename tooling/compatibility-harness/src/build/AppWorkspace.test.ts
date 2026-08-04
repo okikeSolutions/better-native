@@ -3,7 +3,7 @@ import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Schema from "effect/Schema"
-import { AppWorkspace, layer } from "./AppWorkspace.ts"
+import { AppWorkspace, layer, workspaceName } from "./AppWorkspace.ts"
 import type { PinnedExpoToolchain } from "./BuildModel.ts"
 
 const request = {
@@ -27,6 +27,17 @@ const MaterializedManifest = Schema.Struct({
 })
 
 describe("AppWorkspace", () => {
+  it("keeps compiler paths stable when only the run identity changes", () => {
+    assert.strictEqual(
+      workspaceName(request),
+      workspaceName({ ...request, id: "different-github-run" }),
+    )
+    assert.notStrictEqual(
+      workspaceName(request),
+      workspaceName({ ...request, mode: "candidate", candidateRevision: "candidate" }),
+    )
+  })
+
   it.effect("preserves fixture autolinking instead of injecting global module search paths", () =>
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem
@@ -41,6 +52,7 @@ describe("AppWorkspace", () => {
         nodeModules: `${expoRoot}/node_modules`,
         artifacts: [],
         observations: [],
+        performance: { architecture: "test", phases: [], caches: [] },
       }
       const sourceManifest = {
         name: "fixture",
@@ -127,6 +139,7 @@ describe("AppWorkspace", () => {
         nodeModules: `${expoRoot}/node_modules`,
         artifacts: [],
         observations: [],
+        performance: { architecture: "test", phases: [], caches: [] },
       }
 
       const prepared = yield* Effect.gen(function* () {

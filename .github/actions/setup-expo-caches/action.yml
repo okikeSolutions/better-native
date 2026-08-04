@@ -17,25 +17,76 @@ runs:
 
     - name: Restore ccache for iOS
       if: inputs.platform == 'ios'
+      id: ios-ccache
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ runner.temp }}/.ccache
-        key: ${{ runner.os }}-ccache-${{ steps.xcode-version.outputs.hash }}-${{ hashFiles('compatibility/upstreams.json', 'apps/compatibility-suite/**', 'packages/metro/**') }}
-        restore-keys: ${{ runner.os }}-ccache-${{ steps.xcode-version.outputs.hash }}-
+        key: ${{ runner.os }}-${{ runner.arch }}-ccache-ios-${{ steps.xcode-version.outputs.hash }}-${{ hashFiles('compatibility/upstreams.json', 'bun.lock', 'apps/compatibility-suite/package.json', 'apps/compatibility-suite/app.config.ts', 'apps/compatibility-suite/plugins/**', 'packages/**/ios/**', 'packages/**/native/**') }}
+        restore-keys: ${{ runner.os }}-${{ runner.arch }}-ccache-ios-${{ steps.xcode-version.outputs.hash }}-
 
     - name: Restore ccache for Android
       if: inputs.platform == 'android'
+      id: android-ccache
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ runner.temp }}/.ccache
-        key: ${{ runner.os }}-ccache-${{ hashFiles('compatibility/upstreams.json', 'apps/compatibility-suite/**', 'packages/metro/**') }}
-        restore-keys: ${{ runner.os }}-ccache-
+        key: ${{ runner.os }}-${{ runner.arch }}-ccache-android-${{ hashFiles('compatibility/upstreams.json', 'bun.lock', 'apps/compatibility-suite/package.json', 'apps/compatibility-suite/app.config.ts', 'apps/compatibility-suite/plugins/**', 'packages/**/android/**', 'packages/**/native/**') }}
+        restore-keys: ${{ runner.os }}-${{ runner.arch }}-ccache-android-
+
+    - name: Record ccache evidence
+      shell: bash
+      env:
+        IOS_HIT: ${{ steps.ios-ccache.outputs.cache-hit }}
+        ANDROID_HIT: ${{ steps.android-ccache.outputs.cache-hit }}
+        IOS_KEY: ${{ steps.ios-ccache.outputs.cache-primary-key }}
+        ANDROID_KEY: ${{ steps.android-ccache.outputs.cache-primary-key }}
+      run: |
+        if [ "${{ inputs.platform }}" = ios ]; then
+          hit="${IOS_HIT:-false}"
+          key="${IOS_KEY:-unknown}"
+        else
+          hit="${ANDROID_HIT:-false}"
+          key="${ANDROID_KEY:-unknown}"
+        fi
+        echo "BETTER_NATIVE_CCACHE_CACHE_HIT=$hit" >> "$GITHUB_ENV"
+        echo "BETTER_NATIVE_CCACHE_CACHE_KEY=$key" >> "$GITHUB_ENV"
+
+    - name: Restore fingerprinted native artifact index
+      id: native-artifacts
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .artifacts/native-cache/v1
+        key: native-v1-${{ runner.os }}-${{ runner.arch }}-${{ inputs.platform }}-${{ hashFiles('compatibility/upstreams.json', 'bun.lock', 'apps/compatibility-suite/package.json', 'apps/compatibility-suite/app.config.ts', 'apps/compatibility-suite/plugins/**', 'packages/**/ios/**', 'packages/**/android/**', 'packages/**/native/**') }}
+
+    - name: Restore generated CocoaPods cache
+      if: inputs.platform == 'ios'
+      id: pods-cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .artifacts/pods-cache/v1
+        key: pods-v1-release-${{ runner.os }}-${{ runner.arch }}-${{ steps.xcode-version.outputs.hash }}-${{ hashFiles('compatibility/upstreams.json', 'bun.lock', 'apps/compatibility-suite/package.json', 'apps/compatibility-suite/app.config.ts', 'apps/compatibility-suite/plugins/**', 'packages/**/ios/**', 'packages/**/native/**') }}
+
+    - name: Record CocoaPods cache evidence
+      if: inputs.platform == 'ios'
+      shell: bash
+      env:
+        CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
+        CACHE_KEY: ${{ steps.pods-cache.outputs.cache-primary-key }}
+      run: |
+        echo "BETTER_NATIVE_PODS_CACHE_HIT=${CACHE_HIT:-false}" >> "$GITHUB_ENV"
+        echo "BETTER_NATIVE_PODS_CACHE_KEY=${CACHE_KEY:-unknown}" >> "$GITHUB_ENV"
 
     - name: Restore Gradle cache
       if: inputs.platform == 'android'
       uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
       with:
         cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+        cache-cleanup: on-success
+
+    - name: Record Gradle cache evidence
+      if: inputs.platform == 'android'
+      shell: bash
+      run: echo "BETTER_NATIVE_GRADLE_CACHE_KEY=gradle-${{ runner.os }}-${{ runner.arch }}-jdk17-${{ hashFiles('compatibility/upstreams.json', 'bun.lock', 'apps/compatibility-suite/package.json', 'packages/**/android/**') }}" >> "$GITHUB_ENV"
 
     - name: Configure React Native download cache
       if: inputs.platform == 'android'
@@ -47,5 +98,5 @@ runs:
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ env.REACT_NATIVE_DOWNLOADS_DIR }}
-        key: gradle-downloads-${{ hashFiles('compatibility/upstreams.json', 'apps/compatibility-suite/**') }}
+        key: gradle-downloads-${{ hashFiles('compatibility/upstreams.json', 'bun.lock', 'apps/compatibility-suite/package.json', 'packages/**/android/**') }}
         restore-keys: gradle-downloads-

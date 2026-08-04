@@ -3,6 +3,7 @@ import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as ExpoRepository from "../ExpoRepository.ts"
+import * as HarnessConfig from "../HarnessConfig.ts"
 import * as Suites from "./Suites.ts"
 import { jestCaseName } from "../runners/ExternalRunnerAdapters.ts"
 
@@ -93,7 +94,14 @@ describe("Suites", () => {
         )
       }).pipe(
         Effect.provide(
-          ExpoRepository.layer(process.cwd()).pipe(Layer.provideMerge(NodeServices.layer)),
+          ExpoRepository.layer(process.cwd()).pipe(
+            Layer.provideMerge(
+              Layer.merge(
+                NodeServices.layer,
+                HarnessConfig.layer(process.cwd()).pipe(Layer.provide(NodeServices.layer)),
+              ),
+            ),
+          ),
         ),
       ),
   )

@@ -3,8 +3,10 @@ import * as Crypto from "effect/Crypto"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
+import * as Match from "effect/Match"
 import * as Path from "effect/Path"
 import { EvidenceStore } from "../evidence/EvidenceStore.ts"
+import { HarnessConfig } from "../HarnessConfig.ts"
 import { AppBuildExecutor, layer as appBuildExecutorLayer } from "./AppBuildExecutor.ts"
 import { AppBuildImporter, layer as appBuildImporterLayer } from "./AppBuildImporter.ts"
 import { layer as appWorkspaceLayer } from "./AppWorkspace.ts"
@@ -20,6 +22,7 @@ import {
 } from "./BuildModel.ts"
 import { layer as buildProductsLayer } from "./BuildProducts.ts"
 import { ExpoToolchain } from "./ExpoToolchain.ts"
+import { layer as nativeArtifactCacheLayer } from "./NativeArtifactCache.ts"
 
 export { BuildImportError, BuildPipelineError, pinnedPluginPackages } from "./BuildModel.ts"
 export type {
@@ -58,7 +61,14 @@ const serviceLayer: Layer.Layer<
         .pipe(Effect.flatMap((pinnedUpstream) => executor.execute(request, pinnedUpstream)))
     const buildPair: Service["buildPair"] = ({ materializationId, upstream, candidate }) =>
       Effect.gen(function* () {
-        if (upstream.mode !== "upstream" || candidate.mode !== "candidate") {
+        const modesArePaired = Match.value({
+          upstream: upstream.mode,
+          candidate: candidate.mode,
+        }).pipe(
+          Match.when({ upstream: "upstream", candidate: "candidate" }, () => true),
+          Match.orElse(() => false),
+        )
+        if (!modesArePaired) {
           return yield* new BuildPipelineError({
             phase: "workspace",
             request: upstream,
@@ -97,9 +107,19 @@ export const layer = (
 ): Layer.Layer<
   BuildPipeline,
   never,
-  BuildCommand | ExpoToolchain | EvidenceStore | FileSystem.FileSystem | Path.Path | Crypto.Crypto
+  | BuildCommand
+  | ExpoToolchain
+  | EvidenceStore
+  | FileSystem.FileSystem
+  | Path.Path
+  | Crypto.Crypto
+  | HarnessConfig
 > => {
-  const shared = Layer.mergeAll(buildProductsLayer, appWorkspaceLayer(root))
+  const core = Layer.mergeAll(buildProductsLayer, appWorkspaceLayer(root))
+  const shared = Layer.mergeAll(
+    core,
+    nativeArtifactCacheLayer(root).pipe(Layer.provideMerge(buildProductsLayer)),
+  )
   const dependencies = Layer.mergeAll(
     shared,
     appBuildExecutorLayer(root).pipe(Layer.provideMerge(shared)),

@@ -8,6 +8,7 @@ import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
 import * as ChildProcess from "effect/unstable/process/ChildProcess"
 import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
+import { HarnessConfig } from "./HarnessConfig.ts"
 import { HarnessError } from "./HarnessError.ts"
 
 export const GitRevision = Schema.String.pipe(
@@ -86,7 +87,11 @@ export const layer = (
 ): Layer.Layer<
   ExpoRepository,
   HarnessError,
-  FileSystem.FileSystem | Path.Path | Crypto.Crypto | ChildProcessSpawner.ChildProcessSpawner
+  | FileSystem.FileSystem
+  | Path.Path
+  | Crypto.Crypto
+  | ChildProcessSpawner.ChildProcessSpawner
+  | HarnessConfig
 > =>
   Layer.effect(
     ExpoRepository,
@@ -95,6 +100,7 @@ export const layer = (
       const path = yield* Path.Path
       const crypto = yield* Crypto.Crypto
       const childProcesses = yield* ChildProcessSpawner.ChildProcessSpawner
+      const config = yield* HarnessConfig
       const canonicalRoot = yield* fs
         .realPath(root)
         .pipe(Effect.mapError((cause) => failure("resolve repository root", root, cause)))
@@ -166,9 +172,7 @@ export const layer = (
           ),
         )
       const effectRoot = yield* resolveUpstream(upstreams.effect.path, "Effect")
-      const configuredExpoRoot =
-        expoSourceRoot ?? process.env.EXPO_SOURCE_ROOT ?? path.join(root, "..", "expo")
-      const expoRoot = path.resolve(configuredExpoRoot)
+      const expoRoot = path.resolve(expoSourceRoot ?? config.expoSourceRoot)
       const resolveExpoRoot = fs
         .realPath(expoRoot)
         .pipe(

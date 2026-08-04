@@ -1,11 +1,12 @@
 import * as Command from "effect/unstable/cli/Command"
 import * as Flag from "effect/unstable/cli/Flag"
-import * as Config from "effect/Config"
 import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
+import * as Match from "effect/Match"
 import * as Option from "effect/Option"
 import * as Compatibility from "./Compatibility.ts"
 import { ExpoRepository } from "./ExpoRepository.ts"
+import { HarnessConfig } from "./HarnessConfig.ts"
 import { HarnessError } from "./HarnessError.ts"
 import * as AppRegistry from "./registry/AppRegistry.ts"
 import * as RunnerPlanExecution from "./registry/RunnerPlanExecution.ts"
@@ -28,14 +29,17 @@ const requireSuccessfulRun = (record: {
   readonly plan: { readonly id: string }
   readonly finalInfrastructure: { readonly _tag: string }
 }) =>
-  record.finalInfrastructure._tag === "succeeded"
-    ? Effect.void
-    : Effect.fail(
+  Match.value(record.finalInfrastructure._tag).pipe(
+    Match.when("succeeded", () => Effect.void),
+    Match.orElse(() =>
+      Effect.fail(
         new HarnessError({
           operation: "execute compatibility run",
           cause: `${record.plan.id}: ${JSON.stringify(record.finalInfrastructure)}`,
         }),
-      )
+      ),
+    ),
+  )
 
 const generate = Command.make("generate", {}, Compatibility.generate).pipe(
   Command.withDescription("Generate the compatibility catalog artifact"),
@@ -67,13 +71,14 @@ const buildMode = Flag.choice("mode", ["upstream", "candidate"] as const)
 const buildPlatform = Flag.choice("platform", ["web", "ios", "android"] as const)
 const buildIdFlag = Flag.string("build-id")
 const timeoutMillisFlag = Flag.integer("timeout-ms").pipe(Flag.withDefault(1_200_000))
-const configuredCandidateRevision = Config.string("GITHUB_SHA").pipe(
-  Config.option,
-  Effect.map(Option.getOrNull),
-)
+const configuredCandidateRevision = HarnessConfig.pipe(Effect.map((config) => config.githubSha))
 
 const candidateRevision = (mode: "upstream" | "candidate") =>
-  mode === "candidate" ? configuredCandidateRevision : Effect.succeed(null)
+  Match.value(mode).pipe(
+    Match.when("candidate", () => configuredCandidateRevision),
+    Match.when("upstream", () => Effect.succeed(null)),
+    Match.exhaustive,
+  )
 
 const prepareExpo = Command.make(
   "prepare-expo",
@@ -83,7 +88,7 @@ const prepareExpo = Command.make(
     const toolchain = yield* ExpoToolchain
     const revision = repository.upstreams.expo.revision
     const prepared = yield* toolchain.ensure({
-      id: `expo-${revision.slice(0, 12)}`,
+      id: `expo-${revision.slice(0, 12)}-v3`,
       mode: "upstream",
       platform: "web",
       expoRevision: revision,
@@ -343,9 +348,6 @@ const deviceIdFlag = Flag.string("device-id")
 const runIdFlag = Flag.string("run-id")
 const shardIndexFlag = Flag.integer("shard-index").pipe(Flag.withDefault(0))
 const shardCountFlag = Flag.integer("shard-count").pipe(Flag.withDefault(1))
-const permissionStateFlag = Flag.choice("permissions", ["granted", "reset"] as const).pipe(
-  Flag.withDefault("granted" as const),
-)
 
 const supervisedNative = Command.make(
   "supervise-native",
@@ -357,7 +359,6 @@ const supervisedNative = Command.make(
     runId: runIdFlag,
     shardIndex: shardIndexFlag,
     shardCount: shardCountFlag,
-    permissionState: permissionStateFlag,
     timeoutMillis: timeoutMillisFlag,
   },
   Effect.fn("Command.superviseNative")(function* ({
@@ -368,7 +369,6 @@ const supervisedNative = Command.make(
     runId,
     shardIndex,
     shardCount,
-    permissionState,
     timeoutMillis,
   }) {
     if (shardCount < 1 || shardIndex < 0 || shardIndex >= shardCount) {
@@ -394,14 +394,12 @@ const supervisedNative = Command.make(
       platform,
       id: deviceId,
       applicationId: "dev.betternative.compatibility",
-      ...(platform === "android" ? { activity: ".MainActivity" } : {}),
     } as const
     const records = yield* native.runBatch({
       id: runId,
       build,
       device,
       units,
-      permissionState,
       timeoutMillis,
     })
     yield* Effect.forEach(records, requireSuccessfulRun, { discard: true })
@@ -432,7 +430,6 @@ const supervisedNativePair = Command.make(
     runId: runIdFlag,
     shardIndex: shardIndexFlag,
     shardCount: shardCountFlag,
-    permissionState: permissionStateFlag,
     timeoutMillis: timeoutMillisFlag,
   },
   Effect.fn("Command.superviseNativePair")(function* ({
@@ -445,7 +442,6 @@ const supervisedNativePair = Command.make(
     runId,
     shardIndex,
     shardCount,
-    permissionState,
     timeoutMillis,
   }) {
     if (shardCount < 1 || shardIndex < 0 || shardIndex >= shardCount) {
@@ -474,14 +470,12 @@ const supervisedNativePair = Command.make(
       platform,
       id: deviceId,
       applicationId: "dev.betternative.compatibility",
-      ...(platform === "android" ? { activity: ".MainActivity" } : {}),
     } as const
     const upstream = yield* native.runBatch({
       id: `${runId}-upstream`,
       build: upstreamBuild,
       device,
       units,
-      permissionState,
       timeoutMillis,
     })
     yield* Effect.forEach(upstream, requireSuccessfulRun, { discard: true })
@@ -490,7 +484,6 @@ const supervisedNativePair = Command.make(
       build: candidateBuild,
       device,
       units,
-      permissionState,
       timeoutMillis,
     })
     yield* Effect.forEach(candidate, requireSuccessfulRun, { discard: true })
@@ -503,7 +496,7 @@ const supervisedNativePair = Command.make(
   }),
 ).pipe(
   Command.withDescription(
-    "Execute paired upstream and candidate shards sequentially on one reset native device",
+    "Execute paired upstream and candidate shards sequentially on one native device",
   ),
 )
 
@@ -526,10 +519,12 @@ const compareRuns = Command.make(
         { concurrency: "unbounded" },
       )
     const platform = upstreamRecords[0]?.plan.platform ?? candidateRecords[0]?.plan.platform
-    const expectedSources =
-      platform === "web" || platform === "ios" || platform === "android"
-        ? AppRegistry.runnableSourceIds(metadata, platform)
-        : []
+    const expectedSources = Match.value(platform).pipe(
+      Match.whenOr("web", "ios", "android", (supported) =>
+        AppRegistry.runnableSourceIds(metadata, supported),
+      ),
+      Match.orElse(() => []),
+    )
     const candidateTreatmentEvidence = yield* RunComparison.loadCandidateTreatmentEvidence(
       candidate,
       candidateRecords,

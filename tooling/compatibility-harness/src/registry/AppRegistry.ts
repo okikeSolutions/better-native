@@ -1,5 +1,6 @@
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
+import * as Match from "effect/Match"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
 import {
@@ -20,7 +21,33 @@ const platforms = ["web", "ios", "android"] as const
 type Platform = (typeof platforms)[number]
 
 const executionRunner = (platform: Platform): ExecutionUnit["runner"] =>
-  platform === "web" ? "web-app" : "native-app"
+  Match.value(platform).pipe(
+    Match.when("web", () => "web-app" as const),
+    Match.whenOr("ios", "android", () => "native-app" as const),
+    Match.exhaustive,
+  )
+
+const platformFallback = (
+  platform: Platform,
+  native: TestSource | undefined,
+  base: TestSource | undefined,
+): TestSource | undefined =>
+  Match.value(platform).pipe(
+    Match.when("web", () => base),
+    Match.whenOr("ios", "android", () => native ?? base),
+    Match.exhaustive,
+  )
+
+const metadataPlatformFallback = (
+  platform: Platform,
+  native: RegistryMetadataType["sources"][number] | undefined,
+  base: RegistryMetadataType["sources"][number] | undefined,
+): RegistryMetadataType["sources"][number] | undefined =>
+  Match.value(platform).pipe(
+    Match.when("web", () => base),
+    Match.whenOr("ios", "android", () => native ?? base),
+    Match.exhaustive,
+  )
 
 const unitId = (platform: Platform, sourceId: TestSourceId): string => {
   let hash = 2166136261
@@ -103,7 +130,7 @@ const selectPlatformSources = (
     const exact = entries.find((source) => platformVariant(source.path) === platform)
     const native = entries.find((source) => platformVariant(source.path) === "native")
     const base = entries.find((source) => platformVariant(source.path) === null)
-    const source = exact ?? (platform === "web" ? undefined : native) ?? base
+    const source = exact ?? platformFallback(platform, native, base)
     if (source !== undefined && supportsPlatform(source.path, platform)) selected.push(source)
   }
   return selected.toSorted((left, right) => left.id.localeCompare(right.id))
@@ -117,7 +144,12 @@ export const runnableSourceIds = (
   const nativeE2eSourceIds = new Set(metadata.nativeE2eSourceIds)
   for (const source of metadata.sources.filter(
     ({ sourceId, registration }) =>
-      registration !== "external" && (platform === "web" || nativeE2eSourceIds.has(sourceId)),
+      registration !== "external" &&
+      Match.value(platform).pipe(
+        Match.when("web", () => true),
+        Match.whenOr("ios", "android", () => nativeE2eSourceIds.has(sourceId)),
+        Match.exhaustive,
+      ),
   )) {
     const key = logicalPath(source.path)
     const entries = groups.get(key) ?? []
@@ -129,7 +161,7 @@ export const runnableSourceIds = (
     const exact = entries.find((source) => platformVariant(source.path) === platform)
     const native = entries.find((source) => platformVariant(source.path) === "native")
     const base = entries.find((source) => platformVariant(source.path) === null)
-    const source = exact ?? (platform === "web" ? undefined : native) ?? base
+    const source = exact ?? metadataPlatformFallback(platform, native, base)
     if (source !== undefined && supportsPlatform(source.path, platform)) {
       selected.push(source.sourceId)
     }

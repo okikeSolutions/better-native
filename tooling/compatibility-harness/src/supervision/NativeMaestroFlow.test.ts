@@ -5,7 +5,7 @@ import { make, makeBatch } from "./NativeMaestroFlow.ts"
 import type { NativeRunRequest } from "./NativeSupervisor.ts"
 
 const record: BuildRecord = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   id: BuildId.make("native-build"),
   mode: "upstream",
   platform: "ios",
@@ -14,6 +14,11 @@ const record: BuildRecord = {
   configurationHash: ContentHash.make("0".repeat(64)),
   bundleHash: ContentHash.make("0".repeat(64)),
   nativeBinaryHash: null,
+  nativeFingerprint: null,
+  toolchainFingerprint: null,
+  buildDecision: "full-build",
+  nativeArtifact: null,
+  performance: { architecture: "test", phases: [], caches: [] },
   artifacts: [],
 }
 const build: BuildOutput = {
@@ -34,16 +39,16 @@ const request: NativeRunRequest = {
     platform: "ios",
     sourceId: TestSourceId.make("expo-app-suite#apps/test-suite/tests/Network.js"),
   },
-  permissionState: "granted",
   timeoutMillis: 120_000,
 }
 
 describe("NativeMaestroFlow", () => {
-  it("uses one short source selection without resetting the prepared app", () => {
+  it("lets Maestro clear state before cold-launching one short source selection", () => {
     const flow = make(request)
-    assert.notInclude(flow, "clearState")
+    assert.include(flow, "- clearState")
     assert.include(flow, "- openLink:")
-    assert.include(flow, 'id: "compatibility_run"')
+    assert.include(flow, 'id: "compatibility_run_selection"')
+    assert.include(flow, 'text: "expo-app-suite#apps/test-suite/tests/Network.js"')
     assert.include(flow, 'id: "compatibility_run_complete"')
     assert.include(flow, 'id: "compatibility_run_error"')
     assert.include(flow, "source=expo-app-suite%23apps%2Ftest-suite%2Ftests%2FNetwork.js")
@@ -53,8 +58,10 @@ describe("NativeMaestroFlow", () => {
 
   it("uses one short cohort selector for the pinned Expo native E2E batch", () => {
     const flow = makeBatch(request)
-    assert.notInclude(flow, "clearState")
+    assert.include(flow, "- clearState")
     assert.include(flow, "cohort=native-e2e")
+    assert.include(flow, 'id: "compatibility_run_selection"')
+    assert.include(flow, 'text: "native-e2e"')
     assert.notInclude(flow, "source=")
     assert.notInclude(flow, "caseIds")
   })

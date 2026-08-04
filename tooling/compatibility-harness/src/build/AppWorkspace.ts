@@ -2,6 +2,7 @@ import * as Context from "effect/Context"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
+import * as Match from "effect/Match"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
 import {
@@ -48,6 +49,17 @@ export class AppWorkspace extends Context.Service<AppWorkspace, Service>()(
 ) {}
 
 const packageName = /^(?:@[A-Za-z0-9][A-Za-z0-9._-]*\/)?[A-Za-z0-9][A-Za-z0-9._-]*$/
+
+const dependencyOwner = (pinned: string | undefined): "root" | "pinned-expo" =>
+  Match.value(pinned).pipe(
+    Match.when(undefined, () => "root" as const),
+    Match.orElse(() => "pinned-expo" as const),
+  )
+
+export const workspaceName = (request: BuildRequest): string => {
+  const probe = request.probeSpecifier?.replaceAll(/[^A-Za-z0-9._-]/g, "-")
+  return [request.platform, request.mode, ...(probe === undefined ? [] : [probe])].join("-")
+}
 
 const dependencyNames = (manifest: Record<string, unknown>): ReadonlyArray<string> => {
   const names = new Set<string>()
@@ -150,13 +162,20 @@ export const layer = (
               cause: "build ID is not a safe path segment",
             })
           }
-          const workspace = path.join(root, ".artifacts", "workspaces", request.id)
+          const workspacesRoot = path.join(root, ".artifacts", "workspaces")
+          const workspace = path.join(workspacesRoot, workspaceName(request))
           if (yield* fs.exists(workspace)) {
-            return yield* new BuildPipelineError({
-              phase: "workspace",
-              request,
-              cause: "isolated CNG workspace already exists",
-            })
+            const canonicalParent = yield* fs.realPath(workspacesRoot)
+            const canonicalWorkspace = yield* fs.realPath(workspace)
+            const expected = path.join(canonicalParent, path.basename(workspace))
+            if (canonicalWorkspace !== expected) {
+              return yield* new BuildPipelineError({
+                phase: "workspace",
+                request,
+                cause: `refusing linked compilation workspace ${workspace} -> ${canonicalWorkspace}`,
+              })
+            }
+            yield* fs.remove(canonicalWorkspace, { recursive: true })
           }
           const appDirectory = path.join(workspace, "apps", "compatibility-suite")
           yield* fs.makeDirectory(path.dirname(appDirectory), { recursive: true })
@@ -256,7 +275,7 @@ export const layer = (
             dependencyResolutions.push({
               name,
               source: yield* fs.realPath(source),
-              owner: pinned === undefined ? "root" : "pinned-expo",
+              owner: dependencyOwner(pinned),
             })
             if (pinned !== undefined) {
               const resolved = yield* fs.realPath(destination)

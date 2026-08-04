@@ -42,7 +42,7 @@ const record = (
       retries: 0,
     },
     build: {
-      schemaVersion: 1,
+      schemaVersion: 2,
       id: BuildId.make(`${mode}-build`),
       mode,
       platform: "web",
@@ -51,6 +51,11 @@ const record = (
       configurationHash: hash,
       bundleHash: hash,
       nativeBinaryHash: null,
+      nativeFingerprint: null,
+      toolchainFingerprint: null,
+      buildDecision: "bundle",
+      nativeArtifact: null,
+      performance: { architecture: "test", phases: [], caches: [] },
       artifacts: [],
     },
     device: {
