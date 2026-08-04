@@ -4,7 +4,7 @@ import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
 import { CompatibilityConfiguration } from "./Configuration.ts"
 import { configureUpstreamSelection, metadata, registry, type RegistryEntry } from "./Registry.ts"
-import { make, RunSelectionError, type CaseResult } from "./Runner.ts"
+import { make, recordJasmineCompletion, RunSelectionError, type CaseResult } from "./Runner.ts"
 
 const tools = { setPortalChild: () => undefined, cleanupPortal: () => Promise.resolve() }
 const selection = (sourceId: string) => ({
@@ -26,6 +26,10 @@ const basic = registry.find(({ path }) => path.endsWith("/tests/Basic.js"))
 if (basic === undefined) throw new Error("Basic registry source is missing")
 const basicCase = basic.caseIds[0]
 if (basicCase === undefined) throw new Error("Basic registry case is missing")
+const battery = registry.find(({ path }) => path.endsWith("/tests/Battery.js"))
+if (battery === undefined) throw new Error("Battery registry source is missing")
+const network = registry.find(({ path }) => path.endsWith("/tests/Network.js"))
+if (network === undefined) throw new Error("Network registry source is missing")
 
 const outcomeTag = (outcome: CaseResult["outcome"]): string =>
   Match.value(outcome).pipe(
@@ -86,6 +90,193 @@ describe("compatibility runner", () => {
     }),
   )
 
+  it.effect("runs Basic, Battery, and Network together in the interactive smoke cohort", () => {
+    const sources = [basic, battery, network].map(
+      (entry): RegistryEntry => ({
+        ...entry,
+        load: () => ({
+          name: entry.runtimeName ?? entry.path,
+          test: (jasmine: {
+            describe: (name: string, body: () => void) => void
+            it: (name: string, body: () => void) => void
+          }) => {
+            jasmine.describe(entry.runtimeName ?? entry.path, () => {
+              jasmine.it("runs", () => undefined)
+            })
+          },
+        }),
+      }),
+    )
+    return make(sources)
+      .run({ schemaVersion: 1, runId: "smoke-run", cohort: "interactive-smoke" }, tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.lengthOf(summary.results, 3)
+          assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "passed"))
+          assert.isTrue(
+            sources.every(({ sourceId }) =>
+              summary.results.some(({ caseId }) => caseId.startsWith(`${sourceId}#`)),
+            ),
+          )
+        }),
+      )
+  })
+
+  it.effect("runs the curated native E2E cohort without changing its membership", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      load: () => ({
+        name: "Basic",
+        test: (jasmine: {
+          describe: (name: string, body: () => void) => void
+          it: (name: string, body: () => void) => void
+        }) => {
+          jasmine.describe("Basic", () => {
+            jasmine.it("runs", () => undefined)
+          })
+        },
+      }),
+    }
+    return make([source])
+      .run({ schemaVersion: 1, runId: "native-e2e-run", cohort: "native-e2e" }, tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.lengthOf(summary.results, 1)
+          assert.strictEqual(summary.results[0]?.outcome._tag, "passed")
+        }),
+      )
+  })
+
+  it.effect("rejects an empty native E2E cohort", () =>
+    make([battery])
+      .run({ schemaVersion: 1, runId: "empty-native-e2e", cohort: "native-e2e" }, tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.flip,
+        Effect.map((error) => {
+          assert.instanceOf(error, RunSelectionError)
+          assert.match(error.reason, /native-e2e cohort is empty/)
+        }),
+      ),
+  )
+
+  it.effect("rejects an empty interactive smoke cohort", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      sourceId: "expo-app-suite#apps/test-suite/tests/NotInInteractiveSmoke.js",
+    }
+    return make([source])
+      .run(
+        { schemaVersion: 1, runId: "empty-interactive-smoke", cohort: "interactive-smoke" },
+        tools,
+      )
+      .pipe(
+        Effect.provide(configuration),
+        Effect.flip,
+        Effect.map((error) => {
+          assert.instanceOf(error, RunSelectionError)
+          assert.match(error.reason, /interactive-smoke cohort is empty/)
+        }),
+      )
+  })
+
+  it.effect("skips a source omitted by the pinned Expo applicability selection", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      get selectedByUpstream(): boolean {
+        return false
+      },
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.strictEqual(summary.results.length, source.caseIds.length)
+          assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "skipped"))
+          assert.match(JSON.stringify(summary), /not selected by pinned Expo TestModules/)
+        }),
+      )
+  })
+
+  it.effect(
+    "uses the not-applicable fallback for an unselected source without static cases",
+    () => {
+      const source: RegistryEntry = {
+        ...basic,
+        caseIds: [],
+        get selectedByUpstream() {
+          return false
+        },
+      }
+      return make([source])
+        .run(selection(source.sourceId), tools)
+        .pipe(
+          Effect.provide(configuration),
+          Effect.map((summary) => {
+            assert.deepEqual(
+              summary.results.map(({ caseId }) => caseId),
+              [`${source.sourceId}#<not-applicable>@1`],
+            )
+            assert.deepEqual(summary.runtimeDiscoveredCaseIds, [
+              `${source.sourceId}#<not-applicable>@1`,
+            ])
+          }),
+        )
+    },
+  )
+
+  it.effect("marks a missing app loader as not-run", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      load: null,
+      reason: "source is external to the application",
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "not-run"))
+          assert.match(JSON.stringify(summary), /source is external to the application/)
+        }),
+      )
+  })
+
+  it.effect("uses the default reason for a missing app loader", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      load: null,
+      reason: null,
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.match(JSON.stringify(summary), /source is external to the application/)
+        }),
+      )
+  })
+
+  it.effect("rejects a loaded module that is not an Expo Jasmine module", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      load: () => ({ name: "missing test function" }),
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "failed"))
+          assert.match(JSON.stringify(summary), /is not an Expo Jasmine module/)
+        }),
+      )
+  })
+
   it.effect("turns a missing module into an explicit failed case", () => {
     const source: RegistryEntry = {
       ...basic,
@@ -102,6 +293,29 @@ describe("compatibility runner", () => {
           assert.isDefined(result)
           assert.strictEqual(outcomeTag(result.outcome), "failed")
           assert.match(JSON.stringify(summary.results[0]), /injected missing module/)
+        }),
+      )
+  })
+
+  it.effect("records a non-Error loader failure without inventing a stack", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      load: () => {
+        throw "injected non-Error failure"
+      },
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          const outcome = summary.results[0]?.outcome
+          assert.isDefined(outcome)
+          assert.strictEqual(outcome._tag, "failed")
+          if (outcome._tag === "failed") {
+            assert.strictEqual(outcome.message, "injected non-Error failure")
+            assert.strictEqual(outcome.stack, null)
+          }
         }),
       )
   })
@@ -124,6 +338,28 @@ describe("compatibility runner", () => {
           assert.strictEqual(summary.results.length, source.caseIds.length)
           assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "skipped"))
           assert.match(JSON.stringify(summary), /registered no cases for this platform/)
+        }),
+      )
+  })
+
+  it.effect("wraps unexpected source execution errors with the selected source ID", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      get selectedByUpstream(): boolean {
+        throw new Error("applicability adapter failed")
+      },
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.flip,
+        Effect.map((error) => {
+          assert.instanceOf(error, RunSelectionError)
+          assert.include(
+            error.reason,
+            `execute ${source.sourceId}: Error: applicability adapter failed`,
+          )
         }),
       )
   })
@@ -182,6 +418,83 @@ describe("compatibility runner", () => {
           assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "failed"))
           assert.match(JSON.stringify(summary), /injected registration failure/)
         }),
+      )
+  })
+
+  it.effect("uses a registration-failure fallback when static cases are unavailable", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      caseIds: [],
+      load: () => ({
+        name: "Broken registration",
+        test: () => {
+          throw new Error("injected empty registration failure")
+        },
+      }),
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.deepEqual(
+            summary.results.map(({ caseId }) => caseId),
+            [`${source.sourceId}#<registration failure>@1`],
+          )
+          assert.deepEqual(summary.runtimeDiscoveredCaseIds, [
+            `${source.sourceId}#<registration failure>@1`,
+          ])
+        }),
+      )
+  })
+
+  it.effect("uses a platform-skip fallback when no static cases are registered", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      caseIds: [],
+      load: () => ({ name: "No cases", test: () => undefined }),
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.deepEqual(
+            summary.results.map(({ caseId }) => caseId),
+            [`${source.sourceId}#<not-applicable>@1`],
+          )
+          assert.deepEqual(summary.runtimeDiscoveredCaseIds, [
+            `${source.sourceId}#<not-applicable>@1`,
+          ])
+        }),
+      )
+  })
+
+  it.effect("assigns the first occurrence to a static case ID without an occurrence suffix", () => {
+    const sourceId = "expo-app-suite#apps/test-suite/tests/NoOccurrence.ts"
+    const caseId = `${sourceId}#No occurrence runs`
+    const source: RegistryEntry = {
+      ...basic,
+      sourceId,
+      path: "apps/test-suite/tests/NoOccurrence.ts",
+      caseIds: [caseId],
+      load: () => ({
+        name: "No occurrence",
+        test: (jasmine: {
+          describe: (name: string, body: () => void) => void
+          it: (name: string, body: () => void) => void
+        }) => {
+          jasmine.describe("No occurrence", () => {
+            jasmine.it("runs", () => undefined)
+          })
+        },
+      }),
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => assert.deepEqual(summary.runtimeDiscoveredCaseIds, [caseId])),
       )
   })
 
@@ -293,5 +606,68 @@ describe("compatibility runner", () => {
           assert.match(JSON.stringify(summary), /Jasmine completed with status failed/)
         }),
       )
+  })
+
+  it.effect("records non-passing Jasmine statuses as skipped outcomes", () => {
+    const source: RegistryEntry = {
+      ...basic,
+      load: () => ({
+        name: "Pending",
+        test: (jasmine: {
+          describe: (name: string, body: () => void) => void
+          xit: (name: string, body: () => void) => void
+        }) => {
+          jasmine.describe("Pending", () => {
+            jasmine.xit("is intentionally skipped", () => undefined)
+          })
+        },
+      }),
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.lengthOf(summary.results, 1)
+          assert.strictEqual(summary.results[0]?.outcome._tag, "skipped")
+        }),
+      )
+  })
+
+  it("records a terminal Jasmine failure when no spec result is reported", () => {
+    const results: Array<CaseResult> = []
+    const runtimeDiscoveredCaseIds: Array<string> = []
+    recordJasmineCompletion({
+      done: { overallStatus: "failed" },
+      results,
+      selectedCaseIds: new Set(),
+      sourceId: basic.sourceId,
+      runId: "terminal-failure",
+      runtimeDiscoveredCaseIds,
+    })
+    assert.deepEqual(
+      results.map(({ caseId }) => caseId),
+      [`${basic.sourceId}#<suite failure>@1`],
+    )
+    assert.deepEqual(runtimeDiscoveredCaseIds, [`${basic.sourceId}#<suite failure>@1`])
+    assert.match(JSON.stringify(results), /Jasmine completed with status failed/)
+  })
+
+  it("prefers the incomplete reason and selected case for a terminal Jasmine failure", () => {
+    const results: Array<CaseResult> = []
+    const runtimeDiscoveredCaseIds: Array<string> = []
+    recordJasmineCompletion({
+      done: { overallStatus: "incomplete", incompleteReason: "native runner stopped" },
+      results,
+      selectedCaseIds: new Set([basicCase]),
+      sourceId: basic.sourceId,
+      runId: "incomplete-run",
+      runtimeDiscoveredCaseIds,
+    })
+    const outcome = results[0]?.outcome
+    assert.isDefined(outcome)
+    assert.strictEqual(outcome._tag, "failed")
+    if (outcome._tag === "failed") assert.strictEqual(outcome.message, "native runner stopped")
+    assert.deepEqual(runtimeDiscoveredCaseIds, [])
   })
 })

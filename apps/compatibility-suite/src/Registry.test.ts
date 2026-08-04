@@ -1,5 +1,10 @@
 import { assert, describe, it } from "@effect/vitest"
-import { configureUpstreamSelection, metadata, registry } from "./Registry.ts"
+import {
+  configureUpstreamSelection,
+  interactiveSmokeSourceIds,
+  metadata,
+  registry,
+} from "./Registry.ts"
 
 describe("generated compatibility registry", () => {
   it("contains the complete corpus without silent omissions", () => {
@@ -30,17 +35,32 @@ describe("generated compatibility registry", () => {
 
   it("exposes platform-selected Expo Jasmine modules and every static case ID", () => {
     const basic = registry.find(({ path }) => path.endsWith("/tests/Basic.js"))
+    const battery = registry.find(({ path }) => path.endsWith("/tests/Battery.js"))
     const network = registry.find(({ path }) => path.endsWith("/tests/Network.js"))
     assert.isDefined(basic)
+    assert.isDefined(battery)
     assert.isDefined(network)
     assert.isFunction(basic.load)
+    assert.isFunction(battery.load)
     assert.isFunction(network.load)
     assert.isAbove(basic.caseIds.length, 0)
+    assert.isAbove(battery.caseIds.length, 0)
     assert.isAbove(network.caseIds.length, 0)
     assert.strictEqual(
       new Set(registry.flatMap(({ caseIds }) => caseIds)).size,
       registry.reduce((total, source) => total + source.caseIds.length, 0),
     )
+  })
+
+  it("includes Basic, Battery, and Network in the interactive smoke cohort", () => {
+    const smokePaths = registry
+      .filter(({ sourceId }) => interactiveSmokeSourceIds.has(sourceId))
+      .map(({ path }) => path)
+    assert.deepEqual(smokePaths, [
+      "apps/test-suite/tests/Basic.js",
+      "apps/test-suite/tests/Battery.js",
+      "apps/test-suite/tests/Network.js",
+    ])
   })
 
   it("keeps TaskManager and Location marked for eager registration", () => {
@@ -60,5 +80,12 @@ describe("generated compatibility registry", () => {
       metadata.sources.flatMap(({ runtimeName }) => (runtimeName === null ? [] : [runtimeName])),
     )
     assert.isTrue(authoritative.selectedByUpstream)
+  })
+
+  it("allows supplemental sources without upstream applicability", () => {
+    const supplemental = registry.find(({ authority }) => authority === "supplemental")
+    assert.isDefined(supplemental)
+    configureUpstreamSelection([])
+    assert.isTrue(supplemental.selectedByUpstream)
   })
 })
