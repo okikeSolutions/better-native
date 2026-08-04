@@ -7,8 +7,17 @@ export const SurfaceId = Schema.String.pipe(Schema.brand("@better-native/Surface
 export const SuiteId = Schema.String.pipe(Schema.brand("@better-native/SuiteId"))
 export const TestSourceId = Schema.String.pipe(Schema.brand("@better-native/TestSourceId"))
 export const TestCaseId = Schema.String.pipe(Schema.brand("@better-native/TestCaseId"))
-export const BuildId = Schema.String.pipe(Schema.brand("@better-native/BuildId"))
-export const RunId = Schema.String.pipe(Schema.brand("@better-native/RunId"))
+const safePathSegmentPattern = /^[A-Za-z0-9][A-Za-z0-9._-]*$/
+export const isSafePathSegment = (value: string): boolean => safePathSegmentPattern.test(value)
+const SafePathSegment = Schema.String.pipe(
+  Schema.check(
+    Schema.makeFilter(isSafePathSegment, {
+      expected: "a safe non-empty path segment",
+    }),
+  ),
+)
+export const BuildId = SafePathSegment.pipe(Schema.brand("@better-native/BuildId"))
+export const RunId = SafePathSegment.pipe(Schema.brand("@better-native/RunId"))
 export const ArtifactId = Schema.String.pipe(Schema.brand("@better-native/ArtifactId"))
 export const ObservationId = Schema.String.pipe(Schema.brand("@better-native/ObservationId"))
 export const AttemptId = Schema.String.pipe(Schema.brand("@better-native/AttemptId"))

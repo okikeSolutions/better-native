@@ -7,7 +7,7 @@ import * as Option from "effect/Option"
 import * as Path from "effect/Path"
 import * as Redacted from "effect/Redacted"
 import * as Schema from "effect/Schema"
-import { Artifact, BuildCacheEvidence, BuildPhaseEvidence } from "../Domain.ts"
+import { Artifact, BuildCacheEvidence, BuildPhaseEvidence, isSafePathSegment } from "../Domain.ts"
 import { HarnessConfig } from "../HarnessConfig.ts"
 import { ProcessSupervisor } from "../supervision/ProcessSupervisor.ts"
 import { BuildCommand, type BuildCommandResult } from "./BuildCommand.ts"
@@ -15,7 +15,6 @@ import {
   BuildPipelineError,
   gitRevision,
   pinnedPluginPackages,
-  safeBuildId,
   type BuildRequest,
   type PinnedExpoToolchain,
 } from "./BuildModel.ts"
@@ -51,7 +50,7 @@ export class ExpoToolchain extends Context.Service<ExpoToolchain, Service>()(
 
 const validateRequest = (request: BuildRequest) =>
   Effect.gen(function* () {
-    if (!safeBuildId.test(request.id)) {
+    if (!isSafePathSegment(request.id)) {
       return yield* new BuildPipelineError({
         phase: "upstream",
         request,

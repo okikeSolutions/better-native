@@ -7,7 +7,7 @@ import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
-import { ArtifactId, ContentHash, type Artifact } from "../Domain.ts"
+import { ArtifactId, ContentHash, isSafePathSegment, type Artifact } from "../Domain.ts"
 
 export class EvidenceError extends Data.TaggedError("EvidenceError")<{
   readonly operation: string
@@ -35,8 +35,6 @@ export interface Service {
 export class EvidenceStore extends Context.Service<EvidenceStore, Service>()(
   "@better-native/compatibility-harness/EvidenceStore",
 ) {}
-
-const segment = /^[A-Za-z0-9][A-Za-z0-9._-]*$/
 
 export const layer = (
   root: string,
@@ -68,7 +66,7 @@ export const layer = (
         )
       const writeBytes: Service["writeBytes"] = (collection, recordId, name, mediaType, bytes) =>
         Effect.gen(function* () {
-          if (!segment.test(recordId) || !segment.test(name)) {
+          if (!isSafePathSegment(recordId) || !isSafePathSegment(name)) {
             return yield* fail(
               "validate evidence path",
               `${collection}/${recordId}/${name}`,

@@ -26,7 +26,7 @@ import {
 } from "./WebSupervisor.ts"
 
 const request: WebRunRequest = {
-  id: "web-failure",
+  id: RunId.make("web-failure"),
   build: {
     record: {
       schemaVersion: 2,
@@ -216,7 +216,7 @@ describe("WebSupervisor failure evidence", () => {
       )
       const second: WebRunRequest = {
         ...request,
-        id: "web-second",
+        id: RunId.make("web-second"),
         unit: {
           ...request.unit,
           id: "web-source-two",

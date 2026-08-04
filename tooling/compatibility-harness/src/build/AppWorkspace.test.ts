@@ -3,11 +3,12 @@ import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Schema from "effect/Schema"
+import { BuildId } from "../Domain.ts"
 import { AppWorkspace, layer, workspaceName } from "./AppWorkspace.ts"
 import type { PinnedExpoToolchain } from "./BuildModel.ts"
 
 const request = {
-  id: "fixture-isolation",
+  id: BuildId.make("fixture-isolation"),
   mode: "upstream" as const,
   platform: "ios" as const,
   expoRevision: "1".repeat(40),
@@ -30,7 +31,7 @@ describe("AppWorkspace", () => {
   it("keeps compiler paths stable when only the run identity changes", () => {
     assert.strictEqual(
       workspaceName(request),
-      workspaceName({ ...request, id: "different-github-run" }),
+      workspaceName({ ...request, id: BuildId.make("different-github-run") }),
     )
     assert.notStrictEqual(
       workspaceName(request),

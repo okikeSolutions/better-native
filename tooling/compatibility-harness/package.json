@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@types/semver": "7.7.1",
-    "@types/xml2js": "~0.4.11"
+    "@types/xml2js": "~0.4.11",
+    "typedoc": "0.28.19"
   }
 }

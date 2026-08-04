@@ -280,7 +280,7 @@ describe("BuildPipeline imported products", () => {
       )
       const failure = yield* Effect.gen(function* () {
         yield* prepareToolchain(root, {
-          id: "failed-expo",
+          id: BuildId.make("failed-expo"),
           mode: "upstream",
           platform: "web",
           expoRevision,
@@ -290,7 +290,7 @@ describe("BuildPipeline imported products", () => {
         const builds = yield* BuildPipeline
         return yield* builds
           .build({
-            id: "failed-web-build",
+            id: BuildId.make("failed-web-build"),
             mode: "candidate",
             platform: "web",
             expoRevision,
@@ -365,7 +365,7 @@ describe("BuildPipeline imported products", () => {
         const builds = yield* BuildPipeline
         return yield* builds
           .build({
-            id: "invalid-revision",
+            id: BuildId.make("invalid-revision"),
             mode: "upstream",
             platform: "web",
             expoRevision: "../../outside",
@@ -451,7 +451,7 @@ describe("BuildPipeline imported products", () => {
       )
       const pair = yield* Effect.gen(function* () {
         const preparation = {
-          id: "paired-expo",
+          id: BuildId.make("paired-expo"),
           mode: "upstream",
           platform: "web",
           expoRevision,
@@ -462,9 +462,9 @@ describe("BuildPipeline imported products", () => {
         yield* ensureToolchain(root, preparation)
         const builds = yield* BuildPipeline
         return yield* builds.buildPair({
-          materializationId: "paired-expo",
+          materializationId: BuildId.make("paired-expo"),
           upstream: {
-            id: "paired-upstream",
+            id: BuildId.make("paired-upstream"),
             mode: "upstream",
             platform: "web",
             expoRevision,
@@ -472,7 +472,7 @@ describe("BuildPipeline imported products", () => {
             timeoutMillis: 1_000,
           },
           candidate: {
-            id: "paired-candidate",
+            id: BuildId.make("paired-candidate"),
             mode: "candidate",
             platform: "web",
             expoRevision,
@@ -515,7 +515,7 @@ describe("BuildPipeline imported products", () => {
         const builds = yield* BuildPipeline
         return yield* builds
           .build({
-            id: "linked-cache",
+            id: BuildId.make("linked-cache"),
             mode: "upstream",
             platform: "web",
             expoRevision,

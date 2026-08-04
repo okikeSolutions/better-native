@@ -7,14 +7,20 @@ import * as Match from "effect/Match"
 import * as Option from "effect/Option"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
-import { CaseResult, RunId, TestSourceId, type CaseResult as CaseResultType } from "../Domain.ts"
+import {
+  CaseResult,
+  RunId,
+  TestSourceId,
+  isSafePathSegment,
+  type CaseResult as CaseResultType,
+} from "../Domain.ts"
 import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import * as ExternalRunnerAdapters from "../runners/ExternalRunnerAdapters.ts"
 import { ProcessSupervisor, type ProcessSpec } from "./ProcessSupervisor.ts"
 
 export const ExternalRunRequest = Schema.Struct({
   reviewed: Schema.Literal(true),
-  id: Schema.NonEmptyString,
+  id: RunId,
   runner: Schema.Literals([
     "jest",
     "node-test",
@@ -61,7 +67,6 @@ export class ExternalRunnerSupervisor extends Context.Service<ExternalRunnerSupe
 
 const Results = Schema.Array(CaseResult)
 const maximumReportBytes = 16 * 1024 * 1024
-const safeSegment = /^[A-Za-z0-9][A-Za-z0-9._-]*$/
 const executableNames: Readonly<Record<ExternalRunRequest["runner"], ReadonlySet<string>>> = {
   jest: new Set(["bun", "jest", "mkdir", "node", "npx", "pnpm"]),
   "node-test": new Set(["mkdir", "node", "pnpm"]),
@@ -136,7 +141,7 @@ export const layer = (
         })
       const resolveReport = (input: string, requestId: string, reportExtension: ".json" | ".xml") =>
         Effect.gen(function* () {
-          if (!safeSegment.test(requestId)) {
+          if (!isSafePathSegment(requestId)) {
             return yield* Effect.fail(`external run ID is not a safe path segment: ${requestId}`)
           }
           const target = path.isAbsolute(input)

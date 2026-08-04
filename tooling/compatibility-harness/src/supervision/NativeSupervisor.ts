@@ -25,7 +25,7 @@ import * as NativeMaestroFlow from "./NativeMaestroFlow.ts"
 const maestroFlowRetries = 1
 
 export interface NativeRunRequest {
-  readonly id: string
+  readonly id: RunId
   readonly build: BuildOutput
   readonly device: NativeDevice
   readonly unit: ExecutionUnit
@@ -33,7 +33,7 @@ export interface NativeRunRequest {
 }
 
 export interface NativeBatchRequest {
-  readonly id: string
+  readonly id: RunId
   readonly build: BuildOutput
   readonly device: NativeDevice
   readonly units: ReadonlyArray<ExecutionUnit>
@@ -401,7 +401,7 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
               Effect.gen(function* () {
                 const unitId = `${request.id}-${unit.id}`
                 const unitRunId = RunId.make(unitId)
-                const unitRequest: NativeRunRequest = { ...request, id: unitId, unit }
+                const unitRequest: NativeRunRequest = { ...request, id: unitRunId, unit }
                 const belongsToUnit = (caseId: string) => caseId.startsWith(`${unit.sourceId}#`)
                 const record: RunRecordType = {
                   schemaVersion: 1,

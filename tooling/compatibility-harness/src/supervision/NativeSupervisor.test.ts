@@ -2,7 +2,7 @@ import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Ref from "effect/Ref"
-import { ArtifactId, BuildId, ContentHash, TestSourceId, type BuildRecord } from "../Domain.ts"
+import { ArtifactId, BuildId, ContentHash, RunId, TestSourceId, type BuildRecord } from "../Domain.ts"
 import type { BuildOutput } from "../build/BuildPipeline.ts"
 import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import { NativeSupervisor, layer } from "./NativeSupervisor.ts"
@@ -48,7 +48,7 @@ const device: NativeDevice = {
   applicationId: "dev.betternative.compatibility",
 }
 const request = {
-  id: "native-run",
+  id: RunId.make("native-run"),
   build,
   device,
   unit: {
@@ -113,7 +113,7 @@ describe("NativeSupervisor fault injection", () => {
       const records = yield* Effect.gen(function* () {
         const supervisor = yield* NativeSupervisor
         return yield* supervisor.runBatch({
-          id: "native-batch",
+          id: RunId.make("native-batch"),
           build,
           device,
           units: [
@@ -222,14 +222,14 @@ describe("NativeSupervisor fault injection", () => {
       yield* Effect.gen(function* () {
         const supervisor = yield* NativeSupervisor
         yield* supervisor.runBatch({
-          id: "pair-upstream",
+          id: RunId.make("pair-upstream"),
           build: upstreamBuild,
           device,
           units: [request.unit],
           timeoutMillis: 1_000,
         })
         yield* supervisor.runBatch({
-          id: "pair-candidate",
+          id: RunId.make("pair-candidate"),
           build,
           device,
           units: [request.unit],
@@ -295,7 +295,7 @@ describe("NativeSupervisor fault injection", () => {
       const supervisor = yield* NativeSupervisor
       const failure = yield* supervisor
         .runBatch({
-          id: "native-batch",
+          id: RunId.make("native-batch"),
           build,
           device,
           units: [request.unit],
@@ -349,7 +349,7 @@ describe("NativeSupervisor fault injection", () => {
         const supervisor = yield* NativeSupervisor
         return yield* supervisor
           .runBatch({
-            id: "native-batch",
+            id: RunId.make("native-batch"),
             build,
             device,
             units: [request.unit],

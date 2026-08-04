@@ -46,7 +46,7 @@ describe("ExternalRunnerSupervisor", () => {
         const supervisor = yield* ExternalRunnerSupervisor
         const results = yield* supervisor.run({
           reviewed: true,
-          id: "external-run",
+          id: RunId.make("external-run"),
           runner: "jest",
           runId: RunId.make("external-run"),
           sourceId: TestSourceId.make("package-unit#packages/expo-network/test.ts"),
@@ -86,7 +86,7 @@ describe("ExternalRunnerSupervisor", () => {
           return yield* supervisor
             .run({
               reviewed: true,
-              id: "external-policy",
+              id: RunId.make("external-policy"),
               runner: "jest",
               runId: RunId.make("external-policy"),
               sourceId: TestSourceId.make("package-unit#policy"),
@@ -143,7 +143,7 @@ describe("ExternalRunnerSupervisor", () => {
           return yield* supervisor
             .run({
               reviewed: true,
-              id: `external-${scenario}`,
+              id: RunId.make(`external-${scenario}`),
               runner: "jest",
               runId: RunId.make(`external-${scenario}`),
               sourceId: TestSourceId.make("package-unit#report"),
@@ -180,7 +180,7 @@ describe("ExternalRunnerSupervisor", () => {
           return yield* supervisor
             .run({
               reviewed: true,
-              id: "source-boundary",
+              id: RunId.make("source-boundary"),
               runner: "jest",
               runId: RunId.make("source-boundary"),
               sourceId: TestSourceId.make("package-unit#boundary"),

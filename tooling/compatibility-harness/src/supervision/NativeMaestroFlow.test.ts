@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import { BuildId, ContentHash, TestSourceId, type BuildRecord } from "../Domain.ts"
+import { BuildId, ContentHash, RunId, TestSourceId, type BuildRecord } from "../Domain.ts"
 import type { BuildOutput } from "../build/BuildPipeline.ts"
 import { make, makeBatch } from "./NativeMaestroFlow.ts"
 import type { NativeRunRequest } from "./NativeSupervisor.ts"
@@ -30,7 +30,7 @@ const build: BuildOutput = {
   observations: [],
 }
 const request: NativeRunRequest = {
-  id: "ios-source-run",
+  id: RunId.make("ios-source-run"),
   build,
   device: { platform: "ios", id: "simulator", applicationId: "dev.betternative.compatibility" },
   unit: {

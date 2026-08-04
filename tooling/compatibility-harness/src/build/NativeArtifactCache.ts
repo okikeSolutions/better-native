@@ -7,7 +7,13 @@ import * as Match from "effect/Match"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
 import { fileURLToPath } from "node:url"
-import { BuildId, ContentHash, type Artifact, type BuildRecord } from "../Domain.ts"
+import {
+  BuildId,
+  ContentHash,
+  isSafePathSegment,
+  type Artifact,
+  type BuildRecord,
+} from "../Domain.ts"
 import { HarnessConfig } from "../HarnessConfig.ts"
 import { BuildCommand } from "./BuildCommand.ts"
 import { BuildPipelineError, type BuildRequest } from "./BuildModel.ts"
@@ -109,7 +115,6 @@ export class NativeArtifactCache extends Context.Service<NativeArtifactCache, Se
   "@better-native/compatibility-harness/NativeArtifactCache",
 ) {}
 
-const segment = /^[A-Za-z0-9][A-Za-z0-9._-]*$/
 const repackModulePath = fileURLToPath(import.meta.resolve("@expo/repack-app"))
 
 export const layer = (
@@ -132,7 +137,7 @@ export const layer = (
         const artifact = nativeArtifact(input.request.platform)
         if (artifact === null) return null
         const cacheKey = nativeArtifactCacheKey(input)
-        if (!segment.test(cacheKey)) throw new Error(`invalid native cache key: ${cacheKey}`)
+        if (!isSafePathSegment(cacheKey)) throw new Error(`invalid native cache key: ${cacheKey}`)
         const directory = path.join(cacheRoot, cacheKey)
         return {
           cacheKey,

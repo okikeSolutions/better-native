@@ -3,6 +3,7 @@ import * as FileSystem from "effect/FileSystem"
 import * as Match from "effect/Match"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
+import ts from "typescript"
 import {
   RegistryMetadata,
   type ExecutionUnit,
@@ -369,6 +370,172 @@ export const writeGeneratedOutputs = Effect.fn("AppRegistry.writeGeneratedOutput
   return undefined
 })
 
+type ExportKind = "type" | "value" | "both"
+
+const mergeExportKind = (left: ExportKind | undefined, right: ExportKind): ExportKind => {
+  if (left === undefined || left === right) return right
+  return "both"
+}
+
+const exportedDeclarations = (sourceText: string): Map<string, ExportKind> => {
+  const source = ts.createSourceFile("module.ts", sourceText, ts.ScriptTarget.Latest, true)
+  const exports = new Map<string, ExportKind>()
+  for (const statement of source.statements) {
+    const modifiers = ts.canHaveModifiers(statement) ? ts.getModifiers(statement) : undefined
+    const isExported = modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
+    if (!isExported) continue
+    if (
+      (ts.isFunctionDeclaration(statement) ||
+        ts.isClassDeclaration(statement) ||
+        ts.isVariableStatement(statement) ||
+        ts.isEnumDeclaration(statement)) &&
+      "name" in statement &&
+      statement.name !== undefined
+    ) {
+      const name = statement.name.text
+      const kind: ExportKind = ts.isEnumDeclaration(statement) ? "both" : "value"
+      exports.set(name, mergeExportKind(exports.get(name), kind))
+    } else if (ts.isVariableStatement(statement)) {
+      for (const declaration of statement.declarationList.declarations) {
+        if (ts.isIdentifier(declaration.name)) {
+          exports.set(
+            declaration.name.text,
+            mergeExportKind(exports.get(declaration.name.text), "value"),
+          )
+        }
+      }
+    } else if (
+      (ts.isInterfaceDeclaration(statement) || ts.isTypeAliasDeclaration(statement)) &&
+      statement.name !== undefined
+    ) {
+      const name = statement.name.text
+      exports.set(name, mergeExportKind(exports.get(name), "type"))
+    }
+  }
+  return exports
+}
+
+const relativeModulePath = (specifier: string): string | null =>
+  specifier.startsWith("./") || specifier.startsWith("../") ? specifier : null
+
+const resolveSourceModule = (path: Path.Path, sourceFile: string, specifier: string): string =>
+  path.normalize(path.join(path.dirname(sourceFile), `${specifier}.ts`))
+
+const mainSourceFile = (expoPackage: string, manifest: unknown): string | null => {
+  if (typeof manifest !== "object" || manifest === null || !("main" in manifest)) return null
+  const main = (manifest as { readonly main?: unknown }).main
+  if (typeof main !== "string") return null
+  const match = main.match(/^build\/(.+)\.js$/)
+  return match === null ? null : `packages/${expoPackage}/src/${match[1]}.ts`
+}
+
+const expoCompatSource = Effect.fn("AppRegistry.expoCompatSource")(function* (expoPackage: string) {
+  const repository = yield* ExpoRepository
+  const path = yield* Path.Path
+  const manifest = yield* repository.readExpoJson(
+    `packages/${expoPackage}/package.json`,
+    Schema.Unknown,
+  )
+  const entry = mainSourceFile(expoPackage, manifest)
+  if (entry === null) {
+    return yield* failure(
+      "generate Expo-compatible entrypoint",
+      `packages/${expoPackage}/package.json`,
+      "expected main to point at build/<entry>.js",
+    )
+  }
+  const textByFile = new Map<string, string>()
+  const readSource = Effect.fn("AppRegistry.readExportSource")(function* (file: string) {
+    const cached = textByFile.get(file)
+    if (cached !== undefined) return cached
+    const text = yield* repository.readExpoText(file)
+    textByFile.set(file, text)
+    return text
+  })
+  const collect = Effect.fn("AppRegistry.collectExports")(function* (file: string) {
+    const sourceText = yield* readSource(file)
+    const local = exportedDeclarations(sourceText)
+    const values = new Set<string>()
+    const types = new Set<string>()
+    const source = ts.createSourceFile(file, sourceText, ts.ScriptTarget.Latest, true)
+    for (const [name, kind] of local) {
+      if (kind === "value" || kind === "both") values.add(name)
+      if (kind === "type" || kind === "both") types.add(name)
+    }
+    for (const statement of source.statements) {
+      if (
+        !ts.isExportDeclaration(statement) ||
+        statement.exportClause === undefined ||
+        !ts.isNamedExports(statement.exportClause)
+      ) {
+        continue
+      }
+      const moduleSpecifier = statement.moduleSpecifier
+      const relative =
+        moduleSpecifier !== undefined && ts.isStringLiteral(moduleSpecifier)
+          ? relativeModulePath(moduleSpecifier.text)
+          : null
+      const targetKinds =
+        relative === null
+          ? new Map<string, ExportKind>()
+          : exportedDeclarations(yield* readSource(resolveSourceModule(path, file, relative)))
+      for (const element of statement.exportClause.elements) {
+        const exported = element.name.text
+        const imported = element.propertyName?.text ?? exported
+        const typeOnly = statement.isTypeOnly || element.isTypeOnly
+        const kind = typeOnly ? "type" : (targetKinds.get(imported) ?? "both")
+        if (kind === "value" || kind === "both") values.add(exported)
+        if (kind === "type" || kind === "both") types.add(exported)
+      }
+    }
+    return { values: [...values].toSorted(), types: [...types].toSorted() }
+  })
+  const { values, types } = yield* collect(entry)
+  const namespace = expoPackage
+    .split("-")
+    .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
+    .join("")
+  return [
+    "// @generated by better-native compatibility harness",
+    "// Do not edit manually.",
+    `// Source: ${expoPackage} at Expo ${repository.upstreams.expo.revision}`,
+    "",
+    `import * as ${namespace} from "${expoPackage}"`,
+    "",
+    ...values.map((name) => `export const ${name} = ${namespace}.${name}`),
+    ...(values.length > 0 && types.length > 0 ? [""] : []),
+    ...types.map((name) => `export type ${name} = ${namespace}.${name}`),
+    "",
+  ].join("\n")
+})
+
+const generatedExpoCompatTargets = (
+  replacements: ReadonlyArray<{ readonly source: string; readonly target: string }>,
+): ReadonlyArray<{ readonly source: string; readonly path: string }> =>
+  replacements.flatMap(({ source, target }) => {
+    const match = target.match(/^@better-native\/([^/]+)\/expo$/)
+    return match?.[1] === undefined ? [] : [{ source, path: `packages/${match[1]}/src/Expo.ts` }]
+  })
+
+const writeExpoCompatEntrypoints = Effect.fn("AppRegistry.writeExpoCompatEntrypoints")(function* (
+  replacements: ReadonlyArray<{ readonly source: string; readonly target: string }>,
+) {
+  const repository = yield* ExpoRepository
+  const fs = yield* FileSystem.FileSystem
+  const path = yield* Path.Path
+  for (const target of generatedExpoCompatTargets(replacements)) {
+    const output = path.join(repository.root, target.path)
+    const source = yield* expoCompatSource(target.source)
+    yield* fs
+      .writeFileString(output, source)
+      .pipe(
+        Effect.mapError((cause) =>
+          failure("write generated Expo-compatible entrypoint", output, cause),
+        ),
+      )
+  }
+})
+
 export const generate = Effect.fn("AppRegistry.generate")(function* (
   corpus: CorpusSnapshot,
   surface: SurfaceSnapshot,
@@ -551,8 +718,13 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
     ["UpstreamSelection.ts", upstreamSelectionSource()],
   ])
   yield* writeGeneratedOutputs(directory, outputs)
+  yield* writeExpoCompatEntrypoints(replacements)
+  const expoCompatEntrypoints = generatedExpoCompatTargets(replacements).map((target) =>
+    path.join(repository.root, target.path),
+  )
   return {
     directory,
+    expoCompatEntrypoints,
     sources: metadata.sources.length,
     appRunnableSources: jasmineSources.size,
     executableRunnerPlans: runnerPlans.entries.filter(({ status }) => status === "executable")

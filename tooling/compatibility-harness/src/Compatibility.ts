@@ -66,6 +66,11 @@ export const generate = Effect.fn("Compatibility.generate")(function* () {
   yield* Console.log(
     `Generated ${registry.directory} (${registry.sources} sources; ${registry.appRunnableSources} app-runnable; ${registry.executableRunnerPlans} executable runner plans; ${registry.blockedRunnerPlans} reviewed blockers)`,
   )
+  yield* Effect.forEach(
+    registry.expoCompatEntrypoints,
+    (entrypoint) => Console.log(`Generated ${entrypoint}`),
+    { discard: true },
+  )
 })
 
 export const updateSurfaceLock = Effect.fn("Compatibility.updateSurfaceLock")(function* () {

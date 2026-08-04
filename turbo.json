@@ -9,8 +9,8 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "!dist/**"],
-      "outputs": ["dist/**"]
+      "inputs": ["$TURBO_DEFAULT$", "!build/**", "!dist/**"],
+      "outputs": ["build/**", "dist/**"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"],
@@ -23,6 +23,9 @@
     "check:dist": {
       "dependsOn": ["build"],
       "outputs": []
+    },
+    "docs:api": {
+      "outputs": ["../../.artifacts/docs/api/**"]
     },
     "//#compatibility:web": {
       "cache": false,

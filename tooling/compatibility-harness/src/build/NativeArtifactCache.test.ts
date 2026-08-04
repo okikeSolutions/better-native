@@ -20,7 +20,7 @@ import {
 
 const hash = (character: string) => ContentHash.make(character.repeat(64))
 const request: BuildRequest = {
-  id: "cache-test",
+  id: BuildId.make("cache-test"),
   mode: "upstream",
   platform: "android",
   expoRevision: "1".repeat(40),
@@ -120,7 +120,7 @@ describe("NativeArtifactCache", () => {
       ...upstream,
       request: {
         ...upstream.request,
-        id: "another-run-id",
+        id: BuildId.make("another-run-id"),
         mode: "candidate",
         candidateRevision: "candidate-revision",
       },
@@ -233,7 +233,7 @@ describe("NativeArtifactCache", () => {
         ...upstream,
         request: {
           ...upstream.request,
-          id: "candidate-build",
+          id: BuildId.make("candidate-build"),
           mode: "candidate",
           candidateRevision: "candidate-revision",
         },

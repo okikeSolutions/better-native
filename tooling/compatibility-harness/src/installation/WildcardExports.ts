@@ -1,3 +1,4 @@
+import * as RegExp from "effect/RegExp"
 import type { Json } from "effect/Schema"
 import { Subpath, type Entrypoint, type ExpandedEntrypoint } from "../Domain.ts"
 
@@ -11,13 +12,11 @@ const targets = (value: Json): ReadonlyArray<string> => {
   return []
 }
 
-const escapeRegex = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-
 const capture = (pattern: string, file: string): string | undefined => {
   const wildcard = pattern.indexOf("*")
   if (wildcard === -1) return undefined
-  const expression = new RegExp(
-    `^${escapeRegex(pattern.slice(0, wildcard))}(.+)${escapeRegex(pattern.slice(wildcard + 1))}$`,
+  const expression = new RegExp.RegExp(
+    `^${RegExp.escape(pattern.slice(0, wildcard))}(.+)${RegExp.escape(pattern.slice(wildcard + 1))}$`,
   )
   return expression.exec(file)?.[1]
 }

@@ -29,7 +29,7 @@ import { ProcessSupervisor, type RunningProcess } from "./ProcessSupervisor.ts"
 import * as RunProtocol from "../protocol/RunProtocol.ts"
 
 export interface WebRunRequest {
-  readonly id: string
+  readonly id: RunId
   readonly build: BuildOutput
   readonly unit: ExecutionUnit
   readonly port: number

@@ -1,9 +1,9 @@
 import * as Data from "effect/Data"
 import * as Schema from "effect/Schema"
-import type { BuildRecord, Mode, ProcessObservation } from "../Domain.ts"
+import type { BuildId, BuildRecord, Mode, ProcessObservation } from "../Domain.ts"
 
 export interface BuildRequest {
-  readonly id: string
+  readonly id: BuildId
   readonly mode: Mode
   readonly platform: "web" | "ios" | "android"
   readonly expoRevision: string
@@ -22,7 +22,7 @@ export interface BuildOutput {
 }
 
 export interface BuildPairRequest {
-  readonly materializationId: string
+  readonly materializationId: BuildId
   readonly upstream: BuildRequest
   readonly candidate: BuildRequest
 }
@@ -57,7 +57,6 @@ export interface PinnedExpoToolchain {
   readonly performance: BuildRecord["performance"]
 }
 
-export const safeBuildId = /^[A-Za-z0-9][A-Za-z0-9._-]*$/
 export const gitRevision = /^[0-9a-f]{40}$/
 
 /** Packages whose source app plugins are evaluated by the compatibility app. */

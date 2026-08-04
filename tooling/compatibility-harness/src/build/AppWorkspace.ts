@@ -5,11 +5,11 @@ import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
+import { isSafePathSegment } from "../Domain.ts"
 import {
   BuildPipelineError,
   ProbeCatalog,
   isRecord,
-  safeBuildId,
   type BuildRequest,
   type PinnedExpoToolchain,
 } from "./BuildModel.ts"
@@ -155,7 +155,7 @@ export const layer = (
         )
       const prepare: Service["prepare"] = (request, toolchain) =>
         Effect.gen(function* () {
-          if (!safeBuildId.test(request.id)) {
+          if (!isSafePathSegment(request.id)) {
             return yield* new BuildPipelineError({
               phase: "workspace",
               request,
