@@ -1,4 +1,4 @@
-import { chromium } from "playwright"
+import { chromium, type Browser } from "playwright"
 import * as Clock from "effect/Clock"
 import * as Context from "effect/Context"
 import * as Data from "effect/Data"
@@ -218,6 +218,7 @@ export interface BrowserDriverService {
     url: string,
     timeoutMillis: number,
     resultTestId: string,
+    permissions?: ReadonlyArray<string>,
   ) => Effect.Effect<BrowserResult, unknown>
 }
 
@@ -225,21 +226,42 @@ export class BrowserDriver extends Context.Service<BrowserDriver, BrowserDriverS
   "@better-native/compatibility-harness/BrowserDriver",
 ) {}
 
-export const browserLayer = Layer.succeed(
+const clipboardSourceId = "expo-app-suite#apps/test-suite/tests/Clipboard.js"
+
+/** @internal */
+export const browserPermissionsForSource = (sourceId: string): ReadonlyArray<string> =>
+  sourceId === clipboardSourceId ? ["clipboard-read", "clipboard-write"] : []
+
+export const browserLayer = Layer.effect(
   BrowserDriver,
-  BrowserDriver.of({
-    execute: (url, timeoutMillis, resultTestId) =>
-      Effect.acquireUseRelease(
-        Effect.tryPromise({
-          try: () => chromium.launch({ headless: true }),
-          catch: (cause) => new BrowserDriverError({ cause, console: [] }),
-        }),
-        (browser) =>
-          Effect.suspend(() => {
-            const messages = makeBoundedConsoleCollector()
-            return Effect.tryPromise({
-              try: async () => {
-                const page = await browser.newPage()
+  Effect.gen(function* () {
+    let browserPromise: Promise<Browser> | undefined
+    const browser = () => {
+      browserPromise ??= chromium.launch({ headless: true })
+      return browserPromise
+    }
+    yield* Effect.addFinalizer(() => {
+      const pendingBrowser = browserPromise
+      return pendingBrowser === undefined
+        ? Effect.void
+        : Effect.promise(async () => {
+            const launched = await pendingBrowser
+            await launched.close()
+          })
+    })
+    return BrowserDriver.of({
+      execute: (url, timeoutMillis, resultTestId, permissions = []) =>
+        Effect.suspend(() => {
+          const messages = makeBoundedConsoleCollector()
+          return Effect.tryPromise({
+            try: async () => {
+              const launched = await browser()
+              const context = await launched.newContext()
+              try {
+                if (permissions.length > 0) {
+                  await context.grantPermissions([...permissions], { origin: new URL(url).origin })
+                }
+                const page = await context.newPage()
                 page.on("console", (message) => messages.push(message.text()))
                 page.on("pageerror", (error) => messages.push(`page error: ${error.message}`))
                 const response = await page.goto(url, {
@@ -276,17 +298,22 @@ export const browserLayer = Layer.succeed(
                   resultJson: validateBrowserResultPayload(resultJson),
                   console: messages.snapshot(),
                 }
-              },
-              catch: (cause) => new BrowserDriverError({ cause, console: messages.snapshot() }),
-            })
-          }),
-        (browser) => Effect.promise(() => browser.close()),
-      ),
+              } finally {
+                await context.close()
+              }
+            },
+            catch: (cause) => new BrowserDriverError({ cause, console: messages.snapshot() }),
+          })
+        }),
+    })
   }),
 )
 
 export interface Service {
   readonly run: (request: WebRunRequest) => Effect.Effect<RunRecordType, WebSupervisorError>
+  readonly runAll: (
+    requests: ReadonlyArray<WebRunRequest>,
+  ) => Effect.Effect<ReadonlyArray<RunRecordType>, WebSupervisorError>
   readonly probe: (request: WebProbeRequest) => Effect.Effect<DiscoveryRecord, WebSupervisorError>
 }
 
@@ -305,40 +332,161 @@ export const layer: Layer.Layer<
     const processes = yield* ProcessSupervisor
     const evidence = yield* EvidenceStore
     const discovery = yield* DiscoveryPass
-    const run: Service["run"] = (request) =>
-      Effect.scoped(
-        Effect.gen(function* () {
-          const runId = RunId.make(request.id)
-          const startedAtMillis = yield* Clock.currentTimeMillis
-          const plan = {
-            schemaVersion: 1 as const,
-            id: runId,
-            buildId: request.build.record.id,
-            platform: "web" as const,
-            unit: request.unit,
-            timeoutMillis: request.timeoutMillis,
-            retries: 0,
-          }
-          const planArtifact = yield* evidence
-            .writeJson("runs", request.id, "plan.json", RunPlan, plan)
-            .pipe(
-              Effect.mapError(
-                (cause) =>
-                  new WebSupervisorError({ phase: "evidence", request, cause, observations: [] }),
+    const runAgainstServer = (request: WebRunRequest, server: RunningProcess) =>
+      Effect.gen(function* () {
+        const runId = RunId.make(request.id)
+        const startedAtMillis = yield* Clock.currentTimeMillis
+        const plan = {
+          schemaVersion: 1 as const,
+          id: runId,
+          buildId: request.build.record.id,
+          platform: "web" as const,
+          unit: request.unit,
+          timeoutMillis: request.timeoutMillis,
+          retries: 0,
+        }
+        const planArtifact = yield* evidence
+          .writeJson("runs", request.id, "plan.json", RunPlan, plan)
+          .pipe(Effect.mapError((cause) => webFailure("evidence", request, cause)))
+        return yield* withServerFailureEvidence(
+          server,
+          Effect.gen(function* () {
+            const browserResult = yield* browser
+              .execute(
+                webRunUrl(request.port, request.id, request.unit.sourceId),
+                request.timeoutMillis,
+                "compatibility_run_result_json",
+                browserPermissionsForSource(request.unit.sourceId),
+              )
+              .pipe(
+                Effect.retry(Schedule.exponential(100).pipe(Schedule.upTo({ times: 5 }))),
+                Effect.mapError((cause) => webFailure("browser", request, cause)),
+              )
+            const summary = yield* Effect.try({
+              try: () => JSON.parse(browserResult.resultJson) as unknown,
+              catch: (cause) => webFailure("protocol", request, cause),
+            }).pipe(
+              Effect.flatMap(Schema.decodeUnknownEffect(AppRunSummary)),
+              Effect.mapError((cause) =>
+                cause instanceof WebSupervisorError
+                  ? cause
+                  : webFailure("protocol", request, cause),
               ),
             )
+            yield* RunProtocol.validate(
+              {
+                runId: request.id,
+                buildId: request.build.record.id,
+                mode: request.build.record.mode,
+                sourceId: request.unit.sourceId,
+              },
+              summary,
+            ).pipe(Effect.mapError((cause) => webFailure("protocol", request, cause)))
+            const finishedAtMillis = yield* Clock.currentTimeMillis
+            const processObservations = yield* server.observations
+            const observations = appendBrowserConsoleObservations(
+              processObservations,
+              browserResult.console,
+              finishedAtMillis,
+            )
+            const infrastructure = RunProtocol.completedInfrastructure()
+            const record: RunRecordType = {
+              schemaVersion: 1,
+              plan,
+              build: request.build.record,
+              device: {
+                id: DeviceId.make(`chromium-${request.port}`),
+                platform: "web",
+                kind: "browser",
+                name: "Playwright Chromium",
+                osVersion: null,
+                runtimeVersion: chromium.name(),
+              },
+              runtimeDiscoveredCaseIds: summary.runtimeDiscoveredCaseIds,
+              attempts: [
+                {
+                  schemaVersion: 1,
+                  id: AttemptId.make(`${request.id}-1`),
+                  runId,
+                  attempt: 1,
+                  startedAtMillis,
+                  finishedAtMillis,
+                  infrastructure,
+                  results: summary.results,
+                  observations,
+                  artifacts: [planArtifact.id],
+                },
+              ],
+              finalInfrastructure: infrastructure,
+            }
+            yield* evidence
+              .writeJson("runs", request.id, "record.json", RunRecord, record)
+              .pipe(Effect.mapError((cause) => webFailure("evidence", request, cause)))
+            yield* discovery
+              .collect({
+                runId,
+                buildId: request.build.record.id,
+                mode: request.build.record.mode,
+                platform: "web",
+                corpus: request.corpus,
+                summaries: [summary],
+                processObservations: request.build.observations,
+                exportProbeJson: [],
+              })
+              .pipe(Effect.mapError((cause) => webFailure("evidence", request, cause)))
+            return record
+          }),
+        ).pipe(
+          Effect.catch((failure) =>
+            Effect.gen(function* () {
+              yield* persistWebRunFailure(evidence, request.id, plan, failure).pipe(
+                Effect.mapError(
+                  (cause) =>
+                    new WebSupervisorError({
+                      phase: "evidence",
+                      request,
+                      cause: { primary: failure, evidence: cause },
+                      observations: failure.observations,
+                    }),
+                ),
+              )
+              return yield* failure
+            }),
+          ),
+        )
+      })
+    const runAll: Service["runAll"] = (requests) => {
+      const first = requests[0]
+      if (first === undefined) return Effect.succeed([])
+      const incompatible = requests.find(
+        (request) =>
+          request.build.record.id !== first.build.record.id ||
+          request.build.output !== first.build.output ||
+          request.build.appDirectory !== first.build.appDirectory,
+      )
+      if (incompatible !== undefined) {
+        return Effect.fail(
+          webFailure(
+            "protocol",
+            incompatible,
+            new Error("a shared web session must reference one build materialization"),
+          ),
+        )
+      }
+      return Effect.scoped(
+        Effect.gen(function* () {
           const server = yield* processes
             .start({
               command: "node",
               args: [
-                request.build.expoCli,
+                first.build.expoCli,
                 "serve",
-                request.build.output,
+                first.build.output,
                 "--port",
-                String(request.port),
+                String(first.port),
               ],
-              cwd: request.build.appDirectory,
-              timeoutMillis: request.timeoutMillis,
+              cwd: first.build.appDirectory,
+              timeoutMillis: first.timeoutMillis,
               terminationGraceMillis: 2_000,
             })
             .pipe(
@@ -346,120 +494,29 @@ export const layer: Layer.Layer<
                 (cause) =>
                   new WebSupervisorError({
                     phase: "serve",
-                    request,
+                    request: first,
                     cause,
                     observations: cause.observations,
                   }),
               ),
             )
-          return yield* withServerFailureEvidence(
-            server,
-            Effect.gen(function* () {
-              const browserResult = yield* browser
-                .execute(
-                  webRunUrl(request.port, request.id, request.unit.sourceId),
-                  request.timeoutMillis,
-                  "compatibility_run_result_json",
-                )
-                .pipe(
-                  Effect.retry(Schedule.exponential(100).pipe(Schedule.upTo({ times: 5 }))),
-                  Effect.mapError((cause) => webFailure("browser", request, cause)),
-                )
-              const summary = yield* Effect.try({
-                try: () => JSON.parse(browserResult.resultJson) as unknown,
-                catch: (cause) => webFailure("protocol", request, cause),
-              }).pipe(
-                Effect.flatMap(Schema.decodeUnknownEffect(AppRunSummary)),
-                Effect.mapError((cause) =>
-                  cause instanceof WebSupervisorError
-                    ? cause
-                    : webFailure("protocol", request, cause),
-                ),
-              )
-              yield* RunProtocol.validate(
-                {
-                  runId: request.id,
-                  buildId: request.build.record.id,
-                  mode: request.build.record.mode,
-                  sourceId: request.unit.sourceId,
-                },
-                summary,
-              ).pipe(Effect.mapError((cause) => webFailure("protocol", request, cause)))
-              yield* server.terminate.pipe(
-                Effect.mapError((cause) => webFailure("serve", request, cause)),
-              )
-              const finishedAtMillis = yield* Clock.currentTimeMillis
-              const processObservations = yield* server.observations
-              const observations = appendBrowserConsoleObservations(
-                processObservations,
-                browserResult.console,
-                finishedAtMillis,
-              )
-              const infrastructure = RunProtocol.infrastructureOf(summary)
-              const record: RunRecordType = {
-                schemaVersion: 1,
-                plan,
-                build: request.build.record,
-                device: {
-                  id: DeviceId.make(`chromium-${request.port}`),
-                  platform: "web",
-                  kind: "browser",
-                  name: "Playwright Chromium",
-                  osVersion: null,
-                  runtimeVersion: chromium.name(),
-                },
-                runtimeDiscoveredCaseIds: summary.runtimeDiscoveredCaseIds,
-                attempts: [
-                  {
-                    schemaVersion: 1,
-                    id: AttemptId.make(`${request.id}-1`),
-                    runId,
-                    attempt: 1,
-                    startedAtMillis,
-                    finishedAtMillis,
-                    infrastructure,
-                    results: summary.results,
-                    observations,
-                    artifacts: [planArtifact.id],
-                  },
-                ],
-                finalInfrastructure: infrastructure,
-              }
-              yield* evidence
-                .writeJson("runs", request.id, "record.json", RunRecord, record)
-                .pipe(Effect.mapError((cause) => webFailure("evidence", request, cause)))
-              yield* discovery
-                .collect({
-                  runId,
-                  buildId: request.build.record.id,
-                  mode: request.build.record.mode,
-                  platform: "web",
-                  corpus: request.corpus,
-                  summaries: [summary],
-                  processObservations: request.build.observations,
-                  exportProbeJson: [],
-                })
-                .pipe(Effect.mapError((cause) => webFailure("evidence", request, cause)))
-              return record
-            }),
-          ).pipe(
-            Effect.catch((failure) =>
-              Effect.gen(function* () {
-                yield* persistWebRunFailure(evidence, request.id, plan, failure).pipe(
-                  Effect.mapError(
-                    (cause) =>
-                      new WebSupervisorError({
-                        phase: "evidence",
-                        request,
-                        cause: { primary: failure, evidence: cause },
-                        observations: failure.observations,
-                      }),
-                  ),
-                )
-                return yield* failure
-              }),
-            ),
+          const records = yield* Effect.forEach(requests, (request) =>
+            runAgainstServer({ ...request, port: first.port }, server),
           )
+          yield* server.terminate.pipe(
+            Effect.mapError((cause) => webFailure("serve", first, cause)),
+          )
+          return records
+        }),
+      )
+    }
+    const run: Service["run"] = (request) =>
+      runAll([request]).pipe(
+        Effect.flatMap((records) => {
+          const record = records[0]
+          return record === undefined
+            ? Effect.fail(webFailure("protocol", request, new Error("web run produced no record")))
+            : Effect.succeed(record)
         }),
       )
     const probe: Service["probe"] = (request) =>
@@ -523,6 +580,6 @@ export const layer: Layer.Layer<
           )
         }),
       )
-    return WebSupervisor.of({ run, probe })
+    return WebSupervisor.of({ run, runAll, probe })
   }),
 )

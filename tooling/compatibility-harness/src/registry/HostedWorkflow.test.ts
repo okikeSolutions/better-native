@@ -97,7 +97,9 @@ describe("hosted compatibility workflow", () => {
       assert.notMatch(workflow, /uses: reactivecircus\/android-emulator-runner@/)
       assert.notMatch(workflow, /script: \|\n\s+set -euo pipefail/)
       assert.match(androidEmulator, /99-kvm4all\.rules/)
-      assert.match(androidEmulator, /\[ ! -r \/dev\/kvm \] \|\| \[ ! -w \/dev\/kvm \]/)
+      assert.match(androidEmulator, /udevadm trigger --name-match=kvm/)
+      assert.notMatch(androidEmulator, /\[ ! -r \/dev\/kvm \] \|\| \[ ! -w \/dev\/kvm \]/)
+      assert.notMatch(androidEmulator, /KVM is unavailable to the GitHub Actions runner/)
       assert.strictEqual(
         androidEmulator.match(/reactivecircus\/android-emulator-runner@/g)?.length,
         3,

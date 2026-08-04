@@ -62,33 +62,102 @@ export class NativeSupervisor extends Context.Service<NativeSupervisor, Service>
   "@better-native/compatibility-harness/NativeSupervisor",
 ) {}
 
+const makePlan = (request: NativeRunRequest, runId: RunId): RunRecordType["plan"] => ({
+  schemaVersion: 1,
+  id: runId,
+  buildId: request.build.record.id,
+  platform: request.device.platform,
+  unit: request.unit,
+  timeoutMillis: request.timeoutMillis,
+  retries: maestroFlowRetries,
+})
+
+const makeDevice = (request: NativeRunRequest): RunRecordType["device"] => ({
+  id: DeviceId.make(request.device.id),
+  platform: request.device.platform,
+  kind: request.device.platform === "ios" ? "simulator" : "emulator",
+  name: request.device.id,
+  osVersion: null,
+  runtimeVersion: null,
+})
+
+const failureOutcome = (error: NativeSupervisorError): RunRecordType["finalInfrastructure"] =>
+  Match.value(error.phase).pipe(
+    Match.when("crash", () => ({
+      _tag: "crashed" as const,
+      signal: null,
+      exitCode: null,
+    })),
+    Match.when("timeout", () => ({
+      _tag: "timed-out" as const,
+      phase: "native-result",
+      timeoutMillis: error.request.timeoutMillis,
+    })),
+    Match.when("protocol", () => ({
+      _tag: "protocol-error" as const,
+      message: String(error.cause),
+    })),
+    Match.when("device", () => ({
+      _tag: "device-unavailable" as const,
+      message: String(error.cause),
+    })),
+    Match.when("evidence", () => ({
+      _tag: "runner-failed" as const,
+      message: String(error.cause),
+    })),
+    Match.exhaustive,
+  )
+
 export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | EvidenceStore> =
   Layer.effect(
     NativeSupervisor,
     Effect.gen(function* () {
       const drivers = yield* PlatformDrivers
       const evidence = yield* EvidenceStore
+      const persistFailure = (
+        request: NativeRunRequest,
+        startedAtMillis: number,
+        error: NativeSupervisorError,
+        artifacts: RunRecordType["attempts"][number]["artifacts"] = [],
+      ) =>
+        Effect.gen(function* () {
+          if (error.phase === "evidence") return
+          const finishedAtMillis = yield* Clock.currentTimeMillis
+          const observations = yield* drivers
+            .logs(request.device)
+            .pipe(Effect.orElseSucceed(() => []))
+          const infrastructure = failureOutcome(error)
+          const runId = RunId.make(request.id)
+          const record: RunRecordType = {
+            schemaVersion: 1,
+            plan: makePlan(request, runId),
+            build: request.build.record,
+            device: makeDevice(request),
+            runtimeDiscoveredCaseIds: [],
+            attempts: [
+              {
+                schemaVersion: 1,
+                id: AttemptId.make(`${request.id}-1`),
+                runId,
+                attempt: 1,
+                startedAtMillis,
+                finishedAtMillis,
+                infrastructure,
+                results: [],
+                observations,
+                artifacts,
+              },
+            ],
+            finalInfrastructure: infrastructure,
+          }
+          yield* evidence.writeJson("runs", request.id, "record.json", RunRecord, record)
+        }).pipe(Effect.ignore)
       const run: Service["run"] = (request) =>
         Effect.gen(function* () {
           const startedAtMillis = yield* Clock.currentTimeMillis
           const runId = RunId.make(request.id)
-          const plan: RunRecordType["plan"] = {
-            schemaVersion: 1,
-            id: runId,
-            buildId: request.build.record.id,
-            platform: request.device.platform,
-            unit: request.unit,
-            timeoutMillis: request.timeoutMillis,
-            retries: maestroFlowRetries,
-          }
-          const device: RunRecordType["device"] = {
-            id: DeviceId.make(request.device.id),
-            platform: request.device.platform,
-            kind: request.device.platform === "ios" ? "simulator" : "emulator",
-            name: request.device.id,
-            osVersion: null,
-            runtimeVersion: null,
-          }
+          const plan = makePlan(request, runId)
+          const device = makeDevice(request)
           const flowArtifact = yield* evidence
             .writeBytes(
               "runs",
@@ -102,66 +171,6 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
                 (cause) => new NativeSupervisorError({ phase: "evidence", request, cause }),
               ),
             )
-          const failureOutcome = (
-            error: NativeSupervisorError,
-          ): RunRecordType["finalInfrastructure"] =>
-            Match.value(error.phase).pipe(
-              Match.when("crash", () => ({
-                _tag: "crashed" as const,
-                signal: null,
-                exitCode: null,
-              })),
-              Match.when("timeout", () => ({
-                _tag: "timed-out" as const,
-                phase: "native-result",
-                timeoutMillis: request.timeoutMillis,
-              })),
-              Match.when("protocol", () => ({
-                _tag: "protocol-error" as const,
-                message: String(error.cause),
-              })),
-              Match.when("device", () => ({
-                _tag: "device-unavailable" as const,
-                message: String(error.cause),
-              })),
-              Match.when("evidence", () => ({
-                _tag: "runner-failed" as const,
-                message: String(error.cause),
-              })),
-              Match.exhaustive,
-            )
-          const persistFailure = (error: NativeSupervisorError) =>
-            Effect.gen(function* () {
-              if (error.phase === "evidence") return
-              const finishedAtMillis = yield* Clock.currentTimeMillis
-              const observations = yield* drivers
-                .logs(request.device)
-                .pipe(Effect.orElseSucceed(() => []))
-              const infrastructure = failureOutcome(error)
-              const record: RunRecordType = {
-                schemaVersion: 1,
-                plan,
-                build: request.build.record,
-                device,
-                runtimeDiscoveredCaseIds: [],
-                attempts: [
-                  {
-                    schemaVersion: 1,
-                    id: AttemptId.make(`${request.id}-1`),
-                    runId,
-                    attempt: 1,
-                    startedAtMillis,
-                    finishedAtMillis,
-                    infrastructure,
-                    results: [],
-                    observations,
-                    artifacts: [],
-                  },
-                ],
-                finalInfrastructure: infrastructure,
-              }
-              yield* evidence.writeJson("runs", request.id, "record.json", RunRecord, record)
-            }).pipe(Effect.ignore)
           const program = Effect.gen(function* () {
             const execute = Effect.gen(function* () {
               if (request.session !== "prepared") {
@@ -261,7 +270,7 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
               ),
             )
             const finishedAtMillis = yield* Clock.currentTimeMillis
-            const infrastructure = RunProtocol.infrastructureOf(summary)
+            const infrastructure = RunProtocol.completedInfrastructure()
             const record: RunRecordType = {
               schemaVersion: 1,
               plan,
@@ -293,7 +302,11 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
               )
             return record
           })
-          return yield* program.pipe(Effect.tapError(persistFailure))
+          return yield* program.pipe(
+            Effect.tapError((error) =>
+              persistFailure(request, startedAtMillis, error, [flowArtifact.id]),
+            ),
+          )
         })
       const runBatch: Service["runBatch"] = (request) =>
         Effect.gen(function* () {
@@ -314,36 +327,36 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
             })
           }
           const batchRequest = { ...request, unit: firstUnit }
-          yield* drivers.reset(request.device).pipe(
-            Effect.andThen(drivers.install(request.device, request.build.output)),
-            Effect.andThen(
-              request.permissionState === "granted"
-                ? drivers.grantPermissions(request.device)
-                : Effect.void,
-            ),
-            Effect.mapError(
-              (cause) =>
-                new NativeSupervisorError({ phase: "device", request: batchRequest, cause }),
-            ),
-          )
-          const launch = yield* drivers
-            .launch(request.device)
-            .pipe(
+          const startedAtMillis = yield* Clock.currentTimeMillis
+          yield* Effect.gen(function* () {
+            yield* drivers.reset(request.device).pipe(
+              Effect.andThen(drivers.install(request.device, request.build.output)),
+              Effect.andThen(
+                request.permissionState === "granted"
+                  ? drivers.grantPermissions(request.device)
+                  : Effect.void,
+              ),
               Effect.mapError(
                 (cause) =>
                   new NativeSupervisorError({ phase: "device", request: batchRequest, cause }),
               ),
             )
-          if (launch.crashed) {
-            return yield* new NativeSupervisorError({
-              phase: "crash",
-              request: {
-                ...request,
-                unit: firstUnit,
-              },
-              cause: "application crashed during launch",
-            })
-          }
+            const launch = yield* drivers
+              .launch(request.device)
+              .pipe(
+                Effect.mapError(
+                  (cause) =>
+                    new NativeSupervisorError({ phase: "device", request: batchRequest, cause }),
+                ),
+              )
+            yield* launch.crashed
+              ? new NativeSupervisorError({
+                  phase: "crash",
+                  request: batchRequest,
+                  cause: "application crashed during launch",
+                })
+              : Effect.void
+          }).pipe(Effect.tapError((error) => persistFailure(batchRequest, startedAtMillis, error)))
           const outcomes = yield* Effect.forEach(request.units, (unit) =>
             Effect.exit(
               run({

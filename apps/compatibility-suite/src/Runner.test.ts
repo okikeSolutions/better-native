@@ -66,7 +66,7 @@ describe("compatibility runner", () => {
         Effect.map((summary) => {
           const result = summary.results.find(({ caseId }) => caseId === arithmeticCase)
           assert.isDefined(result)
-          assert.deepEqual(summary.runtimeDiscoveredCaseIds, [])
+          assert.deepEqual(summary.runtimeDiscoveredCaseIds, [arithmeticCase])
           assert.strictEqual(result.caseId, arithmeticCase)
           assert.strictEqual(outcomeTag(result.outcome), "passed")
         }),
@@ -128,6 +128,42 @@ describe("compatibility runner", () => {
       )
   })
 
+  it.effect("uses runtime registration as the platform-specific case denominator", () => {
+    const firstCase = basic.caseIds[0]
+    const secondCase = basic.caseIds[1]
+    if (firstCase === undefined || secondCase === undefined) {
+      throw new Error("Basic registry needs at least two cases")
+    }
+    const source: RegistryEntry = {
+      ...basic,
+      caseIds: [firstCase, secondCase],
+      load: () => ({
+        name: "Platform-conditioned source",
+        test: (jasmine: {
+          describe: (name: string, body: () => void) => void
+          it: (name: string, body: () => void) => void
+        }) => {
+          jasmine.describe("Basic", () => {
+            jasmine.it("2 + 2 is 4?", () => undefined)
+          })
+        },
+      }),
+    }
+    return make([source])
+      .run(selection(source.sourceId), tools)
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.deepEqual(summary.runtimeDiscoveredCaseIds, [firstCase])
+          assert.deepEqual(
+            summary.results.map(({ caseId }) => caseId),
+            [firstCase],
+          )
+          assert.isFalse(summary.results.some(({ outcome }) => outcome._tag === "not-run"))
+        }),
+      )
+  })
+
   it.effect("records a registration exception as failed source results", () => {
     const source: RegistryEntry = {
       ...basic,
@@ -149,7 +185,7 @@ describe("compatibility runner", () => {
       )
   })
 
-  it.effect("reports a selected case that is absent at runtime", () => {
+  it.effect("reports runtime-only cases without inventing absent static cases", () => {
     const source: RegistryEntry = {
       ...basic,
       load: () => ({
@@ -174,10 +210,12 @@ describe("compatibility runner", () => {
       .pipe(
         Effect.provide(configuration),
         Effect.map((summary) => {
-          const selected = summary.results.find(({ caseId }) => caseId === basicCase)
-          assert.isDefined(selected)
-          assert.strictEqual(outcomeTag(selected.outcome), "not-run")
-          assert.match(JSON.stringify(selected), /not registered at runtime/)
+          assert.lengthOf(summary.results, 1)
+          const discovered = summary.results[0]
+          assert.isDefined(discovered)
+          assert.strictEqual(outcomeTag(discovered.outcome), "passed")
+          assert.deepEqual(summary.runtimeDiscoveredCaseIds, [discovered.caseId])
+          assert.notStrictEqual(discovered.caseId, basicCase)
         }),
       )
   })

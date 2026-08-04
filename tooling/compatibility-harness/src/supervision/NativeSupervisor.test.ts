@@ -9,6 +9,8 @@ import { NativeSupervisor, NativeSupervisorError, layer } from "./NativeSupervis
 import {
   PlatformDriverError,
   PlatformDrivers,
+  iosLaunchProcessId,
+  iosProcessIsAlive,
   resultFromHierarchy,
   type NativeDevice,
   type Service as DriverService,
@@ -96,6 +98,20 @@ const supervisorLayer = (service: Partial<DriverService>) =>
   layer.pipe(Layer.provideMerge(Layer.merge(drivers(service), evidence)))
 
 describe("NativeSupervisor fault injection", () => {
+  it("tracks iOS simulator liveness by the PID reported by simctl", () => {
+    assert.strictEqual(iosLaunchProcessId("dev.betternative.compatibility: 96141"), 96141)
+    assert.isNull(iosLaunchProcessId("dev.betternative.compatibility: not-a-pid"))
+    assert.isTrue(
+      iosProcessIsAlive("bsd proc info = {\n\tpid = 96141\n\tstatus = running\n}", 96141),
+    )
+    assert.isFalse(
+      iosProcessIsAlive(
+        "program path = (could not resolve path)\n(pid 96141 is not managed by launchd)",
+        96141,
+      ),
+    )
+  })
+
   it.effect("keeps permissions reset when that scenario is requested", () =>
     Effect.gen(function* () {
       const granted = yield* Ref.make(false)
@@ -227,6 +243,63 @@ describe("NativeSupervisor fault injection", () => {
         }),
       ),
     ),
+  )
+
+  it.effect("persists evidence when a native batch crashes during launch", () =>
+    Effect.gen(function* () {
+      const writtenRecords = yield* Ref.make<ReadonlyArray<string>>([])
+      const recordingEvidence = Layer.succeed(
+        EvidenceStore,
+        EvidenceStore.of({
+          writeBytes: (_collection, recordId, name) =>
+            Effect.succeed({
+              id: ArtifactId.make(`runs/${recordId}/${name}@${hash}`),
+              path: `.artifacts/runs/${recordId}/${name}`,
+              mediaType: "application/yaml",
+              size: 0,
+              hash,
+            }),
+          writeJson: (_collection, recordId, name) =>
+            Ref.update(writtenRecords, (records) => [...records, `${recordId}/${name}`]).pipe(
+              Effect.as({
+                id: ArtifactId.make(`runs/${recordId}/${name}@${hash}`),
+                path: `.artifacts/runs/${recordId}/${name}`,
+                mediaType: "application/json",
+                size: 0,
+                hash,
+              }),
+            ),
+        }),
+      )
+      const failure = yield* Effect.gen(function* () {
+        const supervisor = yield* NativeSupervisor
+        return yield* supervisor
+          .runBatch({
+            id: "native-batch",
+            build,
+            device,
+            units: [request.unit],
+            permissionState: "granted",
+            timeoutMillis: 1_000,
+          })
+          .pipe(Effect.flip)
+      }).pipe(
+        Effect.provide(
+          layer.pipe(
+            Layer.provideMerge(
+              Layer.merge(
+                drivers({
+                  launch: () => Effect.succeed({ alive: false, crashed: true, logs: [] }),
+                }),
+                recordingEvidence,
+              ),
+            ),
+          ),
+        ),
+      )
+      assert.strictEqual(failure.phase, "crash")
+      assert.deepEqual(yield* Ref.get(writtenRecords), ["native-batch/record.json"])
+    }),
   )
 
   it.effect("does not hide cleanup failures", () => {

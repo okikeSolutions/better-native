@@ -20,7 +20,7 @@
     "compatibility:web": "bun run generate && bun run expo:prepare && bun run better-native supervise-web --mode upstream --build-id local-web",
     "effect:patch": "effect-language-service patch",
     "expo:toolchain": "bun run better-native prepare-expo --timeout-ms 3600000",
-    "expo:prepare": "turbo run //#expo:toolchain --concurrency=90%",
+    "expo:prepare": "turbo run //#expo:toolchain --cache=local:rw --concurrency=90%",
     "format": "oxfmt --disable-nested-config --config .oxfmtrc.json --write .",
     "format:check": "oxfmt --disable-nested-config --config .oxfmtrc.json --check .",
     "generate": "bun run better-native generate",

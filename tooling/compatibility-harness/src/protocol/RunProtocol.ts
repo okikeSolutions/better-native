@@ -74,15 +74,9 @@ export const validate = Effect.fn("RunProtocol.validate")(function* (
   return summary
 })
 
-/** Converts case-level failures into a non-successful run record without losing the evidence. */
-export const infrastructureOf = (summary: AppRunSummary): InfrastructureOutcome => {
-  const unsuccessful = summary.results.filter(
-    ({ outcome }) => outcome._tag !== "passed" && outcome._tag !== "skipped",
-  )
-  return unsuccessful.length === 0
-    ? { _tag: "succeeded" }
-    : {
-        _tag: "runner-failed",
-        message: `${unsuccessful.length} case(s) failed, timed out, crashed, or were not run`,
-      }
-}
+/** A protocol-valid application summary proves that the runner completed.
+ * Case outcomes are behavioral evidence and are compared separately.
+ */
+export const completedInfrastructure = (): InfrastructureOutcome => ({
+  _tag: "succeeded",
+})

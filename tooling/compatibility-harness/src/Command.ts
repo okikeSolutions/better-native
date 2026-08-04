@@ -211,15 +211,15 @@ const supervisedWeb = Command.make(
       candidateRevision: revision,
       timeoutMillis,
     })
-    const records = yield* Effect.forEach(units, (unit, index) =>
-      web.run({
+    const records = yield* web.runAll(
+      units.map((unit) => ({
         id: `${buildId}-run-${unit.id}`,
         build,
         unit,
-        port: port + index,
+        port,
         timeoutMillis,
         corpus,
-      }),
+      })),
     )
     yield* Effect.forEach(records, requireSuccessfulRun, { discard: true })
     return yield* Console.log(
@@ -264,26 +264,26 @@ const supervisedWebPair = Command.make(
         timeoutMillis,
       },
     })
-    const upstream = yield* Effect.forEach(units, (unit, index) =>
-      web.run({
+    const upstream = yield* web.runAll(
+      units.map((unit) => ({
         id: `${buildId}-upstream-run-${unit.id}`,
         build: pair.upstream,
         unit,
-        port: port + index,
+        port,
         timeoutMillis,
         corpus,
-      }),
+      })),
     )
     yield* Effect.forEach(upstream, requireSuccessfulRun, { discard: true })
-    const candidate = yield* Effect.forEach(units, (unit, index) =>
-      web.run({
+    const candidate = yield* web.runAll(
+      units.map((unit) => ({
         id: `${buildId}-candidate-run-${unit.id}`,
         build: pair.candidate,
         unit,
-        port: port + index,
+        port,
         timeoutMillis,
         corpus,
-      }),
+      })),
     )
     yield* Effect.forEach(candidate, requireSuccessfulRun, { discard: true })
     return yield* Console.log(

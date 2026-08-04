@@ -228,7 +228,9 @@ const runSource = (
           const discoveredCaseId = `${source.sourceId}#${name}@${occurrence}`
           const caseId = caseIdBySpecId.get(result.id) ?? discoveredCaseId
           if (result.status === "excluded" && !selectedCaseIds.has(caseId) && !discovery) return
-          if (!knownCaseIds.has(caseId)) {
+          if (discovery) {
+            runtimeDiscoveredCaseIds.push(caseId)
+          } else if (!knownCaseIds.has(caseId)) {
             runtimeDiscoveredCaseIds.push(discoveredCaseId)
           }
           const durationMillis = result.duration ?? 0
@@ -318,10 +320,12 @@ const runSource = (
           if (selected === undefined) runtimeDiscoveredCaseIds.push(caseId)
         }
       }
-      const observed = new Set(results.map(({ caseId }) => caseId))
-      for (const caseId of selectedCaseIds) {
-        if (!observed.has(caseId)) {
-          results.push(notRun(selection.runId, caseId, "case was not registered at runtime"))
+      if (!discovery) {
+        const observed = new Set(results.map(({ caseId }) => caseId))
+        for (const caseId of selectedCaseIds) {
+          if (!observed.has(caseId)) {
+            results.push(notRun(selection.runId, caseId, "case was not registered at runtime"))
+          }
         }
       }
       return { results, runtimeDiscoveredCaseIds }

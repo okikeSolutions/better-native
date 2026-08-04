@@ -1,7 +1,7 @@
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import { BuildId, RunId, TestCaseId, TestSourceId, type AppRunSummary } from "../Domain.ts"
-import { infrastructureOf, RunProtocolError, validate } from "./RunProtocol.ts"
+import { completedInfrastructure, RunProtocolError, validate } from "./RunProtocol.ts"
 
 const caseWithComma = TestCaseId.make("suite#source#accepts red, green, blue@1")
 const expected = {
@@ -69,33 +69,7 @@ describe("RunProtocol", () => {
     })
   })
 
-  it("turns every unsuccessful executable outcome into runner infrastructure failure", () => {
-    const value = summary()
-    const failed: AppRunSummary = {
-      ...value,
-      results: value.results.map((result) => ({
-        ...result,
-        outcome: {
-          _tag: "failed" as const,
-          durationMillis: 1,
-          message: "boom",
-          stack: null,
-        },
-      })),
-    }
-    assert.strictEqual(infrastructureOf(failed)._tag, "runner-failed")
-    for (const outcome of [
-      { _tag: "timeout" as const, timeoutMillis: 1 },
-      { _tag: "crashed" as const, signal: null, exitCode: 1 },
-      { _tag: "not-run" as const, reason: "missing" },
-    ]) {
-      assert.strictEqual(
-        infrastructureOf({
-          ...value,
-          results: value.results.map((result) => ({ ...result, outcome })),
-        })._tag,
-        "runner-failed",
-      )
-    }
+  it("represents a completed runner independently from behavioral outcomes", () => {
+    assert.deepEqual(completedInfrastructure(), { _tag: "succeeded" })
   })
 })

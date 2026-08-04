@@ -5,18 +5,23 @@ import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Ref from "effect/Ref"
 import { BuildId, ContentHash, RunId, TestSourceId, type ProcessObservation } from "../Domain.ts"
+import { DiscoveryPass } from "../evidence/DiscoveryPass.ts"
 import { EvidenceStore, layer as evidenceLayer } from "../evidence/EvidenceStore.ts"
-import { ProcessFailure, type RunningProcess } from "./ProcessSupervisor.ts"
+import { ProcessFailure, ProcessSupervisor, type RunningProcess } from "./ProcessSupervisor.ts"
 import {
   appendBrowserConsoleObservations,
+  BrowserDriver,
   BrowserDriverError,
+  browserPermissionsForSource,
   diagnosticMessage,
   makeBoundedConsoleCollector,
   persistWebRunFailure,
   validateBrowserResultPayload,
   webRunUrl,
+  WebSupervisor,
   WebSupervisorError,
   withServerFailureEvidence,
+  layer as webSupervisorLayer,
   type WebRunRequest,
 } from "./WebSupervisor.ts"
 
@@ -117,6 +122,120 @@ describe("WebSupervisor failure evidence", () => {
     assert.strictEqual(url, "http://127.0.0.1:8081/run?runId=web-failure&source=source+one")
     assert.isBelow(url.length, 16_384)
   })
+
+  it("grants only the browser capabilities required by the selected source", () => {
+    assert.deepEqual(
+      browserPermissionsForSource("expo-app-suite#apps/test-suite/tests/Clipboard.js"),
+      ["clipboard-read", "clipboard-write"],
+    )
+    assert.deepEqual(
+      browserPermissionsForSource("expo-app-suite#apps/test-suite/tests/Network.js"),
+      [],
+    )
+  })
+
+  it.effect("starts one server and executes every source in the shared web session", () =>
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem
+      const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-web-session-" })
+      const starts = yield* Ref.make(0)
+      const terminations = yield* Ref.make(0)
+      const executions = yield* Ref.make(0)
+      const process = {
+        exitCode: Effect.never,
+        observations: Effect.succeed<ReadonlyArray<ProcessObservation>>([]),
+        terminate: Ref.update(terminations, (value) => value + 1),
+      }
+      const processLayer = Layer.succeed(
+        ProcessSupervisor,
+        ProcessSupervisor.of({
+          start: () => Ref.update(starts, (value) => value + 1).pipe(Effect.as(process)),
+          run: () => Effect.succeed({ exitCode: 0, observations: [] }),
+        }),
+      )
+      const browserLayer = Layer.succeed(
+        BrowserDriver,
+        BrowserDriver.of({
+          execute: (url) =>
+            Effect.gen(function* () {
+              yield* Ref.update(executions, (value) => value + 1)
+              const selection = new URL(url)
+              const runId = selection.searchParams.get("runId") ?? "missing-run"
+              const sourceId = selection.searchParams.get("source") ?? "missing-source"
+              const caseId = `${sourceId}#case@1`
+              return {
+                resultJson: JSON.stringify({
+                  schemaVersion: 1,
+                  runId,
+                  buildId: request.build.record.id,
+                  mode: request.build.record.mode,
+                  results: [
+                    {
+                      schemaVersion: 1,
+                      runId,
+                      caseId,
+                      attempt: 1,
+                      outcome: { _tag: "passed", durationMillis: 1 },
+                      artifacts: [],
+                    },
+                  ],
+                  runtimeDiscoveredCaseIds: [caseId],
+                }),
+                console: [],
+              }
+            }),
+        }),
+      )
+      const discoveryLayer = Layer.succeed(
+        DiscoveryPass,
+        DiscoveryPass.of({
+          collect: (input) =>
+            Effect.succeed({
+              schemaVersion: 1,
+              runId: input.runId,
+              runtimeCases: [],
+              resolutions: [],
+              exports: [],
+            }),
+        }),
+      )
+      const live = webSupervisorLayer.pipe(
+        Layer.provideMerge(
+          Layer.mergeAll(
+            browserLayer,
+            processLayer,
+            discoveryLayer,
+            evidenceLayer(root).pipe(Layer.provideMerge(NodeServices.layer)),
+          ),
+        ),
+      )
+      const second: WebRunRequest = {
+        ...request,
+        id: "web-second",
+        unit: {
+          ...request.unit,
+          id: "web-source-two",
+          sourceId: TestSourceId.make("source two"),
+        },
+      }
+      const records = yield* Effect.gen(function* () {
+        const supervisor = yield* WebSupervisor
+        const completed = yield* supervisor.runAll([request, second])
+        const incompatible = yield* supervisor
+          .runAll([
+            request,
+            { ...second, build: { ...second.build, output: "/workspace/other-dist" } },
+          ])
+          .pipe(Effect.flip)
+        assert.strictEqual(incompatible.phase, "protocol")
+        return completed
+      }).pipe(Effect.provide(live))
+      assert.lengthOf(records, 2)
+      assert.strictEqual(yield* Ref.get(starts), 1)
+      assert.strictEqual(yield* Ref.get(terminations), 1)
+      assert.strictEqual(yield* Ref.get(executions), 2)
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+  )
 
   it("bounds retained browser console evidence with deterministic metadata", () => {
     const messages = makeBoundedConsoleCollector(10, 2)
