@@ -28,6 +28,21 @@ runs:
         sudo udevadm control --reload-rules
         sudo udevadm trigger --name-match=kvm
 
+    - name: Prepare compatibility command
+      id: compatibility-script
+      shell: bash
+      env:
+        COMPATIBILITY_SCRIPT: ${{ inputs.script }}
+      run: |
+        set -euo pipefail
+        script_path=$(mktemp "${RUNNER_TEMP:?}/better-native-android.XXXXXX.sh")
+        {
+          printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail'
+          printf '%s\n' "$COMPATIBILITY_SCRIPT"
+        } > "$script_path"
+        chmod 700 "$script_path"
+        echo "path=$script_path" >> "$GITHUB_OUTPUT"
+
     - name: Android emulator attempt 1
       id: attempt-1
       continue-on-error: true
@@ -45,7 +60,7 @@ runs:
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
           adb shell settings put secure immersive_mode_confirmations confirmed
           adb shell input keyevent 3
-          ${{ inputs.script }}
+          bash "${{ steps.compatibility-script.outputs.path }}"
         working-directory: ${{ inputs.working-directory }}
 
     - name: Preserve compatibility failure from attempt 1
@@ -71,7 +86,7 @@ runs:
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
           adb shell settings put secure immersive_mode_confirmations confirmed
           adb shell input keyevent 3
-          ${{ inputs.script }}
+          bash "${{ steps.compatibility-script.outputs.path }}"
         working-directory: ${{ inputs.working-directory }}
 
     - name: Preserve compatibility failure from attempt 2
@@ -96,5 +111,5 @@ runs:
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
           adb shell settings put secure immersive_mode_confirmations confirmed
           adb shell input keyevent 3
-          ${{ inputs.script }}
+          bash "${{ steps.compatibility-script.outputs.path }}"
         working-directory: ${{ inputs.working-directory }}

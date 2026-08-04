@@ -10,7 +10,8 @@ import {
   PlatformDriverError,
   PlatformDrivers,
   iosLaunchProcessId,
-  iosProcessIsAlive,
+  iosLivenessSpec,
+  iosLogPredicate,
   resultFromHierarchy,
   type NativeDevice,
   type Service as DriverService,
@@ -98,17 +99,17 @@ const supervisorLayer = (service: Partial<DriverService>) =>
   layer.pipe(Layer.provideMerge(Layer.merge(drivers(service), evidence)))
 
 describe("NativeSupervisor fault injection", () => {
-  it("tracks iOS simulator liveness by the PID reported by simctl", () => {
+  it("tracks iOS simulator liveness by the host PID reported by simctl", () => {
     assert.strictEqual(iosLaunchProcessId("dev.betternative.compatibility: 96141"), 96141)
     assert.isNull(iosLaunchProcessId("dev.betternative.compatibility: not-a-pid"))
-    assert.isTrue(
-      iosProcessIsAlive("bsd proc info = {\n\tpid = 96141\n\tstatus = running\n}", 96141),
-    )
-    assert.isFalse(
-      iosProcessIsAlive(
-        "program path = (could not resolve path)\n(pid 96141 is not managed by launchd)",
-        96141,
-      ),
+    assert.deepEqual(iosLivenessSpec(96141), {
+      command: "/bin/kill",
+      args: ["-0", "96141"],
+      timeoutMillis: 5_000,
+    })
+    assert.strictEqual(
+      iosLogPredicate(96141),
+      'eventMessage CONTAINS "BETTER_NATIVE_" OR (processIdentifier == 96141 AND (messageType == "Error" OR messageType == "Fault"))',
     )
   })
 

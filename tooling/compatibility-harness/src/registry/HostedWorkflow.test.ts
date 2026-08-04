@@ -92,12 +92,24 @@ describe("hosted compatibility workflow", () => {
       assert.strictEqual(workflow.match(/supervise-native-pair/g)?.length, 2)
       assert.match(
         workflow,
-        /uses: \.\/\.github\/actions\/use-android-emulator[\s\S]*?script: \|\n\s+set -eu\n/,
+        /uses: \.\/\.github\/actions\/use-android-emulator[\s\S]*?script: \|\n\s+if \[ "\$COMPATIBILITY_MODE" = pair \]; then\n/,
       )
       assert.notMatch(workflow, /uses: reactivecircus\/android-emulator-runner@/)
       assert.notMatch(workflow, /script: \|\n\s+set -euo pipefail/)
       assert.match(androidEmulator, /99-kvm4all\.rules/)
       assert.match(androidEmulator, /udevadm trigger --name-match=kvm/)
+      assert.match(androidEmulator, /id: compatibility-script/)
+      assert.match(androidEmulator, /COMPATIBILITY_SCRIPT: \$\{\{ inputs\.script \}\}/)
+      assert.match(
+        androidEmulator,
+        /mktemp "\$\{RUNNER_TEMP:\?\}\/better-native-android\.XXXXXX\.sh"/,
+      )
+      assert.strictEqual(
+        androidEmulator.match(/bash "\$\{\{ steps\.compatibility-script\.outputs\.path \}\}"/g)
+          ?.length,
+        3,
+      )
+      assert.strictEqual(androidEmulator.match(/\$\{\{ inputs\.script \}\}/g)?.length, 1)
       assert.notMatch(androidEmulator, /\[ ! -r \/dev\/kvm \] \|\| \[ ! -w \/dev\/kvm \]/)
       assert.notMatch(androidEmulator, /KVM is unavailable to the GitHub Actions runner/)
       assert.strictEqual(

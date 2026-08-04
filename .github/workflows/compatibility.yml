@@ -474,7 +474,6 @@ jobs:
           avd-api: 36
           avd-name: compatibility-api-36
           script: |
-            set -eu
             if [ "$COMPATIBILITY_MODE" = pair ]; then
               upstream_record=".artifacts/builds/${BUILD_ID}-upstream/record.json"
             else

@@ -80,9 +80,14 @@ export const iosLaunchProcessId = (stdout: string): number | null => {
   return Number.isSafeInteger(processId) && processId > 0 ? processId : null
 }
 
-export const iosProcessIsAlive = (stdout: string, processId: number): boolean =>
-  new RegExp(`(?:^|\\n)\\s*pid = ${processId}\\s*(?:\\n|$)`).test(stdout) &&
-  !stdout.includes("is not managed by launchd")
+export const iosLivenessSpec = (processId: number): ProcessSpec => ({
+  command: "/bin/kill",
+  args: ["-0", String(processId)],
+  timeoutMillis: 5_000,
+})
+
+export const iosLogPredicate = (processId: number): string =>
+  `eventMessage CONTAINS "BETTER_NATIVE_" OR (processIdentifier == ${processId} AND (messageType == "Error" OR messageType == "Fault"))`
 
 const resultTestId = "compatibility_run_result_json"
 
@@ -184,14 +189,8 @@ export const layer: Layer.Layer<PlatformDrivers, never, ProcessSupervisor> = Lay
               const processId = current.get(processKey(device))
               if (processId === undefined) return Effect.succeed(false)
               return processes
-                .run(
-                  command(
-                    device,
-                    ["spawn", device.id, "launchctl", "procinfo", String(processId)],
-                    15_000,
-                  ),
-                )
-                .pipe(Effect.map((result) => iosProcessIsAlive(output(result), processId)))
+                .run(iosLivenessSpec(processId))
+                .pipe(Effect.map((result) => result.exitCode === 0))
             }),
             Effect.mapError(
               (cause) => new PlatformDriverError({ operation: "liveness", device, cause }),
@@ -209,14 +208,14 @@ export const layer: Layer.Layer<PlatformDrivers, never, ProcessSupervisor> = Lay
           const predicate =
             processId === undefined
               ? 'eventMessage CONTAINS "BETTER_NATIVE_"'
-              : `processIdentifier == ${processId} OR eventMessage CONTAINS "BETTER_NATIVE_"`
+              : iosLogPredicate(processId)
           return invoke("logs", device, [
             "spawn",
             device.id,
             "log",
             "show",
             "--last",
-            "5m",
+            "1m",
             "--style",
             "json",
             "--predicate",
@@ -343,18 +342,24 @@ export const layer: Layer.Layer<PlatformDrivers, never, ProcessSupervisor> = Lay
                   })
             return rememberProcess.pipe(
               Effect.andThen(Effect.sleep(1_000)),
-              Effect.andThen(Effect.all([isAlive(device), logs(device)])),
-              Effect.map(([alive, logEntries]) => {
-                const observations = [...launchResult.observations, ...logEntries]
-                const logText = observations.map((entry) => entry.text).join("\n")
-                return {
-                  alive,
-                  crashed:
-                    !alive ||
-                    /(?:FATAL EXCEPTION|Terminated due to signal|crash report)/i.test(logText),
-                  logs: observations,
-                }
-              }),
+              Effect.andThen(isAlive(device)),
+              Effect.flatMap((alive) =>
+                alive
+                  ? Effect.succeed<NativeLaunch>({
+                      alive: true,
+                      crashed: false,
+                      logs: launchResult.observations,
+                    })
+                  : logs(device).pipe(
+                      Effect.map(
+                        (logEntries): NativeLaunch => ({
+                          alive: false,
+                          crashed: true,
+                          logs: [...launchResult.observations, ...logEntries],
+                        }),
+                      ),
+                    ),
+              ),
             )
           }),
         )
