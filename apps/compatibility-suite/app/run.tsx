@@ -1,25 +1,12 @@
 import { useLocalSearchParams } from "expo-router"
 import { type ReactNode, useEffect, useState } from "react"
-import { Platform, ScrollView, StyleSheet, Text, View } from "react-native"
+import { ScrollView, StyleSheet, Text, View } from "react-native"
 import * as Encoding from "effect/Encoding"
 import * as Match from "effect/Match"
 import * as Result from "effect/Result"
-import * as FileSystem from "expo-file-system/legacy"
+import { publishResult, rendersResultPayload } from "../src/ResultTransport"
 import { run, type RunSummary } from "../src/Runner.ts"
 import { runtime } from "../src/Runtime.ts"
-
-const resultFileName = (runId: string): string =>
-  `better-native-result-${Encoding.encodeBase64Url(runId)}.json`
-
-const persistResult = (runId: string, result: RunSummary): Promise<void> => {
-  if (Platform.OS !== "ios") return Promise.resolve()
-  if (FileSystem.documentDirectory === null)
-    return Promise.reject(new Error("document directory unavailable"))
-  return FileSystem.writeAsStringAsync(
-    `${FileSystem.documentDirectory}${resultFileName(runId)}`,
-    JSON.stringify(result),
-  )
-}
 
 const selectionFor = (
   runId: string,
@@ -86,7 +73,7 @@ export default function Run() {
         ),
       )
       .then(async (result) => {
-        await persistResult(runId, result)
+        await publishResult(runId, result)
         if (active) setSummary(result)
       })
       .catch((cause: unknown) => {
@@ -118,7 +105,7 @@ export default function Run() {
           <Text testID="compatibility_run_summary">
             {summary.mode} · {summary.buildId} · {summary.results.length} results · {failed} failed
           </Text>
-          {Platform.OS === "web" ? (
+          {rendersResultPayload ? (
             <Text selectable style={styles.result} testID="compatibility_run_result_json">
               {JSON.stringify(summary)}
             </Text>
