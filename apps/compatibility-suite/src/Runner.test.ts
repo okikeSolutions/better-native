@@ -13,11 +13,7 @@ import {
   type CaseResult,
 } from "./Runner.ts"
 
-const tools = {
-  setPortalChild: () => undefined,
-  cleanupPortal: () => Promise.resolve(),
-  setProgress: () => undefined,
-}
+const tools = { setPortalChild: () => undefined, cleanupPortal: () => Promise.resolve() }
 const selection = (sourceId: string) => ({
   schemaVersion: 1,
   runId: "test-run",
@@ -98,34 +94,6 @@ describe("compatibility runner", () => {
           assert.deepEqual(summary.runtimeDiscoveredCaseIds, [arithmeticCase])
           assert.strictEqual(result.caseId, arithmeticCase)
           assert.strictEqual(outcomeTag(result.outcome), "passed")
-        }),
-      )
-  })
-
-  it.effect("reports source and spec progress before publishing the final result", () => {
-    const reported: Array<import("./Registry.ts").RunnerProgress> = []
-    const source: RegistryEntry = {
-      ...basic,
-      load: () => ({
-        name: "Basic",
-        test: (jasmine: {
-          describe: (name: string, body: () => void) => void
-          it: (name: string, body: () => void) => void
-        }) => {
-          jasmine.describe("Basic", () => jasmine.it("2 + 2 is 4?", () => undefined))
-        },
-      }),
-    }
-    return make([source])
-      .run(selection(source.sourceId), { ...tools, setProgress: (next) => reported.push(next) })
-      .pipe(
-        Effect.provide(configuration),
-        Effect.map(() => {
-          assert.deepEqual(
-            reported.map(({ phase }) => phase),
-            ["loading", "registering", "running", "spec-finished", "complete"],
-          )
-          assert.strictEqual(reported[3]?.caseId, basicCase)
         }),
       )
   })

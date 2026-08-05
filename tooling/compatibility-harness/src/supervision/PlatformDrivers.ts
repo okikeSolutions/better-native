@@ -231,40 +231,34 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
           ]).pipe(Effect.map(({ observations }) => observations)),
         ),
         Match.when("ios", () =>
-          Effect.all([
-            invoke("logs", device, [
-              "spawn",
-              device.id,
-              "log",
-              "show",
-              "--last",
-              "1m",
-              "--style",
-              "json",
-              "--predicate",
-              iosLogPredicate,
-            ]).pipe(
-              Effect.map(({ observations }) => observations),
-              Effect.orElseSucceed(() => []),
-            ),
-            processes
-              .run({
-                command: "maestro",
-                args: ["--device", device.id, "hierarchy"],
-                timeoutMillis: 30_000,
-                retainedOutputBytes: maximumResultLogBytes,
-              })
-              .pipe(
-                Effect.map(({ observations }) => observations),
-                Effect.orElseSucceed(() => []),
-              ),
-          ]).pipe(Effect.map(([nativeLogs, hierarchy]) => [...nativeLogs, ...hierarchy])),
+          invoke("logs", device, [
+            "spawn",
+            device.id,
+            "log",
+            "show",
+            "--last",
+            "1m",
+            "--style",
+            "json",
+            "--predicate",
+            iosLogPredicate,
+          ]).pipe(Effect.map(({ observations }) => observations)),
         ),
         Match.exhaustive,
       )
     }
     const result: Service["result"] = (device, runId) =>
       Effect.gen(function* () {
+        if (device.platform === "ios") {
+          const container = yield* processes.run(
+            command(device, ["get_app_container", device.id, device.applicationId, "data"], 30_000),
+          )
+          if (container.exitCode === 0) {
+            const dataDirectory = output(container).trim()
+            const resultPath = `${dataDirectory}/Documents/better-native-result-${Buffer.from(runId).toString("base64url")}.json`
+            if (yield* fs.exists(resultPath)) return yield* fs.readFileString(resultPath)
+          }
+        }
         const logSpec = Match.value(device.platform).pipe(
           Match.when("android", () =>
             command(device, ["logcat", "-d", "-v", "raw", "ReactNativeJS:V", "*:S"], 30_000),

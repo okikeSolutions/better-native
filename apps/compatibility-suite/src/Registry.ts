@@ -17,14 +17,6 @@ export interface ExpoTestModule {
 export interface TestTools {
   readonly setPortalChild: (child: ReactNode) => void
   readonly cleanupPortal: () => Promise<void>
-  readonly setProgress: (progress: RunnerProgress) => void
-}
-
-export interface RunnerProgress {
-  readonly runId: string
-  readonly sourceId: string
-  readonly phase: "loading" | "registering" | "running" | "spec-finished" | "complete"
-  readonly caseId: string | null
 }
 
 export type RegistryLoaders = ReadonlyMap<string, () => unknown>

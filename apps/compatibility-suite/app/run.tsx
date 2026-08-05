@@ -1,12 +1,25 @@
 import { useLocalSearchParams } from "expo-router"
 import { type ReactNode, useEffect, useState } from "react"
-import { ScrollView, StyleSheet, Text, View } from "react-native"
+import { Platform, ScrollView, StyleSheet, Text, View } from "react-native"
 import * as Encoding from "effect/Encoding"
 import * as Match from "effect/Match"
 import * as Result from "effect/Result"
+import * as FileSystem from "expo-file-system/legacy"
 import { run, type RunSummary } from "../src/Runner.ts"
-import type { RunnerProgress } from "../src/Registry.ts"
 import { runtime } from "../src/Runtime.ts"
+
+const resultFileName = (runId: string): string =>
+  `better-native-result-${Encoding.encodeBase64Url(runId)}.json`
+
+const persistResult = (runId: string, result: RunSummary): Promise<void> => {
+  if (Platform.OS !== "ios") return Promise.resolve()
+  if (FileSystem.documentDirectory === null)
+    return Promise.reject(new Error("document directory unavailable"))
+  return FileSystem.writeAsStringAsync(
+    `${FileSystem.documentDirectory}${resultFileName(runId)}`,
+    JSON.stringify(result),
+  )
+}
 
 const selectionFor = (
   runId: string,
@@ -48,7 +61,6 @@ export default function Run() {
   }>()
   const [summary, setSummary] = useState<RunSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [progress, setProgress] = useState<RunnerProgress | null>(null)
   const [portalChild, setPortalChild] = useState<ReactNode>(null)
   const runId = params.runId ?? "interactive-run"
   const sourceId = typeof params.source === "string" ? params.source : undefined
@@ -65,7 +77,6 @@ export default function Run() {
         runtime.runPromise(
           run(input, {
             setPortalChild,
-            setProgress,
             cleanupPortal: () =>
               new Promise<void>((resolve) => {
                 setPortalChild(null)
@@ -74,7 +85,8 @@ export default function Run() {
           }),
         ),
       )
-      .then((result) => {
+      .then(async (result) => {
+        await persistResult(runId, result)
         if (active) setSummary(result)
       })
       .catch((cause: unknown) => {
@@ -96,24 +108,21 @@ export default function Run() {
     <ScrollView contentContainerStyle={styles.container} testID="compatibility_run">
       <Text style={styles.title}>Run {runId}</Text>
       <Text testID="compatibility_run_selection">{selectionIdentity}</Text>
-      {progress ? (
-        <Text testID="compatibility_run_progress">
-          {progress.phase} · {progress.sourceId}
-          {progress.caseId ? ` · ${progress.caseId}` : ""}
-        </Text>
-      ) : null}
       {error ? <Text testID="compatibility_run_error">{error}</Text> : null}
       {summary === null && error === null ? (
         <Text testID="compatibility_run_running">Loading compatibility run…</Text>
       ) : null}
       {summary ? (
-        <View testID="compatibility_run_complete">
+        <View>
+          <Text testID="compatibility_run_complete">Compatibility run complete</Text>
           <Text testID="compatibility_run_summary">
             {summary.mode} · {summary.buildId} · {summary.results.length} results · {failed} failed
           </Text>
-          <Text selectable style={styles.result} testID="compatibility_run_result_json">
-            {JSON.stringify(summary)}
-          </Text>
+          {Platform.OS === "web" ? (
+            <Text selectable style={styles.result} testID="compatibility_run_result_json">
+              {JSON.stringify(summary)}
+            </Text>
+          ) : null}
         </View>
       ) : null}
       <View testID="compatibility_test_portal">{portalChild}</View>
