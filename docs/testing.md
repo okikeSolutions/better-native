@@ -76,6 +76,11 @@ Native parity is a paired comparison, not a host-test result:
 The curated `native-e2e` cohort remains owned by pinned Expo source and must not be changed to
 improve Better Native coverage. Capability-specific parity runs are separate and opt-in.
 
+Android executes the complete pinned cohort in one app session. Hosted iOS CI partitions the same
+unchanged source set into two deterministic shards, balanced by each source's statically discovered
+case count. Each shard still runs as one app session; the split keeps the 291-case suite within the
+simulator deadline, and paired comparison merges both shards before checking source completeness.
+
 Simulator results are platform evidence, with platform limits. For example, iOS Simulator correctly
 proves Expo Battery's unavailable behavior, but it cannot prove live battery level, charging, or
 low-power events. Those cases require a physical iPhone. Simulator network state and IP behavior

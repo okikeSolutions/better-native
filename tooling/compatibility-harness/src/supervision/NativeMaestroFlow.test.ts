@@ -2,7 +2,7 @@ import { assert, describe, it } from "@effect/vitest"
 import { BuildId, ContentHash, RunId, TestSourceId, type BuildRecord } from "../Domain.ts"
 import type { BuildOutput } from "../build/BuildPipeline.ts"
 import { make, makeBatch } from "./NativeMaestroFlow.ts"
-import type { NativeRunRequest } from "./NativeSupervisor.ts"
+import type { NativeBatchRequest, NativeRunRequest } from "./NativeSupervisor.ts"
 
 const record: BuildRecord = {
   schemaVersion: 2,
@@ -41,6 +41,17 @@ const request: NativeRunRequest = {
   },
   timeoutMillis: 120_000,
 }
+const batchRequest: NativeBatchRequest = {
+  ...request,
+  units: [
+    request.unit,
+    {
+      ...request.unit,
+      id: "ios-expo_crypto-source",
+      sourceId: TestSourceId.make("expo-app-suite#apps/test-suite/tests/Crypto.js"),
+    },
+  ],
+}
 
 describe("NativeMaestroFlow", () => {
   it("lets Maestro clear state before cold-launching one short source selection", () => {
@@ -57,12 +68,16 @@ describe("NativeMaestroFlow", () => {
   })
 
   it("uses one short cohort selector for the pinned Expo native E2E batch", () => {
-    const flow = makeBatch(request)
+    const flow = makeBatch(batchRequest)
     assert.include(flow, "- clearState")
-    assert.include(flow, "cohort=native-e2e")
+    assert.include(
+      flow,
+      "sources=6578706f2d6170702d737569746523617070732f746573742d73756974652f74657374732f4e6574776f726b2e6a73%2C6578706f2d6170702d737569746523617070732f746573742d73756974652f74657374732f43727970746f2e6a73",
+    )
     assert.include(flow, 'id: "compatibility_run_selection"')
     assert.include(flow, 'text: "native-e2e"')
     assert.notInclude(flow, "source=")
+    assert.notInclude(flow, "cohort=")
     assert.notInclude(flow, "caseIds")
   })
 })

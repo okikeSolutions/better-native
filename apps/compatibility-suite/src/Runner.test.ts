@@ -170,6 +170,65 @@ describe("compatibility runner", () => {
       )
   })
 
+  it.effect("runs exactly an explicit subset of curated native sources", () => {
+    const crypto = registry.find(({ path }) => path.endsWith("/tests/Crypto.js"))
+    if (crypto === undefined) throw new Error("Crypto registry source is missing")
+    const sources = [basic, crypto].map(
+      (entry): RegistryEntry => ({
+        ...entry,
+        caseIds: [`${entry.sourceId}#runs@1`],
+        load: () => ({
+          name: entry.runtimeName ?? entry.path,
+          test: (jasmine: {
+            describe: (name: string, body: () => void) => void
+            it: (name: string, body: () => void) => void
+          }) => {
+            jasmine.describe(entry.runtimeName ?? entry.path, () => {
+              jasmine.it("runs", () => undefined)
+            })
+          },
+        }),
+      }),
+    )
+    return make(sources)
+      .run(
+        {
+          schemaVersion: 1,
+          runId: "native-shard-run",
+          sourceIds: sources.map(({ sourceId }) => sourceId),
+        },
+        tools,
+      )
+      .pipe(
+        Effect.provide(configuration),
+        Effect.map((summary) => {
+          assert.lengthOf(summary.results, 2)
+          assert.deepEqual(
+            summary.results.map(({ caseId }) => caseId.split("#").slice(0, -1).join("#")),
+            sources.map(({ sourceId }) => sourceId),
+          )
+        }),
+      )
+  })
+
+  it.effect("rejects duplicate or non-curated explicit native sources", () =>
+    Effect.forEach(
+      [[basic.sourceId, basic.sourceId], [battery.sourceId]],
+      (sourceIds) =>
+        make([basic, battery])
+          .run({ schemaVersion: 1, runId: "invalid-native-shard", sourceIds }, tools)
+          .pipe(
+            Effect.provide(configuration),
+            Effect.flip,
+            Effect.map((error) => {
+              assert.instanceOf(error, RunSelectionError)
+              assert.match(error.reason, /invalid pinned native source selection/)
+            }),
+          ),
+      { discard: true },
+    ),
+  )
+
   it.effect("rejects an empty native E2E cohort", () =>
     make([battery])
       .run({ schemaVersion: 1, runId: "empty-native-e2e", cohort: "native-e2e" }, tools)

@@ -1,7 +1,9 @@
 import { useLocalSearchParams } from "expo-router"
 import { type ReactNode, useEffect, useState } from "react"
 import { ScrollView, StyleSheet, Text, View } from "react-native"
+import * as Encoding from "effect/Encoding"
 import * as Match from "effect/Match"
+import * as Result from "effect/Result"
 import { run, type RunSummary } from "../src/Runner.ts"
 import { runtime } from "../src/Runtime.ts"
 
@@ -9,8 +11,20 @@ const selectionFor = (
   runId: string,
   sourceId: string | undefined,
   cohort: string | undefined,
+  sources: string | undefined,
 ): unknown => {
   if (sourceId !== undefined) return { schemaVersion: 1, runId, sourceId }
+  if (sources !== undefined) {
+    const sourceIds = sources
+      .split(",")
+      .map((encoded) =>
+        Result.getOrThrowWith(
+          Encoding.decodeHexString(encoded),
+          () => new Error("invalid source list"),
+        ),
+      )
+    return { schemaVersion: 1, runId, sourceIds }
+  }
   if (cohort === "native-e2e") return { schemaVersion: 1, runId, cohort }
   return { schemaVersion: 1, runId, cohort: "interactive-smoke" }
 }
@@ -29,6 +43,7 @@ export default function Run() {
     runId?: string
     source?: string
     cohort?: string
+    sources?: string
   }>()
   const [summary, setSummary] = useState<RunSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -36,11 +51,14 @@ export default function Run() {
   const runId = params.runId ?? "interactive-run"
   const sourceId = typeof params.source === "string" ? params.source : undefined
   const cohort = typeof params.cohort === "string" ? params.cohort : undefined
-  const selectionIdentity = sourceId ?? cohort ?? "interactive-smoke"
+  const sources = typeof params.sources === "string" ? params.sources : undefined
+  const selectionIdentity =
+    sources === undefined ? (sourceId ?? cohort ?? "interactive-smoke") : "native-e2e"
 
   useEffect(() => {
     let active = true
-    Promise.resolve(selectionFor(runId, sourceId, cohort))
+    Promise.resolve()
+      .then(() => selectionFor(runId, sourceId, cohort, sources))
       .then((input) =>
         runtime.runPromise(
           run(input, {
@@ -62,7 +80,7 @@ export default function Run() {
     return () => {
       active = false
     }
-  }, [cohort, params.runId, runId, sourceId])
+  }, [cohort, params.runId, runId, sourceId, sources])
 
   const failed =
     summary?.results.filter(({ outcome }) =>

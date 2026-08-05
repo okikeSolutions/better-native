@@ -264,14 +264,24 @@ jobs:
           retention-days: ${{ job.status == 'success' && 3 || 7 }}
 
   ios-test:
-    name: iOS device test
+    name: iOS device test (${{ matrix.shard-label }}/2)
     needs: ios-build
     if: needs.ios-build.result == 'success'
     runs-on: macos-26
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard-index: 0
+            shard-label: 1
+          - shard-index: 1
+            shard-label: 2
     env:
       COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
       BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-ios
+      SHARD_COUNT: 2
+      SHARD_INDEX: ${{ matrix.shard-index }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -340,15 +350,15 @@ jobs:
           fi
           upstream_binary=".artifacts/imports/${BUILD_ID}/upstream/BetterNativeCompatibility.app"
           if [ "$COMPATIBILITY_MODE" = pair ]; then
-            bun run better-native supervise-native-pair --platform ios --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/imports/${BUILD_ID}/candidate/BetterNativeCompatibility.app" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID" --timeout-ms 1200000
+            bun run better-native supervise-native-pair --platform ios --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/imports/${BUILD_ID}/candidate/BetterNativeCompatibility.app" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID" --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000
           else
-            bun run better-native supervise-native --platform ios --record "$upstream_record" --binary "$upstream_binary" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID-upstream" --timeout-ms 1200000
+            bun run better-native supervise-native --platform ios --record "$upstream_record" --binary "$upstream_binary" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID-upstream" --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000
           fi
       - name: Upload iOS run evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: compatibility-ios-run-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          name: compatibility-ios-run-evidence-${{ github.run_id }}-${{ github.run_attempt }}-shard-${{ matrix.shard-index }}
           path: .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-ios*
           if-no-files-found: warn
           retention-days: ${{ job.status == 'success' && 3 || 7 }}
@@ -369,13 +379,25 @@ jobs:
       - name: Download iOS run evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: compatibility-ios-run-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          pattern: compatibility-ios-run-evidence-${{ github.run_id }}-${{ github.run_attempt }}-shard-*
           path: .artifacts/runs
+          merge-multiple: true
+      - name: Group iOS evidence by build mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' record; do
+            mode=$(jq -er '.build.mode | select(. == "upstream" or . == "candidate")' "$record")
+            run_id=$(jq -er '.plan.id' "$record")
+            destination=".artifacts/compare/${mode}/${run_id}"
+            mkdir -p "$destination"
+            cp "$record" "$destination/record.json"
+          done < <(find .artifacts/runs -type f -name record.json -print0)
       - name: Compare paired iOS evidence
         run: >-
           bun run better-native compare-runs
-          --upstream .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-ios-upstream
-          --candidate .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-ios-candidate
+          --upstream .artifacts/compare/upstream
+          --candidate .artifacts/compare/candidate
 
   android-build:
     name: Android Release build

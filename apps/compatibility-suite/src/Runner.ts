@@ -26,12 +26,22 @@ const NativeE2eSelection = Schema.Struct({
   runId: Schema.NonEmptyString,
   cohort: Schema.Literal("native-e2e"),
 })
+const NativeSourcesSelection = Schema.Struct({
+  schemaVersion: Schema.Literal(1),
+  runId: Schema.NonEmptyString,
+  sourceIds: Schema.NonEmptyArray(Schema.NonEmptyString),
+})
 const InteractiveSmokeSelection = Schema.Struct({
   schemaVersion: Schema.Literal(1),
   runId: Schema.NonEmptyString,
   cohort: Schema.Literal("interactive-smoke"),
 })
-const AnyRunSelection = Schema.Union([RunSelection, NativeE2eSelection, InteractiveSmokeSelection])
+const AnyRunSelection = Schema.Union([
+  RunSelection,
+  NativeE2eSelection,
+  NativeSourcesSelection,
+  InteractiveSmokeSelection,
+])
 const Passed = Schema.TaggedStruct("passed", { durationMillis: Schema.Number })
 const Failed = Schema.TaggedStruct("failed", {
   durationMillis: Schema.Number,
@@ -380,13 +390,24 @@ const runSource = (
 const decodeRunSelectionWith = (entries: ReadonlyArray<RegistryEntry>, input: unknown) =>
   Schema.decodeUnknownEffect(AnyRunSelection)(input).pipe(
     Effect.mapError((cause) => new RunSelectionError({ reason: String(cause) })),
-    Effect.flatMap((selection) =>
-      "cohort" in selection || entries.some((entry) => entry.sourceId === selection.sourceId)
+    Effect.flatMap((selection): Effect.Effect<RunSelection, RunSelectionError> => {
+      if ("cohort" in selection) return Effect.succeed(selection)
+      if ("sourceIds" in selection) {
+        const isValid =
+          new Set(selection.sourceIds).size === selection.sourceIds.length &&
+          selection.sourceIds.every(
+            (sourceId) =>
+              nativeE2eSourceIds.has(sourceId) &&
+              entries.some((entry) => entry.sourceId === sourceId),
+          )
+        return isValid
+          ? Effect.succeed(selection)
+          : Effect.fail(new RunSelectionError({ reason: "invalid pinned native source selection" }))
+      }
+      return entries.some((entry) => entry.sourceId === selection.sourceId)
         ? Effect.succeed(selection)
-        : Effect.fail(
-            new RunSelectionError({ reason: `unknown source ID: ${selection.sourceId}` }),
-          ),
-    ),
+        : Effect.fail(new RunSelectionError({ reason: `unknown source ID: ${selection.sourceId}` }))
+    }),
   )
 
 export const make = (entries: ReadonlyArray<RegistryEntry>) => {
@@ -394,20 +415,19 @@ export const make = (entries: ReadonlyArray<RegistryEntry>) => {
   const run = Effect.fn("CompatibilityRunner.run")(function* (input: unknown, tools: TestTools) {
     const selection = yield* decodeRunSelection(input)
     const configuration = yield* CompatibilityConfiguration
-    const selectedEntries =
-      "cohort" in selection
-        ? entries.filter(({ sourceId }) =>
-            selection.cohort === "native-e2e"
-              ? nativeE2eSourceIds.has(sourceId)
-              : interactiveSmokeSourceIds.has(sourceId),
-          )
-        : entries.filter((entry) => entry.sourceId === selection.sourceId)
-    if (selectedEntries.length === 0) {
+    let selectedEntries: ReadonlyArray<RegistryEntry>
+    if ("sourceIds" in selection) {
+      selectedEntries = entries.filter(({ sourceId }) => selection.sourceIds.includes(sourceId))
+    } else if ("cohort" in selection) {
+      const selectedSourceIds =
+        selection.cohort === "native-e2e" ? nativeE2eSourceIds : interactiveSmokeSourceIds
+      selectedEntries = entries.filter(({ sourceId }) => selectedSourceIds.has(sourceId))
+    } else {
+      selectedEntries = entries.filter((entry) => entry.sourceId === selection.sourceId)
+    }
+    if (selectedEntries.length === 0 && "cohort" in selection) {
       return yield* new RunSelectionError({
-        reason:
-          "cohort" in selection
-            ? `the pinned Expo ${selection.cohort} cohort is empty`
-            : `unknown source ID: ${selection.sourceId}`,
+        reason: `the pinned Expo ${selection.cohort} cohort is empty`,
       })
     }
     const groups = yield* Effect.forEach(selectedEntries, (entry) =>

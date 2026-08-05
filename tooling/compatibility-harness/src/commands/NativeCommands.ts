@@ -51,9 +51,7 @@ export const supervisedNative = Command.make(
     const builds = yield* AppBuildImporter
     const native = yield* NativeSupervisor
     const metadata = yield* AppRegistry.loadMetadata()
-    const units = AppRegistry.appExecutionUnits(metadata, platform).filter(
-      (_, index) => index % shardCount === shardIndex,
-    )
+    const units = AppRegistry.appExecutionShards(metadata, platform, shardCount)[shardIndex] ?? []
     if (units.length === 0) {
       return yield* new HarnessError({
         operation: "select native shard",
@@ -124,9 +122,7 @@ export const supervisedNativePair = Command.make(
     const builds = yield* AppBuildImporter
     const native = yield* NativeSupervisor
     const metadata = yield* AppRegistry.loadMetadata()
-    const units = AppRegistry.appExecutionUnits(metadata, platform).filter(
-      (_, index) => index % shardCount === shardIndex,
-    )
+    const units = AppRegistry.appExecutionShards(metadata, platform, shardCount)[shardIndex] ?? []
     if (units.length === 0) {
       return yield* new HarnessError({
         operation: "select native shard",

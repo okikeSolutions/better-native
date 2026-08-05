@@ -1,4 +1,5 @@
-import type { NativeRunRequest } from "./NativeSupervisor.ts"
+import * as Encoding from "effect/Encoding"
+import type { NativeBatchRequest, NativeRunRequest } from "./NativeSupervisor.ts"
 
 const yamlString = (value: string): string => JSON.stringify(value)
 
@@ -36,10 +37,12 @@ export const make = (request: NativeRunRequest): string => {
   ].join("\n")
 }
 
-export const makeBatch = (request: NativeRunRequest): string => {
+const encodeSourceId = (sourceId: string): string => Encoding.encodeHex(sourceId)
+
+export const makeBatch = (request: NativeBatchRequest): string => {
   const link = `better-native://run?${new URLSearchParams({
     runId: request.id,
-    cohort: "native-e2e",
+    sources: request.units.map(({ sourceId }) => encodeSourceId(sourceId)).join(","),
   }).toString()}`
   return [
     `appId: ${request.device.applicationId}`,

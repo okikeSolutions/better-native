@@ -342,9 +342,9 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
             .writeBytes(
               "runs",
               request.id,
-              "flow.yaml",
+              `flow-${firstUnit.id}.yaml`,
               "application/yaml",
-              new TextEncoder().encode(NativeMaestroFlow.makeBatch(batchRequest)),
+              new TextEncoder().encode(NativeMaestroFlow.makeBatch(request)),
             )
             .pipe(
               Effect.mapError(

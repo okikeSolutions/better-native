@@ -185,6 +185,38 @@ export const appExecutionUnits = (
     sourceId,
   }))
 
+/**
+ * Balances whole-source native work by its statically discovered case count.
+ * Sources stay intact because the app registry is the authority for execution.
+ */
+export const appExecutionShards = (
+  metadata: RegistryMetadataType,
+  platform: Platform,
+  shardCount: number,
+): ReadonlyArray<ReadonlyArray<ExecutionUnit>> => {
+  const weights = new Map(
+    metadata.sources.map(({ sourceId, caseIds }) => [sourceId, Math.max(1, caseIds.length)]),
+  )
+  const shards = Array.from({ length: shardCount }, () => ({
+    weight: 0,
+    units: [] as Array<ExecutionUnit>,
+  }))
+  for (const unit of appExecutionUnits(metadata, platform).toSorted(
+    (left, right) =>
+      (weights.get(right.sourceId) ?? 1) - (weights.get(left.sourceId) ?? 1) ||
+      left.sourceId.localeCompare(right.sourceId),
+  )) {
+    const shard = shards.reduce((lightest, candidate) =>
+      candidate.weight < lightest.weight ? candidate : lightest,
+    )
+    shard.units.push(unit)
+    shard.weight += weights.get(unit.sourceId) ?? 1
+  }
+  return shards.map(({ units }) =>
+    units.toSorted((left, right) => left.sourceId.localeCompare(right.sourceId)),
+  )
+}
+
 export const loadMetadata = Effect.fn("AppRegistry.loadMetadata")(function* () {
   const fs = yield* FileSystem.FileSystem
   const file = "apps/compatibility-suite/src/generated/RegistryMetadata.json"
