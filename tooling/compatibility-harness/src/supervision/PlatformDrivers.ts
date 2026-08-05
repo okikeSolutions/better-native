@@ -4,7 +4,7 @@ import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
-import type { Platform, ProcessObservation } from "../Domain.ts"
+import type { Platform, ProcessObservation, RunId } from "../Domain.ts"
 import { ProcessSupervisor, type ProcessResult, type ProcessSpec } from "./ProcessSupervisor.ts"
 
 export interface NativeDevice {
@@ -33,7 +33,10 @@ export interface Service {
   readonly logs: (
     device: NativeDevice,
   ) => Effect.Effect<ReadonlyArray<ProcessObservation>, PlatformDriverError>
-  readonly result: (device: NativeDevice) => Effect.Effect<string | null, PlatformDriverError>
+  readonly result: (
+    device: NativeDevice,
+    runId: RunId,
+  ) => Effect.Effect<string | null, PlatformDriverError>
 }
 
 export class PlatformDrivers extends Context.Service<PlatformDrivers, Service>()(
@@ -63,6 +66,8 @@ export const iosLogPredicate =
   'eventMessage CONTAINS "BETTER_NATIVE_" OR subsystem == "com.facebook.react.log" OR (process == "BetterNativeCompatibility" AND (messageType == "Error" OR messageType == "Fault"))'
 
 const resultTestId = "compatibility_run_result_json"
+const resultChunkMarker = "BETTER_NATIVE_RESULT_V1_CHUNK="
+const maximumResultLogBytes = 16 * 1024 * 1024
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value)
@@ -107,6 +112,50 @@ export const resultFromHierarchy = (stdout: string): string | null => {
   } catch {
     return null
   }
+}
+
+const matchingResult = (json: string | null, runId: RunId): string | null => {
+  if (json === null) return null
+  try {
+    const value: unknown = JSON.parse(json)
+    return isRecord(value) && value.runId === runId ? json : null
+  } catch {
+    return null
+  }
+}
+
+export const resultFromLogChunks = (stdout: string, runId: RunId): string | null => {
+  const chunks = new Map<number, string>()
+  let total: number | undefined
+  for (const line of stdout.split("\n")) {
+    const markerOffset = line.indexOf(resultChunkMarker)
+    if (markerOffset < 0) continue
+    const encoded = line.slice(markerOffset + resultChunkMarker.length)
+    const header = /^([A-Za-z0-9][A-Za-z0-9._-]*):(\d+)\/(\d+):(\d+):/.exec(encoded)
+    if (header === null || header[1] !== runId) continue
+    const index = Number(header[2])
+    const chunkTotal = Number(header[3])
+    const length = Number(header[4])
+    if (
+      !Number.isSafeInteger(index) ||
+      !Number.isSafeInteger(chunkTotal) ||
+      !Number.isSafeInteger(length) ||
+      index < 0 ||
+      chunkTotal < 1 ||
+      index >= chunkTotal ||
+      length < 0 ||
+      (total !== undefined && total !== chunkTotal)
+    ) {
+      continue
+    }
+    const chunk = encoded.slice(header[0].length, header[0].length + length)
+    if (chunk.length !== length) continue
+    total = chunkTotal
+    chunks.set(index, chunk)
+  }
+  if (total === undefined || chunks.size !== total) return null
+  const result = Array.from({ length: total }, (_, index) => chunks.get(index))
+  return result.every((chunk): chunk is string => chunk !== undefined) ? result.join("") : null
 }
 
 export const maestroJUnitPassed = (report: string): boolean =>
@@ -198,31 +247,61 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
         Match.exhaustive,
       )
     }
-    const result: Service["result"] = (device) =>
-      processes
-        .run({
+    const result: Service["result"] = (device, runId) =>
+      Effect.gen(function* () {
+        const logSpec = Match.value(device.platform).pipe(
+          Match.when("android", () =>
+            command(device, ["logcat", "-d", "-v", "raw", "ReactNativeJS:V", "*:S"], 30_000),
+          ),
+          Match.when("ios", () =>
+            command(
+              device,
+              [
+                "spawn",
+                device.id,
+                "log",
+                "show",
+                "--last",
+                "5m",
+                "--style",
+                "compact",
+                "--predicate",
+                `eventMessage CONTAINS "${resultChunkMarker}"`,
+              ],
+              30_000,
+            ),
+          ),
+          Match.exhaustive,
+        )
+        const logResult = yield* processes.run({
+          ...logSpec,
+          retainedOutputBytes: maximumResultLogBytes,
+        })
+        if (logResult.exitCode === 0) {
+          const logged = matchingResult(resultFromLogChunks(output(logResult), runId), runId)
+          if (logged !== null) return logged
+        }
+        const hierarchyProcess = yield* processes.run({
           command: "maestro",
           args: ["--device", device.id, "hierarchy"],
           timeoutMillis: 30_000,
+          retainedOutputBytes: maximumResultLogBytes,
         })
-        .pipe(
-          Effect.flatMap((processResult) =>
-            processResult.exitCode === 0
-              ? Effect.succeed(resultFromHierarchy(output(processResult)))
-              : Effect.fail(
-                  new PlatformDriverError({
-                    operation: "result",
-                    device,
-                    cause: `maestro hierarchy exited ${processResult.exitCode}: ${output(processResult)}`,
-                  }),
-                ),
-          ),
-          Effect.mapError((cause) =>
-            cause instanceof PlatformDriverError
-              ? cause
-              : new PlatformDriverError({ operation: "result", device, cause }),
-          ),
-        )
+        if (hierarchyProcess.exitCode !== 0) {
+          return yield* new PlatformDriverError({
+            operation: "result",
+            device,
+            cause: `maestro hierarchy exited ${hierarchyProcess.exitCode}: ${output(hierarchyProcess)}`,
+          })
+        }
+        return matchingResult(resultFromHierarchy(output(hierarchyProcess)), runId)
+      }).pipe(
+        Effect.mapError((cause) =>
+          cause instanceof PlatformDriverError
+            ? cause
+            : new PlatformDriverError({ operation: "result", device, cause }),
+        ),
+      )
     return PlatformDrivers.of({
       install: (device, binary) => {
         const args = Match.value(device.platform).pipe(
@@ -252,6 +331,7 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
               timeoutMillis,
               terminationGraceMillis: 5_000,
             })
+            yield* Effect.addFinalizer(() => running.terminate.pipe(Effect.ignore))
             yield* Effect.gen(function* () {
               while (!(yield* fs.exists(reportPath))) yield* Effect.sleep(1_000)
               yield* Effect.sleep(60_000)

@@ -57,6 +57,20 @@ const RunSummary = Schema.Struct({
   runtimeDiscoveredCaseIds: Schema.Array(Schema.String),
 })
 
+const resultLogChunkCharacters = 2_000
+
+export const resultLogChunks = (runId: string, json: string): ReadonlyArray<string> => {
+  const chunks = Array.from(
+    { length: Math.max(1, Math.ceil(json.length / resultLogChunkCharacters)) },
+    (_, index) =>
+      json.slice(index * resultLogChunkCharacters, (index + 1) * resultLogChunkCharacters),
+  )
+  return chunks.map(
+    (chunk, index) =>
+      `BETTER_NATIVE_RESULT_V1_CHUNK=${runId}:${index}/${chunks.length}:${chunk.length}:${chunk}`,
+  )
+}
+
 export type RunSelection = Schema.Schema.Type<typeof AnyRunSelection>
 export type RunSummary = Schema.Schema.Type<typeof RunSummary>
 export type CaseResult = Schema.Schema.Type<typeof CaseResult>
@@ -409,7 +423,10 @@ export const make = (entries: ReadonlyArray<RegistryEntry>) => {
         ({ runtimeDiscoveredCaseIds }) => runtimeDiscoveredCaseIds,
       ),
     })
-    yield* Effect.sync(() => console.log(`BETTER_NATIVE_RESULT_V1=${JSON.stringify(summary)}`))
+    yield* Effect.sync(() => {
+      const json = JSON.stringify(summary)
+      for (const line of resultLogChunks(summary.runId, json)) console.log(line)
+    })
     return summary
   })
   return { decodeRunSelection, run } as const

@@ -155,9 +155,13 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
         Effect.gen(function* () {
           if (error.phase === "evidence") return
           const finishedAtMillis = yield* Clock.currentTimeMillis
-          const observations = yield* drivers
-            .logs(request.device)
-            .pipe(Effect.orElseSucceed(() => []))
+          const observations = yield* drivers.logs(request.device).pipe(
+            Effect.timeoutOrElse({
+              duration: Math.min(10_000, request.timeoutMillis),
+              orElse: () => Effect.succeed([]),
+            }),
+            Effect.orElseSucceed(() => []),
+          )
           const infrastructure = failureOutcome(error)
           const runId = RunId.make(request.id)
           const record: RunRecordType = {
@@ -208,7 +212,7 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
               yield* drivers.install(request.device, request.build.output)
               const maestroObservations = yield* runMaestro(request, flowArtifact.path)
               const poll = Effect.gen(function* () {
-                const json = yield* drivers.result(request.device)
+                const json = yield* drivers.result(request.device, request.id)
                 if (json !== null) return json
                 return yield* Effect.fail("result sentinel not observed")
               })
@@ -298,6 +302,17 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
             return record
           })
           return yield* program.pipe(
+            Effect.timeoutOrElse({
+              duration: request.timeoutMillis,
+              orElse: () =>
+                Effect.fail(
+                  new NativeSupervisorError({
+                    phase: "timeout",
+                    request,
+                    cause: `native run exceeded its ${request.timeoutMillis}ms total deadline`,
+                  }),
+                ),
+            }),
             Effect.tapError((error) =>
               persistFailure(request, startedAtMillis, error, [flowArtifact.id]),
             ),
@@ -344,7 +359,7 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
             )
             const maestroObservations = yield* runMaestro(batchRequest, flowArtifact.path)
             const json = yield* Effect.gen(function* () {
-              const observed = yield* drivers.result(request.device)
+              const observed = yield* drivers.result(request.device, request.id)
               if (observed !== null) return observed
               return yield* Effect.fail("result sentinel not observed")
             }).pipe(
@@ -443,6 +458,17 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
             ),
           )
           return yield* program.pipe(
+            Effect.timeoutOrElse({
+              duration: request.timeoutMillis,
+              orElse: () =>
+                Effect.fail(
+                  new NativeSupervisorError({
+                    phase: "timeout",
+                    request: batchRequest,
+                    cause: `native cohort exceeded its ${request.timeoutMillis}ms total deadline`,
+                  }),
+                ),
+            }),
             Effect.tapError((error) =>
               persistFailure(batchRequest, startedAtMillis, error, [flowArtifact.id]),
             ),

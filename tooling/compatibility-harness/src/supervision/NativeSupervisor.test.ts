@@ -1,8 +1,17 @@
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
+import * as Fiber from "effect/Fiber"
 import * as Layer from "effect/Layer"
 import * as Ref from "effect/Ref"
-import { ArtifactId, BuildId, ContentHash, RunId, TestSourceId, type BuildRecord } from "../Domain.ts"
+import * as TestClock from "effect/testing/TestClock"
+import {
+  ArtifactId,
+  BuildId,
+  ContentHash,
+  RunId,
+  TestSourceId,
+  type BuildRecord,
+} from "../Domain.ts"
 import type { BuildOutput } from "../build/BuildPipeline.ts"
 import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import { NativeSupervisor, layer } from "./NativeSupervisor.ts"
@@ -12,6 +21,7 @@ import {
   iosLogPredicate,
   maestroJUnitPassed,
   resultFromHierarchy,
+  resultFromLogChunks,
   type NativeDevice,
   type Service as DriverService,
 } from "./PlatformDrivers.ts"
@@ -276,6 +286,26 @@ describe("NativeSupervisor fault injection", () => {
     assert.isNull(resultFromHierarchy("not json"))
   })
 
+  it("reassembles native result log chunks beyond the hierarchy text limit", () => {
+    const runId = RunId.make("large-native-run")
+    const json = JSON.stringify({ runId, payload: "x".repeat(120_000) })
+    const chunkSize = 2_000
+    const chunks = Array.from({ length: Math.ceil(json.length / chunkSize) }, (_, index) =>
+      json.slice(index * chunkSize, (index + 1) * chunkSize),
+    )
+    const logs = [
+      "unrelated native log",
+      ...chunks.map(
+        (chunk, index) =>
+          `BETTER_NATIVE_RESULT_V1_CHUNK=${runId}:${index}/${chunks.length}:${chunk.length}:${chunk}`,
+      ),
+    ].join("\n")
+
+    assert.strictEqual(resultFromLogChunks(logs, runId), json)
+    assert.isNull(resultFromLogChunks(logs.slice(0, 100_000), runId))
+    assert.isNull(resultFromLogChunks(logs, RunId.make("another-run")))
+  })
+
   it("accepts only complete, passing Maestro JUnit reports", () => {
     assert.isTrue(
       maestroJUnitPassed(
@@ -289,6 +319,37 @@ describe("NativeSupervisor fault injection", () => {
     )
     assert.isFalse(maestroJUnitPassed("not a JUnit report"))
   })
+
+  it.effect("enforces one total deadline across Maestro retries and result polling", () =>
+    Effect.gen(function* () {
+      const attempts = yield* Ref.make(0)
+      const failure = yield* Effect.gen(function* () {
+        const supervisor = yield* NativeSupervisor
+        const running = yield* supervisor
+          .runBatch({
+            id: RunId.make("deadline-native-batch"),
+            build,
+            device,
+            units: [request.unit],
+            timeoutMillis: 1_000,
+          })
+          .pipe(Effect.flip, Effect.forkChild)
+
+        yield* TestClock.adjust(1_000)
+        return yield* Fiber.join(running)
+      }).pipe(
+        Effect.provide(
+          supervisorLayer({
+            runMaestroFlow: () =>
+              Ref.update(attempts, (count) => count + 1).pipe(Effect.andThen(Effect.never)),
+          }),
+        ),
+      )
+
+      assert.strictEqual(failure.phase, "timeout")
+      assert.strictEqual(yield* Ref.get(attempts), 1)
+    }),
+  )
 
   it.effect("classifies a Maestro assertion as a runner failure", () =>
     Effect.gen(function* () {

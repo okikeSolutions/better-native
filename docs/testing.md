@@ -70,7 +70,7 @@ Native parity is a paired comparison, not a host-test result:
 1. Build an upstream Release app that resolves Expo APIs normally.
 2. Build a candidate Release app that resolves the reviewed replacements.
 3. Run the same source or explicit smoke selection on the same simulator, emulator, or device state.
-4. Capture each app's `BETTER_NATIVE_RESULT_V1` result and immutable build/run evidence.
+4. Capture each app's chunked `BETTER_NATIVE_RESULT_V1` result and immutable build/run evidence.
 5. Compare the records with `bun run better-native compare-runs`.
 
 The curated `native-e2e` cohort remains owned by pinned Expo source and must not be changed to

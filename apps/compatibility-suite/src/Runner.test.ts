@@ -8,6 +8,7 @@ import {
   failureOutcome,
   make,
   recordJasmineCompletion,
+  resultLogChunks,
   RunSelectionError,
   type CaseResult,
 } from "./Runner.ts"
@@ -48,6 +49,20 @@ const outcomeTag = (outcome: CaseResult["outcome"]): string =>
   )
 
 describe("compatibility runner", () => {
+  it("emits large native summaries as bounded, lossless log chunks", () => {
+    const json = JSON.stringify({ runId: "native-run", payload: "x".repeat(120_000) })
+    const chunks = resultLogChunks("native-run", json)
+
+    assert.isAbove(chunks.length, 50)
+    assert.isTrue(chunks.every((chunk) => chunk.length < 2_100))
+    assert.strictEqual(
+      chunks
+        .map((chunk) => chunk.replace(/^BETTER_NATIVE_RESULT_V1_CHUNK=[^:]+:\d+\/\d+:\d+:/, ""))
+        .join(""),
+      json,
+    )
+  })
+
   it.effect("executes Expo Jasmine cases under their stable catalog IDs", () => {
     const arithmeticCase = basic.caseIds.find((caseId) => caseId.includes("2 + 2 is 4?"))
     if (arithmeticCase === undefined) throw new Error("Basic arithmetic case is missing")
