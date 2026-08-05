@@ -103,11 +103,17 @@ describe("@better-native/battery", () => {
   })
 
   it("rejects malformed Expo power-state payloads", async () => {
-    vi.mocked(ExpoBattery.getPowerStateAsync).mockResolvedValueOnce({
-      batteryLevel: "not a number",
+    const powerState = {
+      batteryLevel: 0.5,
       batteryState: BatteryState.CHARGING,
       lowPowerMode: false,
-    } as never)
+    }
+    vi.mocked(ExpoBattery.getPowerStateAsync).mockResolvedValueOnce(
+      new Proxy(powerState, {
+        get: (target, property, receiver) =>
+          property === "batteryLevel" ? "not a number" : Reflect.get(target, property, receiver),
+      }),
+    )
 
     const exit = await Effect.runPromiseExit(
       Battery.getPowerState.pipe(Effect.provide(Battery.live)),
@@ -270,20 +276,21 @@ describe("@better-native/battery", () => {
       registry.mount(Battery.lowPowerModeAtom),
       registry.mount(Battery.powerStateAtom),
     ]
-    const value = <A>(atom: Parameters<typeof registry.get>[0]) => {
-      const result = registry.get(atom) as AsyncResult.AsyncResult<A, never>
-      expect(AsyncResult.isSuccess(result)).toBe(true)
-      return (result as AsyncResult.Success<A, never>).value
+    const values = {
+      level: () => AsyncResult.getOrThrow(registry.get(Battery.levelAtom)),
+      state: () => AsyncResult.getOrThrow(registry.get(Battery.stateAtom)),
+      lowPowerMode: () => AsyncResult.getOrThrow(registry.get(Battery.lowPowerModeAtom)),
+      powerState: () => AsyncResult.getOrThrow(registry.get(Battery.powerStateAtom)),
     }
 
-    expect(value<number>(Battery.levelAtom)).toBe(-1)
-    expect(value<typeof BatteryState.CHARGING>(Battery.stateAtom)).toBe(BatteryState.UNKNOWN)
-    expect(value<boolean>(Battery.lowPowerModeAtom)).toBe(false)
+    expect(values.level()).toBe(-1)
+    expect(values.state()).toBe(BatteryState.UNKNOWN)
+    expect(values.lowPowerMode()).toBe(false)
     await vi.waitFor(() => {
-      expect(value<number>(Battery.levelAtom)).toBe(0.82)
-      expect(value<typeof BatteryState.CHARGING>(Battery.stateAtom)).toBe(BatteryState.CHARGING)
-      expect(value<boolean>(Battery.lowPowerModeAtom)).toBe(false)
-      expect(value(Battery.powerStateAtom)).toEqual({
+      expect(values.level()).toBe(0.82)
+      expect(values.state()).toBe(BatteryState.CHARGING)
+      expect(values.lowPowerMode()).toBe(false)
+      expect(values.powerState()).toEqual({
         batteryLevel: 0.82,
         batteryState: BatteryState.CHARGING,
         lowPowerMode: false,
@@ -300,10 +307,10 @@ describe("@better-native/battery", () => {
     for (const listener of stateListeners) listener({ batteryState: state })
     for (const listener of lowPowerModeListeners) listener({ lowPowerMode })
     await vi.waitFor(() => {
-      expect(value<number>(Battery.levelAtom)).toBe(0.37)
-      expect(value<typeof BatteryState.FULL>(Battery.stateAtom)).toBe(BatteryState.FULL)
-      expect(value<boolean>(Battery.lowPowerModeAtom)).toBe(true)
-      expect(value(Battery.powerStateAtom)).toEqual({
+      expect(values.level()).toBe(0.37)
+      expect(values.state()).toBe(BatteryState.FULL)
+      expect(values.lowPowerMode()).toBe(true)
+      expect(values.powerState()).toEqual({
         batteryLevel: 0.37,
         batteryState: BatteryState.FULL,
         lowPowerMode: true,

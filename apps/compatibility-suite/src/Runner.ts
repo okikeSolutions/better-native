@@ -113,17 +113,19 @@ class NoopGlobalErrors {
   reportUnhandledRejections() {}
 }
 
+export const failureOutcome = (cause: unknown): CaseResult["outcome"] => ({
+  _tag: "failed",
+  durationMillis: 0,
+  message: cause instanceof Error ? cause.message : String(cause),
+  stack: cause instanceof Error ? (cause.stack ?? null) : null,
+})
+
 const failed = (runId: string, caseId: string, cause: unknown): CaseResult => ({
   schemaVersion: 1,
   runId,
   caseId,
   attempt: 1,
-  outcome: {
-    _tag: "failed",
-    durationMillis: 0,
-    message: cause instanceof Error ? cause.message : String(cause),
-    stack: cause instanceof Error ? (cause.stack ?? null) : null,
-  },
+  outcome: failureOutcome(cause),
   artifacts: [],
 })
 

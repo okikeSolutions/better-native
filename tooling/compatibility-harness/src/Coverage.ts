@@ -3,6 +3,7 @@ import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Match from "effect/Match"
 import * as Path from "effect/Path"
+import * as Schema from "effect/Schema"
 import {
   Application,
   LogLevel,
@@ -213,11 +214,12 @@ const coverageEntries = Effect.fn("Coverage.coverageEntries")(function* (expoPac
       const targetExport = candidates(expoPackage, expoExport).find((candidate) =>
         betterNativeExports.has(candidate),
       )
-      const target = expoExport.startsWith("use")
-        ? `${betterNativePackage(expoPackage)}/expo#${expoExport}`
-        : targetExport === undefined
-          ? null
-          : `${betterNativePackage(expoPackage)}#${targetExport}`
+      let target: string | null = null
+      if (expoExport.startsWith("use")) {
+        target = `${betterNativePackage(expoPackage)}/expo#${expoExport}`
+      } else if (targetExport !== undefined) {
+        target = `${betterNativePackage(expoPackage)}#${targetExport}`
+      }
       return {
         packageName: expoPackage,
         expoExport,
@@ -357,9 +359,20 @@ const loadCoveragePackages = Effect.fn("Coverage.loadCoveragePackages")(function
         }),
     ),
   )
-  const parsed = JSON.parse(source) as {
-    readonly replacements?: ReadonlyArray<{ readonly source?: unknown; readonly target?: unknown }>
-  }
+  const parsed = Schema.decodeUnknownSync(
+    Schema.fromJsonString(
+      Schema.Struct({
+        replacements: Schema.optional(
+          Schema.Array(
+            Schema.Struct({
+              source: Schema.optional(Schema.Unknown),
+              target: Schema.optional(Schema.Unknown),
+            }),
+          ),
+        ),
+      }),
+    ),
+  )(source)
   return (parsed.replacements ?? [])
     .flatMap((replacement) =>
       typeof replacement.source === "string" &&

@@ -4,7 +4,13 @@ import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
 import { CompatibilityConfiguration } from "./Configuration.ts"
 import { configureUpstreamSelection, metadata, registry, type RegistryEntry } from "./Registry.ts"
-import { make, recordJasmineCompletion, RunSelectionError, type CaseResult } from "./Runner.ts"
+import {
+  failureOutcome,
+  make,
+  recordJasmineCompletion,
+  RunSelectionError,
+  type CaseResult,
+} from "./Runner.ts"
 
 const tools = { setPortalChild: () => undefined, cleanupPortal: () => Promise.resolve() }
 const selection = (sourceId: string) => ({
@@ -297,27 +303,13 @@ describe("compatibility runner", () => {
       )
   })
 
-  it.effect("records a non-Error loader failure without inventing a stack", () => {
-    const source: RegistryEntry = {
-      ...basic,
-      load: () => {
-        throw "injected non-Error failure"
-      },
-    }
-    return make([source])
-      .run(selection(source.sourceId), tools)
-      .pipe(
-        Effect.provide(configuration),
-        Effect.map((summary) => {
-          const outcome = summary.results[0]?.outcome
-          assert.isDefined(outcome)
-          assert.strictEqual(outcome._tag, "failed")
-          if (outcome._tag === "failed") {
-            assert.strictEqual(outcome.message, "injected non-Error failure")
-            assert.strictEqual(outcome.stack, null)
-          }
-        }),
-      )
+  it("records a non-Error failure without inventing a stack", () => {
+    assert.deepStrictEqual(failureOutcome("injected non-Error failure"), {
+      _tag: "failed",
+      durationMillis: 0,
+      message: "injected non-Error failure",
+      stack: null,
+    })
   })
 
   it.effect("skips a source that registers no cases for the current platform", () => {

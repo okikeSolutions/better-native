@@ -84,7 +84,7 @@ const battery = vi.hoisted(() => {
 })
 
 vi.mock("expo-battery", async () => {
-  const React = await import("react")
+  const ReactModule = await import("react")
   const getBatteryLevelAsync = () => battery.read(() => battery.level)
   const getBatteryStateAsync = () => battery.read(() => battery.state)
   const isLowPowerModeEnabledAsync = () => battery.read(() => battery.lowPowerMode)
@@ -112,46 +112,50 @@ vi.mock("expo-battery", async () => {
     addBatteryStateListener,
     addLowPowerModeListener,
     useBatteryLevel: () => {
-      const [value, setValue] = React.useState(-1)
-      React.useEffect(() => {
+      const [value, setValue] = ReactModule.useState(-1)
+      ReactModule.useEffect(() => {
         void getBatteryLevelAsync().then(setValue)
         return addBatteryLevelListener(({ batteryLevel }) => setValue(batteryLevel)).remove
       }, [])
       return value
     },
     useBatteryState: () => {
-      const [value, setValue] = React.useState(0)
-      React.useEffect(() => {
+      const [value, setValue] = ReactModule.useState(0)
+      ReactModule.useEffect(() => {
         void getBatteryStateAsync().then(setValue)
         return addBatteryStateListener(({ batteryState }) => setValue(batteryState)).remove
       }, [])
       return value
     },
     useLowPowerMode: () => {
-      const [value, setValue] = React.useState(false)
-      React.useEffect(() => {
+      const [value, setValue] = ReactModule.useState(false)
+      ReactModule.useEffect(() => {
         void isLowPowerModeEnabledAsync().then(setValue)
         return addLowPowerModeListener(({ lowPowerMode }) => setValue(lowPowerMode)).remove
       }, [])
       return value
     },
     usePowerState: () => {
-      const [batteryLevel, setBatteryLevel] = React.useState(-1)
-      const [batteryState, setBatteryState] = React.useState(0)
-      const [lowPowerMode, setLowPowerMode] = React.useState(false)
-      React.useEffect(() => {
+      const [batteryLevel, setBatteryLevel] = ReactModule.useState(-1)
+      const [batteryState, setBatteryState] = ReactModule.useState(0)
+      const [lowPowerMode, setLowPowerMode] = ReactModule.useState(false)
+      ReactModule.useEffect(() => {
         void getBatteryLevelAsync().then(setBatteryLevel)
         void getBatteryStateAsync().then(setBatteryState)
         void isLowPowerModeEnabledAsync().then(setLowPowerMode)
-        const level = addBatteryLevelListener(({ batteryLevel }) => setBatteryLevel(batteryLevel))
-        const state = addBatteryStateListener(({ batteryState }) => setBatteryState(batteryState))
-        const lowPowerMode = addLowPowerModeListener(({ lowPowerMode }) =>
-          setLowPowerMode(lowPowerMode),
+        const levelSubscription = addBatteryLevelListener(({ batteryLevel: nextLevel }) =>
+          setBatteryLevel(nextLevel),
+        )
+        const stateSubscription = addBatteryStateListener(({ batteryState: nextState }) =>
+          setBatteryState(nextState),
+        )
+        const lowPowerModeSubscription = addLowPowerModeListener(({ lowPowerMode: nextMode }) =>
+          setLowPowerMode(nextMode),
         )
         return () => {
-          level.remove()
-          state.remove()
-          lowPowerMode.remove()
+          levelSubscription.remove()
+          stateSubscription.remove()
+          lowPowerModeSubscription.remove()
         }
       }, [])
       return { batteryLevel, batteryState, lowPowerMode }
@@ -270,10 +274,11 @@ describe("@better-native/battery/expo", () => {
       registry.mount(EffectBattery.lowPowerModeAtom),
       registry.mount(EffectBattery.powerStateAtom),
     ]
-    const value = <A>(atom: Parameters<typeof registry.get>[0]) => {
-      const result = registry.get(atom) as AsyncResult.AsyncResult<A, never>
-      if (!AsyncResult.isSuccess(result)) throw new Error("expected atom value")
-      return result.value
+    const values = {
+      level: () => AsyncResult.getOrThrow(registry.get(EffectBattery.levelAtom)),
+      state: () => AsyncResult.getOrThrow(registry.get(EffectBattery.stateAtom)),
+      lowPowerMode: () => AsyncResult.getOrThrow(registry.get(EffectBattery.lowPowerModeAtom)),
+      powerState: () => AsyncResult.getOrThrow(registry.get(EffectBattery.powerStateAtom)),
     }
     let snapshot:
       | {
@@ -301,10 +306,10 @@ describe("@better-native/battery/expo", () => {
       root.render(React.createElement(Probe))
     })
     expect(snapshot).toEqual({
-      level: value<number>(EffectBattery.levelAtom),
-      state: value<number>(EffectBattery.stateAtom),
-      lowPowerMode: value<boolean>(EffectBattery.lowPowerModeAtom),
-      power: value(EffectBattery.powerStateAtom),
+      level: values.level(),
+      state: values.state(),
+      lowPowerMode: values.lowPowerMode(),
+      power: values.powerState(),
     })
     await vi.waitFor(() =>
       expect(battery.listenerCounts()).toEqual({ level: 4, state: 4, lowPowerMode: 4 }),
@@ -317,10 +322,10 @@ describe("@better-native/battery/expo", () => {
     })
     await vi.waitFor(() => {
       expect(snapshot).toEqual({
-        level: value<number>(EffectBattery.levelAtom),
-        state: value<number>(EffectBattery.stateAtom),
-        lowPowerMode: value<boolean>(EffectBattery.lowPowerModeAtom),
-        power: value(EffectBattery.powerStateAtom),
+        level: values.level(),
+        state: values.state(),
+        lowPowerMode: values.lowPowerMode(),
+        power: values.powerState(),
       })
     })
 
@@ -329,10 +334,10 @@ describe("@better-native/battery/expo", () => {
     })
     await vi.waitFor(() => {
       expect(snapshot).toEqual({
-        level: value<number>(EffectBattery.levelAtom),
-        state: value<number>(EffectBattery.stateAtom),
-        lowPowerMode: value<boolean>(EffectBattery.lowPowerModeAtom),
-        power: value(EffectBattery.powerStateAtom),
+        level: values.level(),
+        state: values.state(),
+        lowPowerMode: values.lowPowerMode(),
+        power: values.powerState(),
       })
     })
 
@@ -346,10 +351,10 @@ describe("@better-native/battery/expo", () => {
     })
     await vi.waitFor(() => {
       expect(snapshot).toEqual({
-        level: value<number>(EffectBattery.levelAtom),
-        state: value<number>(EffectBattery.stateAtom),
-        lowPowerMode: value<boolean>(EffectBattery.lowPowerModeAtom),
-        power: value(EffectBattery.powerStateAtom),
+        level: values.level(),
+        state: values.state(),
+        lowPowerMode: values.lowPowerMode(),
+        power: values.powerState(),
       })
     })
 

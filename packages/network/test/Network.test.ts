@@ -123,11 +123,17 @@ describe("@better-native/network", () => {
   })
 
   it("rejects malformed Expo network-state payloads", async () => {
-    vi.mocked(ExpoNetwork.getNetworkStateAsync).mockResolvedValueOnce({
-      type: "NOT_A_NETWORK_TYPE",
+    const networkState = {
+      type: NetworkStateType.WIFI,
       isConnected: true,
       isInternetReachable: true,
-    } as never)
+    }
+    vi.mocked(ExpoNetwork.getNetworkStateAsync).mockResolvedValueOnce(
+      new Proxy(networkState, {
+        get: (target, property, receiver) =>
+          property === "type" ? "NOT_A_NETWORK_TYPE" : Reflect.get(target, property, receiver),
+      }),
+    )
 
     const exit = await Effect.runPromiseExit(Network.getState.pipe(Effect.provide(Network.live)))
 
@@ -246,8 +252,8 @@ describe("@better-native/network", () => {
     const cancel = registry.mount(Network.stateAtom)
     const value = () => {
       const result = registry.get(Network.stateAtom)
-      expect(AsyncResult.isSuccess(result)).toBe(true)
-      return (result as AsyncResult.Success<typeof state, never>).value
+      if (!AsyncResult.isSuccess(result)) throw new Error("expected atom value")
+      return result.value
     }
 
     expect(value()).toEqual({})

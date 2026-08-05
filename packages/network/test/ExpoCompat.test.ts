@@ -44,7 +44,7 @@ const network = vi.hoisted(() => {
 })
 
 vi.mock("expo-network", async () => {
-  const React = await import("react")
+  const ReactModule = await import("react")
   const getNetworkStateAsync = network.read
   const addNetworkStateListener = network.onState
   return {
@@ -54,8 +54,8 @@ vi.mock("expo-network", async () => {
     isAirplaneModeEnabledAsync: () => Promise.resolve(false),
     addNetworkStateListener,
     useNetworkState: () => {
-      const [state, setState] = React.useState({})
-      React.useEffect(() => {
+      const [state, setState] = ReactModule.useState({})
+      ReactModule.useEffect(() => {
         void getNetworkStateAsync().then(setState)
         return addNetworkStateListener(setState).remove
       }, [])
