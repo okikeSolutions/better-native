@@ -231,18 +231,34 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
           ]).pipe(Effect.map(({ observations }) => observations)),
         ),
         Match.when("ios", () =>
-          invoke("logs", device, [
-            "spawn",
-            device.id,
-            "log",
-            "show",
-            "--last",
-            "1m",
-            "--style",
-            "json",
-            "--predicate",
-            iosLogPredicate,
-          ]).pipe(Effect.map(({ observations }) => observations)),
+          Effect.all([
+            invoke("logs", device, [
+              "spawn",
+              device.id,
+              "log",
+              "show",
+              "--last",
+              "1m",
+              "--style",
+              "json",
+              "--predicate",
+              iosLogPredicate,
+            ]).pipe(
+              Effect.map(({ observations }) => observations),
+              Effect.orElseSucceed(() => []),
+            ),
+            processes
+              .run({
+                command: "maestro",
+                args: ["--device", device.id, "hierarchy"],
+                timeoutMillis: 30_000,
+                retainedOutputBytes: maximumResultLogBytes,
+              })
+              .pipe(
+                Effect.map(({ observations }) => observations),
+                Effect.orElseSucceed(() => []),
+              ),
+          ]).pipe(Effect.map(([nativeLogs, hierarchy]) => [...nativeLogs, ...hierarchy])),
         ),
         Match.exhaustive,
       )

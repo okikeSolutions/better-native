@@ -12,6 +12,7 @@ import {
   registry,
   type ExpoTestModule,
   type RegistryEntry,
+  type RunnerProgress,
   type TestTools,
 } from "./Registry.ts"
 
@@ -68,6 +69,11 @@ const RunSummary = Schema.Struct({
 })
 
 const resultLogChunkCharacters = 2_000
+
+const reportProgress = (tools: TestTools, progress: RunnerProgress): void => {
+  tools.setProgress(progress)
+  console.log(`BETTER_NATIVE_PROGRESS_V1=${JSON.stringify(progress)}`)
+}
 
 export const resultLogChunks = (runId: string, json: string): ReadonlyArray<string> => {
   const chunks = Array.from(
@@ -212,6 +218,12 @@ const runSource = (
 ) =>
   Effect.tryPromise({
     try: async () => {
+      reportProgress(tools, {
+        runId: selection.runId,
+        sourceId: source.sourceId,
+        phase: "loading",
+        caseId: null,
+      })
       if (!source.selectedByUpstream) {
         const caseIds =
           selectedCaseIds.size > 0
@@ -260,6 +272,13 @@ const runSource = (
         }
       }
 
+      reportProgress(tools, {
+        runId: selection.runId,
+        sourceId: source.sourceId,
+        phase: "registering",
+        caseId: null,
+      })
+
       const jasmineCore = jasmineRequire.core(jasmineRequire)
       const jasmineEnv = jasmineCore.getEnv({
         suppressLoadErrors: true,
@@ -303,6 +322,12 @@ const runSource = (
           occurrences.set(name, occurrence)
           const discoveredCaseId = `${source.sourceId}#${name}@${occurrence}`
           const caseId = caseIdBySpecId.get(result.id) ?? discoveredCaseId
+          reportProgress(tools, {
+            runId: selection.runId,
+            sourceId: source.sourceId,
+            phase: "spec-finished",
+            caseId,
+          })
           runtimeDiscoveredCaseIds.push(caseId)
           const durationMillis = result.duration ?? 0
           const outcome = Match.value(result.status).pipe(
@@ -372,6 +397,12 @@ const runSource = (
         }
       }
       if (registeredSpecCount === 0) return platformSkipped()
+      reportProgress(tools, {
+        runId: selection.runId,
+        sourceId: source.sourceId,
+        phase: "running",
+        caseId: null,
+      })
       const done = Schema.decodeUnknownSync(JasmineDone)(await jasmineEnv.execute())
       recordJasmineCompletion({
         done,
@@ -380,6 +411,12 @@ const runSource = (
         sourceId: source.sourceId,
         runId: selection.runId,
         runtimeDiscoveredCaseIds,
+      })
+      reportProgress(tools, {
+        runId: selection.runId,
+        sourceId: source.sourceId,
+        phase: "complete",
+        caseId: null,
       })
       return { results, runtimeDiscoveredCaseIds }
     },
