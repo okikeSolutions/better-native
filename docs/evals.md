@@ -161,7 +161,18 @@ only by an opaque version and content digest in public results.
 
 All executable grader implementations and TypeScript for task loading, agent adapters,
 verification, and reduction belong in the private `tooling/dx-evals` workspace. That workspace owns
-a package manifest, TypeScript project, Effect diagnostics, tests, and Knip coverage.
+a package manifest, TypeScript project, Effect diagnostics, tests, and Knip coverage. It is an
+Effect-native application: domain models use `Schema`, expected failures use typed Effect error
+channels, dependencies are services supplied by `Layer`, and temporary workspaces, processes,
+sandboxes, and report servers use scoped resource lifecycles. Its tests use `@effect/vitest` where
+they exercise Effect programs. Promise-, callback-, SDK-, container-, and Vitest-specific APIs are
+kept at narrow adapters and lifted into Effect rather than becoming the orchestration model.
+
+The workspace imports Effect through normal package entrypoints such as `effect/Effect` and
+`effect/Schema`, using the exact root dependency version associated with the revision recorded for
+`vendor/effect`. It does not import source files through `vendor/effect` paths. The vendored checkout
+is the pinned authoritative source and research reference; the installed `effect` package is the
+compilation and runtime boundary. Dependency and revision identities are recorded in eval evidence.
 `evals/tasks/*/grader` is data-only: fixtures, expected values, and declarative grader configuration.
 `evals/tasks` is not an unchecked executable-code root.
 
@@ -296,6 +307,17 @@ or harness failure. It is not automatically evidence that all evaluated agents l
 
 ## Harness architecture
 
+The harness core is composed as an Effect program. Task repositories, export construction, agent
+adapters, isolation backends, verification, evidence storage, clocks, identifiers, and configuration
+are explicit services. The executable entrypoint builds one `ManagedRuntime` from the application
+`Layer` and `NodeServices.layer` from `@effect/platform-node/NodeServices`. That runtime owns the
+Layer scope, serves every custom-harness invocation in its process, and is disposed exactly once
+when the eval process finishes. A trial never constructs or provides the production Layer again.
+Services do not read `process.env`, instantiate model clients, or acquire global filesystem and
+process dependencies internally. This follows the same `NodeServices` base layer and
+host-configuration boundary as the compatibility harness while using `ManagedRuntime` for the
+repeated Promise entrypoints required by Vitest Evals.
+
 DX evals use Vitest Evals for suite authoring, normalized run data, assertions, artifacts, and
 reporting. They run under a dedicated `vitest.evals.config.ts`; long timeouts, provider settings,
 and eval reporters must not leak into ordinary unit tests. The configuration enables both
@@ -305,6 +327,95 @@ output path beneath `.artifacts/evals`.
 Vitest Evals is not a security, process-supervision, resource-enforcement, or durable-storage
 boundary. Its custom harness adapts one trial into normalized JSON data for assertions and reports.
 better-native therefore uses a staged trust pipeline:
+
+```text
+describeEval
+  -> createHarness<TrialInput, TrialOutcome>
+       -> dxEvalRuntime.runPromise(runTrial(input))
+            -> prepare isolated workspace
+            -> execute agent
+            -> validate submission
+            -> run clean-room graders
+            -> authenticate evidence
+       -> normalized Vitest Evals result
+  -> deterministic assertions
+  -> JSON and local report UI
+```
+
+`createHarness()` is the integration boundary because the evaluated application is a custom coding
+workflow rather than one of Vitest Evals' first-party model-runtime adapters. The callback is a
+small Promise boundary around the managed Effect runtime; it does not own orchestration, Layer
+construction, or runtime disposal. The runtime entrypoint is:
+
+```ts
+import * as NodeServices from "@effect/platform-node/NodeServices"
+import * as Layer from "effect/Layer"
+import * as ManagedRuntime from "effect/ManagedRuntime"
+
+const MainLayer = DxEvalLive.pipe(Layer.provideMerge(NodeServices.layer))
+
+export const dxEvalRuntime = ManagedRuntime.make(MainLayer)
+```
+
+`DxEvalLive` composes the task repository, exporter, adapter registry, isolation backend, verifier,
+evidence store, clock, identifier, and configuration Layers. The executable integration that owns
+`dxEvalRuntime` also owns its process-level shutdown hook and awaits `dxEvalRuntime.dispose()` once.
+The custom adapter reuses that runtime:
+
+```ts
+import { createHarness } from "vitest-evals"
+import { dxEvalRuntime } from "./DxEvalRuntime.js"
+
+export const dxHarness = createHarness<TrialInput, TrialOutcome>({
+  name: "better-native-dx",
+  run: async ({ input, setArtifact }) => {
+    const outcome = await dxEvalRuntime.runPromise(runTrial(input))
+
+    setArtifact("evidence-reference", {
+      runId: outcome.runId,
+      manifestDigest: outcome.publicEvidenceManifest.digest,
+    })
+
+    return {
+      output: outcome,
+      events: outcome.transcript,
+      usage: outcome.usage,
+    }
+  },
+})
+```
+
+The task schema supplies `TrialInput`; the trusted controller constructs `TrialOutcome`. The
+artifact contains only a bounded public reference to authenticated evidence. It never contains a
+publication credential, concealed grader material, or authority to replace the evidence manifest.
+Every returned `events` array contains at least one ordered canonical transcript event.
+
+Eval files invoke that harness once per case and assert deterministic gates:
+
+```ts
+import { expect } from "vitest"
+import { describeEval } from "vitest-evals"
+import { dxHarness } from "./DxHarness.js"
+
+describeEval("network adoption", { harness: dxHarness }, (it) => {
+  it("preserves typed failures", async ({ run }) => {
+    const result = await run(networkTypedFailureTrial)
+
+    expect(result.output.infrastructureStatus).toBe("valid")
+    expect(result.output.requiredGates.length).toBeGreaterThan(0)
+    for (const gate of result.output.requiredGates) {
+      expect(gate.result, gate.id).toBe("pass")
+    }
+  })
+})
+```
+
+The initial implementation uses this lightweight normalized return. It returns a complete
+Vitest Evals `HarnessRun` only if direct control of its session, timings, traces, artifacts, and
+error representation becomes necessary; a complete run must already contain canonical
+`session.events`. In either form, the trusted evidence manifest remains authoritative.
+
+The custom-harness adapter sits outside the security pipeline it reports:
 
 ```text
 trusted preparation
@@ -575,7 +686,12 @@ The first implementation contains:
 
 - an exact reviewed Vitest Evals dependency that passes the repository security-audit policy and is
   compatible with the pinned Vitest version;
-- a `tooling/dx-evals` workspace included in typecheck, Effect diagnostics, tests, and Knip;
+- an Effect-native `tooling/dx-evals` workspace using normal imports from the pinned `effect`
+  package, included in typecheck, strict Effect diagnostics, `@effect/vitest` tests, and Knip;
+- one process-owned `ManagedRuntime` built from `NodeServices.layer` and the complete application
+  Layer, reused by every trial in that process and covered by a disposal test;
+- a conformance check rejecting direct imports from `vendor/effect` and recording the installed
+  Effect version and pinned source revision;
 - one synthetic consumer task with no Expo or native dependency;
 - task-schema and filtered-export validation;
 - reference and no-op adapters only;
