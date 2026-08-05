@@ -22,3 +22,5 @@ bun run check
 
 The architecture and compatibility contract live in [docs/architecture.md](./docs/architecture.md).
 The documentation target lives in [docs/documentation.md](./docs/documentation.md).
+The human and agent developer-experience evaluation contract lives in
+[docs/evals.md](./docs/evals.md).
