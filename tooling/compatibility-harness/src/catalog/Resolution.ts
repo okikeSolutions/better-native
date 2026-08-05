@@ -34,4 +34,15 @@ const visit = (
   return []
 }
 
+/**
+ * Flattens conditional package-export JSON into explicit resolution branches.
+ *
+ * @remarks
+ * Conditions and fallback indexes are preserved rather than evaluated. The
+ * harness must record the package's declared resolution space for each platform,
+ * not guess one host-specific target.
+ *
+ * @param value - Raw `exports` target from a package manifest.
+ * @returns Deterministic conditional branches with their platform hints.
+ */
 export const branches = (value: Json): ReadonlyArray<ResolutionBranch> => visit(value, [], [])

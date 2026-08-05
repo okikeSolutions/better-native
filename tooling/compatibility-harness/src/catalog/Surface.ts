@@ -142,6 +142,18 @@ const exportsOf = (
 const surfaceId = (packageName: string, subpath: string, name: string) =>
   SurfaceId.make(`${packageName}#${subpath}#${name}`)
 
+/**
+ * Derives the complete export surface from catalog and installation evidence.
+ *
+ * @remarks
+ * Surface generation preserves type-only, opaque, wildcard, and platform-aware
+ * exports so compatibility ownership cannot silently shrink to runtime values.
+ *
+ * @param snapshot - Pinned package catalog snapshot.
+ * @param installation - Prepared installation and expanded entrypoint evidence.
+ * @returns The versioned surface snapshot and fingerprint.
+ * @throws {@link HarnessError} when declarations cannot be read or parsed.
+ */
 export const make = Effect.fn("Surface.make")(function* (
   snapshot: CatalogSnapshot,
   installation: ExpoInstallation,

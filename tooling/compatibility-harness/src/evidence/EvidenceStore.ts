@@ -9,12 +9,14 @@ import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
 import { ArtifactId, ContentHash, isSafePathSegment, type Artifact } from "../Domain.ts"
 
+/** Describes a failed evidence read, write, hash, or path validation. */
 export class EvidenceError extends Data.TaggedError("EvidenceError")<{
   readonly operation: string
   readonly path: string
   readonly cause: unknown
 }> {}
 
+/** Immutable artifact store shared by build and run supervisors. */
 export interface Service {
   readonly writeBytes: (
     collection: "builds" | "runs",
@@ -32,10 +34,21 @@ export interface Service {
   ) => Effect.Effect<Artifact, EvidenceError>
 }
 
+/** Effect context tag for the immutable evidence store. */
 export class EvidenceStore extends Context.Service<EvidenceStore, Service>()(
   "@better-native/compatibility-harness/EvidenceStore",
 ) {}
 
+/**
+ * Builds an evidence store rooted at the repository artifact directory.
+ *
+ * @remarks
+ * Writes are content-addressed and immutable. Existing artifacts are accepted
+ * only when their hash matches the new bytes, and symlinked paths are rejected.
+ *
+ * @param root - Better Native repository root.
+ * @returns A layer providing {@link EvidenceStore}.
+ */
 export const layer = (
   root: string,
 ): Layer.Layer<EvidenceStore, never, FileSystem.FileSystem | Path.Path | Crypto.Crypto> =>
@@ -53,6 +66,18 @@ export const layer = (
           Effect.map((digest) => ContentHash.make(Encoding.encodeHex(digest))),
           Effect.mapError((cause) => fail("hash evidence", root, cause)),
         )
+      /**
+       * Ensures an evidence path resolves exactly where the supervisor computed it.
+       *
+       * @remarks
+       * Evidence is immutable and repository-local. Resolving the target and its
+       * parent before writing prevents a symlink from redirecting an artifact into
+       * an unrelated location.
+       *
+       * @param operation - Operation name used when constructing a failure.
+       * @param target - Directory or file path that must remain canonical.
+       * @returns An effect that succeeds only for a non-symlink path.
+       */
       const ensureCanonical = (operation: string, target: string) =>
         fs.realPath(target).pipe(
           Effect.flatMap((canonical) =>

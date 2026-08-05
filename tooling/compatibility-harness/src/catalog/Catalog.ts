@@ -79,6 +79,16 @@ const bundledPackage = (name: string, version: string): Package => ({
   nativeRegistration: null,
 })
 
+/**
+ * Builds the package catalog from the pinned Expo checkout and repository inputs.
+ *
+ * @remarks
+ * The catalog is the compatibility denominator. It includes discovered packages
+ * even when their runtime or native implementation is not yet executable.
+ *
+ * @returns The catalog snapshot and deterministic fingerprint.
+ * @throws {@link HarnessError} when pinned manifests, roles, or revisions are invalid.
+ */
 export const make = Effect.fn("Catalog.make")(function* () {
   const repository = yield* ExpoRepository
   yield* repository.verify

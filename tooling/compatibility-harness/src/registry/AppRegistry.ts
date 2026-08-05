@@ -28,6 +28,19 @@ const executionRunner = (platform: Platform): ExecutionUnit["runner"] =>
     Match.exhaustive,
   )
 
+/**
+ * Selects the source variant used when an exact platform file is unavailable.
+ *
+ * @remarks
+ * Native is preferred for iOS and Android, then the platform-neutral source.
+ * The fallback is metadata selection only; platform support is checked again
+ * before a source becomes runnable.
+ *
+ * @param platform - Target execution platform.
+ * @param native - Native source variant, if discovered.
+ * @param base - Platform-neutral source variant, if discovered.
+ * @returns The source selected for metadata and registry generation.
+ */
 const platformFallback = (
   platform: Platform,
   native: TestSource | undefined,
@@ -60,6 +73,7 @@ const unitId = (platform: Platform, sourceId: TestSourceId): string => {
   return `${platform}-${stem}-${(hash >>> 0).toString(16)}`
 }
 
+/** Versioned candidate replacements and the ownership fingerprint that authorized them. */
 export const ReplacementManifest = Schema.Struct({
   schemaVersion: Schema.Literal(1),
   expoRevision: Schema.String,
@@ -69,6 +83,7 @@ export const ReplacementManifest = Schema.Struct({
   ),
   trackedSpecifiers: Schema.Array(Schema.String),
 })
+/** Decoded replacement manifest accepted by {@link ReplacementManifest}. */
 export type ReplacementManifest = Schema.Schema.Type<typeof ReplacementManifest>
 
 const platformVariant = (file: string): Platform | "native" | null => {
@@ -96,6 +111,16 @@ const upstreamTestModuleStems = (source: string): ReadonlySet<string> =>
     ),
   )
 
+/**
+ * Extracts enabled native E2E module names from Expo's authoritative source list.
+ *
+ * @remarks
+ * Block and line comments are removed before string extraction so disabled tests
+ * do not silently enter the native execution cohort.
+ *
+ * @param source - Source text of Expo's native E2E test-suite manifest.
+ * @returns Enabled module names exactly as declared upstream.
+ */
 export const upstreamNativeE2eNames = (source: string): ReadonlySet<string> => {
   const tests = source.match(/\bconst\s+TESTS\s*=\s*\[([\s\S]*?)\]\s*;/)?.[1]
   if (tests === undefined) return new Set()
@@ -137,6 +162,18 @@ const selectPlatformSources = (
   return selected.toSorted((left, right) => left.id.localeCompare(right.id))
 }
 
+/**
+ * Selects registry sources runnable on one platform.
+ *
+ * @remarks
+ * Web accepts registered app sources, while native execution is restricted to
+ * Expo's authoritative native E2E selection. Platform variants are collapsed to
+ * one logical source before IDs are returned.
+ *
+ * @param metadata - Generated application registry metadata.
+ * @param platform - Execution platform to select.
+ * @returns Deterministically sorted runnable source identifiers.
+ */
 export const runnableSourceIds = (
   metadata: RegistryMetadataType,
   platform: Platform,
@@ -171,8 +208,15 @@ export const runnableSourceIds = (
 }
 
 /**
- * Produces source-sized app work. The unit IDs are safe evidence-path segments;
- * source IDs remain unmodified so the app can resolve them from its static registry.
+ * Produces source-sized execution units for a platform.
+ *
+ * @remarks
+ * Unit IDs are safe evidence-path segments; source IDs remain unmodified so the
+ * generated app can resolve them from its static registry.
+ *
+ * @param metadata - Generated application registry metadata.
+ * @param platform - Execution platform to select.
+ * @returns One execution unit per runnable logical source.
  */
 export const appExecutionUnits = (
   metadata: RegistryMetadataType,
@@ -186,8 +230,17 @@ export const appExecutionUnits = (
   }))
 
 /**
- * Balances whole-source native work by its statically discovered case count.
- * Sources stay intact because the app registry is the authority for execution.
+ * Balances complete source units across native shards by discovered case weight.
+ *
+ * @remarks
+ * A source is never split because the generated app registry is the authority
+ * for execution and case discovery. Sorting by weight and source ID keeps shard
+ * assignment deterministic while greedy placement limits skew.
+ *
+ * @param metadata - Generated registry metadata containing source case counts.
+ * @param platform - Native platform whose units should be sharded.
+ * @param shardCount - Number of output shards.
+ * @returns Shards containing whole execution units in deterministic order.
  */
 export const appExecutionShards = (
   metadata: RegistryMetadataType,
@@ -217,6 +270,12 @@ export const appExecutionShards = (
   )
 }
 
+/**
+ * Loads generated compatibility-app registry metadata.
+ *
+ * @returns The decoded registry metadata.
+ * @throws {@link HarnessError} when reading, parsing, or decoding fails.
+ */
 export const loadMetadata = Effect.fn("AppRegistry.loadMetadata")(function* () {
   const fs = yield* FileSystem.FileSystem
   const file = "apps/compatibility-suite/src/generated/RegistryMetadata.json"
@@ -240,6 +299,12 @@ export const loadMetadata = Effect.fn("AppRegistry.loadMetadata")(function* () {
   )
 })
 
+/**
+ * Loads the generated candidate replacement manifest.
+ *
+ * @returns The decoded manifest bound to a reviewed ownership fingerprint.
+ * @throws {@link HarnessError} when the generated file is unavailable or invalid.
+ */
 export const loadReplacementManifest = Effect.fn("AppRegistry.loadReplacementManifest")(
   function* () {
     const repository = yield* ExpoRepository
@@ -250,6 +315,12 @@ export const loadReplacementManifest = Effect.fn("AppRegistry.loadReplacementMan
   },
 )
 
+/**
+ * Loads the generated external runner-plan ledger.
+ *
+ * @returns The decoded disposition for every non-app source.
+ * @throws {@link HarnessError} when the generated ledger is unavailable or invalid.
+ */
 export const loadRunnerPlanLedger = Effect.fn("AppRegistry.loadRunnerPlanLedger")(function* () {
   const repository = yield* ExpoRepository
   return yield* repository.readJson(
@@ -373,6 +444,18 @@ const eagerSource = (
 const failure = (operation: string, path: string, cause: unknown): HarnessError =>
   new HarnessError({ operation, path, cause })
 
+/**
+ * Synchronizes a generated directory with an exact output map.
+ *
+ * @remarks
+ * Obsolete regular files are removed, but unexpected directories or special
+ * entries fail closed so generation cannot recursively delete user data.
+ *
+ * @param directory - Existing generated-output directory.
+ * @param outputs - Exact filename-to-content map that should remain.
+ * @returns An Effect that completes after synchronization.
+ * @throws {@link HarnessError} for unsafe obsolete entries or failed writes.
+ */
 export const writeGeneratedOutputs = Effect.fn("AppRegistry.writeGeneratedOutputs")(function* (
   directory: string,
   outputs: ReadonlyMap<string, string>,
@@ -409,6 +492,17 @@ const mergeExportKind = (left: ExportKind | undefined, right: ExportKind): Expor
   return "both"
 }
 
+/**
+ * Extracts runtime and type exports from one Expo-compatible source module.
+ *
+ * @remarks
+ * The parser intentionally records both declarations and re-exports so the
+ * generated compatibility entrypoint can be compared with the locked Expo
+ * surface without executing the module.
+ *
+ * @param sourceText - TypeScript source text for the module.
+ * @returns Export names mapped to their observed declaration kind.
+ */
 const exportedDeclarations = (sourceText: string): Map<string, ExportKind> => {
   const source = ts.createSourceFile("module.ts", sourceText, ts.ScriptTarget.Latest, true)
   const exports = new Map<string, ExportKind>()
@@ -568,6 +662,21 @@ const writeExpoCompatEntrypoints = Effect.fn("AppRegistry.writeExpoCompatEntrypo
   }
 })
 
+/**
+ * Generates the application registry, replacement manifest, runner ledger, and compat entrypoints.
+ *
+ * @remarks
+ * Source selection remains tied to Expo's authoritative manifests. Every corpus
+ * source becomes app-runnable, externally executable, or explicitly blocked.
+ * Generated Expo-compatible entrypoints are derived from pinned source exports.
+ *
+ * @param corpus - Complete discovered Expo test corpus.
+ * @param surface - Locked Expo export surface.
+ * @param replacements - Reviewed candidate module replacements.
+ * @param ownershipFingerprint - Fingerprint authorizing the replacement set.
+ * @returns Counts and paths for the generated outputs.
+ * @throws {@link HarnessError} when source discovery, validation, or writing fails.
+ */
 export const generate = Effect.fn("AppRegistry.generate")(function* (
   corpus: CorpusSnapshot,
   surface: SurfaceSnapshot,

@@ -12,6 +12,17 @@ const targets = (value: Json): ReadonlyArray<string> => {
   return []
 }
 
+/**
+ * Extracts wildcard captures from one declared export pattern and file path.
+ *
+ * @remarks
+ * Captures are matched segment-by-segment so a wildcard cannot consume a path
+ * separator that the package export pattern did not declare.
+ *
+ * @param pattern - Export pattern from the package manifest.
+ * @param file - Candidate relative file path.
+ * @returns The wildcard value, or `undefined` when the file does not match.
+ */
 const capture = (pattern: string, file: string): string | undefined => {
   const wildcard = pattern.indexOf("*")
   if (wildcard === -1) return undefined
@@ -23,6 +34,18 @@ const capture = (pattern: string, file: string): string | undefined => {
 
 const withoutDotSlash = (value: string): string => (value.startsWith("./") ? value.slice(2) : value)
 
+/**
+ * Expands one wildcard export against files in the installed package.
+ *
+ * @remarks
+ * Only files selected by the package's export target are returned, and output
+ * ordering is deterministic so generated surface fingerprints remain stable.
+ *
+ * @param entrypoint - Declared wildcard entrypoint and resolution branches.
+ * @param files - Relative files available in the package.
+ * @param declarationSource - Authority that supplied the package declaration.
+ * @returns Expanded entrypoints with their matched files.
+ */
 export const expand = (
   entrypoint: Entrypoint,
   files: ReadonlyArray<string>,

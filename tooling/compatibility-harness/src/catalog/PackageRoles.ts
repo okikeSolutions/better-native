@@ -1,6 +1,7 @@
 import type { Entrypoint, NativeRegistration, PackageRole, RoleEvidence } from "../Domain.ts"
 import type { PackageManifest } from "./PackageManifest.ts"
 
+/** Package metadata used to derive reviewed catalog roles. */
 export interface EvidenceInput {
   readonly manifest: PackageManifest
   readonly manifestPath: string
@@ -15,6 +16,12 @@ export interface EvidenceInput {
 const isSdkHomepage = (homepage: string | undefined): boolean =>
   homepage?.startsWith("https://docs.expo.dev/versions/latest/sdk/") === true
 
+/**
+ * Derives role evidence without inferring unsupported roles from package names.
+ *
+ * @param input - Manifest, homepage, docs, and native-registration signals.
+ * @returns Evidence entries in stable precedence order.
+ */
 export const evidence = (input: EvidenceInput): ReadonlyArray<RoleEvidence> => {
   const output: Array<RoleEvidence> = [
     { role: "workspace", source: "workspace-manifest", path: input.manifestPath },
@@ -46,5 +53,11 @@ export const evidence = (input: EvidenceInput): ReadonlyArray<RoleEvidence> => {
   return output
 }
 
+/**
+ * Returns unique package roles represented by the supplied evidence.
+ *
+ * @param roleEvidence - Evidence entries derived for one package.
+ * @returns Unique roles in first-evidence order.
+ */
 export const roles = (roleEvidence: ReadonlyArray<RoleEvidence>): ReadonlyArray<PackageRole> =>
   [...new Set(roleEvidence.map((entry) => entry.role))].toSorted()

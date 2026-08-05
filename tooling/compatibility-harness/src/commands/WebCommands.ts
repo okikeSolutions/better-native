@@ -31,6 +31,9 @@ const selectWebUnits = (
     onSome: (sourceId) => units.filter((unit) => unit.sourceId === sourceId),
   })
 
+/**
+ * Runs one generated web source through the browser supervisor.
+ */
 export const supervisedWeb = Command.make(
   "supervise-web",
   {
@@ -79,6 +82,9 @@ export const supervisedWeb = Command.make(
   }),
 ).pipe(Command.withDescription("Build and execute a production web compatibility run"))
 
+/**
+ * Runs paired upstream and candidate web sources.
+ */
 export const supervisedWebPair = Command.make(
   "supervise-web-pair",
   { buildId: buildIdFlag, source: webSource, timeoutMillis: timeoutMillisFlag, port: webPort },
@@ -151,6 +157,9 @@ export const supervisedWebPair = Command.make(
 )
 
 const probeSpecifier = Flag.string("specifier")
+/**
+ * Probes one opaque Expo export's web resolution and load behavior.
+ */
 export const probeWeb = Command.make(
   "probe-web",
   {

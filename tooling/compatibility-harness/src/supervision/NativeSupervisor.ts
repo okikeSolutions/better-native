@@ -24,6 +24,7 @@ import * as NativeMaestroFlow from "./NativeMaestroFlow.ts"
 
 const maestroFlowRetries = 1
 
+/** Request for one native source execution on a prepared device. */
 export interface NativeRunRequest {
   readonly id: RunId
   readonly build: BuildOutput
@@ -32,6 +33,7 @@ export interface NativeRunRequest {
   readonly timeoutMillis: number
 }
 
+/** Request for a native cohort execution on one prepared device. */
 export interface NativeBatchRequest {
   readonly id: RunId
   readonly build: BuildOutput
@@ -40,12 +42,14 @@ export interface NativeBatchRequest {
   readonly timeoutMillis: number
 }
 
+/** Failure raised while building, launching, validating, or recording a native run. */
 export class NativeSupervisorError extends Data.TaggedError("NativeSupervisorError")<{
   readonly phase: "device" | "crash" | "protocol" | "timeout" | "runner" | "evidence"
   readonly request: NativeRunRequest
   readonly cause: unknown
 }> {}
 
+/** Native supervisor operations that produce immutable run records. */
 export interface Service {
   readonly run: (request: NativeRunRequest) => Effect.Effect<RunRecordType, NativeSupervisorError>
   readonly runBatch: (
@@ -53,6 +57,7 @@ export interface Service {
   ) => Effect.Effect<ReadonlyArray<RunRecordType>, NativeSupervisorError>
 }
 
+/** Effect context tag for native simulator and emulator supervision. */
 export class NativeSupervisor extends Context.Service<NativeSupervisor, Service>()(
   "@better-native/compatibility-harness/NativeSupervisor",
 ) {}
@@ -121,6 +126,11 @@ const failurePhase = (cause: unknown): NativeSupervisorError["phase"] =>
     Match.orElse(() => "device" as const),
   )
 
+/**
+ * Builds native supervision from platform drivers and immutable evidence storage.
+ *
+ * @returns A layer providing {@link NativeSupervisor}.
+ */
 export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | EvidenceStore> =
   Layer.effect(
     NativeSupervisor,

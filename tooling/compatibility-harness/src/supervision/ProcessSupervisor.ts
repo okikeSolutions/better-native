@@ -12,6 +12,7 @@ import * as ChildProcess from "effect/unstable/process/ChildProcess"
 import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
 import type { ProcessObservation } from "../Domain.ts"
 
+/** Bounded child-process launch specification. */
 export interface ProcessSpec {
   readonly command: string
   readonly args?: ReadonlyArray<string>
@@ -25,11 +26,13 @@ export interface ProcessSpec {
   readonly retainedOutputLines?: number
 }
 
+/** Exit code and bounded observations returned by a completed process. */
 export interface ProcessResult {
   readonly exitCode: number
   readonly observations: ReadonlyArray<ProcessObservation>
 }
 
+/** Failure raised when a child process cannot be spawned, drained, or terminated. */
 export class ProcessFailure extends Data.TaggedError("ProcessFailure")<{
   readonly reason: "spawn" | "stream" | "exit" | "timeout"
   readonly spec: ProcessSpec
@@ -37,6 +40,7 @@ export class ProcessFailure extends Data.TaggedError("ProcessFailure")<{
   readonly cause: unknown
 }> {}
 
+/** Backend process handle exposed to the supervisor lifecycle. */
 export interface ProcessHandle {
   readonly stdout: Stream.Stream<string, unknown>
   readonly stderr: Stream.Stream<string, unknown>
@@ -44,21 +48,25 @@ export interface ProcessHandle {
   readonly terminate: (graceMillis: number) => Effect.Effect<void, unknown>
 }
 
+/** Minimal process backend used by the real and test supervisors. */
 export interface ProcessBackend {
   readonly spawn: (spec: ProcessSpec) => Effect.Effect<ProcessHandle, unknown, Scope.Scope>
 }
 
+/** Running process with shared completion, observations, and termination effects. */
 export interface RunningProcess {
   readonly exitCode: Effect.Effect<number, ProcessFailure>
   readonly observations: Effect.Effect<ReadonlyArray<ProcessObservation>>
   readonly terminate: Effect.Effect<void, ProcessFailure>
 }
 
+/** Process lifecycle operations with bounded output and timeout handling. */
 export interface Service {
   readonly start: (spec: ProcessSpec) => Effect.Effect<RunningProcess, ProcessFailure, Scope.Scope>
   readonly run: (spec: ProcessSpec) => Effect.Effect<ProcessResult, ProcessFailure>
 }
 
+/** Effect context tag for supervised child processes. */
 export class ProcessSupervisor extends Context.Service<ProcessSupervisor, Service>()(
   "@better-native/compatibility-harness/ProcessSupervisor",
 ) {}
@@ -125,6 +133,18 @@ interface BoundedLine {
   readonly omittedBytes: number
 }
 
+/**
+ * Retains the UTF-8 suffix that fits within a line's byte budget.
+ *
+ * @remarks
+ * The start offset is advanced past UTF-8 continuation bytes so truncation
+ * never leaves an invalid sequence for the decoder. The omitted byte count is
+ * retained as evidence that output was bounded.
+ *
+ * @param text - Accumulated line text.
+ * @param byteLimit - Maximum encoded byte length.
+ * @returns A valid suffix and the number of omitted bytes.
+ */
 const utf8Suffix = (text: string, byteLimit: number): BoundedLine => {
   const bytes = encoder.encode(text)
   if (bytes.byteLength <= byteLimit) return { text, omittedBytes: 0 }
@@ -137,8 +157,17 @@ const utf8Suffix = (text: string, byteLimit: number): BoundedLine => {
 }
 
 /**
- * Converts decoded process chunks into lines without allowing an unfinished line to grow
- * beyond the configured byte limit. Input is always drained, even after bytes are omitted.
+ * Converts decoded process chunks into bounded observations.
+ *
+ * @remarks
+ * Input is always drained even after bytes are omitted. This prevents a noisy
+ * child process from blocking the supervisor while retaining deterministic
+ * suffixes for diagnostics.
+ *
+ * @param output - Process stream to consume.
+ * @param byteLimit - Maximum retained bytes for an unfinished line.
+ * @param emit - Sink for each completed bounded line.
+ * @returns An effect that completes after the stream has been fully drained.
  */
 const drainDecodedChunks = (
   output: Stream.Stream<string, unknown>,
@@ -348,9 +377,20 @@ const makeService = (backend: ProcessBackend): Service => {
   return { start, run }
 }
 
+/**
+ * Builds a process supervisor from an injected backend.
+ *
+ * @param backend - Process backend used to spawn handles.
+ * @returns A layer providing {@link ProcessSupervisor}.
+ */
 export const layerFromBackend = (backend: ProcessBackend) =>
   Layer.succeed(ProcessSupervisor, ProcessSupervisor.of(makeService(backend)))
 
+/**
+ * Builds the production supervisor from Effect's child-process spawner.
+ *
+ * @returns A layer providing {@link ProcessSupervisor}.
+ */
 export const layer: Layer.Layer<ProcessSupervisor, never, ChildProcessSpawner.ChildProcessSpawner> =
   Layer.effect(
     ProcessSupervisor,

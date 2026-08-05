@@ -2,15 +2,29 @@ import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import type { CaseResult, TestCaseId, TestSourceId } from "../Domain.ts"
 
+/** Static case denominator an external runner must cover. */
 export interface ExpectedExternalRun {
   readonly sourceId: TestSourceId
   readonly staticCaseIds: ReadonlyArray<TestCaseId>
 }
 
+/** Rejects incomplete or unsuccessful external-runner output. */
 export class ExternalRunProtocolError extends Data.TaggedError("ExternalRunProtocolError")<{
   readonly reason: string
 }> {}
 
+/**
+ * Validates external results against the discovered static case denominator.
+ *
+ * @remarks
+ * Duplicate, missing, foreign, failed, timed-out, crashed, and not-run cases are
+ * rejected before the report can become compatibility evidence.
+ *
+ * @param expected - Source identity and statically discovered case IDs.
+ * @param results - Normalized external runner results.
+ * @returns The unchanged results after protocol closure succeeds.
+ * @throws {@link ExternalRunProtocolError} when case coverage or outcomes are invalid.
+ */
 export const validate = Effect.fn("ExternalRunProtocol.validate")(function* (
   expected: ExpectedExternalRun,
   results: ReadonlyArray<CaseResult>,

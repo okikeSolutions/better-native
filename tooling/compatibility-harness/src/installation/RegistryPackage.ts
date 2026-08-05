@@ -78,6 +78,21 @@ const files = Effect.fn("RegistryPackage.files")(function* (directory: string) {
   return (yield* visit(directory, "")).toSorted()
 })
 
+/**
+ * Finds and inspects an installed registry package at an exact expected version.
+ *
+ * @remarks
+ * Search roots are ordered by authority. The first matching package is decoded,
+ * fingerprinted through lock evidence, and expanded into catalog entrypoints.
+ *
+ * @param root - Better Native repository root.
+ * @param nodeModulesPaths - Ordered package installation roots.
+ * @param name - Package name to inspect.
+ * @param expectedVersion - Exact version required by the pinned Expo catalog.
+ * @param lock - Decoded Bun lockfile used to attach integrity evidence.
+ * @returns Package metadata, or `null` when no exact installation exists.
+ * @throws {@link HarnessError} when a discovered manifest cannot be read or decoded.
+ */
 export const inspect = Effect.fn("RegistryPackage.inspect")(function* (
   root: string,
   nodeModulesPaths: ReadonlyArray<string>,

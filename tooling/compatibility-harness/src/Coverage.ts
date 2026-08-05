@@ -4,14 +4,7 @@ import * as FileSystem from "effect/FileSystem"
 import * as Match from "effect/Match"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
-import {
-  Application,
-  LogLevel,
-  normalizePath,
-  TSConfigReader,
-  TypeDocReader,
-  type JSONOutput,
-} from "typedoc"
+import ts from "typescript"
 import { ExpoRepository } from "./ExpoRepository.ts"
 import { HarnessError } from "./HarnessError.ts"
 
@@ -151,10 +144,6 @@ const loadExpoExports = Effect.fn("Coverage.loadExpoExports")(function* (expoPac
   return expoValueExports(source)
 })
 
-const typedocChildren = (
-  json: JSONOutput.ProjectReflection,
-): ReadonlyArray<JSONOutput.DeclarationReflection> => json.children ?? []
-
 const loadBetterNativeExports = Effect.fn("Coverage.loadBetterNativeExports")(function* (
   expoPackage: string,
 ) {
@@ -162,42 +151,49 @@ const loadBetterNativeExports = Effect.fn("Coverage.loadBetterNativeExports")(fu
   const path = yield* Path.Path
   const entryPoint = path.join(repository.root, entrypointPath(expoPackage))
   const tsconfig = path.join(repository.root, tsconfigPath(expoPackage))
-  const artifact = path.join(
-    repository.root,
-    ".artifacts/compatibility",
-    `typedoc-${packageStem(expoPackage)}.json`,
-  )
-  return yield* Effect.tryPromise({
-    try: async () => {
-      const app = await Application.bootstrapWithPlugins(
-        {
-          entryPoints: [entryPoint],
-          tsconfig,
-          disableSources: true,
-          hideGenerator: true,
-          excludePrivate: true,
-          excludeProtected: true,
-          excludeExternals: true,
-          pretty: true,
-          commentStyle: "block",
-          jsDocCompatibility: false,
-          preserveLinkText: true,
-          sourceLinkExternal: false,
-          markdownLinkExternal: false,
-          logLevel: LogLevel.None,
-        },
-        [new TSConfigReader(), new TypeDocReader()],
+  return yield* Effect.try({
+    try: () => {
+      const configFile = ts.readConfigFile(tsconfig, (fileName) => ts.sys.readFile(fileName))
+      if (configFile.error !== undefined) {
+        throw new Error(ts.flattenDiagnosticMessageText(configFile.error.messageText, "\n"))
+      }
+      const parsed = ts.parseJsonConfigFileContent(
+        configFile.config,
+        ts.sys,
+        path.dirname(tsconfig),
+        undefined,
+        tsconfig,
       )
-      const project = await app.convert()
-      if (project === undefined)
-        throw new Error(`TypeDoc failed for ${betterNativePackage(expoPackage)}`)
-      await app.generateJson(project, artifact)
-      const json = app.serializer.projectToObject(project, normalizePath(repository.root))
-      return new Set(typedocChildren(json).map((child) => child.name))
+      if (parsed.errors.length > 0) {
+        throw new Error(
+          parsed.errors
+            .map((diagnostic) => ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"))
+            .join("\n"),
+        )
+      }
+      const program = ts.createProgram({
+        rootNames: [...new Set([...parsed.fileNames, entryPoint])],
+        options: parsed.options,
+        ...(parsed.projectReferences === undefined
+          ? {}
+          : { projectReferences: parsed.projectReferences }),
+      })
+      const source = program.getSourceFile(entryPoint)
+      const module =
+        source === undefined ? undefined : program.getTypeChecker().getSymbolAtLocation(source)
+      if (module === undefined) {
+        throw new Error(`TypeScript could not resolve ${betterNativePackage(expoPackage)}`)
+      }
+      return new Set(
+        program
+          .getTypeChecker()
+          .getExportsOfModule(module)
+          .map(({ name }) => name),
+      )
     },
     catch: (cause) =>
       new HarnessError({
-        operation: "extract Better Native API with TypeDoc",
+        operation: "extract Better Native API with TypeScript",
         path: entryPoint,
         cause,
       }),
@@ -402,6 +398,17 @@ const makeReport = Effect.fn("Coverage.makeReport")(function* () {
   } satisfies CoverageReport
 })
 
+/**
+ * Prints Effect-native API coverage for configured Expo replacements.
+ *
+ * @remarks
+ * Coverage describes export mapping only. It does not convert bundle success or
+ * API presence into behavioral compatibility evidence.
+ *
+ * @param options - Output-format selection.
+ * @returns An Effect that completes after the report is printed.
+ * @throws {@link HarnessError} when catalog or generated entrypoints cannot be inspected.
+ */
 export const report = Effect.fn("Coverage.report")(function* (options: { readonly json: boolean }) {
   const coverage = yield* makeReport()
   return yield* Console.log(

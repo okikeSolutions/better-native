@@ -14,6 +14,13 @@ import { HarnessError } from "../HarnessError.ts"
 const keyOf = (override: OwnershipOverride): string =>
   `${override.package}#${override.subpath}#${override.export ?? "*"}`
 
+/**
+ * Reports duplicate, stale, or incomplete ownership overrides.
+ *
+ * @param surface - The discovered Expo export surface.
+ * @param ownership - Reviewed ownership configuration.
+ * @returns Human-readable policy issues, in deterministic traversal order.
+ */
 export const issues = (
   surface: SurfaceSnapshot,
   ownership: OwnershipModel,
@@ -65,6 +72,12 @@ export const issues = (
   return output
 }
 
+/**
+ * Converts effect and fallback overrides into Metro replacement entries.
+ *
+ * @param ownership - Reviewed ownership configuration.
+ * @returns Sorted source-to-target replacements for candidate resolution.
+ */
 export const replacements = (ownership: OwnershipModel) => {
   const values = new Map<string, string>()
   for (const override of ownership.overrides) {
@@ -84,6 +97,13 @@ export const replacements = (ownership: OwnershipModel) => {
     .toSorted((left, right) => left.source.localeCompare(right.source))
 }
 
+/**
+ * Loads ownership policy and validates it against the discovered surface.
+ *
+ * @param surface - The current pinned Expo export surface.
+ * @returns The validated ownership configuration.
+ * @throws {@link HarnessError} for stale revisions or invalid overrides.
+ */
 export const load = Effect.fn("Ownership.load")(function* (surface: SurfaceSnapshot) {
   const repository = yield* ExpoRepository
   const ownership = yield* repository.readJson("compatibility/ownership.json", Ownership)
@@ -106,6 +126,14 @@ export const load = Effect.fn("Ownership.load")(function* (surface: SurfaceSnaps
   return ownership
 })
 
+/**
+ * Materializes a complete ownership ledger, defaulting unoverridden exports upstream.
+ *
+ * @param surface - The discovered export denominator.
+ * @param ownership - Reviewed overrides to apply.
+ * @returns A versioned ledger covering every surface export.
+ * @throws {@link HarnessError} when the ledger fingerprint cannot be computed.
+ */
 export const materialize = Effect.fn("Ownership.materialize")(function* (
   surface: SurfaceSnapshot,
   ownership: OwnershipModel,
@@ -136,11 +164,24 @@ export const materialize = Effect.fn("Ownership.materialize")(function* (
   } satisfies OwnershipLedgerModel
 })
 
+/**
+ * Loads the reviewed surface lock used to detect catalog drift.
+ *
+ * @returns The lock read from the repository compatibility inputs.
+ * @throws {@link HarnessError} when the lock cannot be read or decoded.
+ */
 export const loadSurfaceLock = Effect.fn("Ownership.loadSurfaceLock")(function* () {
   const repository = yield* ExpoRepository
   return yield* repository.readJson("compatibility/surface-lock.json", SurfaceLock)
 })
 
+/**
+ * Reports additions, removals, or fingerprint changes against the surface lock.
+ *
+ * @param surface - The newly discovered surface.
+ * @param lock - The previously reviewed surface lock.
+ * @returns Drift issues that must be reviewed before generation proceeds.
+ */
 export const lockIssues = (
   surface: SurfaceSnapshot,
   lock: SurfaceLockModel,

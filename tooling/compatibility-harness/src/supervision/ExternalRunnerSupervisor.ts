@@ -18,6 +18,7 @@ import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import * as ExternalRunnerAdapters from "../runners/ExternalRunnerAdapters.ts"
 import { ProcessSupervisor, type ProcessSpec } from "./ProcessSupervisor.ts"
 
+/** Reviewed command and report contract for one external runner execution. */
 export const ExternalRunRequest = Schema.Struct({
   reviewed: Schema.Literal(true),
   id: RunId,
@@ -47,20 +48,24 @@ export const ExternalRunRequest = Schema.Struct({
   ),
   reportPath: Schema.NonEmptyString,
 })
+/** Decoded external runner request accepted by {@link ExternalRunRequest}. */
 export type ExternalRunRequest = Schema.Schema.Type<typeof ExternalRunRequest>
 
+/** Failure raised while running, parsing, or recording external test output. */
 export class ExternalRunnerError extends Data.TaggedError("ExternalRunnerError")<{
   readonly request: ExternalRunRequest
   readonly phase: "process" | "report" | "evidence"
   readonly cause: unknown
 }> {}
 
+/** External runner operation that returns validated case results. */
 export interface Service {
   readonly run: (
     request: ExternalRunRequest,
   ) => Effect.Effect<ReadonlyArray<CaseResultType>, ExternalRunnerError>
 }
 
+/** Effect context tag for reviewed external runner execution. */
 export class ExternalRunnerSupervisor extends Context.Service<ExternalRunnerSupervisor, Service>()(
   "@better-native/compatibility-harness/ExternalRunnerSupervisor",
 ) {}
@@ -100,6 +105,16 @@ const parseReport = (
     ),
   )
 
+/**
+ * Builds an external runner supervisor confined to the repository root.
+ *
+ * @remarks
+ * Commands, working directories, and reports are checked against reviewed roots;
+ * report size and executable names are bounded before output becomes evidence.
+ *
+ * @param root - Better Native repository root.
+ * @returns A layer providing {@link ExternalRunnerSupervisor}.
+ */
 export const layer = (
   root: string,
 ): Layer.Layer<

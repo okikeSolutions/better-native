@@ -19,6 +19,7 @@ import { BuildCommand } from "./BuildCommand.ts"
 import { BuildPipelineError, type BuildRequest } from "./BuildModel.ts"
 import { BuildProducts } from "./BuildProducts.ts"
 
+/** Versioned metadata binding a cached native artifact to its build inputs. */
 export const NativeArtifactCacheRecord = Schema.Struct({
   schemaVersion: Schema.Literal(1),
   platform: Schema.Literals(["ios", "android"]),
@@ -29,12 +30,14 @@ export const NativeArtifactCacheRecord = Schema.Struct({
   sourceBuildId: BuildId,
   artifactHash: ContentHash,
 })
+/** Decoded cache metadata accepted by {@link NativeArtifactCacheRecord}. */
 export type NativeArtifactCacheRecord = Schema.Schema.Type<typeof NativeArtifactCacheRecord>
 
 class NativeCacheMetadataError extends Data.TaggedError("NativeCacheMetadataError")<{
   readonly cause: unknown
 }> {}
 
+/** Inputs used to locate or publish one native artifact cache entry. */
 export interface NativeCacheRequest {
   readonly request: BuildRequest
   readonly appDirectory: string
@@ -43,6 +46,7 @@ export interface NativeCacheRequest {
   readonly toolchainFingerprint: ContentHash
 }
 
+/** Cache hit/miss result and provenance returned to the build pipeline. */
 export interface NativeCacheRestore {
   readonly hit: boolean
   readonly key: string
@@ -53,6 +57,18 @@ export interface NativeCacheRestore {
   readonly phases: ReadonlyArray<BuildRecord["performance"]["phases"][number]>
 }
 
+/**
+ * Computes the cache identity for a platform native artifact.
+ *
+ * @remarks
+ * The key includes platform, host architecture, native fingerprint, and
+ * toolchain fingerprint. Omitting any component could reuse a binary built
+ * from incompatible native inputs.
+ *
+ * @param input - Build and fingerprint inputs for the artifact.
+ * @param architecture - Host architecture used by the native toolchain.
+ * @returns A path-safe deterministic cache key.
+ */
 export const nativeArtifactCacheKey = (
   input: Pick<NativeCacheRequest, "request" | "nativeFingerprint" | "toolchainFingerprint">,
   architecture: string = process.arch,
@@ -61,6 +77,12 @@ export const nativeArtifactCacheKey = (
     "-",
   )
 
+/**
+ * Selects the native product name for a supported build platform.
+ *
+ * @param platform - Build platform.
+ * @returns Native product metadata, or `null` for web builds.
+ */
 export const nativeArtifact = (
   platform: BuildRequest["platform"],
 ): { readonly platform: "ios" | "android"; readonly name: string } | null =>
@@ -71,9 +93,27 @@ export const nativeArtifact = (
     Match.exhaustive,
   )
 
+/**
+ * Returns the native product filename for a platform, if one exists.
+ *
+ * @param platform - Build platform.
+ * @returns The product filename, or `null` for web builds.
+ */
 export const nativeArtifactName = (platform: BuildRequest["platform"]): string | null =>
   nativeArtifact(platform)?.name ?? null
 
+/**
+ * Explains why a cached native artifact cannot satisfy a build request.
+ *
+ * @remarks
+ * Checks are ordered from coarse platform identity to toolchain identity so
+ * diagnostics identify the first invalid cache dimension.
+ *
+ * @param record - Metadata persisted with the cached artifact.
+ * @param input - Current build request and fingerprints.
+ * @param architecture - Host architecture used by the current toolchain.
+ * @returns The mismatching dimension, or `null` when all dimensions match.
+ */
 export const nativeArtifactCacheMismatch = (
   record: NativeArtifactCacheRecord,
   input: NativeCacheRequest,
@@ -111,12 +151,19 @@ interface Service {
   ) => Effect.Effect<NativeCacheRestore, BuildPipelineError>
 }
 
+/** Effect context tag for reusable native build artifacts. */
 export class NativeArtifactCache extends Context.Service<NativeArtifactCache, Service>()(
   "@better-native/compatibility-harness/NativeArtifactCache",
 ) {}
 
 const repackModulePath = fileURLToPath(import.meta.resolve("@expo/repack-app"))
 
+/**
+ * Builds native caching with product hashing and shared build services.
+ *
+ * @param root - Better Native repository root.
+ * @returns A layer providing {@link NativeArtifactCache}.
+ */
 export const layer = (
   root: string,
 ): Layer.Layer<

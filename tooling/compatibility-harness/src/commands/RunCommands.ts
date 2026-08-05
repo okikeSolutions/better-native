@@ -19,6 +19,12 @@ import { shardCountFlag, shardIndexFlag, timeoutMillisFlag } from "./Shared.ts"
 
 const upstreamEvidenceFlag = Flag.string("upstream")
 const candidateEvidenceFlag = Flag.string("candidate")
+/**
+ * Compares upstream and candidate evidence and emits a differential verdict.
+ *
+ * @remarks
+ * Missing evidence and unapproved divergences are failures, not neutral results.
+ */
 export const compareRuns = Command.make(
   "compare-runs",
   { upstream: upstreamEvidenceFlag, candidate: candidateEvidenceFlag },
@@ -76,6 +82,9 @@ export const compareRuns = Command.make(
 )
 
 const externalPlan = Flag.string("plan")
+/**
+ * Executes one reviewed external-runner request.
+ */
 export const supervisedExternal = Command.make(
   "supervise-external",
   { plan: externalPlan },
@@ -137,6 +146,9 @@ export const supervisedExternal = Command.make(
 
 const runnerFamily = Flag.string("runner").pipe(Flag.withDefault("all"))
 const runnerReport = Flag.string("report")
+/**
+ * Executes a shard of generated external runner plans.
+ */
 export const supervisedRunnerPlans = Command.make(
   "supervise-runner-plans",
   {

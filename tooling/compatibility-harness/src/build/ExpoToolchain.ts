@@ -44,6 +44,7 @@ interface Service {
   readonly load: (request: BuildRequest) => Effect.Effect<PinnedExpoToolchain, BuildPipelineError>
 }
 
+/** Effect context tag for preparing and reusing the pinned Expo toolchain. */
 export class ExpoToolchain extends Context.Service<ExpoToolchain, Service>()(
   "@better-native/compatibility-harness/ExpoToolchain",
 ) {}
@@ -67,6 +68,13 @@ const validateRequest = (request: BuildRequest) =>
     return undefined
   })
 
+/**
+ * Builds toolchain preparation with validated source roots and cache evidence.
+ *
+ * @param root - Better Native repository root.
+ * @param expoSourceRoot - Optional explicit Expo checkout overriding harness configuration.
+ * @returns A layer providing {@link ExpoToolchain}.
+ */
 export const layer = (
   root: string,
   expoSourceRoot?: string,

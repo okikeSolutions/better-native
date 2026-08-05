@@ -53,6 +53,20 @@ const containsTestCall = (node: ts.Node, toolObjects: ReadonlySet<string>): bool
   return found
 }
 
+/**
+ * Statically analyzes one test source for case declarations.
+ *
+ * @remarks
+ * Literal case names are retained as static evidence. Parameterized tests,
+ * wrappers, RuleTester calls, and dynamic titles mark the source for runtime
+ * discovery rather than inventing case identifiers.
+ *
+ * @param sourceId - Stable source identifier.
+ * @param file - Source path used by the TypeScript parser.
+ * @param text - Source text to analyze.
+ * @param invokedFactoryName - Optional exported factory whose parameters act as test tools.
+ * @returns Statically discovered cases and the strongest available evidence kind.
+ */
 export const analyzeCases = (
   sourceId: TestSourceIdType,
   file: string,
@@ -189,6 +203,16 @@ const looksLikeTestSource = (file: string): boolean =>
   /\/src\/(?:test|androidTest)\/.*\.(?:java|kt)$/.test(file) ||
   /\/(?:__e2e__|e2e|maestro|\.maestro)\/.*\.ya?ml$/.test(file)
 
+/**
+ * Discovers and classifies the complete pinned Expo test corpus.
+ *
+ * @remarks
+ * Suite rules are applied with deterministic precedence. Every suite must match
+ * a uniquely assigned source, and unassigned test-looking files fail closed.
+ *
+ * @returns The versioned corpus snapshot and deterministic fingerprint.
+ * @throws {@link HarnessError} for stale rules, invalid patterns, empty suites, or uncovered tests.
+ */
 export const discover = Effect.fn("Suites.discover")(function* () {
   const repository = yield* ExpoRepository
   const suites = yield* repository.readJson("compatibility/suites.json", Suites)

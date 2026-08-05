@@ -1,6 +1,7 @@
 import type { CorpusSnapshot, TestSource } from "../Domain.ts"
 import * as Schema from "effect/Schema"
 
+/** Versioned ledger assigning every non-app source an executable plan or blocker. */
 export const RunnerPlanLedgerSchema = Schema.Struct({
   schemaVersion: Schema.Literal(1),
   expoRevision: Schema.String,
@@ -26,6 +27,7 @@ export const RunnerPlanLedgerSchema = Schema.Struct({
   ),
 })
 
+/** Reviewed command template for one external test source. */
 export interface CommandPlan {
   readonly command: string
   readonly args: ReadonlyArray<string>
@@ -35,6 +37,7 @@ export interface CommandPlan {
   readonly reportPath: string | null
 }
 
+/** Executable or explicitly blocked disposition for one discovered source. */
 export interface RunnerPlanEntry {
   readonly sourceId: string
   readonly path: string
@@ -45,6 +48,7 @@ export interface RunnerPlanEntry {
   readonly reason: string | null
 }
 
+/** Complete external runner disposition for the pinned test corpus. */
 export interface RunnerPlanLedger {
   readonly schemaVersion: 1
   readonly expoRevision: string
@@ -92,6 +96,16 @@ const jestBlocker = (source: TestSource): string | null => {
   }
 }
 
+/**
+ * Derives a reviewed external command plan for one source when supported.
+ *
+ * @remarks
+ * Returning `null` is intentional: unsupported sources remain in the ledger
+ * with an explicit blocker rather than disappearing from the denominator.
+ *
+ * @param source - Discovered source and its declared runner.
+ * @returns A bounded command plan, or `null` when no safe adapter exists.
+ */
 const concrete = (source: TestSource): CommandPlan | null => {
   // Discovery-required sources need a prepared application, device, or owning
   // runner configuration. A command that merely names their source file would
@@ -203,6 +217,17 @@ const blockedReason = (source: TestSource): string => {
   }
 }
 
+/**
+ * Builds the external runner ledger for sources not hosted by the compatibility app.
+ *
+ * @remarks
+ * Every source remains visible. Sources without a reviewed command receive a
+ * concrete blocker reason rather than being omitted from the denominator.
+ *
+ * @param corpus - Complete discovered test corpus.
+ * @param appRunnableSourceIds - Sources already executed by the generated app.
+ * @returns A deterministic runner-plan ledger.
+ */
 export const make = (
   corpus: CorpusSnapshot,
   appRunnableSourceIds: ReadonlySet<string>,
@@ -236,6 +261,14 @@ export const make = (
     .toSorted((left, right) => left.sourceId.localeCompare(right.sourceId)),
 })
 
+/**
+ * Validates runner-plan coverage against the current corpus.
+ *
+ * @param corpus - Complete discovered test corpus.
+ * @param ledger - Generated runner-plan disposition.
+ * @param appRunnableSourceIds - Sources owned by the compatibility app.
+ * @returns Missing, conflicting, or incomplete disposition issues.
+ */
 export const issues = (
   corpus: CorpusSnapshot,
   ledger: RunnerPlanLedger,

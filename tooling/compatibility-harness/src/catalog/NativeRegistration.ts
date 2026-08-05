@@ -108,6 +108,17 @@ const normalize = (path: string, config: RawConfig, raw: Schema.Json): NativeReg
   }
 }
 
+/**
+ * Decodes Expo module configuration into normalized native-registration evidence.
+ *
+ * @remarks
+ * Raw configuration is retained alongside normalized module and platform lists
+ * so catalog decisions remain auditable against the source checkout.
+ *
+ * @param path - Configuration path relative to the Expo checkout.
+ * @param text - Raw JSON configuration text.
+ * @returns Normalized registration metadata, or `null` when no native registration exists.
+ */
 export const decode = (
   path: string,
   text: string,

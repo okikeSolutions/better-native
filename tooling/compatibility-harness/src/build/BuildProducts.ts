@@ -12,10 +12,16 @@ interface Service {
   readonly hash: (path: string) => Effect.Effect<ContentHashType, unknown>
 }
 
+/** Effect context tag for canonical build-product hashing. */
 export class BuildProducts extends Context.Service<BuildProducts, Service>()(
   "@better-native/compatibility-harness/BuildProducts",
 ) {}
 
+/**
+ * Builds product hashing with symlink rejection and deterministic directory traversal.
+ *
+ * @returns A layer providing {@link BuildProducts}.
+ */
 export const layer: Layer.Layer<
   BuildProducts,
   never,

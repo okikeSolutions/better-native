@@ -28,6 +28,7 @@ const Report = Schema.Struct({
   entries: Schema.Array(Status),
 })
 
+/** CLI execution options for one runner-plan shard. */
 export interface Options {
   readonly runner: string
   readonly shardIndex: number
@@ -36,6 +37,19 @@ export interface Options {
   readonly reportPath: string
 }
 
+/**
+ * Expands the narrow placeholder set allowed in a reviewed runner command.
+ *
+ * @remarks
+ * Expansion is deliberately not shell interpolation. Only known plan fields
+ * are substituted, keeping executable plans deterministic and bounded.
+ *
+ * @param value - Reviewed command or argument template.
+ * @param repositoryRoot - Canonical Better Native repository root.
+ * @param expoRoot - Canonical pinned Expo source root.
+ * @param runId - Safe run identifier used for report paths.
+ * @returns The expanded command text.
+ */
 export const expandTemplate = (
   value: string,
   repositoryRoot: string,
@@ -47,6 +61,17 @@ export const expandTemplate = (
     .replaceAll("{expoRoot}", expoRoot)
     .replaceAll("{runId}", runId)
 
+/**
+ * Executes one deterministic shard of reviewed external runner plans.
+ *
+ * @remarks
+ * Executable entries are selected by stable ledger index. Blocked entries remain
+ * in the output report so unsupported sources cannot disappear from coverage.
+ *
+ * @param options - Runner filter, shard bounds, timeout, and output path.
+ * @returns An Effect that completes after the shard report is written.
+ * @throws {@link HarnessError} for invalid shards, stale ledgers, or report failures.
+ */
 export const run = Effect.fn("RunnerPlanExecution.run")(function* (options: Options) {
   if (
     options.shardCount < 1 ||

@@ -12,10 +12,17 @@ interface Service {
   readonly load: (request: BuildImportRequest) => Effect.Effect<BuildOutput, BuildImportError>
 }
 
+/** Effect context tag for importing validated native build products. */
 export class AppBuildImporter extends Context.Service<AppBuildImporter, Service>()(
   "@better-native/compatibility-harness/AppBuildImporter",
 ) {}
 
+/**
+ * Builds the importer that verifies binary and observation hashes before use.
+ *
+ * @param root - Better Native repository root used for fallback application paths.
+ * @returns A layer providing {@link AppBuildImporter}.
+ */
 export const layer = (
   root: string,
 ): Layer.Layer<AppBuildImporter, never, BuildProducts | FileSystem.FileSystem | Path.Path> =>

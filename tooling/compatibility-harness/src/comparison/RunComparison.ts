@@ -34,11 +34,13 @@ const ResolutionEvent = Schema.Struct({
 
 type ResolutionEventType = Schema.Schema.Type<typeof ResolutionEvent>
 
+/** Candidate resolver observations accepted for the replacement manifest. */
 export interface CandidateTreatmentEvidence {
   readonly resolvedSources: ReadonlySet<string>
   readonly issues: ReadonlyArray<string>
 }
 
+/** Aggregate result of comparing one platform's paired runs. */
 export interface ComparisonSummary {
   readonly schemaVersion: 1
   readonly platform: Platform
@@ -50,6 +52,7 @@ export interface ComparisonSummary {
   readonly issues: ReadonlyArray<string>
 }
 
+/** Describes an unreadable, undecodable, or invalid comparison input. */
 export class RunComparisonError extends Data.TaggedError("RunComparisonError")<{
   readonly operation: "read" | "decode" | "compare"
   readonly path?: string
@@ -59,6 +62,13 @@ export class RunComparisonError extends Data.TaggedError("RunComparisonError")<{
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value)
 
+/**
+ * Loads and decodes every run record below an evidence root.
+ *
+ * @param root - Upstream or candidate run-evidence directory.
+ * @returns Decoded run records found below the root.
+ * @throws {@link RunComparisonError} when records are missing, unreadable, or invalid.
+ */
 export const load = Effect.fn("RunComparison.load")(function* (root: string) {
   const fs = yield* FileSystem.FileSystem
   const files = (yield* fs.glob("**/record.json", { root })).toSorted()
@@ -91,6 +101,17 @@ export const load = Effect.fn("RunComparison.load")(function* (root: string) {
   return records
 })
 
+/**
+ * Checks whether a resolver observation agrees with its serialized outcome.
+ *
+ * @remarks
+ * Source-file outcomes require an exact string target, while asset outcomes
+ * require an exact ordered array. Empty and failed resolutions are diagnostic
+ * observations, never successful candidate treatment.
+ *
+ * @param event - Resolution observation emitted by the instrumented app.
+ * @returns Whether the observed target matches the expected resolution shape.
+ */
 const successfulResolution = (event: ResolutionEventType): boolean => {
   switch (event.outcome.kind) {
     case "source-file":
@@ -110,6 +131,19 @@ const successfulResolution = (event: ResolutionEventType): boolean => {
 const packageName = (specifier: string): string =>
   specifier.startsWith("@") ? specifier.split("/").slice(0, 2).join("/") : specifier.split("/")[0]!
 
+/**
+ * Verifies candidate resolution observations against the generated manifest.
+ *
+ * @remarks
+ * Candidate treatment counts only when the observed source, target package, run,
+ * build, and ownership fingerprint all agree with immutable generated inputs.
+ *
+ * @param root - Candidate evidence root containing discovery records.
+ * @param records - Candidate run records used to bind observations to builds.
+ * @param manifest - Generated and fingerprinted replacement manifest.
+ * @returns Accepted resolved sources and all treatment issues.
+ * @throws {@link RunComparisonError} when discovery evidence cannot be read or decoded.
+ */
 export const loadCandidateTreatmentEvidence = Effect.fn(
   "RunComparison.loadCandidateTreatmentEvidence",
 )(function* (root: string, records: ReadonlyArray<RunRecordType>, manifest: ReplacementManifest) {
@@ -301,6 +335,22 @@ const buildIdentities = (records: ReadonlyArray<RunRecordType>) =>
     ),
   )
 
+/**
+ * Produces the differential verdict for paired upstream and candidate evidence.
+ *
+ * @remarks
+ * The comparison fails closed on incomplete sources, infrastructure failures,
+ * unexpected outcomes, build-identity drift, and unobserved candidate replacements.
+ * Reviewed expectations may explain a divergence but cannot create missing evidence.
+ *
+ * @param upstream - Upstream oracle run records.
+ * @param candidate - Candidate run records.
+ * @param expectations - Reviewed case-level expected divergences.
+ * @param expectedSources - Complete source denominator for the comparison.
+ * @param replacementManifest - Generated candidate replacement manifest.
+ * @param candidateTreatmentEvidence - Verified resolver observations.
+ * @returns Aggregate comparison counts and blocking issues.
+ */
 export const compare = (
   upstream: ReadonlyArray<RunRecordType>,
   candidate: ReadonlyArray<RunRecordType>,

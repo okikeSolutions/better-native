@@ -3,6 +3,16 @@ import { Expectations } from "../Domain.ts"
 import { ExpoRepository } from "../ExpoRepository.ts"
 import { HarnessError } from "../HarnessError.ts"
 
+/**
+ * Loads reviewed case-level divergences and validates their pinned revision.
+ *
+ * @remarks
+ * Every expectation must carry a reason and issue so intentional behavior
+ * differences remain auditable rather than becoming silent skips.
+ *
+ * @returns The validated expectations configuration.
+ * @throws {@link HarnessError} for stale revisions, duplicates, or incomplete rationale.
+ */
 export const load = Effect.fn("Expectations.load")(function* () {
   const repository = yield* ExpoRepository
   const expectations = yield* repository.readJson("compatibility/expectations.json", Expectations)

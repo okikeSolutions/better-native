@@ -5,6 +5,13 @@ import { BuildId, RunId } from "../Domain.ts"
 import { HarnessConfig } from "../HarnessConfig.ts"
 import { HarnessError } from "../HarnessError.ts"
 
+/**
+ * Fails command execution unless a prior build record succeeded.
+ *
+ * @param record - Build record and output path returned by the build pipeline.
+ * @returns The unchanged record when infrastructure succeeded.
+ * @throws {@link HarnessError} when the build infrastructure did not succeed.
+ */
 export const requireSuccessfulRun = (record: {
   readonly plan: { readonly id: string }
   readonly finalInfrastructure: { readonly _tag: string }
@@ -21,14 +28,31 @@ export const requireSuccessfulRun = (record: {
     ),
   )
 
+/** CLI flag selecting upstream or candidate build mode. */
 export const buildMode = Flag.choice("mode", ["upstream", "candidate"] as const)
+/** CLI flag selecting the build platform. */
 export const buildPlatform = Flag.choice("platform", ["web", "ios", "android"] as const)
+/** CLI flag validated as a safe build identifier. */
 export const buildIdFlag = Flag.string("build-id").pipe(Flag.withSchema(BuildId))
+/** CLI timeout flag with the harness default execution budget. */
 export const timeoutMillisFlag = Flag.integer("timeout-ms").pipe(Flag.withDefault(1_200_000))
+/**
+ * Candidate revision supplied by the harness configuration, when present.
+ *
+ * @param config - Loaded harness configuration.
+ * @returns The configured candidate revision.
+ */
 export const configuredCandidateRevision = HarnessConfig.pipe(
   Effect.map((config) => config.githubSha),
 )
 
+/**
+ * Resolves the candidate revision required by a command mode.
+ *
+ * @param mode - Upstream or candidate execution mode.
+ * @returns `null` for upstream mode or the configured candidate revision.
+ * @throws {@link HarnessError} when candidate mode has no configured revision.
+ */
 export const candidateRevision = (mode: "upstream" | "candidate") =>
   Match.value(mode).pipe(
     Match.when("candidate", () => configuredCandidateRevision),
@@ -36,8 +60,13 @@ export const candidateRevision = (mode: "upstream" | "candidate") =>
     Match.exhaustive,
   )
 
+/** CLI flag restricting native commands to iOS or Android. */
 export const nativePlatform = Flag.choice("platform", ["ios", "android"] as const)
+/** CLI device or simulator identifier. */
 export const deviceIdFlag = Flag.string("device-id")
+/** CLI flag validated as a safe run identifier. */
 export const runIdFlag = Flag.string("run-id").pipe(Flag.withSchema(RunId))
+/** Zero-based runner-plan shard index. */
 export const shardIndexFlag = Flag.integer("shard-index").pipe(Flag.withDefault(0))
+/** Total number of runner-plan shards. */
 export const shardCountFlag = Flag.integer("shard-count").pipe(Flag.withDefault(1))

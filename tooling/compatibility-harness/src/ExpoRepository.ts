@@ -11,6 +11,7 @@ import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawne
 import { HarnessConfig } from "./HarnessConfig.ts"
 import { HarnessError } from "./HarnessError.ts"
 
+/** Schema for a full lowercase Git object revision. */
 export const GitRevision = Schema.String.pipe(
   Schema.check(
     Schema.makeFilter((value) => /^[0-9a-f]{40}$/.test(value), {
@@ -43,14 +44,17 @@ const ExternalUpstream = Schema.Struct({
   revision: GitRevision,
 })
 
+/** Versioned configuration for the pinned Effect and Expo source revisions. */
 export const Upstreams = Schema.Struct({
   schemaVersion: Schema.Literal(1),
   effect: Upstream,
   expo: ExternalUpstream,
 })
 
+/** Decoded upstream configuration accepted by {@link Upstreams}. */
 export type Upstreams = Schema.Schema.Type<typeof Upstreams>
 
+/** Repository access constrained to verified Better Native and Expo roots. */
 export interface Service {
   readonly root: string
   readonly expoRoot: string
@@ -74,6 +78,7 @@ export interface Service {
   readonly verify: Effect.Effect<void, HarnessError>
 }
 
+/** Effect context tag for pinned repository access and artifact writing. */
 export class ExpoRepository extends Context.Service<ExpoRepository, Service>()(
   "@better-native/compatibility-harness/ExpoRepository",
 ) {}
@@ -81,6 +86,18 @@ export class ExpoRepository extends Context.Service<ExpoRepository, Service>()(
 const failure = (operation: string, path: string | undefined, cause: unknown): HarnessError =>
   new HarnessError({ operation, ...(path === undefined ? {} : { path }), cause })
 
+/**
+ * Builds verified repository access for the harness.
+ *
+ * @remarks
+ * The layer rejects symlinked source roots, parent traversal, and revision drift
+ * before exposing file access. The external Expo checkout is the authoritative oracle.
+ *
+ * @param root - Better Native repository root.
+ * @param expoSourceRoot - Optional explicit pinned Expo checkout.
+ * @returns A layer providing {@link ExpoRepository}.
+ * @throws {@link HarnessError} when roots, revisions, or upstream configuration are invalid.
+ */
 export const layer = (
   root: string,
   expoSourceRoot?: string,

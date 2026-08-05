@@ -6,6 +6,7 @@ import { parseStringPromise } from "xml2js"
 import { TestCaseId, type CaseResult, type RunId, type TestSourceId } from "../Domain.ts"
 import type { ProcessSpec } from "../supervision/ProcessSupervisor.ts"
 
+/** Failure raised when an external runner report cannot be parsed or normalized. */
 export class RunnerOutputError extends Data.TaggedError("RunnerOutputError")<{
   readonly runner:
     | "jest"
@@ -21,6 +22,15 @@ export class RunnerOutputError extends Data.TaggedError("RunnerOutputError")<{
   readonly cause: unknown
 }> {}
 
+/**
+ * Builds the bounded Jest command used by reviewed runner plans.
+ *
+ * @param cwd - Owning Expo workspace directory.
+ * @param outputFile - JSON report destination.
+ * @param paths - Exact test source paths.
+ * @param timeoutMillis - Process timeout.
+ * @returns A supervised process specification.
+ */
 export const jestCommand = (
   cwd: string,
   outputFile: string,
@@ -33,6 +43,17 @@ export const jestCommand = (
   timeoutMillis,
 })
 
+/**
+ * Builds an `xcodebuild test` process specification.
+ *
+ * @param cwd - Owning native project directory.
+ * @param workspace - Xcode workspace path.
+ * @param scheme - Reviewed test scheme.
+ * @param destination - Simulator or device destination.
+ * @param resultBundle - Result bundle output path.
+ * @param timeoutMillis - Process timeout.
+ * @returns A supervised process specification.
+ */
 export const xctestCommand = (
   cwd: string,
   workspace: string,
@@ -57,6 +78,15 @@ export const xctestCommand = (
   timeoutMillis,
 })
 
+/**
+ * Builds a Gradle unit or instrumentation test process specification.
+ *
+ * @param cwd - Owning Android project directory.
+ * @param executable - Gradle wrapper or executable path.
+ * @param instrumentation - Whether to select the connected-device task.
+ * @param timeoutMillis - Process timeout.
+ * @returns A supervised process specification.
+ */
 export const gradleCommand = (
   cwd: string,
   executable: string,
@@ -69,6 +99,15 @@ export const gradleCommand = (
   timeoutMillis,
 })
 
+/**
+ * Builds a Maestro command that emits JUnit evidence.
+ *
+ * @param cwd - Flow working directory.
+ * @param flow - Reviewed Maestro flow path.
+ * @param outputFile - JUnit report destination.
+ * @param timeoutMillis - Process timeout.
+ * @returns A supervised process specification with Maestro shutdown grace.
+ */
 export const maestroCommand = (
   cwd: string,
   flow: string,
@@ -181,6 +220,18 @@ const outcome = (
     })),
   )
 
+/**
+ * Converts normalized runner rows into the harness case-result model.
+ *
+ * @remarks
+ * Case IDs are derived from source ID, normalized name, and occurrence index,
+ * making duplicate titles representable without inventing unstable identifiers.
+ *
+ * @param runId - Run receiving the normalized results.
+ * @param sourceId - Source that produced the runner report.
+ * @param rows - Adapter-specific normalized rows.
+ * @returns Case results suitable for external protocol validation.
+ */
 const materialize = (
   runId: RunId,
   sourceId: TestSourceId,
@@ -206,6 +257,15 @@ const materialize = (
   })
 }
 
+/**
+ * Parses Jest JSON into normalized compatibility case results.
+ *
+ * @param runId - Run receiving the results.
+ * @param sourceId - Source represented by the report.
+ * @param input - Raw Jest JSON report.
+ * @returns Normalized case results with stable occurrence identifiers.
+ * @throws {@link RunnerOutputError} when JSON or report shape is invalid.
+ */
 export const parseJest = Effect.fn("ExternalRunnerAdapters.parseJest")(function* (
   runId: RunId,
   sourceId: TestSourceId,
@@ -226,6 +286,13 @@ export const parseJest = Effect.fn("ExternalRunnerAdapters.parseJest")(function*
   )
 })
 
+/**
+ * Joins suite ancestry and a case title without duplicating existing hierarchy text.
+ *
+ * @param ancestors - Outer suite names.
+ * @param title - Runner-provided case title.
+ * @returns A stable ` > `-separated case name.
+ */
 export const hierarchicalCaseName = (ancestors: ReadonlyArray<string>, title: string): string => {
   const parts = ancestors.filter((part) => part.length > 0)
   if (parts.length === 0 || title.includes(" > ")) return title
@@ -233,6 +300,12 @@ export const hierarchicalCaseName = (ancestors: ReadonlyArray<string>, title: st
   return [...parts, title].join(" > ")
 }
 
+/**
+ * Selects the most structured stable name available for a Jest assertion.
+ *
+ * @param entry - Jest assertion naming fields.
+ * @returns A hierarchical case name.
+ */
 export const jestCaseName = (entry: {
   readonly fullName: string
   readonly ancestorTitles?: ReadonlyArray<string> | undefined
@@ -290,6 +363,16 @@ const junitRows = (report: Schema.Schema.Type<typeof JunitOutput>) => {
   return rows
 }
 
+/**
+ * Parses nested JUnit XML into normalized compatibility case results.
+ *
+ * @param runner - Runner family that produced the report.
+ * @param runId - Run receiving the results.
+ * @param sourceId - Source represented by the report.
+ * @param input - Raw JUnit XML.
+ * @returns Normalized case results preserving suite ancestry.
+ * @throws {@link RunnerOutputError} when XML or report shape is invalid.
+ */
 export const parseJunit = Effect.fn("ExternalRunnerAdapters.parseJunit")(function* (
   runner:
     | "node-test"
@@ -323,6 +406,15 @@ export const parseJunit = Effect.fn("ExternalRunnerAdapters.parseJunit")(functio
   )
 })
 
+/**
+ * Parses `xcresulttool` JSON into normalized compatibility case results.
+ *
+ * @param runId - Run receiving the results.
+ * @param sourceId - Source represented by the report.
+ * @param input - Raw XCTest result-tree JSON.
+ * @returns Normalized leaf results from the recursive XCTest tree.
+ * @throws {@link RunnerOutputError} when JSON or report shape is invalid.
+ */
 export const parseXcTest = Effect.fn("ExternalRunnerAdapters.parseXcTest")(function* (
   runId: RunId,
   sourceId: TestSourceId,

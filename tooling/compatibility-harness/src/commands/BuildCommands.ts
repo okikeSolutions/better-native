@@ -14,6 +14,9 @@ import {
   timeoutMillisFlag,
 } from "./Shared.ts"
 
+/**
+ * Prepares and validates the pinned Expo toolchain.
+ */
 export const prepareExpo = Command.make(
   "prepare-expo",
   { timeoutMillis: timeoutMillisFlag },
@@ -39,6 +42,9 @@ export const prepareExpo = Command.make(
   ),
 )
 
+/**
+ * Builds one upstream or candidate compatibility app.
+ */
 export const supervisedBuild = Command.make(
   "supervise-build",
   {
@@ -63,6 +69,13 @@ export const supervisedBuild = Command.make(
   }),
 ).pipe(Command.withDescription("Create an isolated production web or Release native build"))
 
+/**
+ * Builds upstream and candidate apps from one shared materialization.
+ *
+ * @remarks
+ * Sharing the materialization keeps the pair comparable while allowing distinct
+ * JavaScript resolution modes.
+ */
 export const supervisedBuildPair = Command.make(
   "supervise-build-pair",
   {

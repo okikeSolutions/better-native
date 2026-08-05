@@ -15,6 +15,18 @@ const targetStrings = (value: Json): ReadonlyArray<string> => {
 
 const codeTarget = /\.(?:[cm]?[jt]sx?|d\.[cm]?ts)$/
 
+/**
+ * Classifies one package subpath from its conditional export target.
+ *
+ * @remarks
+ * Classification preserves the raw resolution tree because platform-specific
+ * branches are compatibility evidence, not a value to flatten prematurely.
+ *
+ * @param packageName - Owning package name used for conventional classification.
+ * @param subpath - Package subpath being classified.
+ * @param resolution - Raw target value from the package manifest.
+ * @returns The entrypoint kind and normalized resolution branches.
+ */
 export const classify = (
   packageName: PackageName,
   subpath: string,
@@ -67,6 +79,16 @@ const manifestResolution = (manifest: PackageManifest): Json => ({
   typesVersions: manifest.typesVersions ?? null,
 })
 
+/**
+ * Derives all declared entrypoints from a package manifest.
+ *
+ * @remarks
+ * Explicit exports are authoritative. Conventional root and config-plugin
+ * entrypoints are added only when the manifest does not declare them.
+ *
+ * @param manifest - Decoded package manifest.
+ * @returns Deterministically ordered entrypoint records.
+ */
 export const fromManifest = (manifest: PackageManifest): ReadonlyArray<Entrypoint> => {
   if (manifest.exports === undefined) {
     return [
@@ -87,6 +109,13 @@ export const fromManifest = (manifest: PackageManifest): ReadonlyArray<Entrypoin
   return [makeEntrypoint(manifest.name, ".", "exports", manifest.exports)]
 }
 
+/**
+ * Adds a conventional config-plugin entrypoint when the manifest exposes one.
+ *
+ * @param entrypoints - Existing package entrypoints.
+ * @param manifest - Decoded package manifest.
+ * @returns Entry points including the normalized config-plugin target.
+ */
 export const addConfigPlugin = (
   manifest: PackageManifest,
   entrypoints: ReadonlyArray<Entrypoint>,

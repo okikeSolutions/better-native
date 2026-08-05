@@ -15,9 +15,12 @@ const Advisory = Schema.Struct({
 })
 const JsonObject = Schema.Record(Schema.String, Schema.Json)
 
+/** JSON advisory report produced by `bun audit --json`. */
 export const AuditReport = Schema.Record(Schema.String, Schema.Array(Advisory))
+/** Decoded dependency-audit report accepted by {@link AuditReport}. */
 export type AuditReport = Schema.Schema.Type<typeof AuditReport>
 
+/** Reviewed exception binding an advisory to an exact lockfile dependency path. */
 export interface ReviewedException {
   readonly owner: { readonly lockKey: string; readonly identifier: string }
   readonly dependency: {
@@ -28,6 +31,7 @@ export interface ReviewedException {
   readonly advisories: ReadonlyArray<string>
 }
 
+/** Signals unreviewed or stale dependency advisories. */
 export class SecurityAuditError extends Data.TaggedError("SecurityAuditError")<{
   readonly issues: ReadonlyArray<string>
 }> {}
@@ -54,6 +58,18 @@ const installedVersion = (identifier: string, packageName: string): string | nul
   return identifier.startsWith(prefix) ? identifier.slice(prefix.length) : null
 }
 
+/**
+ * Validates audit findings against exact reviewed lockfile exceptions.
+ *
+ * @remarks
+ * Exceptions bind an advisory to both the exact vulnerable package entry and its
+ * reviewed owner path. Stale or broadened dependency paths are reported as issues.
+ *
+ * @param report - Current dependency audit findings.
+ * @param lock - Current Bun lockfile.
+ * @param policy - Reviewed exceptions; defaults to the checked-in policy.
+ * @returns Unreviewed findings and stale exception issues.
+ */
 export const validate = (
   report: AuditReport,
   lock: BunLock.BunLock,
@@ -120,6 +136,13 @@ export const validate = (
   return issues
 }
 
+/**
+ * Runs the dependency audit and rejects findings without reviewed exceptions.
+ *
+ * @returns An Effect that succeeds after every finding is accepted by policy.
+ * @throws {@link HarnessError} when the audit process or report cannot be read.
+ * @throws {@link SecurityAuditError} when findings are unreviewed or exceptions are stale.
+ */
 export const run = Effect.fn("AuditPolicy.run")(function* () {
   const repository = yield* ExpoRepository
   const processes = yield* ProcessSupervisor

@@ -28,6 +28,7 @@ import { EvidenceStore, type Service as EvidenceStoreService } from "../evidence
 import { ProcessSupervisor, type RunningProcess } from "./ProcessSupervisor.ts"
 import * as RunProtocol from "../protocol/RunProtocol.ts"
 
+/** Request for one browser execution against a prepared web build. */
 export interface WebRunRequest {
   readonly id: RunId
   readonly build: BuildOutput
@@ -36,10 +37,12 @@ export interface WebRunRequest {
   readonly timeoutMillis: number
   readonly corpus: CorpusSnapshot
 }
+/** Request for one isolated browser module-resolution probe. */
 export interface WebProbeRequest extends Omit<WebRunRequest, "unit"> {
   readonly specifier: string
 }
 
+/** Failure raised while serving, driving, validating, or recording a web run. */
 export class WebSupervisorError extends Data.TaggedError("WebSupervisorError")<{
   readonly phase: "serve" | "browser" | "protocol" | "evidence"
   readonly request: WebRunRequest | WebProbeRequest
@@ -53,7 +56,17 @@ const webFailure = (
   cause: unknown,
 ) => new WebSupervisorError({ phase, request, cause, observations: [] })
 
-/** @internal */
+/**
+ * Converts a web-run failure into evidence while preserving server observations.
+ *
+ * @remarks
+ * Cleanup is attempted before the failure is returned. If cleanup also fails,
+ * both causes remain visible in the resulting error.
+ *
+ * @param server - Running web server associated with the browser run.
+ * @param effect - Browser operation whose failure should be enriched.
+ * @returns The original effect with server observations attached on failure.
+ */
 export const withServerFailureEvidence = <A>(
   server: RunningProcess,
   effect: Effect.Effect<A, WebSupervisorError>,
@@ -81,11 +94,13 @@ export const withServerFailureEvidence = <A>(
     ),
   )
 
+/** Browser payload and console output returned by the page harness. */
 export interface BrowserResult {
   readonly resultJson: string
   readonly console: ReadonlyArray<string>
 }
 
+/** Failure raised by Playwright, including captured browser console output. */
 export class BrowserDriverError extends Data.TaggedError("BrowserDriverError")<{
   readonly cause: unknown
   readonly console: ReadonlyArray<string>
@@ -99,7 +114,13 @@ const WebRunFailure = Schema.Struct({
   observations: Schema.Array(ProcessObservationSchema),
 })
 
-/** @internal */
+/**
+ * Produces a bounded, useful message from nested Effect and process failures.
+ *
+ * @param value - Unknown failure value to render.
+ * @param depth - Current recursion depth used to prevent pathological causes.
+ * @returns A concise diagnostic string.
+ */
 export const diagnosticMessage = (value: unknown, depth = 0): string => {
   if (depth >= 4) return String(value)
   if (typeof value === "object" && value !== null) {
@@ -115,7 +136,15 @@ export const diagnosticMessage = (value: unknown, depth = 0): string => {
   return value instanceof Error ? `${value.name}: ${value.message}` : String(value)
 }
 
-/** @internal */
+/**
+ * Persists a structured web failure and its bounded process observations.
+ *
+ * @param evidence - Shared immutable evidence store.
+ * @param requestId - Safe run identifier used as the evidence directory.
+ * @param plan - Run plan that was active when the failure occurred.
+ * @param failure - Failure containing phase and captured observations.
+ * @returns The written failure artifact.
+ */
 export const persistWebRunFailure = (
   evidence: EvidenceStoreService,
   requestId: string,
@@ -134,11 +163,28 @@ const maximumBrowserConsoleCharacters = 256 * 1024
 const maximumBrowserConsoleEntries = 1_000
 const maximumBrowserResultBytes = 16 * 1024 * 1024
 const browserReadinessTimeoutMillis = 60_000
-/** @internal */
+/**
+ * Builds the minimal deep link used to select one web compatibility source.
+ *
+ * @param port - Local web server port.
+ * @param runId - Supervised run identifier.
+ * @param sourceId - Static registry source identifier.
+ * @returns URL passed to the browser driver.
+ */
 export const webRunUrl = (port: number, runId: string, sourceId: string): string =>
   `http://127.0.0.1:${port}/run?${new URLSearchParams({ runId, source: sourceId }).toString()}`
 
-/** @internal */
+/**
+ * Creates a bounded browser-console collector for one page session.
+ *
+ * @remarks
+ * Both entry count and encoded character count are bounded so a noisy page
+ * cannot exhaust supervisor memory before the run result is returned.
+ *
+ * @param characterLimit - Maximum retained characters across entries.
+ * @param entryLimit - Maximum retained console entries.
+ * @returns A collector callback and a snapshot function for captured messages.
+ */
 export const makeBoundedConsoleCollector = (
   characterLimit = maximumBrowserConsoleCharacters,
   entryLimit = maximumBrowserConsoleEntries,
@@ -179,7 +225,13 @@ export const makeBoundedConsoleCollector = (
   }
 }
 
-/** @internal */
+/**
+ * Validates and extracts the result payload emitted by the browser app.
+ *
+ * @param text - Raw page text returned by the browser driver.
+ * @returns The encoded application result JSON.
+ * @throws When the sentinel or payload is missing or malformed.
+ */
 export const validateBrowserResultPayload = (text: string): string => {
   if (text.length > maximumBrowserResultBytes) {
     throw new Error(`browser result exceeds ${maximumBrowserResultBytes} bytes`)
@@ -191,7 +243,14 @@ export const validateBrowserResultPayload = (text: string): string => {
   return text
 }
 
-/** @internal */
+/**
+ * Appends browser console entries to bounded process observations.
+ *
+ * @param processObservations - Existing supervisor observations.
+ * @param browserConsole - Browser messages captured during the run.
+ * @param timestampMillis - Timestamp assigned to appended entries.
+ * @returns Combined observations in sequence order.
+ */
 export const appendBrowserConsoleObservations = (
   processObservations: ReadonlyArray<ProcessObservation>,
   browserConsole: ReadonlyArray<string>,
@@ -213,6 +272,7 @@ export const appendBrowserConsoleObservations = (
   ]
 }
 
+/** Browser automation operations used by the web supervisor. */
 export interface BrowserDriverService {
   readonly execute: (
     url: string,
@@ -222,16 +282,31 @@ export interface BrowserDriverService {
   ) => Effect.Effect<BrowserResult, unknown>
 }
 
+/** Effect context tag for the Playwright browser driver. */
 export class BrowserDriver extends Context.Service<BrowserDriver, BrowserDriverService>()(
   "@better-native/compatibility-harness/BrowserDriver",
 ) {}
 
 const clipboardSourceId = "expo-app-suite#apps/test-suite/tests/Clipboard.js"
 
-/** @internal */
+/**
+ * Returns browser permissions required by one known Expo source.
+ *
+ * @param sourceId - Static registry source identifier.
+ * @returns Permission names to grant before the browser run.
+ */
 export const browserPermissionsForSource = (sourceId: string): ReadonlyArray<string> =>
   sourceId === clipboardSourceId ? ["clipboard-read", "clipboard-write"] : []
 
+/**
+ * Builds the Playwright driver with the harness browser policy.
+ *
+ * @remarks
+ * One headless browser is shared within the layer scope; every execution gets an
+ * isolated context that is closed before returning.
+ *
+ * @returns A scoped layer providing {@link BrowserDriver}.
+ */
 export const browserLayer = Layer.effect(
   BrowserDriver,
   Effect.gen(function* () {
@@ -309,6 +384,7 @@ export const browserLayer = Layer.effect(
   }),
 )
 
+/** Web supervision operations for runs and resolution probes. */
 export interface Service {
   readonly run: (request: WebRunRequest) => Effect.Effect<RunRecordType, WebSupervisorError>
   readonly runAll: (
@@ -317,10 +393,16 @@ export interface Service {
   readonly probe: (request: WebProbeRequest) => Effect.Effect<DiscoveryRecord, WebSupervisorError>
 }
 
+/** Effect context tag for web compatibility supervision. */
 export class WebSupervisor extends Context.Service<WebSupervisor, Service>()(
   "@better-native/compatibility-harness/WebSupervisor",
 ) {}
 
+/**
+ * Builds web supervision from process, browser, discovery, and evidence services.
+ *
+ * @returns A layer providing {@link WebSupervisor}.
+ */
 export const layer: Layer.Layer<
   WebSupervisor,
   never,

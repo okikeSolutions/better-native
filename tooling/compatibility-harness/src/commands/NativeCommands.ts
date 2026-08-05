@@ -20,6 +20,9 @@ import {
 const recordPathFlag = Flag.string("record")
 const binaryPathFlag = Flag.string("binary")
 
+/**
+ * Runs one generated native source against an imported build.
+ */
 export const supervisedNative = Command.make(
   "supervise-native",
   {
@@ -87,6 +90,9 @@ const upstreamBinaryPathFlag = Flag.string("upstream-binary")
 const candidateRecordPathFlag = Flag.string("candidate-record")
 const candidateBinaryPathFlag = Flag.string("candidate-binary")
 
+/**
+ * Runs paired upstream and candidate native shards.
+ */
 export const supervisedNativePair = Command.make(
   "supervise-native-pair",
   {

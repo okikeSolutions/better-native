@@ -29,6 +29,16 @@ const inspect = Effect.fn("Compatibility.inspect")(function* () {
   return { snapshot, installation, surface, ownershipConfig, ownership, corpus, expectations }
 })
 
+/**
+ * Regenerates compatibility artifacts and application registry sources.
+ *
+ * @remarks
+ * Generation first validates the same catalog, installation, surface lock, and
+ * reviewed policies used by `validate`; it cannot publish claims from stale inputs.
+ *
+ * @returns An Effect that completes after every derived output is written.
+ * @throws {@link HarnessError} when inputs are invalid or an output cannot be written.
+ */
 export const generate = Effect.fn("Compatibility.generate")(function* () {
   const repository = yield* ExpoRepository
   const state = yield* inspect()
@@ -73,6 +83,16 @@ export const generate = Effect.fn("Compatibility.generate")(function* () {
   )
 })
 
+/**
+ * Replaces the reviewed surface lock with the currently discovered Expo surface.
+ *
+ * @remarks
+ * This is an explicit compatibility review boundary. It writes repository state
+ * and must be invoked only after additions and removals have been inspected.
+ *
+ * @returns An Effect that completes after the lock is written.
+ * @throws {@link HarnessError} when discovery or writing fails.
+ */
 export const updateSurfaceLock = Effect.fn("Compatibility.updateSurfaceLock")(function* () {
   const repository = yield* ExpoRepository
   const fs = yield* FileSystem.FileSystem
@@ -97,6 +117,12 @@ export const updateSurfaceLock = Effect.fn("Compatibility.updateSurfaceLock")(fu
   yield* Console.log(`Updated ${output}`)
 })
 
+/**
+ * Validates the complete pinned compatibility denominator.
+ *
+ * @returns An Effect that succeeds only when all blocking installation and policy checks pass.
+ * @throws {@link HarnessError} with the collected blocking validation issues.
+ */
 export const validate = Effect.fn("Compatibility.validate")(function* () {
   const state = yield* inspect()
   const blockingIssues = ExpoInstallation.blockingIssues(state.installation)
@@ -112,6 +138,16 @@ export const validate = Effect.fn("Compatibility.validate")(function* () {
   return undefined
 })
 
+/**
+ * Prints package-installation and wildcard-expansion diagnostics.
+ *
+ * @remarks
+ * Registry revision differences are reported as diagnostics because the pinned
+ * source checkout, not the registry, remains the compatibility oracle.
+ *
+ * @returns An Effect that completes after diagnostics are printed.
+ * @throws {@link HarnessError} when the compatibility inputs cannot be inspected.
+ */
 export const doctor = Effect.fn("Compatibility.doctor")(function* () {
   const state = yield* inspect()
   const counts = new Map<string, number>()
@@ -141,6 +177,12 @@ export const doctor = Effect.fn("Compatibility.doctor")(function* () {
   )
 })
 
+/**
+ * Prints counts for the current catalog, surface, ownership, and test corpus.
+ *
+ * @returns An Effect that completes after the matrix summary is printed.
+ * @throws {@link HarnessError} when the compatibility inputs are invalid.
+ */
 export const matrix = Effect.fn("Compatibility.matrix")(function* () {
   const state = yield* inspect()
   const entrypoints = state.snapshot.catalog.packages.reduce(

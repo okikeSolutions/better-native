@@ -3,6 +3,7 @@ import * as Effect from "effect/Effect"
 import type { ProcessObservation } from "../Domain.ts"
 import type { PreparedAppWorkspace } from "./AppWorkspace.ts"
 
+/** Failure raised when native autolinking escapes the prepared package roots. */
 export class NativeResolutionError extends Data.TaggedError("NativeResolutionError")<{
   readonly cause: unknown
 }> {}
@@ -20,6 +21,17 @@ const stdoutJson = (observations: ReadonlyArray<ProcessObservation>): unknown =>
 
 const normalized = (value: string): string => value.replaceAll("\\", "/").replace(/\/$/, "")
 
+/**
+ * Tests whether a resolved native package path remains inside its materialized root.
+ *
+ * @remarks
+ * Both paths are normalized before comparison and the separator is included in
+ * the prefix check so `/packages/foo-bar` cannot satisfy `/packages/foo`.
+ *
+ * @param root - Expected package materialization directory.
+ * @param candidate - Path returned by Expo autolinking.
+ * @returns Whether the candidate is the root itself or a descendant.
+ */
 const isWithin = (root: string, candidate: string): boolean => {
   const expected = normalized(root)
   const actual = normalized(candidate)
@@ -32,6 +44,18 @@ const expectedRoots = (workspace: PreparedAppWorkspace): ReadonlyMap<string, str
     ...workspace.dependencyResolutions.map(({ name, source }) => [name, source] as const),
   ])
 
+/**
+ * Rejects native-resolution results that point outside the prepared workspace.
+ *
+ * @remarks
+ * Every resolved package must have a declared root. This closes the native
+ * materialization boundary before CNG or a platform build consumes it.
+ *
+ * @param roots - Declared package names and their expected source roots.
+ * @param packageName - Package name reported by autolinking.
+ * @param candidate - Untrusted resolved path.
+ * @returns Nothing when the path is valid; throws for an undeclared or escaping path.
+ */
 const assertPath = (
   roots: ReadonlyMap<string, string>,
   packageName: string,
@@ -82,6 +106,12 @@ const validateExpoModules = (
   }
 }
 
+/**
+ * Extracts the pinned Expo package roots reported by native autolinking.
+ *
+ * @param observations - Autolinking command observations containing JSON output.
+ * @returns Package names and source roots discovered by the native toolchain.
+ */
 export const discoverNativeExpoPackages = (
   observations: ReadonlyArray<ProcessObservation>,
 ): Effect.Effect<ReadonlyArray<string>, NativeResolutionError> =>
@@ -120,6 +150,12 @@ const validateReactNativeModules = (
   }
 }
 
+/**
+ * Validates Expo Modules and React Native resolution against the isolated workspace.
+ *
+ * @param options - Workspace roots and decoded native-resolution observations.
+ * @returns An effect that fails on undeclared or escaping native paths.
+ */
 export const validateNativeResolution = (options: {
   readonly workspace: PreparedAppWorkspace
   readonly expoModules: ReadonlyArray<ProcessObservation>

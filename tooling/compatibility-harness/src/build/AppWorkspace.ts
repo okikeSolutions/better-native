@@ -14,15 +14,18 @@ import {
   type PinnedExpoToolchain,
 } from "./BuildModel.ts"
 
+/** Resolved path for a pinned Expo workspace package. */
 export interface ExpoPackageResolution {
   readonly name: string
   readonly source: string
 }
 
+/** Resolved path for a declared external dependency. */
 export interface DependencyResolution extends ExpoPackageResolution {
   readonly owner: "pinned-expo" | "root"
 }
 
+/** Disposable app workspace and its validated package-resolution manifest. */
 export interface PreparedAppWorkspace {
   readonly workspace: string
   readonly appDirectory: string
@@ -44,6 +47,7 @@ interface Service {
   ) => Effect.Effect<PreparedAppWorkspace, BuildPipelineError>
 }
 
+/** Effect context tag for isolated compatibility-app workspaces. */
 export class AppWorkspace extends Context.Service<AppWorkspace, Service>()(
   "@better-native/compatibility-harness/AppWorkspace",
 ) {}
@@ -56,6 +60,12 @@ const dependencyOwner = (pinned: string | undefined): "root" | "pinned-expo" =>
     Match.orElse(() => "pinned-expo" as const),
   )
 
+/**
+ * Derives a safe deterministic workspace name from a build request.
+ *
+ * @param request - Build identity and mode.
+ * @returns A path-safe disposable workspace name.
+ */
 export const workspaceName = (request: BuildRequest): string => {
   const probe = request.probeSpecifier?.replaceAll(/[^A-Za-z0-9._-]/g, "-")
   return [request.platform, request.mode, ...(probe === undefined ? [] : [probe])].join("-")
@@ -76,6 +86,12 @@ const dependencyNames = (manifest: Record<string, unknown>): ReadonlyArray<strin
   return [...names].toSorted()
 }
 
+/**
+ * Builds the app-workspace service rooted at the repository artifacts directory.
+ *
+ * @param root - Better Native repository root.
+ * @returns A layer providing {@link AppWorkspace}.
+ */
 export const layer = (
   root: string,
 ): Layer.Layer<AppWorkspace, never, FileSystem.FileSystem | Path.Path> =>

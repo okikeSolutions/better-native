@@ -5,15 +5,24 @@ import ts from "typescript"
 import { HarnessError } from "../HarnessError.ts"
 import type { PackageResolution } from "../Domain.ts"
 
+/** Minimal decoded representation of Bun's text lockfile package table. */
 export const BunLock = Schema.Struct({
   packages: Schema.Record(Schema.String, Schema.Array(Schema.Json)),
 })
 
+/** Decoded lockfile accepted by {@link BunLock}. */
 export type BunLock = Schema.Schema.Type<typeof BunLock>
 
 const failure = (operation: string, path: string, cause: unknown): HarnessError =>
   new HarnessError({ operation, path, cause })
 
+/**
+ * Reads and decodes a Bun text lockfile.
+ *
+ * @param lockPath - Absolute or repository-relative lockfile path.
+ * @returns The decoded package table.
+ * @throws {@link HarnessError} when reading, parsing, or schema decoding fails.
+ */
 export const read = Effect.fn("BunLock.read")(function* (lockPath: string) {
   const fs = yield* FileSystem.FileSystem
   const text = yield* fs
@@ -31,6 +40,14 @@ export const read = Effect.fn("BunLock.read")(function* (lockPath: string) {
   )
 })
 
+/**
+ * Finds the integrity-bearing lock resolution for an exact package version.
+ *
+ * @param lock - Decoded Bun lockfile.
+ * @param name - Package name to locate.
+ * @param version - Exact installed version.
+ * @returns Resolution evidence, or `null` when the package is not locked.
+ */
 export const resolution = (
   lock: BunLock,
   name: string,

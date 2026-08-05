@@ -63,10 +63,17 @@ const cacheHitStatus = (hit: boolean) =>
     Match.exhaustive,
   )
 
+/** Effect context tag for executing isolated compatibility app builds. */
 export class AppBuildExecutor extends Context.Service<AppBuildExecutor, Service>()(
   "@better-native/compatibility-harness/AppBuildExecutor",
 ) {}
 
+/**
+ * Builds the app executor with shared workspace, command, cache, and evidence services.
+ *
+ * @param root - Better Native repository root.
+ * @returns A layer providing {@link AppBuildExecutor}.
+ */
 export const layer = (
   root: string,
 ): Layer.Layer<

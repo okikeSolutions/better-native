@@ -11,6 +11,7 @@ import {
 } from "../supervision/ProcessSupervisor.ts"
 import { BuildPipelineError, type BuildRequest } from "./BuildModel.ts"
 
+/** Build command result together with phase-specific observations. */
 export interface BuildCommandResult {
   readonly result: ProcessResult
   readonly artifact: BuildRecord["artifacts"][number]
@@ -31,10 +32,16 @@ interface Service {
   ) => Effect.Effect<BuildCommandResult, BuildPipelineError>
 }
 
+/** Effect context tag for build commands recorded as evidence. */
 export class BuildCommand extends Context.Service<BuildCommand, Service>()(
   "@better-native/compatibility-harness/BuildCommand",
 ) {}
 
+/**
+ * Builds the command service from process supervision and evidence storage.
+ *
+ * @returns A layer providing {@link BuildCommand}.
+ */
 export const layer: Layer.Layer<BuildCommand, never, ProcessSupervisor | EvidenceStore> =
   Layer.effect(
     BuildCommand,

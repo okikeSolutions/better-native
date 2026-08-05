@@ -24,6 +24,12 @@ const AppManifest = Schema.Struct({
 const failure = (operation: string, path: string | undefined, cause: unknown): HarnessError =>
   new HarnessError({ operation, ...(path === undefined ? {} : { path }), cause })
 
+/**
+ * Classifies one expected package against declaration, version, and lock evidence.
+ *
+ * @param options - Expected, declared, installed, and lockfile package state.
+ * @returns The first blocking installation status, or `valid` when all checks pass.
+ */
 export const statusOf = (options: {
   readonly installedVersion: string | null
   readonly expectedVersion: string
@@ -67,6 +73,18 @@ const filesBelow = (files: ReadonlyArray<string>, directory: string): ReadonlyAr
     .toSorted()
 }
 
+/**
+ * Inspects the package installation used to derive the Expo compatibility surface.
+ *
+ * @remarks
+ * Pinned workspace packages use files from the source checkout. Bundled external
+ * packages use Expo's normal installation, with registry metadata retained only
+ * as comparison evidence.
+ *
+ * @param catalog - Pinned Expo package catalog.
+ * @returns A versioned installation report with expanded wildcard entrypoints.
+ * @throws {@link HarnessError} when package roots, manifests, or lock evidence cannot be read.
+ */
 export const inspect = Effect.fn("ExpoInstallation.inspect")(function* (catalog: Catalog) {
   const repository = yield* ExpoRepository
   const path = yield* Path.Path
@@ -195,12 +213,28 @@ const issue = (entry: InstalledPackage): string | undefined => {
   )
 }
 
+/**
+ * Reports every invalid package in an installation report.
+ *
+ * @param installation - Installation report to inspect.
+ * @returns Human-readable issues for diagnostics.
+ */
 export const issues = (installation: ExpoInstallation): ReadonlyArray<string> =>
   installation.packages.flatMap((entry) => {
     const message = issue(entry)
     return message === undefined ? [] : [message]
   })
 
+/**
+ * Reports invalid packages declared by the current compatibility fixture.
+ *
+ * @remarks
+ * Undeclared catalog packages are validated by generated single-package or cohort
+ * fixtures, so their absence from the minimal runner is not itself blocking.
+ *
+ * @param installation - Installation report to inspect.
+ * @returns Issues that block validation of the current fixture.
+ */
 export const blockingIssues = (installation: ExpoInstallation): ReadonlyArray<string> =>
   installation.packages
     // A catalog target may intentionally be absent from the minimal runner. Its generated
@@ -211,6 +245,12 @@ export const blockingIssues = (installation: ExpoInstallation): ReadonlyArray<st
       return message === undefined ? [] : [message]
     })
 
+/**
+ * Reports registry packages whose source revision differs from the pinned oracle.
+ *
+ * @param installation - Installation report to inspect.
+ * @returns Non-blocking revision diagnostics.
+ */
 export const registryDifferences = (installation: ExpoInstallation): ReadonlyArray<string> =>
   installation.packages
     .filter((entry) => entry.registryMatchesPinnedRevision === false)

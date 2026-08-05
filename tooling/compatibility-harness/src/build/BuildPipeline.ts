@@ -24,6 +24,7 @@ import { layer as buildProductsLayer } from "./BuildProducts.ts"
 import { ExpoToolchain } from "./ExpoToolchain.ts"
 import { layer as nativeArtifactCacheLayer } from "./NativeArtifactCache.ts"
 
+/** Re-exports build errors and the reviewed plugin package set for pipeline users. */
 export { BuildImportError, BuildPipelineError, pinnedPluginPackages } from "./BuildModel.ts"
 export type {
   BuildImportRequest,
@@ -33,6 +34,7 @@ export type {
   BuildRequest,
 } from "./BuildModel.ts"
 
+/** Coordinates prepared toolchains, builds, imports, and paired execution. */
 export interface Service {
   readonly build: (request: BuildRequest) => Effect.Effect<BuildOutput, BuildPipelineError>
   readonly buildPair: (
@@ -41,6 +43,7 @@ export interface Service {
   readonly load: (request: BuildImportRequest) => Effect.Effect<BuildOutput, BuildImportError>
 }
 
+/** Effect context tag for the shared build pipeline. */
 export class BuildPipeline extends Context.Service<BuildPipeline, Service>()(
   "@better-native/compatibility-harness/BuildPipeline",
 ) {}
@@ -102,6 +105,12 @@ const serviceLayer: Layer.Layer<
   }),
 )
 
+/**
+ * Builds the complete build dependency graph rooted at repository artifacts.
+ *
+ * @param root - Better Native repository root.
+ * @returns A layer providing the shared {@link BuildPipeline}.
+ */
 export const layer = (
   root: string,
 ): Layer.Layer<

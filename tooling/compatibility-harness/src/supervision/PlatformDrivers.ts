@@ -7,18 +7,21 @@ import * as Match from "effect/Match"
 import type { Platform, ProcessObservation, RunId } from "../Domain.ts"
 import { ProcessSupervisor, type ProcessResult, type ProcessSpec } from "./ProcessSupervisor.ts"
 
+/** Native simulator or emulator selected for compatibility execution. */
 export interface NativeDevice {
   readonly platform: "ios" | "android"
   readonly id: string
   readonly applicationId: string
 }
 
+/** Failure raised by device installation, liveness, logging, or result collection. */
 export class PlatformDriverError extends Data.TaggedError("PlatformDriverError")<{
   readonly operation: "install" | "maestro" | "liveness" | "logs" | "result"
   readonly device: NativeDevice
   readonly cause: unknown
 }> {}
 
+/** Platform operations required by the native supervisor. */
 export interface Service {
   readonly install: (
     device: NativeDevice,
@@ -39,6 +42,7 @@ export interface Service {
   ) => Effect.Effect<string | null, PlatformDriverError>
 }
 
+/** Effect context tag for iOS Simulator and Android emulator drivers. */
 export class PlatformDrivers extends Context.Service<PlatformDrivers, Service>()(
   "@better-native/compatibility-harness/PlatformDrivers",
 ) {}
@@ -62,6 +66,7 @@ const command = (
 
 const output = (result: ProcessResult) => result.observations.map(({ text }) => text).join("\n")
 
+/** Predicate restricting iOS log collection to harness and fatal application messages. */
 export const iosLogPredicate =
   'eventMessage CONTAINS "BETTER_NATIVE_" OR subsystem == "com.facebook.react.log" OR (process == "BetterNativeCompatibility" AND (messageType == "Error" OR messageType == "Fault"))'
 
@@ -104,6 +109,16 @@ const hierarchyResult = (value: unknown): string | null => {
   return null
 }
 
+/**
+ * Extracts a completed run result from simulator hierarchy output.
+ *
+ * @remarks
+ * The hierarchy is diagnostic transport, not a trusted result by itself; the
+ * caller still decodes and validates the embedded run protocol.
+ *
+ * @param stdout - Raw hierarchy output captured from the platform driver.
+ * @returns The encoded result payload, or `null` when no result node exists.
+ */
 export const resultFromHierarchy = (stdout: string): string | null => {
   const jsonStart = stdout.indexOf("{")
   if (jsonStart < 0) return null
@@ -124,6 +139,17 @@ const matchingResult = (json: string | null, runId: RunId): string | null => {
   }
 }
 
+/**
+ * Reassembles a chunked result payload emitted through native logs.
+ *
+ * @remarks
+ * Chunks are accepted only when they identify the requested run and form a
+ * contiguous sequence. This prevents stale or interleaved logs becoming run evidence.
+ *
+ * @param stdout - Raw native log output.
+ * @param runId - Run whose payload is being collected.
+ * @returns The reassembled payload, or `null` for incomplete chunks.
+ */
 export const resultFromLogChunks = (stdout: string, runId: RunId): string | null => {
   const chunks = new Map<number, string>()
   let total: number | undefined
@@ -158,11 +184,22 @@ export const resultFromLogChunks = (stdout: string, runId: RunId): string | null
   return result.every((chunk): chunk is string => chunk !== undefined) ? result.join("") : null
 }
 
+/**
+ * Checks whether a Maestro JUnit report records a completed passing flow.
+ *
+ * @param report - Raw JUnit XML written by Maestro.
+ * @returns Whether a suite exists without failure or error entries.
+ */
 export const maestroJUnitPassed = (report: string): boolean =>
   /<testsuites?\b/.test(report) &&
   !/<(?:failure|error)\b/.test(report) &&
   !/\b(?:failures|errors)="[1-9]\d*"/.test(report)
 
+/**
+ * Builds native platform drivers from process supervision and filesystem access.
+ *
+ * @returns A layer providing device installation, execution, liveness, logs, and results.
+ */
 export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.effect(
   PlatformDrivers,
   Effect.gen(function* () {
@@ -396,4 +433,5 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
   }),
 )
 
+/** Native platforms implemented by the current platform-driver service. */
 export const supportedPlatforms: ReadonlyArray<Platform> = ["ios", "android"]

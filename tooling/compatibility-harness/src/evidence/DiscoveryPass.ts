@@ -56,6 +56,7 @@ const ProbeResult = Schema.Struct({
   detail: Schema.NullOr(Schema.String),
 })
 
+/** Inputs collected from an app run and its supervisor observations. */
 export interface DiscoveryInput {
   readonly runId: RunId
   readonly buildId: BuildId
@@ -67,15 +68,18 @@ export interface DiscoveryInput {
   readonly exportProbeJson: ReadonlyArray<string>
 }
 
+/** Signals malformed or inconsistent runtime discovery data. */
 export class DiscoveryError extends Data.TaggedError("DiscoveryError")<{
   readonly runId: RunId
   readonly cause: unknown
 }> {}
 
+/** Runtime-discovery service that materializes a discovery record. */
 export interface Service {
   readonly collect: (input: DiscoveryInput) => Effect.Effect<DiscoveryRecordType, DiscoveryError>
 }
 
+/** Effect context tag for the discovery pass. */
 export class DiscoveryPass extends Context.Service<DiscoveryPass, Service>()(
   "@better-native/compatibility-harness/DiscoveryPass",
 ) {}
@@ -99,6 +103,11 @@ const sentinelJson = (text: string, sentinel: string): string | null => {
   return offset < 0 ? null : text.slice(offset + sentinel.length).trim()
 }
 
+/**
+ * Builds the discovery pass using the shared immutable evidence store.
+ *
+ * @returns A layer providing {@link DiscoveryPass}.
+ */
 export const layer: Layer.Layer<DiscoveryPass, never, EvidenceStore> = Layer.effect(
   DiscoveryPass,
   Effect.gen(function* () {

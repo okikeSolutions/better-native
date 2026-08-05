@@ -14,6 +14,9 @@ const selectionAssertion = (identity: string): ReadonlyArray<string> => [
 /**
  * Selects one static registry source after the Effect supervisor installs the
  * application. Maestro owns state reset and cold launch, matching Expo's suite.
+ *
+ * @param request - Native run request containing the selected execution unit.
+ * @returns Complete Maestro YAML for the source run.
  */
 export const make = (request: NativeRunRequest): string => {
   const link = `better-native://run?${new URLSearchParams({
@@ -39,6 +42,16 @@ export const make = (request: NativeRunRequest): string => {
 
 const encodeSourceId = (sourceId: string): string => Encoding.encodeHex(sourceId)
 
+/**
+ * Generates a Maestro flow for one native source cohort.
+ *
+ * @remarks
+ * Source IDs are hex encoded into the deep link so separators cannot make the
+ * batch ambiguous. Maestro owns state reset and cold launch for parity with Expo.
+ *
+ * @param request - Native batch request containing the selected execution units.
+ * @returns Complete Maestro YAML for the cohort run.
+ */
 export const makeBatch = (request: NativeBatchRequest): string => {
   const link = `better-native://run?${new URLSearchParams({
     runId: request.id,

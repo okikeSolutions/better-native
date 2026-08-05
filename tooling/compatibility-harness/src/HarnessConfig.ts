@@ -7,6 +7,7 @@ import * as Option from "effect/Option"
 import * as Path from "effect/Path"
 import * as Redacted from "effect/Redacted"
 
+/** Environment variable names owned by the host-side harness configuration. */
 export const environmentKeys = {
   expoSourceRoot: "EXPO_SOURCE_ROOT",
   githubSha: "GITHUB_SHA",
@@ -24,11 +25,13 @@ export const environmentKeys = {
   podsCacheKey: "BETTER_NATIVE_PODS_CACHE_KEY",
 } as const
 
+/** Cache status and opaque key recorded as build evidence. */
 export interface CacheEnvironment {
   readonly status: "hit" | "miss" | "unknown"
   readonly key: string | null
 }
 
+/** Validated host configuration shared by harness services. */
 export interface Service {
   readonly expoSourceRoot: string
   readonly githubSha: string | null
@@ -45,6 +48,7 @@ export interface Service {
   }
 }
 
+/** Effect context tag for the single host environment boundary. */
 export class HarnessConfig extends Context.Service<HarnessConfig, Service>()(
   "@better-native/compatibility-harness/HarnessConfig",
 ) {}
@@ -84,6 +88,17 @@ const cacheStatus = (value: Option.Option<boolean>): CacheEnvironment["status"] 
       ),
   })
 
+/**
+ * Loads harness configuration from the environment.
+ *
+ * @remarks
+ * Optional strings are trimmed, secrets remain redacted, and the Expo source
+ * defaults beside the repository. Services consume this layer instead of reading
+ * `process.env` directly.
+ *
+ * @param root - Better Native repository root used to derive defaults.
+ * @returns A layer providing validated {@link HarnessConfig} values.
+ */
 export const layer = (root: string) =>
   Layer.effect(
     HarnessConfig,
