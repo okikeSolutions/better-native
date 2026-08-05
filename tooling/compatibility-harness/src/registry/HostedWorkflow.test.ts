@@ -100,6 +100,8 @@ describe("hosted compatibility workflow", () => {
       assert.match(workflow, /Group iOS evidence by build mode/)
       assert.match(workflow, /--upstream \.artifacts\/compare\/upstream/)
       assert.match(workflow, /--candidate \.artifacts\/compare\/candidate/)
+      assert.match(workflow, /if \[ "\$DEVICE_STATE" != Shutdown \]; then/)
+      assert.notMatch(workflow, /simctl shutdown "\$DEVICE_ID" \|\| true/)
       assert.match(workflow, /^  android-compare:$/m)
       assert.strictEqual(workflow.match(/supervise-web-pair/g)?.length, 1)
       assert.match(workflow, /web-upstream-run-\*/)
