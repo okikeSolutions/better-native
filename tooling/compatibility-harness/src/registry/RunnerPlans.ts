@@ -1,4 +1,5 @@
 import type { CorpusSnapshot, TestSource } from "../Domain.ts"
+import * as Match from "effect/Match"
 import * as Schema from "effect/Schema"
 
 /** Versioned ledger assigning every non-app source an executable plan or blocker. */
@@ -81,19 +82,30 @@ const report = (source: TestSource, extension: string) =>
 
 const jestBlocker = (source: TestSource): string | null => {
   const owner = workspace(source.path)
-  switch (owner) {
-    case "docs":
-      return "Expo docs tests require the workspace generate-static-resources setup and Node VM-module flags from its authoritative test script."
-    case "packages/html-elements":
-      return "@expo/html-elements selects separate Babel and source Jest configurations through workspace test scripts; a generic source command is not authoritative."
-    case "packages/expo-type-information":
-      return "expo-type-information tests require macOS and sourceKitten according to the pinned workspace test contract."
-    case "apps/bare-expo":
-    case "packages/expo-audio":
-      return `${owner} has no authoritative Jest test script in the pinned Expo workspace.`
-    default:
-      return null
-  }
+  return Match.value(owner).pipe(
+    Match.when(
+      "docs",
+      () =>
+        "Expo docs tests require the workspace generate-static-resources setup and Node VM-module flags from its authoritative test script.",
+    ),
+    Match.when(
+      "packages/html-elements",
+      () =>
+        "@expo/html-elements selects separate Babel and source Jest configurations through workspace test scripts; a generic source command is not authoritative.",
+    ),
+    Match.when(
+      "packages/expo-type-information",
+      () =>
+        "expo-type-information tests require macOS and sourceKitten according to the pinned workspace test contract.",
+    ),
+    Match.whenOr(
+      "apps/bare-expo",
+      "packages/expo-audio",
+      (blockedOwner) =>
+        `${blockedOwner} has no authoritative Jest test script in the pinned Expo workspace.`,
+    ),
+    Match.orElse(() => null),
+  )
 }
 
 /**
@@ -115,8 +127,8 @@ const concrete = (source: TestSource): CommandPlan | null => {
   if (source.runner === "jest" && source.caseEvidence === "none") return null
   const cwd = `{expoRoot}/${workspace(source.path)}`
   const relative = relativeTo(source.path, workspace(source.path))
-  switch (source.runner) {
-    case "jest": {
+  return Match.value(source.runner).pipe(
+    Match.when("jest", () => {
       const output = report(source, "json")
       return {
         command: "pnpm",
@@ -134,9 +146,9 @@ const concrete = (source: TestSource): CommandPlan | null => {
         env: {},
         reportFormat: "jest-json",
         reportPath: output,
-      }
-    }
-    case "node-test": {
+      } satisfies CommandPlan
+    }),
+    Match.when("node-test", () => {
       const output = report(source, "xml")
       const compiled = relative.replace(/^src\//, "build/").replace(/\.ts$/, ".js")
       return {
@@ -151,9 +163,9 @@ const concrete = (source: TestSource): CommandPlan | null => {
         env: {},
         reportFormat: "junit",
         reportPath: output,
-      }
-    }
-    case "bun-test": {
+      } satisfies CommandPlan
+    }),
+    Match.when("bun-test", () => {
       const output = report(source, "xml")
       return {
         command: "bun",
@@ -162,9 +174,9 @@ const concrete = (source: TestSource): CommandPlan | null => {
         env: {},
         reportFormat: "junit",
         reportPath: output,
-      }
-    }
-    case "playwright": {
+      } satisfies CommandPlan
+    }),
+    Match.when("playwright", () => {
       const output = report(source, "xml")
       return {
         command: "pnpm",
@@ -173,11 +185,9 @@ const concrete = (source: TestSource): CommandPlan | null => {
         env: { PLAYWRIGHT_JUNIT_OUTPUT_FILE: output },
         reportFormat: "junit",
         reportPath: output,
-      }
-    }
-    case "detox":
-      return null
-    case "maestro": {
+      } satisfies CommandPlan
+    }),
+    Match.when("maestro", () => {
       const output = report(source, "xml")
       return {
         command: "maestro",
@@ -186,11 +196,19 @@ const concrete = (source: TestSource): CommandPlan | null => {
         env: {},
         reportFormat: "junit",
         reportPath: output,
-      }
-    }
-    default:
-      return null
-  }
+      } satisfies CommandPlan
+    }),
+    Match.whenOr(
+      "expo-jasmine",
+      "xctest",
+      "gradle-unit",
+      "gradle-instrumentation",
+      "detox",
+      "workflow",
+      () => null,
+    ),
+    Match.exhaustive,
+  )
 }
 
 const blockedReason = (source: TestSource): string => {
@@ -200,21 +218,43 @@ const blockedReason = (source: TestSource): string => {
   if (source.runner === "jest" && source.caseEvidence === "none") {
     return "The source contains no static or dynamic Jest case declaration evidence and is treated as a support input until authoritative Jest discovery selects it."
   }
-  switch (source.runner) {
-    case "expo-jasmine":
-      return "The file is not an executable Expo Jasmine module and requires an upstream-specific adapter."
-    case "xctest":
-      return "XCTest execution requires discovery of the owning Xcode workspace, scheme and destination from the generated native project."
-    case "gradle-unit":
-    case "gradle-instrumentation":
-      return "Gradle execution requires discovery of the owning project, variant and test task from the generated Android project."
-    case "workflow":
-      return "The workflow is orchestration metadata; its commands are represented by concrete runner entries."
-    case "detox":
-      return "Detox uses project-specific Jest configuration and has no reviewed JUnit reporter contract in the pinned fixture."
-    default:
-      return `The ${source.runner} adapter has no reviewed executable command for this source.`
-  }
+  return Match.value(source.runner).pipe(
+    Match.when(
+      "expo-jasmine",
+      () =>
+        "The file is not an executable Expo Jasmine module and requires an upstream-specific adapter.",
+    ),
+    Match.when(
+      "xctest",
+      () =>
+        "XCTest execution requires discovery of the owning Xcode workspace, scheme and destination from the generated native project.",
+    ),
+    Match.whenOr(
+      "gradle-unit",
+      "gradle-instrumentation",
+      () =>
+        "Gradle execution requires discovery of the owning project, variant and test task from the generated Android project.",
+    ),
+    Match.when(
+      "workflow",
+      () =>
+        "The workflow is orchestration metadata; its commands are represented by concrete runner entries.",
+    ),
+    Match.when(
+      "detox",
+      () =>
+        "Detox uses project-specific Jest configuration and has no reviewed JUnit reporter contract in the pinned fixture.",
+    ),
+    Match.whenOr(
+      "jest",
+      "node-test",
+      "bun-test",
+      "maestro",
+      "playwright",
+      (runner) => `The ${runner} adapter has no reviewed executable command for this source.`,
+    ),
+    Match.exhaustive,
+  )
 }
 
 /**

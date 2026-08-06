@@ -1,6 +1,7 @@
 import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
+import * as Match from "effect/Match"
 import * as Schema from "effect/Schema"
 import {
   DiscoveryRecord,
@@ -112,21 +113,18 @@ export const load = Effect.fn("RunComparison.load")(function* (root: string) {
  * @param event - Resolution observation emitted by the instrumented app.
  * @returns Whether the observed target matches the expected resolution shape.
  */
-const successfulResolution = (event: ResolutionEventType): boolean => {
-  switch (event.outcome.kind) {
-    case "source-file":
-      return event.resolvedTarget === event.outcome.filePath
-    case "asset-files":
-      return (
+const successfulResolution = (event: ResolutionEventType): boolean =>
+  Match.value(event.outcome).pipe(
+    Match.when({ kind: "source-file" }, (outcome) => event.resolvedTarget === outcome.filePath),
+    Match.when(
+      { kind: "asset-files" },
+      (outcome) =>
         Array.isArray(event.resolvedTarget) &&
-        JSON.stringify(event.resolvedTarget) === JSON.stringify(event.outcome.filePaths)
-      )
-    case "empty":
-    case "failure":
-      return false
-  }
-  return false
-}
+        JSON.stringify(event.resolvedTarget) === JSON.stringify(outcome.filePaths),
+    ),
+    Match.whenOr({ kind: "empty" }, { kind: "failure" }, () => false),
+    Match.exhaustive,
+  )
 
 const packageName = (specifier: string): string =>
   specifier.startsWith("@") ? specifier.split("/").slice(0, 2).join("/") : specifier.split("/")[0]!
@@ -311,11 +309,13 @@ const recordIssues = (record: RunRecordType): ReadonlyArray<string> => {
   return issues
 }
 
-const expectedTag = (expected: "fail" | "skip" | "timeout" | "crash") => {
-  if (expected === "fail") return "failed"
-  if (expected === "skip") return "skipped"
-  return expected
-}
+const expectedTag = (expected: "fail" | "skip" | "timeout" | "crash") =>
+  Match.value(expected).pipe(
+    Match.when("fail", () => "failed" as const),
+    Match.when("skip", () => "skipped" as const),
+    Match.whenOr("timeout", "crash", (tag) => tag),
+    Match.exhaustive,
+  )
 
 const planIdentity = (records: ReadonlyArray<RunRecordType>) => ({
   sources: [...new Set(records.map(({ plan }) => plan.unit.sourceId))].toSorted(),
