@@ -12,6 +12,12 @@ Run the CLI from the repository root through the `better-native` script:
 bun run better-native --help
 ```
 
+The root `bun run test:coverage` command includes this harness's complete `src` controller as its
+own coverage threshold group. This is separate from `bun run coverage`, which measures public Expo
+API replacement coverage rather than executed TypeScript lines and branches. Child browser,
+simulator, and external-runner execution is validated through supervision and paired evidence; it
+is not falsely attributed to the parent Vitest V8 process.
+
 ## What it owns
 
 | Area                  | Source of truth                                           | Result                                                   |

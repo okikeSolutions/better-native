@@ -29,20 +29,39 @@ Run the coverage gate with:
 bun run test:coverage
 ```
 
-V8 coverage is intentionally scoped in `vitest.config.ts` to the current capability and
-compatibility-runner implementation files. Generated registry code and tests are excluded from the
-denominator. The enforced minimums are:
+V8 coverage is intentionally scoped in `vitest.config.ts` to product runtime code and both tooling
+controllers. Generated code and tests are excluded from the denominator. Every directory matching
+`packages/*/src` is discovered when Vitest starts and receives its own threshold group. A new
+package therefore enters root coverage automatically and cannot hide behind aggregate coverage
+from existing packages. The application and tooling controllers have independent groups as well:
 
-| Metric     | Minimum |
-| ---------- | ------: |
-| Statements |     95% |
-| Branches   |     90% |
-| Functions  |     95% |
-| Lines      |     95% |
+| Scope                                              | Statements | Branches | Functions | Lines |
+| -------------------------------------------------- | ---------: | -------: | --------: | ----: |
+| Each product package and compatibility-app runtime |        95% |      90% |       95% |   95% |
+| Compatibility-harness controller                   |        70% |      65% |       63% |   70% |
+| DX-evals controller                                |        80% |      70% |       78% |   80% |
+| DX compile-diagnostic sanitizer                    |       100% |      77% |      100% |  100% |
 
-These are regression guards, not a substitute for behavior review. When a new core implementation
-file is added, include it deliberately in the coverage scope and add tests before relying on the
-reported aggregate.
+The tooling thresholds are regression floors backed by deterministic eval controls and the
+read-only compatibility-denominator integration. They should rise as command, reporting, and
+provider-boundary tests are added. The aggregate percentage printed by Vitest is informational—the
+glob thresholds above are the gates.
+
+The root suite uses Vitest's isolated `threads` pool. Threads avoid fork startup overhead while
+isolation remains enabled because tests exercise process environment, module mocks, managed-runtime
+disposal, and filesystem/process boundaries. Do not disable isolation globally without proving
+those contracts remain independent.
+
+Code executed in Podman, Node workers, browser processes, simulators, or other child processes is
+not attributed to the parent Vitest V8 session. Such entrypoints are not mixed into the controller
+denominator as false zeroes. Their behavior is instead required through protocol, isolation,
+supervision, lifecycle, and paired-execution conformance tests. Pure runner utilities executed in
+the Vitest process, currently the DX compile-diagnostic sanitizer, remain in the coverage gate.
+
+These are regression guards, not a substitute for behavior review. Product files under
+`packages/*/src` and controller files under the configured tooling roots are included automatically.
+External-process entrypoints must be placed in an explicit external-process scope and tested at
+their observable boundary.
 
 ## Capability and entrypoint tests
 
