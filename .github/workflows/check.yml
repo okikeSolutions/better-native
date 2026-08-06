@@ -31,5 +31,8 @@ jobs:
       - name: Setup build profile
         uses: ./.github/actions/setup-build
 
+      - name: Setup DX eval prerequisites
+        uses: ./.github/actions/setup-dx-evals
+
       - name: Check
         run: bun run check

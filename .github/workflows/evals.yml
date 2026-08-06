@@ -45,16 +45,8 @@ jobs:
       - name: Setup static profile
         uses: ./.github/actions/setup-static
 
-      - name: Install rootless Podman
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes podman
-          test "$(podman info --format '{{.Host.Security.Rootless}}')" = "true"
-
-      - name: Pull pinned verifier image
-        run: >-
-          podman pull
-          docker.io/library/node@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd
+      - name: Setup DX eval prerequisites
+        uses: ./.github/actions/setup-dx-evals
 
       - name: Review campaign plan
         run: >-
