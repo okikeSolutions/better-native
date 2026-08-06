@@ -51,7 +51,9 @@ Only `effect` counts as migrated.
 apps/compatibility-suite       Executable Expo application and live vectors
 packages/*                     Publishable better-native packages
 tooling/compatibility-harness  Private Expo catalog and installation-validation CLI
+tooling/dx-evals               Private Effect-native developer-experience eval harness
 tooling/expo-catalog           Private declaration-only fallback for external packages
+evals/tasks                    Versioned public DX task fixtures and runtime-withheld controls
 packages/typescript-config     Private shared TypeScript presets
 compatibility/ownership.json   Reviewed per-export ownership overrides
 compatibility/surface-lock.json Reviewed lock for the complete discovered export denominator
@@ -61,6 +63,13 @@ vendor/effect                  Pinned Effect source
 ../expo                        External pinned Expo source and behavioral oracle
 .artifacts                     Disposable catalogs, reports, builds, logs, and screenshots
 ```
+
+The compatibility and DX harnesses support different claims. Compatibility measures behavior
+against pinned Expo source. DX evals measure task completion through the declared public
+better-native boundary; their current synthetic, Network, and Battery instruments are implemented,
+and the first paid model campaigns are recorded, while human blind pilots and calibrated regression
+thresholds remain pending. See
+[the evaluation contract](./evals.md) for the current checkpoint status and evidence limits.
 
 ## Harness configuration
 
