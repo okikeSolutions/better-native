@@ -15,6 +15,7 @@ import {
   type RunRecord,
 } from "../Domain.ts"
 import type { ReplacementManifest } from "../registry/AppRegistry.ts"
+import { provideLayer } from "../TestLayers.ts"
 import { compare, loadCandidateTreatmentEvidence } from "./RunComparison.ts"
 
 const hash = ContentHash.make("0".repeat(64))
@@ -359,6 +360,6 @@ describe("RunComparison", () => {
       )
       const stale = yield* inspect(event)
       assert.match(stale.issues.join("\n"), /discovery references foreign run/)
-    }).pipe(Effect.provide(NodeServices.layer)),
+    }).pipe(provideLayer(NodeServices.layer)),
   )
 })

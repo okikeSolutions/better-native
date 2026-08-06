@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "taskType": "battery",
+  "id": "battery",
+  "version": "1",
+  "allowedSubmissionPaths": ["src/ObserveBattery.ts"],
+  "entrypoint": "src/ObserveBattery.ts",
+  "exportName": "batteryLevels",
+  "publicPackages": ["@better-native/battery"]
+}

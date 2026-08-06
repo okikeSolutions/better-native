@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "taskType": "synthetic-effect",
+  "id": "synthetic-effect",
+  "version": "1",
+  "allowedSubmissionPaths": ["src/Greeting.ts"],
+  "entrypoint": "src/Greeting.ts",
+  "exportName": "greeting"
+}

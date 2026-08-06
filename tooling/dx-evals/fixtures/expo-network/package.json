@@ -1,0 +1,7 @@
+{
+  "name": "expo-network",
+  "version": "57.0.1-controlled",
+  "type": "module",
+  "types": "./index.d.ts",
+  "exports": "./index.js"
+}

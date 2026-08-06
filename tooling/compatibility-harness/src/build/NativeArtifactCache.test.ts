@@ -4,6 +4,7 @@ import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import { ArtifactId, BuildId, ContentHash } from "../Domain.ts"
+import { provideLayer } from "../TestLayers.ts"
 import * as HarnessConfig from "../HarnessConfig.ts"
 import { BuildCommand } from "./BuildCommand.ts"
 import { BuildPipelineError, type BuildRequest } from "./BuildModel.ts"
@@ -177,7 +178,7 @@ describe("NativeArtifactCache", () => {
         yield* fs.writeFileString(`${entry}/app-release.apk`, "tampered")
         return yield* cache.restore(current)
       }).pipe(
-        Effect.provide(
+        provideLayer(
           layer(root).pipe(
             Layer.provideMerge(Layer.mergeAll(fakeCommands, buildProductsLayer, harnessConfig)),
           ),
@@ -185,7 +186,7 @@ describe("NativeArtifactCache", () => {
       )
       assert.isFalse(restored.hit)
       assert.match(restored.reason, /hash is invalid/)
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("falls back for malformed metadata, missing artifacts, and repack failures", () =>
@@ -210,7 +211,7 @@ describe("NativeArtifactCache", () => {
         const repackFailure = yield* cache.restore(current)
         return { malformed, missing, repackFailure }
       }).pipe(
-        Effect.provide(
+        provideLayer(
           layer(root).pipe(
             Layer.provideMerge(Layer.mergeAll(fakeCommands, buildProductsLayer, harnessConfig)),
           ),
@@ -219,7 +220,7 @@ describe("NativeArtifactCache", () => {
       assert.match(results.malformed.reason, /metadata is malformed/)
       assert.match(results.missing.reason, /entry is missing/)
       assert.match(results.repackFailure.reason, /repack failed/)
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("reuses one validated shell across upstream and candidate modes", () =>
@@ -244,7 +245,7 @@ describe("NativeArtifactCache", () => {
         yield* cache.publish(upstream)
         return yield* cache.restore(candidate)
       }).pipe(
-        Effect.provide(
+        provideLayer(
           layer(root).pipe(
             Layer.provideMerge(
               Layer.mergeAll(successfulCommands, buildProductsLayer, harnessConfig),
@@ -255,6 +256,6 @@ describe("NativeArtifactCache", () => {
       assert.isTrue(restored.hit)
       assert.strictEqual(restored.sourceBuildId, BuildId.make("cache-test"))
       assert.strictEqual(yield* fs.readFileString(candidate.output), "upstream-shell")
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 })

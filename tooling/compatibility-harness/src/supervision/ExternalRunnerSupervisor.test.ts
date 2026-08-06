@@ -4,6 +4,7 @@ import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import { RunId, TestSourceId } from "../Domain.ts"
+import { provideLayer } from "../TestLayers.ts"
 import * as EvidenceStore from "../evidence/EvidenceStore.ts"
 import { ExternalRunnerSupervisor, layer } from "./ExternalRunnerSupervisor.ts"
 import { ProcessSupervisor } from "./ProcessSupervisor.ts"
@@ -58,9 +59,9 @@ describe("ExternalRunnerSupervisor", () => {
         assert.isTrue(
           yield* fs.exists(`${root}/.artifacts/runs/external-run/external-results.json`),
         )
-      }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(dependencies))))
+      }).pipe(provideLayer(layer(root).pipe(Layer.provideMerge(dependencies))))
       yield* program
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("rejects unapproved commands and paths outside the reviewed repository", () =>
@@ -94,13 +95,13 @@ describe("ExternalRunnerSupervisor", () => {
               reportPath: `${root}/.artifacts/runs/external-policy/external/report.json`,
             })
             .pipe(Effect.flip)
-        }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(dependencies))))
+        }).pipe(provideLayer(layer(root).pipe(Layer.provideMerge(dependencies))))
 
       const commandFailure = yield* run("sh", root)
       assert.match(String(commandFailure.cause), /not an allowed/)
       const pathFailure = yield* run("jest", outside)
       assert.match(String(pathFailure.cause), /escapes/)
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("rejects symbolic-link and oversized reports", () =>
@@ -151,11 +152,11 @@ describe("ExternalRunnerSupervisor", () => {
               reportPath,
             })
             .pipe(Effect.flip)
-        }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(dependencies))))
+        }).pipe(provideLayer(layer(root).pipe(Layer.provideMerge(dependencies))))
         assert.strictEqual(failure.phase, "report")
         assert.match(String(failure.cause), scenario === "link" ? /symbolic link/ : /no larger/)
       }
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("rejects repository source targets without deleting them", () =>
@@ -188,7 +189,7 @@ describe("ExternalRunnerSupervisor", () => {
               reportPath,
             })
             .pipe(Effect.flip)
-        }).pipe(Effect.provide(layer(root).pipe(Layer.provideMerge(dependencies))))
+        }).pipe(provideLayer(layer(root).pipe(Layer.provideMerge(dependencies))))
 
       const sourceFailure = yield* run(manifest)
       assert.strictEqual(sourceFailure.phase, "report")
@@ -201,6 +202,6 @@ describe("ExternalRunnerSupervisor", () => {
       assert.strictEqual(extensionFailure.phase, "report")
       assert.match(String(extensionFailure.cause), /\.json/)
       assert.strictEqual(yield* fs.readFileString(manifest), "preserve-me")
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 })

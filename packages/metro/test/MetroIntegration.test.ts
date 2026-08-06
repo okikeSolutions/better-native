@@ -3,6 +3,7 @@ import * as NodeServices from "@effect/platform-node/NodeServices"
 import { createRequire } from "node:module"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
+import * as Layer from "effect/Layer"
 import * as Schema from "effect/Schema"
 import * as ChildProcess from "effect/unstable/process/ChildProcess"
 import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
@@ -34,6 +35,13 @@ const BuildResult = Schema.Struct({
   unmanagedCount: Schema.Number,
   networkEvent: NetworkEvent,
 })
+
+const provideLayer =
+  <ROut, E2, RIn>(layer: Layer.Layer<ROut, E2, RIn>) =>
+  <A, E, R>(effect: Effect.Effect<A, E, R>): Effect.Effect<A, E | E2, RIn | Exclude<R, ROut>> =>
+    Effect.scoped(
+      Layer.build(layer).pipe(Effect.flatMap((context) => Effect.provide(effect, context))),
+    )
 
 const bundle = (mode: "upstream" | "candidate") =>
   Effect.gen(function* () {
@@ -75,7 +83,7 @@ describe("Expo Metro integration", () => {
 
         assert.strictEqual(yield* fs.readFileString(nativeManifest), manifestBefore)
         assert.strictEqual(yield* fs.readFileString(nativeRegistration), registrationBefore)
-      }).pipe(Effect.provide(NodeServices.layer)),
+      }).pipe(provideLayer(NodeServices.layer)),
     30_000,
   )
 })

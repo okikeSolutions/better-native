@@ -1,0 +1,11 @@
+--- a/src/ObserveBattery.ts
++++ b/src/ObserveBattery.ts
+@@ -1,3 +1,7 @@
++import { Battery } from "@better-native/battery"
+ import * as Stream from "effect/Stream"
+ 
+-export const batteryLevels = Stream.empty
++export const batteryLevels = Battery.levelChanges.pipe(
++  Stream.map((event) => event.batteryLevel),
++  Stream.provide(Battery.live),
++)

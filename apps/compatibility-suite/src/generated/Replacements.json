@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "expoRevision": "534c99966e34580f56242eb92aac7689b9089cc7",
-  "ownershipFingerprint": "12999631782174e811d021fc36573d5e6687dc6b9e37627ab11d8043b0fe6674",
+  "ownershipFingerprint": "dbf4cf3483f5347423b87d50b727cfc619ba3ac9c8efe54fef1f21899806e356",
   "replacements": [
     {
       "source": "expo-battery",

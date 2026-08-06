@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "taskType": "network",
+  "id": "network",
+  "version": "2",
+  "allowedSubmissionPaths": ["src/ReadNetwork.ts"],
+  "entrypoint": "src/ReadNetwork.ts",
+  "exportName": "readNetwork",
+  "schemaExportName": "NetworkSnapshot",
+  "publicCompileContract": {
+    "kind": "effect-no-requirements",
+    "exportName": "readNetwork"
+  },
+  "publicPackages": ["@better-native/network"]
+}

@@ -176,6 +176,14 @@ compilation and runtime boundary. Dependency and revision identities are recorde
 `evals/tasks/*/grader` is data-only: fixtures, expected values, and declarative grader configuration.
 `evals/tasks` is not an unchecked executable-code root.
 
+Package-specific task schemas, loading, workspace specifications, verification, and gate mapping
+live in task modules under `tooling/dx-evals/src/tasks`. The closed `TaskRegistry` is the only
+package-aware dispatch point. Shared task export, public-package packing, declaration seeding,
+clean-room materialization, observation-envelope parsing, and trial orchestration operate on the
+common task model and do not add package branches. A new package adds its task module and one
+reviewed registry entry rather than extending central `tasks/TaskWorkspace`, `security/Verifier`,
+and `TrialRunner` switchboards.
+
 The task schema must include at least:
 
 - a stable ID, schema version, task version, suite, and capability tags;
@@ -310,13 +318,21 @@ or harness failure. It is not automatically evidence that all evaluated agents l
 The harness core is composed as an Effect program. Task repositories, export construction, agent
 adapters, isolation backends, verification, evidence storage, clocks, identifiers, and configuration
 are explicit services. The executable entrypoint builds one `ManagedRuntime` from the application
-`Layer` and `NodeServices.layer` from `@effect/platform-node/NodeServices`. That runtime owns the
+`Layer`, `NodeServices.layer`, and the Node HTTP client Layer. That runtime owns the
 Layer scope, serves every custom-harness invocation in its process, and is disposed exactly once
 when the eval process finishes. A trial never constructs or provides the production Layer again.
-Services do not read `process.env`, instantiate model clients, or acquire global filesystem and
-process dependencies internally. This follows the same `NodeServices` base layer and
+Services do not read `process.env` or acquire global filesystem and process dependencies
+internally. The host composition boundary decodes optional provider credentials with Effect
+`Config`, creates one `@effect/ai-openrouter` client Layer, and makes credential presence available
+without exposing the secret value. This follows the same `NodeServices` base layer and
 host-configuration boundary as the compatibility harness while using `ManagedRuntime` for the
 repeated Promise entrypoints required by Vitest Evals.
+
+Cryptographic operations are also runtime services. Package and evidence digests, ephemeral
+evidence keys, evidence HMAC-SHA256, temporary evidence names, and isolation container IDs use
+`effect/Crypto` from `NodeServices.layer`. The HMAC construction is composed from the service's
+SHA-256 primitive and checked against fixed standard vectors. Eval orchestration does not import
+`node:crypto` directly.
 
 DX evals use Vitest Evals for suite authoring, normalized run data, assertions, artifacts, and
 reporting. They run under a dedicated `vitest.evals.config.ts`; long timeouts, provider settings,
@@ -349,10 +365,13 @@ construction, or runtime disposal. The runtime entrypoint is:
 
 ```ts
 import * as NodeServices from "@effect/platform-node/NodeServices"
+import * as NodeHttpClient from "@effect/platform-node/NodeHttpClient"
 import * as Layer from "effect/Layer"
 import * as ManagedRuntime from "effect/ManagedRuntime"
 
-const MainLayer = DxEvalLive.pipe(Layer.provideMerge(NodeServices.layer))
+const MainLayer = DxEvalLive.pipe(
+  Layer.provideMerge(Layer.merge(NodeServices.layer, NodeHttpClient.layerNodeHttp)),
+)
 
 export const dxEvalRuntime = ManagedRuntime.make(MainLayer)
 ```
@@ -371,10 +390,12 @@ export const dxHarness = createHarness<TrialInput, TrialOutcome>({
   run: async ({ input, setArtifact }) => {
     const outcome = await dxEvalRuntime.runPromise(runTrial(input))
 
-    setArtifact("evidence-reference", {
-      runId: outcome.runId,
-      manifestDigest: outcome.publicEvidenceManifest.digest,
-    })
+    if (outcome.publicEvidence.status === "process-authenticated") {
+      setArtifact("evidence-reference", {
+        runId: outcome.runId,
+        manifestDigest: outcome.publicEvidence.digest,
+      })
+    }
 
     return {
       output: outcome,
@@ -469,6 +490,92 @@ Agent adapters are replaceable. A task must not depend on Codex-, Claude-, or mo
 text unless the task explicitly evaluates that integration. The evaluated system identity includes
 the model and the complete coding harness; results must not be attributed to the model alone.
 
+The initial real adapter is `openrouter-coding-agent`. It uses Effect AI from the pinned `effect`
+package and the matching `@effect/ai-openrouter` provider directly; Vercel AI SDK is not inserted as
+a second model abstraction. One adapter is parameterized by a reviewed `AgentProfile` containing
+the exact model, reasoning settings, prompt-cache policy, provider-routing policy, and trial limits.
+Changing any of those values changes the evaluated condition. Each profile is expanded into its own
+Vitest case and authenticated evidence records the complete resolved profile.
+
+Agent Profile schema version 3 also contains the decoded virtual-workspace limit policy,
+compaction policy, and separate compaction reasoning effort. The workspace implementation is the
+single owner of the Effect request/result
+schemas consumed by the Effect AI toolkit, including literal closed failure alternatives; it does
+not duplicate looser TypeScript interfaces beside the tool boundary. Campaign plans print both
+policies and authenticated evidence seals them as part of the resolved profile.
+
+The adapter owns a bounded multi-turn loop around `LanguageModel.generateText`. Its Effect AI
+`Toolkit` exposes Pi-shaped `ls`, `find`, `grep`, `read`, `edit`, and `write` operations plus
+`check_submission` and `submit` over a virtual task workspace. Following Pi's inspection model, `read`
+returns at most 2,000 complete lines or 50 KiB and provides a line offset when more remains;
+`grep` accepts regex or literal matching and returns at most 100 matches or 50 KiB, with bounded
+context and line lengths. `find` is glob-based, `ls` lists one virtual directory, `edit` requires
+unique non-overlapping exact matches, and `write` replaces a complete editable file. None can escape
+the precomputed read allowlist or declared write set. General `bash` is intentionally replaced by
+the bounded `check_submission` operation: the current task class needs compilation, not host shell
+access, and private grader execution remains controller-only. `check_submission` compiles the current candidate against the exact packed public
+package inside the same rootless-Podman isolation boundary used by verification. It returns bounded,
+sanitized TypeScript diagnostics and never mounts private graders, reference patches, or verifier
+sources. Runtime-withheld files are absent. Each public package is produced once per managed runtime with
+`bun pm pack --ignore-scripts`; its manifest, exported type entrypoints, and reachable relative
+declaration graph populate the agent workspace, while the exact same archive is installed for
+clean-room verification. Archive type and path checks run before extraction, package exports and
+declaration references must resolve within the package, and the agent and verifier retain the same
+archive digest. The exact installed `effect` package is mounted read-only for compilation and
+execution; its package manifest and top-level public declaration entrypoints are also mirrored into
+the virtual agent workspace so agents receive the same public API discoverability as a normal
+consumer editor. Effect runtime JavaScript and internal declaration paths are not agent-visible.
+Writes are limited to declared submission paths, and tools execute sequentially.
+The trusted controller holds the OpenRouter credential and model conversation; submitted code and
+clean-room verification remain secretless and network-denied.
+
+Task-visible `task.json` may declare a versioned public compile contract when a requirement is
+expressible entirely through exported types. Network version 2 declares that `readNetwork` must have
+no remaining Effect service requirements, so `check_submission` can diagnose a missing
+`Effect.provide(Network.live)` before private scenario execution. The isolated compiler generates a
+bounded type-only assertion from the decoded declaration; it does not load grader inputs or encode
+expected scenario values. Network does not require an empty error channel because output-schema
+validation legitimately retains `SchemaError` in the reference implementation.
+
+Following Pi's system-prompt construction, the coding loop builds its system message from the tools
+actually exposed, concise tool descriptions, immutable workspace boundaries, and proportional
+working guidelines. It does not prescribe a declaration-graph traversal before implementation.
+Runtime guidance is derived from evidence instead: a successful `edit` or `write` makes the latest
+compile result stale, a failed check asks for a correction and another check, and an unchanged
+passing candidate asks for `submit`. Transcript-visible completion-reserve messages begin with three
+effective provider requests remaining so implementation, compilation, correction, and submission are
+not all deferred to the final request. The effective reserve is the smaller of the remaining turn
+allowance and a conservative estimate derived from the remaining observed-token allowance, current
+provider context, and maximum per-request output. Fake-LanguageModel tests exercise repeated
+compilation and stale-check detection without spending provider tokens.
+
+Reviewed profiles use a 64-request emergency circuit breaker rather than a normal turn budget. It
+exists only to contain a pathological zero-usage tool loop; the five-minute duration limit, observed
+token allowance, observed cost stop, successful submission, or model completion should end ordinary
+trials first. This keeps request count from deciding how much work an efficient or inefficient model
+is allowed to do while retaining a finite safety boundary. Low request caps remain injectable in
+deterministic tests so the circuit-breaker behavior itself stays covered.
+
+The first paid verification of this policy ran Network v2 for 14 requests and passed all five gates.
+It stopped on observed tokens at 124,760 total tokens after two compactions and 21 agent tool calls,
+well before the 64-request circuit breaker and within the five-minute duration and USD 0.05 campaign
+limits. The agent used the two requests beyond the former ceiling to correct its final schema shape;
+clean-room verification then accepted the candidate. The recorded provider cost was USD 0.006099696.
+
+Conversation compaction follows the core invariants of [Pi's coding-agent compactor](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/src/core/compaction/compaction.ts): estimate the
+provider context conservatively, retain a bounded recent suffix, cut only at a complete assistant
+turn, and carry forward an explicit checkpoint. The evaluated model performs a bounded, tool-free
+semantic-summary request which preserves API names, signatures, error tags, diagnostics, paths,
+decisions, failed approaches, and next actions. The harness then combines that summary with
+deterministic aggregate tool activity, the latest sanitized `check_submission` result, and the
+authoritative changed editable-file state. When the prompt estimate crosses 12,000 tokens, older
+provider messages are replaced by this checkpoint. The semantic summary is capped at 512 output
+tokens, and complete recent turns are retained only while the resulting prompt stays at or below a
+9,600-token post-compaction target. That 20% headroom prevents an ordinary next turn from triggering
+another compaction immediately. Summary usage and cost are reported separately and included in trial totals. The evidence
+transcript is append-only and retains every original tool call and full bounded tool result, so
+context economy cannot erase audit data or alter scoring.
+
 Adapters translate messages and real tool calls/results into the Vitest Evals transcript model.
 Process lifecycle, filesystem, and supervisor events are stored as bounded trace spans or evidence
 records rather than invented transcript event types. Limits and usage fields are classified as
@@ -533,7 +640,13 @@ are infrastructure errors rather than task failures.
 
 Workspace creation, transfer, retention, and deletion validate canonical harness-owned paths and
 reject links or unexpected file types. Failed validation stops the run; cleanup never broadens its
-target or retries with a stronger destructive primitive.
+target or retries with a stronger destructive primitive. The local baseline validates each existing
+artifact-path component without following links, creates controller directories with restrictive
+modes, and rechecks canonical paths before use. Effect's portable `FileSystem` service does not
+expose descriptor-relative `openat`/`O_NOFOLLOW` operations, so a malicious same-UID host process
+racing those checks is outside this local baseline's threat model. Trusted CI must give the eval
+process an exclusive workspace; cross-tenant or same-UID shared runners require a stronger
+artifact-store backend.
 
 ## Evidence
 
@@ -671,6 +784,27 @@ audited, selected stable tasks may become pull-request gates. Full multi-trial s
 release or when a public API, migration guide, agent harness, or supported model configuration
 changes materially.
 
+Pull-request validation never makes model requests. Paid execution has separate commands and four
+layers of control:
+
+- every profile limits turns, output tokens per turn, total observed tokens, duration, and an
+  `observedCostStopUsd` soft stop checked after each provider response;
+- the process-owned campaign budget reserves each trial's reviewed cost allocation before its first
+  request and fails before the declared campaign allocation can be exceeded;
+- live preflight requires one reusable key dedicated to eval execution, with a finite
+  provider-enforced limit no greater than the reviewed global USD 8.00 ceiling and enough remaining
+  allowance for every not-yet-reserved trial in the selected campaign;
+- the initial campaign runs five Network trials followed by five Battery trials in one serialized
+  Vitest invocation, uses exact model slugs, disables model and provider fallback, and records the
+  actual provider, fingerprint, usage, and cost; and
+- `evals plan` prints the complete selected matrix and conservative maximum cost without reading a
+  secret or making a provider request.
+
+Prompt caching is a reviewed profile setting. It is initially disabled so the first cross-model
+baseline does not mix cache behavior. A later cached condition must be separately identified and
+must record cache-read tokens. Provider or agent retries remain zero unless a versioned profile and
+analysis policy explicitly introduce them.
+
 Thresholds are evidence-based. The repository does not invent a release percentage before it has a
 validated baseline, known infrastructure error rate, and reviewed task distribution.
 
@@ -678,51 +812,272 @@ After calibration, thresholds are pre-registered for a versioned regression set 
 separate runs. A changed task, grader, fixture, documentation bundle, harness, or resource policy
 cannot inherit the old threshold without an explicit re-baseline.
 
-## Initial milestones
+## Implementation status
 
-### Milestone 0: validate the instrument
+“Implemented” below means the checked-in instrument passes deterministic, secretless validation. It
+does not mean a paid model baseline, human pilot, discoverability claim, or regression threshold has
+already been established. Normative requirements elsewhere in this document may describe later
+hardening beyond the current implementation.
 
-The first implementation contains:
+### Checkpoints 1 and 2: foundation and synthetic proof — implemented
+
+The current implementation contains:
 
 - an exact reviewed Vitest Evals dependency that passes the repository security-audit policy and is
   compatible with the pinned Vitest version;
 - an Effect-native `tooling/dx-evals` workspace using normal imports from the pinned `effect`
   package, included in typecheck, strict Effect diagnostics, `@effect/vitest` tests, and Knip;
+- shared scalar refinements centralized in `src/Domain.ts`, built from Effect's `NonEmptyString`,
+  `Natural`, `Int`, and `Finite` schemas rather than repeated feature-local filters;
+- Effect `Brand` identities for decoded task, run, adapter, transcript, path, and cryptographic
+  values, plus exhaustive Effect `Match` dispatch for closed domain alternatives;
 - one process-owned `ManagedRuntime` built from `NodeServices.layer` and the complete application
   Layer, reused by every trial in that process and covered by a disposal test;
 - a conformance check rejecting direct imports from `vendor/effect` and recording the installed
   Effect version and pinned source revision;
 - one synthetic consumer task with no Expo or native dependency;
 - task-schema and filtered-export validation;
-- reference and no-op adapters only;
+- reference, no-op, and deliberately broken deterministic adapters;
 - one isolation backend with conformance tests;
-- one clean-room deterministic verifier;
-- bounded atomic evidence under `.artifacts/evals`;
-- exactly one harness run per Vitest case; and
+- task-owned clean-room deterministic verifiers behind one observation-envelope boundary;
+- single-use atomic evidence under a link-checked `.artifacts/evals` root;
+- exactly one harness run per Vitest case;
+- one deterministic `RequiredGateJudge` that records required-gate pass fraction and failed-gate
+  rationale as native Vitest Evals score metadata;
 - both the `vitest-evals/reporter` and Vitest JSON reporter, with the JSON reporter writing to a
   unique bounded `outputFile.json` beneath `.artifacts/evals`; and
-- a smoke test that validates the exact JSON artifact and eval metadata, serves that artifact with
-  `vitest-evals serve` on an ephemeral port, probes the report UI, and terminates it cleanly.
+- an `evals smoke` command that runs the secretless suite, Schema-decodes its exact harness metadata,
+  starts the Vitest Evals report UI on an ephemeral loopback port, probes it, and closes it.
 
-Milestone 0 must prove that the no-op fails, the reference passes, runtime-withheld material is not
-present in the agent export, malicious archives are rejected, timeouts destroy the agent
-environment, verification occurs in a fresh environment, and evidence cannot be forged by the
-submission.
+The deterministic suite proves that the no-op and deliberately broken solutions fail, the reference
+passes, exactly one harness invocation occurs per Vitest case, canonical transcript events reach the
+report, runtime-withheld material is absent from trial exports, malicious archives are rejected,
+package export and declaration graphs cannot be missing or escape the archive, and agent discovery
+shares the verifier's packed-package digest. It also proves that timeouts destroy the agent
+environment, verification occurs in a fresh environment, and evidence cannot be forged by a
+submission. The isolated supervisor uses Effect `NodeWorker` and the
+candidate entrypoint uses `NodeWorkerRunner`; grader inputs are delivered to the supervisor through
+consumed stdin, and only a controller-nonce-bound worker envelope is accepted. Controlled
+native-double state is closure-held rather than stored on `globalThis`.
 
-### Milestone 1: validate a real task
+### Checkpoint 3: Network baseline — implemented
 
-After Milestone 0 passes its security and lifecycle audit, add:
+The Network task consumes the packed public `@better-native/network` package against a controlled
+`expo-network` double. Its four isolated scenarios cover one-shot Effect execution,
+`Network.live` provisioning, schema-validated output, distinct `NetworkUnavailable` handling, and
+native rejection or malformed state preserved as `NetworkFailure`. Reference passes; no-op and the
+collapsed-error control fail.
 
-- one Network consumer task using packed public packages and controlled native doubles;
-- one real coding-agent adapter;
-- collision-proof trial IDs and initially serialized execution;
-- three diagnostic trials in a scheduled trusted workflow; and
-- the first human blind pilot of the same task.
+### Checkpoint 4: Battery baseline — implemented
 
-Battery Stream, fake-Layer, incremental migration, contributor, native-compilation, parallel, and
-protected-holdout tasks follow only after the preceding task demonstrates that the new dimension can
-be isolated and graded. More tasks are added from the declared capability universe, observed human
-or agent failures, new Effect-native concepts, and real user reports—not to inflate a task count.
+The Battery task consumes the packed public `@better-native/battery` package against controlled
+`expo-battery` events. Its isolated scenarios cover ordered Stream consumption, Layer activation,
+normal completion, early downstream termination, listener cleanup, and listener-registration
+failure preserved as `BatteryFailure`. A fixed-value stream may reproduce happy-path values but
+still fails lifecycle and provisioning gates.
+
+### Checkpoint 5: real execution and reporting — live pilot complete, human evidence pending
+
+The `openrouter-coding-agent`, bounded Effect AI toolkit and multi-turn loop, reviewed five-model
+profile registry, fake-LanguageModel tests, serialized execution, per-trial resource limits and
+observed-cost stop, campaign budget, provider preflight, usage and cost evidence, and no-request
+campaign plan are implemented. `checkpoint-5-smoke` declares one Network trial using the cheapest
+compatible profile, DeepSeek V4 Flash 0731, with a USD 0.05 ceiling. It is the paid acceptance check
+for a valid provider response, nonzero usage and cost, complete process-authenticated evidence, and
+meaningful required-gate diagnostics. Task success remains diagnostic; infrastructure and evidence
+validity are mandatory. `checkpoint-5-diagnostic` then declares five Network trials followed by five
+Battery trials. Each of DeepSeek V4 Flash 0731, GPT-5.6 Luna, Grok 4.5, Kimi K3, and Claude Sonnet 5
+runs exactly once on each task. The full reviewed ceiling is USD 4.00; either task-only subset is USD
+2.50. The ten observations do not support model-ranking claims.
+The serialized campaign ledger reserves each profile's declared maximum before execution, then
+settles a completed trial to its recorded actual provider cost. Provider failures or missing cost
+retain the conservative reservation, and the next trial still fails fast if it cannot fit beneath
+the campaign-wide ceiling.
+
+The first `checkpoint-5-smoke` execution completed on 2026-08-06. The pinned DeepSeek provider
+returned a valid response, the agent submitted after 7 turns and 13 tool calls, and usage recorded
+31,526 input tokens, 2,594 output tokens, 34,120 total tokens, and USD 0.001585476 actual cost with no
+retry. The canonical transcript contained 30 events, and the report's public evidence digest matched
+the persisted HMAC-SHA256 manifest. Infrastructure was valid. The candidate passed the public
+package-boundary and output-schema gates but failed the three behavioral scenario gates, producing
+sanitized compilation and scenario diagnostics. The 0.40 judge score is diagnostic evidence that
+the paid instrument works; it is not a model-performance baseline.
+
+A post-compaction scheduling verification on 2026-08-06 confirmed that the bounded loop now leaves
+enough room for correction and submission. After one transient first-response provider failure, the
+same pinned endpoint passed the bounded compatibility probe and the retried trial completed with
+valid infrastructure. The agent used 12 turns and 18 tool calls, performed a failed compile, edited
+the candidate, passed the next compile, and submitted. Compaction occurred once, reducing the
+estimated provider context from 13,964 to 9,487 tokens; it did not recur on every remaining request.
+The run recorded 100,120 input tokens, 6,351 output tokens, 106,471 total tokens, and USD 0.005122044.
+The candidate still scored 0.40 because it omitted `Network.live` provisioning and failed the three
+behavioral gates. The report correctly classified this as a task failure with valid infrastructure.
+
+Network version 2 was then run as a controlled follow-up with the same DeepSeek profile and resource
+limits. The only task-facing changes were explicit Layer-boundary wording and the agent-visible
+no-remaining-services compile contract. The infrastructure-valid run used 12 turns, 21 tool calls,
+102,180 total tokens, and USD 0.004549302. `Network.live` was present and the available-state gate
+changed from fail to pass. Both public compile checks rejected an export whose inferred service
+requirements remained `unknown`. The candidate nevertheless recovered typed errors into snapshot
+values and then wrapped those snapshots as `available`, so the unavailable and failure gates still
+failed; the loop reached its turn limit before a final compile and submit. The score moved from 0.40
+to 0.60. This supports the narrow conclusion that public contract feedback improved Layer adoption;
+it does not establish task success or justify weakening the behavioral verifier.
+
+The first live matrix is selected to expose the same public adoption task to meaningfully different
+price and capability tiers: DeepSeek is the ultra-cheap open-weight baseline; Luna is the cheap
+proprietary baseline; Grok is a cost-efficient frontier coding model; Kimi targets repository
+navigation and tool-driven iteration; and Sonnet supplies an Anthropic frontier baseline. Exact
+ZDR-compatible provider endpoints are pinned respectively to `deepinfra/fp4`, `azure`, `xai/zdr`,
+`moonshotai/mxfp4`, and `amazon-bedrock/global`. All require the requested reasoning and tool
+parameters, deny data collection, disable fallbacks, and enforce zero data retention. Prompt caching
+is disabled. Claude Opus 5 and GPT-5.6 Sol are intentionally deferred to a separately reviewed
+premium-frontier campaign after the live adapter and evidence pipeline have completed this pilot.
+
+Each profile reviews one mutually exclusive OpenRouter output-token parameter. Luna uses
+`max_completion_tokens`; DeepSeek, Grok, Kimi, and Sonnet use `max_tokens`. The same selection is
+used by model defaults and every remaining-budget clamp, and fake-LanguageModel tests assert that
+the unused alias is absent.
+
+DeepSeek provider eligibility has a separate bounded compatibility instrument. It sends one forced
+schema-valid tool call with no retry, a 512-token output maximum, a 60-second timeout, one explicit
+provider, and fallbacks disabled. Malformed output, a missing tool call, absent usage evidence,
+provider failure, or timeout quarantines the provider and never becomes a task score. On 2026-08-06,
+`deepinfra/fp4` passed with 306 input tokens, 66 output tokens, and USD 0.000034812 actual cost. The
+preserved first campaign remains unchanged and continues to document Morph's malformed response.
+The selector now accepts every reviewed profile and exercises the exact Network system prompt,
+task prompt, model layer, and coding toolkit for as many as twelve bounded turns. Luna's pinned Azure
+endpoint passed that protocol using `max_completion_tokens`, with 8,402 input tokens, 443 output
+tokens, and USD 0.0096776 actual cost. The probe identified explicit `null` values for omitted
+inspection-tool arguments; the schemas now treat those values as omission while handlers retain
+their integer, path, and output limits. A subsequent profile-filtered Luna Network trial was
+infrastructure-valid, produced process-authenticated evidence, used 121,107 observed tokens, and
+cost USD 0.0785156. Its 0.80 score and token-limit exit are retained as an unbiased task failure,
+not a provider failure. Luna is therefore no longer compatibility-quarantined; all historical
+attempts remain unchanged in the blind baseline. `evals plan` and `evals run` accept an explicit
+`--profile` filter so provider debugging cannot accidentally execute the rest of the matrix.
+
+Profile-filtered verification then resolved the remaining reviewed providers independently. Grok
+passed all five Network gates after 5 turns and 11 tool calls; Kimi passed all six Battery gates
+after 15 turns and 18 tool calls; and Sonnet passed all five Network gates after 10 turns and 17
+tool calls. Sonnet's first Battery retry failed before task scoring because it supplied the widely
+used single-edit payload `{ path, oldText, newText }` while the harness exposed only the batch form
+`{ path, edits }`. The root tool schema cannot use `anyOf` under the OpenAI-compatible codec, so one
+object schema now accepts either shape and the Effect handler normalizes both into the existing
+bounded uniqueness, overlap, allowlist, and file-size checks. The next isolated Sonnet Battery run
+submitted after 9 turns and 9 tool calls, recorded 53,307 tokens and USD 0.11347, and passed all six
+gates with valid authenticated evidence. This was a harness compatibility fix; no provider fallback
+or automatic agent retry was introduced, and failed historical attempts remain preserved.
+
+The first report score is deterministic. `RequiredGateJudge` projects the trusted verifier's
+required gates into a score from zero to one and includes failed gate identifiers and rationales.
+Reference controls enforce a score of one. Expected-negative controls and the uncalibrated first
+live campaign use a null threshold, which records scores without making diagnostic task failure a
+Vitest infrastructure failure. No initial LLM judge is used because every current criterion is
+executable; a model-backed rubric remains reserved for a future criterion that cannot be checked
+deterministically and survives calibration against human labels.
+
+Reporter-facing results keep three independent dimensions. Vitest assertion execution is
+`completed`, `failed`, `skipped`, or `unknown`; infrastructure is `valid`, `error`, or unavailable;
+and the task is `success`, `failure`, or `not-evaluated`. The judge score remains a separate numeric
+projection. Consequently a diagnostic assertion that completed with score 0.20 is reported as a
+task failure, never as a passed task. Infrastructure errors are excluded from the conditional task
+denominator rather than converted into a scoreable task failure.
+
+Public failure evidence uses only the frozen sanitized categories `compilation`, `module-load`,
+`provider-protocol`, `timeout`, `scenario`, `source-policy`, and `harness`, plus its trusted phase and
+optional gate ID. Compiler text, submitted source, provider bodies, exceptions, and private grader
+values remain outside this evidence. This makes failed gates diagnosable without widening the
+agent-visible or report-visible trust boundary.
+
+Operational diagnostics use Effect logging with scoped campaign and trial annotations plus timed
+spans. They record lifecycle, bounded budget, sandbox exit, cleanup, and evidence-publication state.
+Console logs, traces, reports, and public evidence never contain task instructions, model responses,
+submitted source, provider bodies, credentials, controller nonces, or authentication key material.
+For live campaigns, Effect's native `Logger.formatJson` and `Logger.toFile` also write a private
+`diagnostics.jsonl` in the collision-proof campaign artifact directory. Provider-failure entries
+retain the semantic Effect AI error, HTTP status, selected non-secret response headers, and at most
+64 KiB of response body, with explicit byte counts and truncation. They exclude request bodies,
+prompts, tool arguments, and submissions; are mode 0600; reject linked sink paths; remain outside
+Vitest metadata and authenticated public evidence; and flush when the managed runtime is disposed.
+Canonical transcripts and evidence remain the trial-result authority.
+
+The first complete five-profile Network-and-Battery campaign on 2026-08-06 produced nine
+infrastructure-valid task successes and one unscored Grok Battery provider-protocol failure. The
+new private diagnostic sink reproduced and identified that failure exactly: the pinned Grok endpoint
+requires reasoning on every request, while the semantic compaction request had explicitly disabled
+reasoning. Agent profile schema version 3 therefore declares a separate reviewed
+`compactionReasoningEffort`; Grok uses its already-compatible `medium` effort and the other four
+profiles retain `none`. A fake-LanguageModel regression proves that the compaction override is sent.
+The subsequent isolated Grok Battery run did not compact, but completed with valid infrastructure,
+submitted after 8 turns, used 64,502 tokens and 14 tool calls, cost USD 0.0430392, and passed all six
+gates. The failed full-campaign observation remains unchanged and unscored; no automatic retry or
+provider fallback was introduced.
+
+After reducing the reviewed campaign ceiling to USD 4.00, the first rerun exposed that the
+in-process ledger retained every completed trial's worst-case reservation. Eight trials executed,
+then Kimi and Sonnet Battery were rejected before provider access because the accumulated
+reservations reached USD 3.45. The ledger now atomically settles a completed serialized trial to its
+recorded actual provider cost; provider failures or missing cost retain the conservative
+reservation. Budget tests cover this behavior, and the failed run remains available as
+infrastructure evidence rather than task evidence.
+
+The corrected complete campaign then scheduled all ten trials and recorded USD 0.564131394 across
+the nine trials with usage evidence. Nine trials were infrastructure-valid: seven passed every
+required task gate, while DeepSeek and Luna Network produced valid task failures. DeepSeek Battery
+received an OpenRouter `RateLimitError` before task verification and remains an unscored
+infrastructure failure. No automatic retry or provider fallback was used. This validates the
+campaign budget, reporting, evidence, and multi-provider execution path, but the strict requirement
+that every live trial be infrastructure-valid remains unmet and no model success-rate threshold is
+derived from this pilot.
+
+One Effect `Command` entrypoint exposes `validate`, `smoke`, `plan`, `run`, `probe-provider`, and
+`report`. A paid run summarizes its exact collision-proof report after Vitest exits and keeps test
+execution, infrastructure validity, task success, and judge score separate. `report` resolves exact
+regular report files: the default and `--latest` serve only the newest retained run,
+`--campaign <id>` serves that campaign's runs, and `--all` is required to aggregate history. Package
+selection is a reviewed campaign/task option rather than a growing collection of package scripts.
+The manually dispatched `paid-evals` GitHub environment runs this same CLI with non-cancelling
+concurrency and uploads JSON reports plus process-authenticated evidence. It is not triggered by pull
+requests and performs no automatic agent retry.
+
+Reviewed profile literals are runtime-decoded with Effect Schema, including a non-empty provider
+allowlist. Each request clamps output to the remaining per-trial output-token budget; aggregate
+input-plus-output tokens and actual provider cost are observed stop thresholds. One reusable
+dedicated OpenRouter key has a reviewed finite USD 8.00 server limit bounding total eval-key
+exposure. The selected campaign has a separate fail-fast reservation budget. The
+`observedCostStopUsd` profile field is intentionally named as a soft, post-response stop because one
+response can cross it. A `submit` tool call does not bypass token, cost, or missing-cost checks, and
+duplicate paid run IDs are rejected.
+
+Current evidence is labeled `process-authenticated`: its HMAC key is ephemeral to one managed
+runtime. It binds the canonical task instruction, selected adapter/profile, private evaluator code
+and grader-data digest—including controlled native doubles and runtime configuration—sandbox image
+and policy, submission, observations, gates, usage, and exit reason. Durable cross-process
+publication remains the separate publisher milestone described by the normative Evidence section;
+this baseline does not mislabel its local HMAC as that facility.
+
+The first paid live campaign is preserved byte-for-byte under `evals/baselines/` as a historical
+blind diagnostic. It is not an accepted performance baseline: four provider attempts failed at the
+infrastructure boundary and none of the six infrastructure-valid trials passed every required task
+gate. Until both tasks have a valid blind pilot and the infrastructure has survived repeated
+real-adapter runs, there is no model success-rate claim and no pull-request threshold derived from
+agent performance.
+
+### Next evidence milestones — pending
+
+- run the first human blind pilots using the same trial-visible public boundary;
+- manually dispatch and audit the reviewed Checkpoint 5 diagnostic campaign after those pilots;
+- version and expose the intended generated-reference and handwritten-guide bundle before using
+  these tasks to support documentation-discoverability claims;
+- define pre-registered regression thresholds only after baseline and infrastructure-noise review;
+- add fake-Layer, incremental-migration, contributor, native-compilation, parallel, and protected
+  holdout tasks only when each adds a distinct measurable dimension; and
+- enable branch protection after the secretless deterministic suite is established as the required
+  pull-request check.
+
+More tasks are added from the declared capability universe, observed human or agent failures, new
+Effect-native concepts, and real user reports—not to inflate a task count.
 
 ## References
 

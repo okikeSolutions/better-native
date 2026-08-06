@@ -7,6 +7,7 @@ import * as Schema from "effect/Schema"
 import { ExpoRepository, Upstreams, layer as expoRepositoryLayer } from "./ExpoRepository.ts"
 import * as HarnessConfig from "./HarnessConfig.ts"
 import { HarnessError } from "./HarnessError.ts"
+import { provideLayer } from "./TestLayers.ts"
 
 const repositoryLayer = (root: string, expoSourceRoot?: string) =>
   expoRepositoryLayer(root, expoSourceRoot).pipe(
@@ -46,18 +47,18 @@ describe("ExpoRepository path boundaries", () => {
         const upstreams = yield* repository.readJson("compatibility/upstreams.json", Upstreams)
         const expoFailure = yield* repository.readExpoText("package.json").pipe(Effect.flip)
         return { upstreams, expoFailure }
-      }).pipe(Effect.provide(repositoryLayer(root, missingExpo)))
+      }).pipe(provideLayer(repositoryLayer(root, missingExpo)))
       assert.strictEqual(result.upstreams.expo.revision, "1".repeat(40))
       assert.instanceOf(result.expoFailure, HarnessError)
       assert.strictEqual(result.expoFailure.operation, "resolve Expo source")
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("rejects absolute and parent-relative repository paths", () =>
     Effect.gen(function* () {
       const repository = yield* ExpoRepository
       const readFailure = yield* repository
-        .readJson("../package.json", Schema.Unknown)
+        .readJson("../package.json", Schema.String)
         .pipe(Effect.flip)
       assert.instanceOf(readFailure, HarnessError)
       assert.strictEqual(readFailure.operation, "resolve repository JSON")
@@ -67,7 +68,7 @@ describe("ExpoRepository path boundaries", () => {
         .pipe(Effect.flip)
       assert.instanceOf(writeFailure, HarnessError)
       assert.strictEqual(writeFailure.operation, "resolve artifact path")
-    }).pipe(Effect.provide(repositoryLayer(process.cwd()))),
+    }).pipe(provideLayer(repositoryLayer(process.cwd()))),
   )
 
   it.effect("rejects unsafe upstream revisions and paths during decoding", () =>
@@ -126,7 +127,7 @@ describe("ExpoRepository path boundaries", () => {
       const directoryFailure = yield* Effect.gen(function* () {
         const repository = yield* ExpoRepository
         return yield* repository.writeArtifact("compatibility/catalog.json", "{}").pipe(Effect.flip)
-      }).pipe(Effect.provide(repositoryLayer(root, `${root}/expo-source`)))
+      }).pipe(provideLayer(repositoryLayer(root, `${root}/expo-source`)))
       assert.instanceOf(directoryFailure, HarnessError)
       assert.strictEqual(directoryFailure.operation, "validate artifact directory")
 
@@ -137,9 +138,9 @@ describe("ExpoRepository path boundaries", () => {
       const targetFailure = yield* Effect.gen(function* () {
         const repository = yield* ExpoRepository
         return yield* repository.writeArtifact("compatibility/catalog.json", "{}").pipe(Effect.flip)
-      }).pipe(Effect.provide(repositoryLayer(root, `${root}/expo-source`)))
+      }).pipe(provideLayer(repositoryLayer(root, `${root}/expo-source`)))
       assert.instanceOf(targetFailure, HarnessError)
       assert.strictEqual(targetFailure.operation, "validate artifact target")
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 })

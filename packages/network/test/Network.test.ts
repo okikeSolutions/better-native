@@ -28,6 +28,13 @@ vi.mock("expo-network", () => ({
 const ExpoNetwork = await import("expo-network")
 const { Network, NetworkFailure, NetworkService, NetworkStateType } = await import("../src/index")
 
+const provideLayer =
+  <ROut, E2, RIn>(layer: Layer.Layer<ROut, E2, RIn>) =>
+  <A, E, R>(effect: Effect.Effect<A, E, R>): Effect.Effect<A, E | E2, RIn | Exclude<R, ROut>> =>
+    Effect.scoped(
+      Layer.build(layer).pipe(Effect.flatMap((context) => Effect.provide(effect, context))),
+    )
+
 describe("@better-native/network", () => {
   it("reads network state through an Effect service", async () => {
     const TestNetwork = Layer.succeed(
@@ -50,7 +57,7 @@ describe("@better-native/network", () => {
       }),
     )
 
-    const result = await Effect.runPromise(Network.getState.pipe(Effect.provide(TestNetwork)))
+    const result = await Effect.runPromise(Network.getState.pipe(provideLayer(TestNetwork)))
 
     expect(result).toEqual({
       type: "WIFI",
@@ -81,7 +88,7 @@ describe("@better-native/network", () => {
     )
 
     await expect(
-      Effect.runPromise(Network.getIpAddress.pipe(Effect.provide(TestNetwork))),
+      Effect.runPromise(Network.getIpAddress.pipe(provideLayer(TestNetwork))),
     ).resolves.toBe("127.0.0.1")
   })
 
@@ -90,7 +97,7 @@ describe("@better-native/network", () => {
       Object.assign(new Error("not available"), { code: "ERR_UNAVAILABLE" }),
     )
 
-    const exit = await Effect.runPromiseExit(Network.getState.pipe(Effect.provide(Network.live)))
+    const exit = await Effect.runPromiseExit(Network.getState.pipe(provideLayer(Network.live)))
 
     expect(exit._tag).toBe("Failure")
     if (exit._tag === "Failure") {
@@ -107,7 +114,7 @@ describe("@better-native/network", () => {
   it("preserves generic Expo failures separately from unavailable APIs", async () => {
     vi.mocked(ExpoNetwork.getNetworkStateAsync).mockRejectedValueOnce(new Error("network failed"))
 
-    const exit = await Effect.runPromiseExit(Network.getState.pipe(Effect.provide(Network.live)))
+    const exit = await Effect.runPromiseExit(Network.getState.pipe(provideLayer(Network.live)))
 
     expect(exit._tag).toBe("Failure")
     if (exit._tag === "Failure") {
@@ -135,7 +142,7 @@ describe("@better-native/network", () => {
       }),
     )
 
-    const exit = await Effect.runPromiseExit(Network.getState.pipe(Effect.provide(Network.live)))
+    const exit = await Effect.runPromiseExit(Network.getState.pipe(provideLayer(Network.live)))
 
     expect(exit._tag).toBe("Failure")
     if (exit._tag === "Failure") {
@@ -154,7 +161,7 @@ describe("@better-native/network", () => {
     vi.mocked(ExpoNetwork.isAirplaneModeEnabledAsync).mockResolvedValueOnce(false)
 
     await expect(
-      Effect.runPromise(Network.isAirplaneModeEnabled.pipe(Effect.provide(Network.live))),
+      Effect.runPromise(Network.isAirplaneModeEnabled.pipe(provideLayer(Network.live))),
     ).resolves.toBe(false)
   })
 
@@ -176,7 +183,7 @@ describe("@better-native/network", () => {
     )
 
     const result = await Effect.runPromise(
-      Network.stateChanges.pipe(Stream.take(1), Stream.runCollect, Effect.provide(TestNetwork)),
+      Network.stateChanges.pipe(Stream.take(1), Stream.runCollect, provideLayer(TestNetwork)),
     )
 
     expect(Array.from(result)).toEqual([
@@ -200,7 +207,7 @@ describe("@better-native/network", () => {
     })
 
     const result = await Effect.runPromise(
-      Network.stateChanges.pipe(Stream.take(1), Stream.runCollect, Effect.provide(Network.live)),
+      Network.stateChanges.pipe(Stream.take(1), Stream.runCollect, provideLayer(Network.live)),
     )
 
     expect(Array.from(result)).toEqual([
@@ -219,7 +226,7 @@ describe("@better-native/network", () => {
     })
 
     const exit = await Effect.runPromiseExit(
-      Network.stateChanges.pipe(Stream.take(1), Stream.runCollect, Effect.provide(Network.live)),
+      Network.stateChanges.pipe(Stream.take(1), Stream.runCollect, provideLayer(Network.live)),
     )
 
     expect(exit._tag).toBe("Failure")

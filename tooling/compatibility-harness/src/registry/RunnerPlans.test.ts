@@ -3,6 +3,7 @@ import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as ExpoRepository from "../ExpoRepository.ts"
+import { provideLayer } from "../TestLayers.ts"
 import * as HarnessConfig from "../HarnessConfig.ts"
 import * as RunnerPlans from "./RunnerPlans.ts"
 import * as AppRegistry from "./AppRegistry.ts"
@@ -27,7 +28,7 @@ describe("generated runner plan ledger", () => {
         ),
       )
     }).pipe(
-      Effect.provide(
+      provideLayer(
         ExpoRepository.layer(process.cwd()).pipe(
           Layer.provideMerge(
             Layer.merge(
@@ -132,7 +133,7 @@ describe("generated runner plan ledger", () => {
         "lint subjects and test helpers remain inputs rather than executable plans",
       )
     }).pipe(
-      Effect.provide(
+      provideLayer(
         ExpoRepository.layer(process.cwd()).pipe(
           Layer.provideMerge(
             Layer.merge(

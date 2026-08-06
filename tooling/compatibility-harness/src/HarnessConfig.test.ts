@@ -6,6 +6,7 @@ import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
 import * as Redacted from "effect/Redacted"
 import { HarnessConfig, layer } from "./HarnessConfig.ts"
+import { provideLayer } from "./TestLayers.ts"
 
 const configuredLayer = (env: Record<string, string>) =>
   layer("/workspace/project").pipe(
@@ -24,7 +25,7 @@ describe("HarnessConfig", () => {
       assert.strictEqual(config.iosDestination, "generic/platform=iOS Simulator")
       assert.strictEqual(config.caches.pnpmStore.status, "unknown")
       assert.isTrue(Option.isNone(config.turboToken))
-    }).pipe(Effect.provide(configuredLayer({ TURBO_TOKEN: "   ", TURBO_TEAM: "   " }))),
+    }).pipe(provideLayer(configuredLayer({ TURBO_TOKEN: "   ", TURBO_TEAM: "   " }))),
   )
 
   it.effect("parses typed build, cache, and secret configuration", () =>
@@ -41,7 +42,7 @@ describe("HarnessConfig", () => {
       assert.strictEqual(config.turboTeam, "team")
       assert.strictEqual(Redacted.value(Option.getOrThrow(config.turboToken)), "secret")
     }).pipe(
-      Effect.provide(
+      provideLayer(
         configuredLayer({
           EXPO_SOURCE_ROOT: "/sources/expo",
           GITHUB_SHA: "abc123",
@@ -60,7 +61,7 @@ describe("HarnessConfig", () => {
 
   it.effect("rejects malformed boolean configuration", () =>
     HarnessConfig.pipe(
-      Effect.provide(configuredLayer({ BETTER_NATIVE_FORCE_COLD_BUILD: "sometimes" })),
+      provideLayer(configuredLayer({ BETTER_NATIVE_FORCE_COLD_BUILD: "sometimes" })),
       Effect.flip,
       Effect.map((error) => assert.include(String(error), "BETTER_NATIVE_FORCE_COLD_BUILD")),
     ),

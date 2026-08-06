@@ -3,6 +3,7 @@ import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import { environmentKeys } from "../HarnessConfig.ts"
+import { provideLayer } from "../TestLayers.ts"
 
 describe("hosted compatibility workflow", () => {
   it.effect("uses Expo-derived job ownership and profiles", () =>
@@ -169,6 +170,6 @@ describe("hosted compatibility workflow", () => {
       assert.match(rootPackage, /"better-native": "node --experimental-strip-types/)
       assert.match(harnessPackage, /"@effect\/platform-node": "4\.0\.0-beta\.102"/)
       assert.notMatch(harnessPackage, /@effect\/platform-bun/)
-    }).pipe(Effect.provide(NodeServices.layer)),
+    }).pipe(provideLayer(NodeServices.layer)),
   )
 })
