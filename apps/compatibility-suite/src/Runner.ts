@@ -372,7 +372,7 @@ const runSource = (
         }
       }
       if (registeredSpecCount === 0) return platformSkipped()
-      const done = Schema.decodeUnknownSync(JasmineDone)(await jasmineEnv.execute())
+      const done = await Schema.decodeUnknownPromise(JasmineDone)(await jasmineEnv.execute())
       recordJasmineCompletion({
         done,
         results,

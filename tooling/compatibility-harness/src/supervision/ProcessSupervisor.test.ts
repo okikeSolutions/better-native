@@ -8,6 +8,7 @@ import * as Layer from "effect/Layer"
 import * as Ref from "effect/Ref"
 import * as Stream from "effect/Stream"
 import * as TestClock from "effect/testing/TestClock"
+import { provideLayer } from "../TestLayers.ts"
 import {
   layer,
   layerFromBackend,
@@ -39,7 +40,7 @@ describe("ProcessSupervisor", () => {
           ["stderr", "err-1"],
         ],
       )
-    }).pipe(Effect.provide(layerFromBackend(backendPlaceholder))),
+    }).pipe(provideLayer(layerFromBackend(backendPlaceholder))),
   )
 
   it.effect("cleans the detached process group after a successful command", () => {
@@ -58,7 +59,7 @@ describe("ProcessSupervisor", () => {
       const result = yield* supervisor.run(spec)
       assert.strictEqual(result.exitCode, 0)
       assert.strictEqual(cleanups, 1)
-    }).pipe(Effect.provide(layerFromBackend(backend)))
+    }).pipe(provideLayer(layerFromBackend(backend)))
   })
 
   it.effect("times out a hung process and requests escalated termination", () =>
@@ -77,7 +78,7 @@ describe("ProcessSupervisor", () => {
       const fiber = yield* Effect.gen(function* () {
         const supervisor = yield* ProcessSupervisor
         return yield* supervisor.run(spec)
-      }).pipe(Effect.provide(layerFromBackend(backend)), Effect.forkChild)
+      }).pipe(provideLayer(layerFromBackend(backend)), Effect.forkChild)
       yield* Effect.yieldNow
       yield* TestClock.adjust(1_000)
       const failure = yield* Fiber.join(fiber).pipe(Effect.flip)
@@ -94,7 +95,7 @@ describe("ProcessSupervisor", () => {
       const failure = yield* supervisor.run(spec).pipe(Effect.flip)
       assert.strictEqual(failure.reason, "spawn")
       assert.match(String(failure.cause), /ENOENT/)
-    }).pipe(Effect.provide(layerFromBackend(backend)))
+    }).pipe(provideLayer(layerFromBackend(backend)))
   })
 
   it.effect("preserves output observed before a stream failure", () => {
@@ -117,7 +118,7 @@ describe("ProcessSupervisor", () => {
         failure.observations.map(({ stream, text }) => [stream, text]),
         [["stdout", "before-failure"]],
       )
-    }).pipe(Effect.provide(layerFromBackend(backend)))
+    }).pipe(provideLayer(layerFromBackend(backend)))
   })
 
   it.effect("surfaces a started process stream failure through its completion", () => {
@@ -142,7 +143,7 @@ describe("ProcessSupervisor", () => {
           failure.observations.map(({ stream, text }) => [stream, text]),
           [["stdout", "before-failure"]],
         )
-      }).pipe(Effect.provide(layerFromBackend(backend))),
+      }).pipe(provideLayer(layerFromBackend(backend))),
     )
   })
 
@@ -178,7 +179,7 @@ describe("ProcessSupervisor", () => {
               ["stdout", "shutdown-tail"],
             ],
           )
-        }).pipe(Effect.provide(layerFromBackend(backend))),
+        }).pipe(provideLayer(layerFromBackend(backend))),
       )
     }),
   )
@@ -198,7 +199,7 @@ describe("ProcessSupervisor", () => {
       const fiber = yield* Effect.gen(function* () {
         const supervisor = yield* ProcessSupervisor
         return yield* supervisor.run(spec)
-      }).pipe(Effect.provide(layerFromBackend(backend)), Effect.forkChild)
+      }).pipe(provideLayer(layerFromBackend(backend)), Effect.forkChild)
       yield* Effect.yieldNow
       yield* TestClock.adjust(spec.timeoutMillis)
       const failure = yield* Fiber.join(fiber).pipe(Effect.flip)
@@ -238,7 +239,7 @@ describe("ProcessSupervisor", () => {
             failure.observations.map(({ stream, text }) => [stream, text]),
             [["stdout", "tail-after-exit"]],
           )
-        }).pipe(Effect.provide(layerFromBackend(backend))),
+        }).pipe(provideLayer(layerFromBackend(backend))),
       )
     }),
   )
@@ -268,7 +269,7 @@ describe("ProcessSupervisor", () => {
             failure.observations.map(({ stream, text }) => [stream, text]),
             [["stderr", "stderr-tail"]],
           )
-        }).pipe(Effect.provide(layerFromBackend(backend))),
+        }).pipe(provideLayer(layerFromBackend(backend))),
       )
     }),
   )
@@ -316,7 +317,7 @@ describe("ProcessSupervisor", () => {
             typeof streamFailure === "object" && streamFailure !== null && "cause" in streamFailure,
           )
           assert.match(String(streamFailure.cause), /stream cleanup failed/)
-        }).pipe(Effect.provide(layerFromBackend(backend))),
+        }).pipe(provideLayer(layerFromBackend(backend))),
       )
     }),
   )
@@ -351,7 +352,7 @@ describe("ProcessSupervisor", () => {
             ["supervisor", "termination requested"],
           ],
         )
-      }).pipe(Effect.provide(layerFromBackend(backend))),
+      }).pipe(provideLayer(layerFromBackend(backend))),
     )
   })
 
@@ -378,7 +379,7 @@ describe("ProcessSupervisor", () => {
         ["second-line", "third-line"],
       )
       assert.match(result.observations.at(-1)?.text ?? "", /omittedLines=1 omittedBytes=10/)
-    }).pipe(Effect.provide(layerFromBackend(backend)))
+    }).pipe(provideLayer(layerFromBackend(backend)))
   })
 
   it.effect(
@@ -405,7 +406,7 @@ describe("ProcessSupervisor", () => {
           truncation?.text,
           "output truncated: omittedLines=1 omittedBytes=295905 retainedBytes=4095",
         )
-      }).pipe(Effect.provide(layer.pipe(Layer.provideMerge(NodeServices.layer)))),
+      }).pipe(provideLayer(layer.pipe(Layer.provideMerge(NodeServices.layer)))),
     15_000,
   )
 })

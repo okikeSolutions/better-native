@@ -5,6 +5,7 @@ import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Ref from "effect/Ref"
 import { BuildId, ContentHash, RunId, TestSourceId, type ProcessObservation } from "../Domain.ts"
+import { provideLayer } from "../TestLayers.ts"
 import { DiscoveryPass } from "../evidence/DiscoveryPass.ts"
 import { EvidenceStore, layer as evidenceLayer } from "../evidence/EvidenceStore.ts"
 import { ProcessFailure, ProcessSupervisor, type RunningProcess } from "./ProcessSupervisor.ts"
@@ -106,7 +107,7 @@ describe("WebSupervisor failure evidence", () => {
       yield* Effect.gen(function* () {
         const evidence = yield* EvidenceStore
         yield* persistWebRunFailure(evidence, request.id, plan, failure)
-      }).pipe(Effect.provide(evidenceLayer(root).pipe(Layer.provideMerge(NodeServices.layer))))
+      }).pipe(provideLayer(evidenceLayer(root).pipe(Layer.provideMerge(NodeServices.layer))))
       const persisted: unknown = JSON.parse(
         yield* fs.readFileString(`${root}/.artifacts/runs/${request.id}/failure.json`),
       )
@@ -119,7 +120,7 @@ describe("WebSupervisor failure evidence", () => {
       assert.match(message, /RunSelectionError: injected selection failure/)
       assert.isArray(observations)
       assert.strictEqual(observations.length, 1)
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it("uses one short source selection in the web URL", () => {
@@ -234,12 +235,12 @@ describe("WebSupervisor failure evidence", () => {
           .pipe(Effect.flip)
         assert.strictEqual(incompatible.phase, "protocol")
         return completed
-      }).pipe(Effect.provide(live))
+      }).pipe(provideLayer(live))
       assert.lengthOf(records, 2)
       assert.strictEqual(yield* Ref.get(starts), 1)
       assert.strictEqual(yield* Ref.get(terminations), 1)
       assert.strictEqual(yield* Ref.get(executions), 2)
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it("bounds retained browser console evidence with deterministic metadata", () => {

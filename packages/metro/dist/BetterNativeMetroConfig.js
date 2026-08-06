@@ -40,17 +40,16 @@ var validateSpecifier = (label, specifier) => {
     throw new Error(`${label} must be a bare package specifier: ${JSON.stringify(specifier)}`);
   }
 };
-var makePolicy = (options) => Effect.try({
+var makePolicy = (options) => Schema.decodeUnknownEffect(ResolverInput)({
+  runId: options.runId,
+  buildId: options.buildId,
+  ownershipFingerprint: options.ownershipFingerprint ?? null,
+  mode: options.mode,
+  replacements: options.replacements,
+  upstreamNodeModulesPath: options.upstreamNodeModulesPath,
+  trackedSpecifiers: options.trackedSpecifiers ?? options.replacements.map(({ source }) => source)
+}).pipe(Effect.mapError((cause) => new MetroConfigurationError({ cause })), Effect.flatMap((decoded) => Effect.try({
   try: () => {
-    const decoded = Schema.decodeUnknownSync(ResolverInput)({
-      runId: options.runId,
-      buildId: options.buildId,
-      ownershipFingerprint: options.ownershipFingerprint ?? null,
-      mode: options.mode,
-      replacements: options.replacements,
-      upstreamNodeModulesPath: options.upstreamNodeModulesPath,
-      trackedSpecifiers: options.trackedSpecifiers ?? options.replacements.map(({ source }) => source)
-    });
     const replacements = new Map;
     for (const replacement of decoded.replacements) {
       validateSpecifier("replacement source", replacement.source);
@@ -105,7 +104,7 @@ var makePolicy = (options) => Effect.try({
     };
   },
   catch: (cause) => new MetroConfigurationError({ cause })
-});
+})));
 var policyLayer = (options) => Layer.effect(ResolutionPolicy)(makePolicy(options));
 var observerLayer = (options) => Layer.effect(ResolutionObserver)(Effect.try({
   try: () => {
@@ -256,7 +255,7 @@ var make = Effect.fn("BetterNativeMetroConfig.make")(function* (config) {
     resolver: { ...config.resolver, resolveRequest }
   };
 });
-var configure = (config, options) => make(config).pipe(Effect.provide(layer(options)));
+var configure = (config, options) => Effect.scoped(Layer.build(layer(options)).pipe(Effect.flatMap((context2) => Effect.provide(make(config), context2))));
 var withBetterNative = (config, options) => Effect.runSync(configure(config, options));
 export {
   withBetterNative,

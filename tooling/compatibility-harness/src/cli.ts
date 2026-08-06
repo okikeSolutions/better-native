@@ -74,4 +74,10 @@ const MainLayer = Layer.mergeAll(
   RepositoryLayer,
 )
 
-Command.run(command, { version: "0.0.0" }).pipe(Effect.provide(MainLayer), NodeRuntime.runMain)
+Effect.scoped(
+  Layer.build(MainLayer).pipe(
+    Effect.flatMap((context) =>
+      Effect.provide(Command.run(command, { version: "0.0.0" }), context),
+    ),
+  ),
+).pipe(NodeRuntime.runMain)

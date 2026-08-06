@@ -130,10 +130,9 @@ const nativeMethod = <A>(method: string, run: () => Promise<A>) =>
   })
 
 const decodeNetworkState = (value: unknown) =>
-  Effect.try({
-    try: () => Schema.decodeUnknownSync(NetworkState)(value),
-    catch: (cause) => failure("getNetworkStateAsync", cause),
-  })
+  Schema.decodeUnknownEffect(NetworkState)(value).pipe(
+    Effect.mapError((cause) => failure("getNetworkStateAsync", cause)),
+  )
 
 /**
  * Reads the current network connection state.

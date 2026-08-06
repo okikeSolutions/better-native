@@ -25,6 +25,13 @@ const configuration = Layer.succeed(
   CompatibilityConfiguration.of({ mode: "candidate", buildId: "test-build" }),
 )
 
+const provideLayer =
+  <ROut, E2, RIn>(layer: Layer.Layer<ROut, E2, RIn>) =>
+  <A, E, R>(effect: Effect.Effect<A, E, R>): Effect.Effect<A, E | E2, RIn | Exclude<R, ROut>> =>
+    Effect.scoped(
+      Layer.build(layer).pipe(Effect.flatMap((context) => Effect.provide(effect, context))),
+    )
+
 configureUpstreamSelection(
   metadata.sources.flatMap(({ runtimeName }) => (runtimeName === null ? [] : [runtimeName])),
 )
@@ -87,7 +94,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(basic.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           const result = summary.results.find(({ caseId }) => caseId === arithmeticCase)
           assert.isDefined(result)
@@ -131,7 +138,7 @@ describe("compatibility runner", () => {
     return make(sources)
       .run({ schemaVersion: 1, runId: "smoke-run", cohort: "interactive-smoke" }, tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.lengthOf(summary.results, 3)
           assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "passed"))
@@ -162,7 +169,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run({ schemaVersion: 1, runId: "native-e2e-run", cohort: "native-e2e" }, tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.lengthOf(summary.results, 1)
           assert.strictEqual(summary.results[0]?.outcome._tag, "passed")
@@ -200,7 +207,7 @@ describe("compatibility runner", () => {
         tools,
       )
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.lengthOf(summary.results, 2)
           assert.deepEqual(
@@ -218,7 +225,7 @@ describe("compatibility runner", () => {
         make([basic, battery])
           .run({ schemaVersion: 1, runId: "invalid-native-shard", sourceIds }, tools)
           .pipe(
-            Effect.provide(configuration),
+            provideLayer(configuration),
             Effect.flip,
             Effect.map((error) => {
               assert.instanceOf(error, RunSelectionError)
@@ -233,7 +240,7 @@ describe("compatibility runner", () => {
     make([battery])
       .run({ schemaVersion: 1, runId: "empty-native-e2e", cohort: "native-e2e" }, tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.flip,
         Effect.map((error) => {
           assert.instanceOf(error, RunSelectionError)
@@ -253,7 +260,7 @@ describe("compatibility runner", () => {
         tools,
       )
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.flip,
         Effect.map((error) => {
           assert.instanceOf(error, RunSelectionError)
@@ -272,7 +279,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.strictEqual(summary.results.length, source.caseIds.length)
           assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "skipped"))
@@ -294,7 +301,7 @@ describe("compatibility runner", () => {
       return make([source])
         .run(selection(source.sourceId), tools)
         .pipe(
-          Effect.provide(configuration),
+          provideLayer(configuration),
           Effect.map((summary) => {
             assert.deepEqual(
               summary.results.map(({ caseId }) => caseId),
@@ -317,7 +324,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "not-run"))
           assert.match(JSON.stringify(summary), /source is external to the application/)
@@ -334,7 +341,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.match(JSON.stringify(summary), /source is external to the application/)
         }),
@@ -349,7 +356,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "failed"))
           assert.match(JSON.stringify(summary), /is not an Expo Jasmine module/)
@@ -367,7 +374,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           const result = summary.results[0]
           assert.isDefined(result)
@@ -399,7 +406,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.strictEqual(summary.results.length, source.caseIds.length)
           assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "skipped"))
@@ -418,7 +425,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.flip,
         Effect.map((error) => {
           assert.instanceOf(error, RunSelectionError)
@@ -454,7 +461,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.deepEqual(summary.runtimeDiscoveredCaseIds, [firstCase])
           assert.deepEqual(
@@ -479,7 +486,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "failed"))
           assert.match(JSON.stringify(summary), /injected registration failure/)
@@ -501,7 +508,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.deepEqual(
             summary.results.map(({ caseId }) => caseId),
@@ -523,7 +530,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.deepEqual(
             summary.results.map(({ caseId }) => caseId),
@@ -559,7 +566,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => assert.deepEqual(summary.runtimeDiscoveredCaseIds, [caseId])),
       )
   })
@@ -587,7 +594,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.lengthOf(summary.results, 1)
           const discovered = summary.results[0]
@@ -628,7 +635,7 @@ describe("compatibility runner", () => {
       return make([source])
         .run(selection(source.sourceId), tools)
         .pipe(
-          Effect.provide(configuration),
+          provideLayer(configuration),
           Effect.map((summary) => {
             assert.strictEqual(summary.results.length, 2)
             assert.strictEqual(
@@ -666,7 +673,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.strictEqual(summary.results[0]?.outcome._tag, "failed")
           assert.match(JSON.stringify(summary), /Jasmine completed with status failed/)
@@ -692,7 +699,7 @@ describe("compatibility runner", () => {
     return make([source])
       .run(selection(source.sourceId), tools)
       .pipe(
-        Effect.provide(configuration),
+        provideLayer(configuration),
         Effect.map((summary) => {
           assert.lengthOf(summary.results, 1)
           assert.strictEqual(summary.results[0]?.outcome._tag, "skipped")

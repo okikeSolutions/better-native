@@ -4,6 +4,7 @@ import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import { TestCaseId } from "../Domain.ts"
+import { provideLayer } from "../TestLayers.ts"
 import * as ExpoRepository from "../ExpoRepository.ts"
 import * as HarnessConfig from "../HarnessConfig.ts"
 import * as RunnerPlanExecution from "./RunnerPlanExecution.ts"
@@ -75,7 +76,7 @@ describe("RunnerPlanExecution", () => {
         shardCount: 4,
         timeoutMillis: 1_000,
         reportPath: output,
-      }).pipe(Effect.provide(supervisor))
+      }).pipe(provideLayer(supervisor))
       assert.strictEqual(report.entries.filter(({ status }) => status === "passed").length, 1)
       assert.strictEqual(report.entries.filter(({ status }) => status === "failed").length, 0)
       assert.isAbove(report.entries.filter(({ status }) => status === "blocked").length, 0)
@@ -89,7 +90,7 @@ describe("RunnerPlanExecution", () => {
       assert.deepEqual(JSON.parse(persisted), report)
     }).pipe(
       Effect.scoped,
-      Effect.provide(
+      provideLayer(
         ExpoRepository.layer(process.cwd()).pipe(
           Layer.provideMerge(
             Layer.merge(
