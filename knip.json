@@ -38,6 +38,10 @@
       "entry": ["src/checkGenerated.ts", "src/**/*.test.ts"],
       "project": ["src/**/*.ts"]
     },
+    "tooling/dx-evals": {
+      "entry": ["evals/**/*.eval.ts", "runner/**/*.ts", "src/**/*.test.ts"],
+      "project": ["evals/**/*.ts", "runner/**/*.ts", "src/**/*.ts"]
+    },
     "tooling/expo-catalog": {
       "ignoreIssues": {
         "package.json": ["dependencies"]

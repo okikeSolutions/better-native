@@ -27,6 +27,36 @@
     "docs:api": {
       "outputs": ["../../.artifacts/docs/api/**"]
     },
+    "evals:validate": {
+      "cache": false,
+      "dependsOn": [
+        "typecheck",
+        "check:effect",
+        "@better-native/network#build",
+        "@better-native/battery#build"
+      ],
+      "passThroughEnv": ["BETTER_NATIVE_EVAL_RUN_ID"],
+      "outputs": []
+    },
+    "evals:live": {
+      "cache": false,
+      "dependsOn": [
+        "typecheck",
+        "check:effect",
+        "@better-native/network#build",
+        "@better-native/battery#build"
+      ],
+      "passThroughEnv": [
+        "OPENROUTER_API_KEY",
+        "BETTER_NATIVE_EVAL_LIVE",
+        "BETTER_NATIVE_EVAL_CAMPAIGN",
+        "BETTER_NATIVE_EVAL_TASK",
+        "BETTER_NATIVE_EVAL_PROFILE",
+        "BETTER_NATIVE_EVAL_RUN_ID",
+        "BETTER_NATIVE_EVAL_CAMPAIGN_MAX_COST_USD"
+      ],
+      "outputs": []
+    },
     "//#compatibility:web": {
       "cache": false,
       "dependsOn": ["//#expo:toolchain", "@better-native/metro#build"],

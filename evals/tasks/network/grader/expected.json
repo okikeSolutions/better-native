@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    {
+      "id": "available",
+      "expected": {
+        "status": "available",
+        "state": {
+          "type": "WIFI",
+          "isConnected": true,
+          "isInternetReachable": true
+        }
+      }
+    },
+    {
+      "id": "unavailable",
+      "expected": {
+        "status": "unavailable",
+        "method": "getNetworkStateAsync"
+      }
+    },
+    {
+      "id": "failure",
+      "expected": {
+        "status": "failure",
+        "method": "getNetworkStateAsync"
+      }
+    },
+    {
+      "id": "malformed",
+      "expected": {
+        "status": "failure",
+        "method": "getNetworkStateAsync"
+      }
+    }
+  ]
+}

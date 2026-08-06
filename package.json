@@ -21,6 +21,7 @@
     "coverage": "bun run better-native coverage",
     "docs:api": "turbo run docs:api --concurrency=90%",
     "effect:patch": "effect-language-service patch && effect-tsgo patch --no-typescript --oxlint",
+    "evals": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --experimental-strip-types tooling/dx-evals/src/cli.ts",
     "expo:toolchain": "bun run better-native prepare-expo --timeout-ms 3600000",
     "expo:prepare": "turbo run //#expo:toolchain --cache=local:rw --concurrency=90%",
     "format": "oxfmt --disable-nested-config --config .oxfmtrc.json --write .",
@@ -50,7 +51,8 @@
     "oxlint-tsgolint": "7.0.2001",
     "turbo": "2.10.0",
     "typescript": "~6.0.3",
-    "vitest": "4.1.10"
+    "vitest": "4.1.10",
+    "vitest-evals": "0.15.0"
   },
   "overrides": {
     "@sentry/browser": "7.119.1",

@@ -1,0 +1,41 @@
+--- a/src/ReadNetwork.ts
++++ b/src/ReadNetwork.ts
+@@ -1,6 +1,36 @@
++import * as Network from "@better-native/network"
+ import * as Effect from "effect/Effect"
++import * as Match from "effect/Match"
+ import * as Schema from "effect/Schema"
+ 
+-export const NetworkSnapshot = Schema.Unknown
++export const NetworkSnapshot = Schema.Union([
++  Schema.Struct({
++    status: Schema.Literal("available"),
++    state: Network.NetworkState,
++  }),
++  Schema.Struct({
++    status: Schema.Literal("unavailable"),
++    method: Schema.String,
++  }),
++  Schema.Struct({
++    status: Schema.Literal("failure"),
++    method: Schema.String,
++  }),
++])
+ 
+-export const readNetwork = Effect.succeed({ status: "not-implemented" })
++export const readNetwork = Network.getState.pipe(
++  Effect.map((state) => ({ status: "available" as const, state })),
++  Effect.catch((error) =>
++    Match.value(error).pipe(
++      Match.when({ _tag: "NetworkUnavailable" }, ({ method }) =>
++        Effect.succeed({ status: "unavailable" as const, method }),
++      ),
++      Match.when({ _tag: "NetworkFailure" }, ({ method }) =>
++        Effect.succeed({ status: "failure" as const, method }),
++      ),
++      Match.exhaustive,
++    ),
++  ),
++  Effect.flatMap(Schema.decodeUnknownEffect(NetworkSnapshot)),
++  Effect.provide(Network.live),
++)
