@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    {
+      "id": "two-events",
+      "take": 2,
+      "expectedValues": [0.21, 0.84],
+      "expectedFailureMethod": null
+    },
+    {
+      "id": "early-stop",
+      "take": 1,
+      "expectedValues": [0.21],
+      "expectedFailureMethod": null
+    },
+    {
+      "id": "listener-failure",
+      "take": 1,
+      "expectedValues": [],
+      "expectedFailureMethod": "addBatteryLevelListener"
+    }
+  ]
+}

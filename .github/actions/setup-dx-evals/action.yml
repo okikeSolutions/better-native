@@ -1,0 +1,28 @@
+name: Setup DX eval prerequisites
+description: Build public task packages and prepare the pinned rootless Podman verifier image
+
+runs:
+  using: composite
+  steps:
+    - name: Build eval task packages
+      shell: bash
+      run: >-
+        bunx turbo run build
+        --filter=@better-native/network
+        --filter=@better-native/battery
+        --concurrency=90%
+
+    - name: Install rootless Podman
+      shell: bash
+      run: |
+        if ! command -v podman >/dev/null 2>&1; then
+          sudo apt-get update
+          sudo apt-get install --yes podman
+        fi
+        test "$(podman info --format '{{.Host.Security.Rootless}}')" = "true"
+
+    - name: Pull pinned verifier image
+      shell: bash
+      run: >-
+        podman pull
+        docker.io/library/node@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd

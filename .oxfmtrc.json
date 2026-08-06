@@ -3,6 +3,8 @@
   "semi": false,
   "ignorePatterns": [
     ".artifacts/**",
+    "evals/baselines/**/outputFile.json",
+    "evals/baselines/**/evidence/**",
     "vendor/**",
     "**/dist/**",
     "**/node_modules/**",

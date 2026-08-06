@@ -1,6 +1,7 @@
 import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
+import { provideLayer } from "../TestLayers.ts"
 import * as AppRegistry from "./AppRegistry.ts"
 
 describe("AppRegistry", () => {
@@ -10,7 +11,7 @@ describe("AppRegistry", () => {
       assert.isAbove(metadata.sources.length, 0)
       assert.isAbove(AppRegistry.appExecutionUnits(metadata, "ios").length, 0)
       assert.isAbove(AppRegistry.appExecutionUnits(metadata, "android").length, 0)
-    }).pipe(Effect.provide(NodeServices.layer)),
+    }).pipe(provideLayer(NodeServices.layer)),
   )
 
   it("derives Expo's active native E2E names without enabling commented tests", () => {
@@ -47,7 +48,7 @@ describe("AppRegistry", () => {
           "SQLite",
         ],
       )
-    }).pipe(Effect.provide(NodeServices.layer)),
+    }).pipe(provideLayer(NodeServices.layer)),
   )
 
   it.effect("balances native shards by case count without changing curated membership", () =>
@@ -78,6 +79,6 @@ describe("AppRegistry", () => {
         shards,
         "sharding must be deterministic",
       )
-    }).pipe(Effect.provide(NodeServices.layer)),
+    }).pipe(provideLayer(NodeServices.layer)),
   )
 })

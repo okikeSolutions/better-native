@@ -1,0 +1,60 @@
+{
+  "manifest": {
+    "schemaVersion": 1,
+    "runId": "network-claude-sonnet-5-1-36b5fd08572cf16964994507404d80b3",
+    "taskId": "network",
+    "taskVersion": "1",
+    "adapterId": "openrouter-coding-agent",
+    "instructionDigest": "17371d897155f14429173efe1e2b6a88527f0f2637a733686ea1321400a82601",
+    "evaluatorBundleDigest": "482c3d7478538f6d3fb61dfd65d08fbe0930c073b52a87a0f56a5c2eba9289ff",
+    "taskExportDigest": "f419191a97da5e69280789dce91929b074fb15c4a46daba0fe6fae0c85955094",
+    "submissionDigest": "d801aa1fb7ddcc330a5e3173372ea6af4a3d08ec58074478e85aa5603e926658",
+    "observationDigest": "bbefd413f8f4b9ab92c2267f1ef8307062cbfb13d0a7c83f62e2153222b01670",
+    "gateDigest": "df53fc821ce291c46d76d1b00a8f48670ebe03d711118a93a872be4f77ba9146",
+    "isolationPolicy": {
+      "image": "docker.io/library/node@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd",
+      "timeoutMilliseconds": 15000,
+      "network": "none",
+      "filesystem": "read-only",
+      "user": "65532:65532"
+    },
+    "agentProfile": {
+      "schemaVersion": 1,
+      "id": "claude-sonnet-5",
+      "model": "anthropic/claude-sonnet-5",
+      "reasoningEffort": "medium",
+      "maxTurns": 12,
+      "maxOutputTokensPerTurn": 8192,
+      "maxTotalOutputTokens": 32768,
+      "maxObservedTotalTokens": 120000,
+      "timeoutMilliseconds": 300000,
+      "observedCostStopUsd": 0.65,
+      "promptCaching": "disabled",
+      "providerPolicy": {
+        "only": [
+          "amazon-bedrock/global"
+        ],
+        "allowFallbacks": false,
+        "requireParameters": true,
+        "dataCollection": "deny",
+        "zeroDataRetention": true
+      }
+    },
+    "usage": {
+      "model": "anthropic/claude-sonnet-5",
+      "inputTokens": 32051,
+      "outputTokens": 1978,
+      "reasoningTokens": 731,
+      "cachedInputTokens": 0,
+      "totalTokens": 34029,
+      "toolCalls": 19,
+      "retries": 0,
+      "turns": 12,
+      "costUsd": 0.083882
+    },
+    "agentExitReason": "turn-limit"
+  },
+  "algorithm": "hmac-sha256",
+  "signature": "bf11f953c0955baa75baa071ba64de0dafe26986ef63fbc574d27a401696cb4a",
+  "digest": "dae237cc632e4e6c80029164c490ef38b80572aa68d35f09b0d5f9b34a333744"
+}

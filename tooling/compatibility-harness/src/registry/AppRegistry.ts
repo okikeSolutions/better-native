@@ -88,15 +88,10 @@ export type ReplacementManifest = Schema.Schema.Type<typeof ReplacementManifest>
 
 const platformVariant = (file: string): Platform | "native" | null => {
   const match = file.match(/\.(android|ios|native|web)\.[^.]+$/)
-  switch (match?.[1]) {
-    case "android":
-    case "ios":
-    case "native":
-    case "web":
-      return match[1]
-    default:
-      return null
-  }
+  return Match.value(match?.[1]).pipe(
+    Match.whenOr("android", "ios", "native", "web", (variant) => variant),
+    Match.orElse(() => null),
+  )
 }
 
 const logicalPath = (file: string): string =>
@@ -343,26 +338,22 @@ const execution = (
 ): RegistryMetadataType["sources"][number]["execution"] => {
   if (appRunnable) return "native-app"
   if (source.executability === "non-executable") return "unsupported"
-  switch (source.runner) {
-    case "jest":
-    case "node-test":
-    case "bun-test":
-    case "playwright":
-    case "detox":
-      return "javascript-runner"
-    case "xctest":
-      return "xctest"
-    case "gradle-unit":
-    case "gradle-instrumentation":
-      return "gradle"
-    case "maestro":
-      return "native-app"
-    case "workflow":
-      return "build"
-    case "expo-jasmine":
-      return "unsupported"
-  }
-  return "unsupported"
+  return Match.value(source.runner).pipe(
+    Match.whenOr(
+      "jest",
+      "node-test",
+      "bun-test",
+      "playwright",
+      "detox",
+      () => "javascript-runner" as const,
+    ),
+    Match.when("xctest", () => "xctest" as const),
+    Match.whenOr("gradle-unit", "gradle-instrumentation", () => "gradle" as const),
+    Match.when("maestro", () => "native-app" as const),
+    Match.when("workflow", () => "build" as const),
+    Match.when("expo-jasmine", () => "unsupported" as const),
+    Match.exhaustive,
+  )
 }
 
 const expoTestModule = (source: TestSource): string => `@better-native/expo-source/${source.path}`

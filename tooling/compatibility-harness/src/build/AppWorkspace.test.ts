@@ -4,6 +4,7 @@ import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Schema from "effect/Schema"
 import { BuildId } from "../Domain.ts"
+import { provideLayer } from "../TestLayers.ts"
 import { AppWorkspace, layer, workspaceName } from "./AppWorkspace.ts"
 import type { PinnedExpoToolchain } from "./BuildModel.ts"
 
@@ -67,14 +68,14 @@ describe("AppWorkspace", () => {
       const prepared = yield* Effect.gen(function* () {
         const workspace = yield* AppWorkspace
         return yield* workspace.prepare(request, toolchain)
-      }).pipe(Effect.provide(layer(root)))
+      }).pipe(provideLayer(layer(root)))
       const materialized = yield* Schema.decodeUnknownEffect(FixtureManifest)(
         JSON.parse(yield* fs.readFileString(`${prepared.appDirectory}/package.json`)) as unknown,
       )
 
       assert.deepStrictEqual(materialized, sourceManifest)
       assert.notProperty(materialized.expo.autolinking, "searchPaths")
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("resolves Expo-owned dependencies from pinned source and third parties from root", () =>
@@ -157,7 +158,7 @@ describe("AppWorkspace", () => {
           },
         ])
         return materialized
-      }).pipe(Effect.provide(layer(root)))
+      }).pipe(provideLayer(layer(root)))
       const canonicalExpoPackage = yield* fs.realPath(`${expoRoot}/packages/expo`)
       const canonicalExpoModulesCore = yield* fs.realPath(`${expoRoot}/packages/expo-modules-core`)
       const canonicalThirdPartyPackage = yield* fs.realPath(`${root}/node_modules/third-party`)
@@ -208,6 +209,6 @@ describe("AppWorkspace", () => {
       assert.deepStrictEqual(materializedManifest.expo.autolinking.searchPaths, [
         "../../native-node-modules",
       ])
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 })

@@ -51,7 +51,9 @@ Only `effect` counts as migrated.
 apps/compatibility-suite       Executable Expo application and live vectors
 packages/*                     Publishable better-native packages
 tooling/compatibility-harness  Private Expo catalog and installation-validation CLI
+tooling/dx-evals               Private Effect-native developer-experience eval harness
 tooling/expo-catalog           Private declaration-only fallback for external packages
+evals/tasks                    Versioned public DX task fixtures and runtime-withheld controls
 packages/typescript-config     Private shared TypeScript presets
 compatibility/ownership.json   Reviewed per-export ownership overrides
 compatibility/surface-lock.json Reviewed lock for the complete discovered export denominator
@@ -62,11 +64,18 @@ vendor/effect                  Pinned Effect source
 .artifacts                     Disposable catalogs, reports, builds, logs, and screenshots
 ```
 
+The compatibility and DX harnesses support different claims. Compatibility measures behavior
+against pinned Expo source. DX evals measure task completion through the declared public
+better-native boundary; their current synthetic, Network, and Battery instruments are implemented,
+and the first paid model campaigns are recorded, while human blind pilots and calibrated regression
+thresholds remain pending. See
+[the evaluation contract](./evals.md) for the current checkpoint status and evidence limits.
+
 ## Harness configuration
 
 `HarnessConfig` is the single host-side environment boundary. It loads all harness inputs once
 with Effect `Config`, applies typed defaults, validates booleans, and keeps the Turbo token
-redacted until the child-process environment is assembled. `main.ts` provides that one Layer to
+redacted until the child-process environment is assembled. `cli.ts` provides that one Layer to
 the repository, toolchain, build, cache, and command services; those services do not read
 `process.env` directly.
 
@@ -151,20 +160,28 @@ It does not install Expo or own process lifecycle behavior.
 
 ### Build service ownership
 
-`main.ts` constructs each shared build service once. `BuildPipeline` receives the shared
-`BuildCommand` and `ExpoToolchain` services; it never creates another materialization path. This
-makes the pinned Expo installation a real dependency-graph invariant.
+`cli.ts` constructs the shared host-facing `BuildCommand`, `ExpoToolchain`, and evidence services.
+`BuildPipeline.layer` receives those services and assembles its pipeline-local workspace, native
+artifact cache, executor, product reader, and importer graph. Native run commands also receive a
+top-level `AppBuildImporter` so device-test jobs can load immutable products without constructing a
+build pipeline or materializing Expo. This keeps the pinned Expo installation behind the one shared
+`ExpoToolchain` while allowing build and device-test commands to use different dependency profiles.
 
 ```mermaid
 flowchart TB
-  Main["main.ts"]
+  Main["cli.ts"]
   Process["ProcessSupervisor"]
   Evidence["EvidenceStore"]
   Command["BuildCommand"]
   Toolchain["ExpoToolchain"]
   Pipeline["BuildPipeline"]
+  Workspace["AppWorkspace"]
+  Cache["NativeArtifactCache"]
+  PipelineProducts["Pipeline BuildProducts"]
   Executor["AppBuildExecutor"]
-  Importer["AppBuildImporter"]
+  PipelineImporter["Pipeline AppBuildImporter"]
+  DeviceProducts["Device-test BuildProducts"]
+  DeviceImporter["Device-test AppBuildImporter"]
 
   Main --> Process
   Main --> Evidence
@@ -173,8 +190,14 @@ flowchart TB
   Command --> Toolchain
   Command --> Pipeline
   Toolchain --> Pipeline
+  Workspace --> Executor
+  Cache --> Executor
+  PipelineProducts --> Executor
   Executor --> Pipeline
-  Importer --> Pipeline
+  PipelineProducts --> PipelineImporter
+  PipelineImporter --> Pipeline
+  Main --> DeviceImporter
+  DeviceProducts --> DeviceImporter
 ```
 
 External runner plans are executable-code manifests, not untrusted data. Every plan is reviewed
@@ -263,9 +286,6 @@ build or device-test environment. Its topology is adapted directly from Expo:
 ```mermaid
 flowchart TB
   Change["Detect platform changes"]
-  Static["Repository checks<br/>setup-static"]
-  Change --> Static
-
   Mode{"Baseline or pair?"}
   Change --> Mode
 
@@ -292,15 +312,16 @@ flowchart TB
   Compare --> PairEvidence["Paired verdict and evidence"]
 ```
 
-`setup-static`, `setup-build`, `setup-device-test`, and `setup-compare` are explicit job profiles.
-Every profile pins Node 24 because the Effect compatibility harness uses `NodeRuntime` and
+`setup-static`, `setup-build`, `setup-device-test`, and `setup-compare` are composite setup profiles
+used by the workflow jobs; `setup-static` is the common base rather than a standalone compatibility
+job. Every profile pins Node 24 because the Effect compatibility harness uses `NodeRuntime` and
 `NodeServices`; Bun remains the workspace package manager and test/script orchestrator. Only the
 build profile installs pnpm and materializes pinned Expo. Device jobs consume immutable products;
 comparison jobs consume downloaded evidence and never install Expo or generate the catalog. Pull
-requests and pushes run the upstream baseline for affected platforms. The weekly
-schedule and manual `pair` mode run upstream and candidate through the same build and device paths;
-candidate mode changes only Metro resolution. Differential verdicts are emitted in their own
-lightweight jobs.
+requests and pushes run the upstream baseline for affected platforms. The weekly schedule and
+manual `pair` mode run upstream and candidate through the same build and device paths; candidate
+mode changes only Metro resolution. Differential verdicts are emitted in their own lightweight
+jobs.
 
 The copied Expo primitives retain platform change classification, ccache configuration, Gradle and
 React Native download cache boundaries, Xcode-version invalidation, runner cleanup, and the pinned
@@ -359,8 +380,8 @@ the audit policy also fails if that path changes or the exception becomes stale.
 never allowed for publishable `@better-native/*` runtime packages.
 
 There are currently no reviewed advisory exceptions. Root-level Bun overrides resolve vulnerable
-Sentry, XML, image-processing, UUID, and React Server Component transitive packages to patched
-versions. `bun audit` must report zero vulnerabilities; `bun run security:audit` additionally
-rejects unreviewed findings and stale exceptions. Every override remains subject to generated
-surface-lock, type, test, and compatibility validation so that a security update cannot silently
-change the pinned Expo contract.
+Sentry, XML, routing, image-processing, UUID, and React Server Component transitive packages to
+patched versions. `bun audit` must report zero vulnerabilities; `bun run security:audit`
+additionally rejects unreviewed findings and stale exceptions. Every override remains subject to
+generated surface-lock, type, test, and compatibility validation so that a security update cannot
+silently change the pinned Expo contract.

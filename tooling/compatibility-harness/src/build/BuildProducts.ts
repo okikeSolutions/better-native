@@ -8,8 +8,8 @@ import * as Path from "effect/Path"
 import { ContentHash, type ContentHash as ContentHashType } from "../Domain.ts"
 
 interface Service {
-  readonly digest: (bytes: Uint8Array) => Effect.Effect<ContentHashType, unknown>
-  readonly hash: (path: string) => Effect.Effect<ContentHashType, unknown>
+  readonly digest: (bytes: Uint8Array) => Effect.Effect<ContentHashType, Error>
+  readonly hash: (path: string) => Effect.Effect<ContentHashType, Error>
 }
 
 /** Effect context tag for canonical build-product hashing. */
@@ -32,10 +32,13 @@ export const layer: Layer.Layer<
     const fs = yield* FileSystem.FileSystem
     const path = yield* Path.Path
     const crypto = yield* Crypto.Crypto
+    const failure = (operation: string, target: string, cause: unknown): Error =>
+      new Error(`failed to ${operation} build product ${target}: ${String(cause)}`, { cause })
     const digest: Service["digest"] = (bytes) =>
-      crypto
-        .digest("SHA-256", bytes)
-        .pipe(Effect.map((value) => ContentHash.make(Encoding.encodeHex(value))))
+      crypto.digest("SHA-256", bytes).pipe(
+        Effect.map((value) => ContentHash.make(Encoding.encodeHex(value))),
+        Effect.mapError((cause) => failure("digest", "bytes", cause)),
+      )
     const hash: Service["hash"] = (target) =>
       Effect.gen(function* () {
         const canonicalParent = yield* fs.realPath(path.dirname(target))
@@ -78,7 +81,7 @@ export const layer: Layer.Layer<
           })
         yield* visit(canonicalRoot)
         return yield* digest(new TextEncoder().encode(entries.join("\n")))
-      })
+      }).pipe(Effect.mapError((cause) => failure("hash", target, cause)))
     return BuildProducts.of({ digest, hash })
   }),
 )

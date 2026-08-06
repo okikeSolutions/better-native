@@ -355,7 +355,7 @@ const loadCoveragePackages = Effect.fn("Coverage.loadCoveragePackages")(function
         }),
     ),
   )
-  const parsed = Schema.decodeUnknownSync(
+  const parsed = yield* Schema.decodeUnknownEffect(
     Schema.fromJsonString(
       Schema.Struct({
         replacements: Schema.optional(
@@ -368,7 +368,16 @@ const loadCoveragePackages = Effect.fn("Coverage.loadCoveragePackages")(function
         ),
       }),
     ),
-  )(source)
+  )(source).pipe(
+    Effect.mapError(
+      (cause) =>
+        new HarnessError({
+          operation: "decode generated replacement manifest",
+          path: file,
+          cause,
+        }),
+    ),
+  )
   return (parsed.replacements ?? [])
     .flatMap((replacement) =>
       typeof replacement.source === "string" &&

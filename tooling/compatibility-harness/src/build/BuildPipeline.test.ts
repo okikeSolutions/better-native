@@ -6,6 +6,7 @@ import * as Encoding from "effect/Encoding"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import { ArtifactId, BuildId, ContentHash, type BuildRecord } from "../Domain.ts"
+import { provideLayer } from "../TestLayers.ts"
 import * as HarnessConfig from "../HarnessConfig.ts"
 import {
   BuildImportError,
@@ -83,7 +84,7 @@ const prepareToolchain = (root: string, request: BuildRequest) =>
     const toolchain = yield* ExpoToolchain
     return yield* toolchain.prepare(request)
   }).pipe(
-    Effect.provide(
+    provideLayer(
       expoToolchainLayer(root, expoSourceRoot(root)).pipe(
         Layer.provide(Layer.merge(buildCommandLayer, harnessConfig(root))),
       ),
@@ -95,7 +96,7 @@ const ensureToolchain = (root: string, request: BuildRequest) =>
     const toolchain = yield* ExpoToolchain
     return yield* toolchain.ensure(request)
   }).pipe(
-    Effect.provide(
+    provideLayer(
       expoToolchainLayer(root, expoSourceRoot(root)).pipe(
         Layer.provide(Layer.merge(buildCommandLayer, harnessConfig(root))),
       ),
@@ -145,9 +146,9 @@ describe("BuildPipeline imported products", () => {
           .pipe(Effect.flip)
         assert.instanceOf(failure, BuildImportError)
         assert.match(String(failure.cause), /hash/)
-      }).pipe(Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))))
+      }).pipe(provideLayer(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))))
       yield* program
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("rejects external and cyclic symbolic links in imported build trees", () =>
@@ -184,7 +185,7 @@ describe("BuildPipeline imported products", () => {
         const builds = yield* BuildPipeline
         return yield* builds.load({ recordPath, binaryPath, platform: "ios" })
       }).pipe(
-        Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))),
+        provideLayer(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))),
         Effect.flip,
       )
       assert.instanceOf(externalFailure, BuildImportError)
@@ -196,12 +197,12 @@ describe("BuildPipeline imported products", () => {
         const builds = yield* BuildPipeline
         return yield* builds.load({ recordPath, binaryPath, platform: "ios" })
       }).pipe(
-        Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))),
+        provideLayer(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))),
         Effect.flip,
       )
       assert.instanceOf(cyclicFailure, BuildImportError)
       assert.match(String(cyclicFailure.cause), /symbolic link/)
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("preserves the process build phase when a command exits unsuccessfully", () =>
@@ -299,7 +300,7 @@ describe("BuildPipeline imported products", () => {
           })
           .pipe(Effect.flip)
       }).pipe(
-        Effect.provide(
+        provideLayer(
           buildPipelineLayer(root).pipe(
             Layer.provideMerge(Layer.mergeAll(NodeServices.layer, processes, evidence)),
           ),
@@ -354,7 +355,7 @@ describe("BuildPipeline imported products", () => {
       )
       assert.isAtLeast(configIndex, 0, "the pinned Expo CLI config command must execute")
       assert.isAbove(exportIndex, configIndex, "config evaluation must precede bundling")
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("rejects invalid revisions before constructing a cache path", () =>
@@ -373,11 +374,11 @@ describe("BuildPipeline imported products", () => {
             timeoutMillis: 1_000,
           })
           .pipe(Effect.flip)
-      }).pipe(Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))))
+      }).pipe(provideLayer(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))))
       assert.instanceOf(failure, BuildPipelineError)
       assert.strictEqual(failure.phase, "upstream")
       assert.match(String(failure.cause), /40-character/)
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("prepares pinned Expo once before a paired web build", () =>
@@ -481,7 +482,7 @@ describe("BuildPipeline imported products", () => {
           },
         })
       }).pipe(
-        Effect.provide(
+        provideLayer(
           buildPipelineLayer(root).pipe(
             Layer.provideMerge(Layer.mergeAll(NodeServices.layer, processes, evidence)),
           ),
@@ -502,7 +503,7 @@ describe("BuildPipeline imported products", () => {
         calls.filter(({ command, args }) => command === "node" && args?.includes("export")).length,
         2,
       )
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("rejects a symbolic-link external Expo root", () =>
@@ -523,9 +524,9 @@ describe("BuildPipeline imported products", () => {
             timeoutMillis: 1_000,
           })
           .pipe(Effect.flip)
-      }).pipe(Effect.provide(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))))
+      }).pipe(provideLayer(buildPipelineLayer(root).pipe(Layer.provideMerge(dependencies))))
       assert.instanceOf(failure, BuildPipelineError)
       assert.match(String(failure.cause), /symbolic-link Expo source root/)
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 })

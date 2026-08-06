@@ -13,6 +13,7 @@ import {
   type BuildRecord,
 } from "../Domain.ts"
 import type { BuildOutput } from "../build/BuildPipeline.ts"
+import { provideLayer } from "../TestLayers.ts"
 import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import { NativeSupervisor, layer } from "./NativeSupervisor.ts"
 import {
@@ -143,7 +144,7 @@ describe("NativeSupervisor fault injection", () => {
           timeoutMillis: 1_000,
         })
       }).pipe(
-        Effect.provide(
+        provideLayer(
           supervisorLayer({
             install: () => Ref.update(installations, (count) => count + 1),
             runMaestroFlow: () => Ref.update(flows, (count) => count + 1).pipe(Effect.as([])),
@@ -246,7 +247,7 @@ describe("NativeSupervisor fault injection", () => {
           timeoutMillis: 1_000,
         })
       }).pipe(
-        Effect.provide(
+        provideLayer(
           supervisorLayer({
             install: (_device, binary) =>
               Ref.update(events, (current) => [...current, `install:${binary}`]),
@@ -338,7 +339,7 @@ describe("NativeSupervisor fault injection", () => {
         yield* TestClock.adjust(1_000)
         return yield* Fiber.join(running)
       }).pipe(
-        Effect.provide(
+        provideLayer(
           supervisorLayer({
             runMaestroFlow: () =>
               Ref.update(attempts, (count) => count + 1).pipe(Effect.andThen(Effect.never)),
@@ -365,7 +366,7 @@ describe("NativeSupervisor fault injection", () => {
         .pipe(Effect.flip)
       assert.strictEqual(failure.phase, "runner")
     }).pipe(
-      Effect.provide(
+      provideLayer(
         supervisorLayer({
           runMaestroFlow: () =>
             Effect.fail(
@@ -418,7 +419,7 @@ describe("NativeSupervisor fault injection", () => {
           })
           .pipe(Effect.flip)
       }).pipe(
-        Effect.provide(
+        provideLayer(
           layer.pipe(
             Layer.provideMerge(
               Layer.merge(
@@ -450,7 +451,7 @@ describe("NativeSupervisor fault injection", () => {
       const failure = yield* supervisor.run(request).pipe(Effect.flip)
       assert.strictEqual(failure.phase, "protocol")
     }).pipe(
-      Effect.provide(
+      provideLayer(
         supervisorLayer({
           result: () => Effect.succeed("{broken-json"),
         }),
@@ -465,7 +466,7 @@ describe("NativeSupervisor fault injection", () => {
         const supervisor = yield* NativeSupervisor
         return yield* supervisor.run(request).pipe(Effect.flip)
       }).pipe(
-        Effect.provide(
+        provideLayer(
           supervisorLayer({
             runMaestroFlow: () =>
               Effect.fail(

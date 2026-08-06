@@ -122,10 +122,9 @@ const method = <A>(name: string, run: () => Promise<A>) =>
   Effect.tryPromise({ try: run, catch: (cause) => failure(name, cause) })
 
 const decodePowerState = (value: unknown) =>
-  Effect.try({
-    try: () => Schema.decodeUnknownSync(PowerState)(value),
-    catch: (cause) => failure("getPowerStateAsync", cause),
-  })
+  Schema.decodeUnknownEffect(PowerState)(value).pipe(
+    Effect.mapError((cause) => failure("getPowerStateAsync", cause)),
+  )
 
 const getPowerStateFromExpoParts = method(
   "getPowerStateAsync",

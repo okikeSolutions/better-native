@@ -42,15 +42,15 @@ export class ProcessFailure extends Data.TaggedError("ProcessFailure")<{
 
 /** Backend process handle exposed to the supervisor lifecycle. */
 export interface ProcessHandle {
-  readonly stdout: Stream.Stream<string, unknown>
-  readonly stderr: Stream.Stream<string, unknown>
-  readonly exitCode: Effect.Effect<number, unknown>
-  readonly terminate: (graceMillis: number) => Effect.Effect<void, unknown>
+  readonly stdout: Stream.Stream<string, Error>
+  readonly stderr: Stream.Stream<string, Error>
+  readonly exitCode: Effect.Effect<number, Error>
+  readonly terminate: (graceMillis: number) => Effect.Effect<void, Error>
 }
 
 /** Minimal process backend used by the real and test supervisors. */
 export interface ProcessBackend {
-  readonly spawn: (spec: ProcessSpec) => Effect.Effect<ProcessHandle, unknown, Scope.Scope>
+  readonly spawn: (spec: ProcessSpec) => Effect.Effect<ProcessHandle, Error, Scope.Scope>
 }
 
 /** Running process with shared completion, observations, and termination effects. */
@@ -170,7 +170,7 @@ const utf8Suffix = (text: string, byteLimit: number): BoundedLine => {
  * @returns An effect that completes after the stream has been fully drained.
  */
 const drainDecodedChunks = (
-  output: Stream.Stream<string, unknown>,
+  output: Stream.Stream<string, Error>,
   byteLimit: number,
   emit: (line: BoundedLine) => Effect.Effect<void>,
 ) =>
@@ -231,7 +231,7 @@ const snapshot = (state: ObservationBuffer, sequence: number, timestampMillis: n
       ]
 }
 
-const drainCause = (outcomes: readonly [Exit.Exit<void, unknown>, Exit.Exit<void, unknown>]) => {
+const drainCause = (outcomes: readonly [Exit.Exit<void, Error>, Exit.Exit<void, Error>]) => {
   const [stdoutExit, stderrExit] = outcomes
   const failures: Array<{ readonly stream: "stdout" | "stderr"; readonly cause: unknown }> = []
   if (Exit.isFailure(stdoutExit)) failures.push({ stream: "stdout", cause: stdoutExit.cause })
@@ -277,7 +277,7 @@ const makeService = (backend: ProcessBackend): Service => {
       const handle = yield* backend
         .spawn(spec)
         .pipe(Effect.catch((cause) => fail<ProcessHandle>("spawn", cause)))
-      const drain = (stream: "stdout" | "stderr", output: Stream.Stream<string, unknown>) =>
+      const drain = (stream: "stdout" | "stderr", output: Stream.Stream<string, Error>) =>
         drainDecodedChunks(output, byteLimit, ({ text, omittedBytes }) =>
           record(stream, text, omittedBytes),
         )

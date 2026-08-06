@@ -127,78 +127,82 @@ const validateSpecifier = (label: string, specifier: string): void => {
 }
 
 const makePolicy = (options: BetterNativeMetroOptions) =>
-  Effect.try({
-    try: () => {
-      const decoded = Schema.decodeUnknownSync(ResolverInput)({
-        runId: options.runId,
-        buildId: options.buildId,
-        ownershipFingerprint: options.ownershipFingerprint ?? null,
-        mode: options.mode,
-        replacements: options.replacements,
-        upstreamNodeModulesPath: options.upstreamNodeModulesPath,
-        trackedSpecifiers:
-          options.trackedSpecifiers ?? options.replacements.map(({ source }) => source),
-      })
-      const replacements = new Map<string, string>()
-      for (const replacement of decoded.replacements) {
-        validateSpecifier("replacement source", replacement.source)
-        validateSpecifier("replacement target", replacement.target)
-        if (replacements.has(replacement.source)) {
-          throw new Error(`duplicate replacement source: ${replacement.source}`)
-        }
-        if (replacement.source === replacement.target) {
-          throw new Error(`replacement source and target must differ: ${replacement.source}`)
-        }
-        replacements.set(replacement.source, replacement.target)
-      }
-      const tracked = new Set(decoded.trackedSpecifiers)
-      for (const specifier of tracked) validateSpecifier("tracked specifier", specifier)
+  Schema.decodeUnknownEffect(ResolverInput)({
+    runId: options.runId,
+    buildId: options.buildId,
+    ownershipFingerprint: options.ownershipFingerprint ?? null,
+    mode: options.mode,
+    replacements: options.replacements,
+    upstreamNodeModulesPath: options.upstreamNodeModulesPath,
+    trackedSpecifiers:
+      options.trackedSpecifiers ?? options.replacements.map(({ source }) => source),
+  }).pipe(
+    Effect.mapError((cause) => new MetroConfigurationError({ cause })),
+    Effect.flatMap((decoded) =>
+      Effect.try({
+        try: () => {
+          const replacements = new Map<string, string>()
+          for (const replacement of decoded.replacements) {
+            validateSpecifier("replacement source", replacement.source)
+            validateSpecifier("replacement target", replacement.target)
+            if (replacements.has(replacement.source)) {
+              throw new Error(`duplicate replacement source: ${replacement.source}`)
+            }
+            if (replacement.source === replacement.target) {
+              throw new Error(`replacement source and target must differ: ${replacement.source}`)
+            }
+            replacements.set(replacement.source, replacement.target)
+          }
+          const tracked = new Set(decoded.trackedSpecifiers)
+          for (const specifier of tracked) validateSpecifier("tracked specifier", specifier)
 
-      return {
-        runId: decoded.runId,
-        buildId: decoded.buildId,
-        ownershipFingerprint: decoded.ownershipFingerprint,
-        mode: decoded.mode,
-        upstreamNodeModulesPath: decoded.upstreamNodeModulesPath,
-        resolve: Effect.fn("ResolutionPolicy.resolve")(
-          (request: ResolutionRequest): Effect.Effect<ResolutionDirective> => {
-            const target = replacements.get(request.specifier)
-            const selfUpstream =
-              target !== undefined &&
-              request.originPackage !== null &&
-              request.originPackage === packageName(target)
-            if (selfUpstream) {
-              return Effect.succeed({
-                decision: "self-upstream" as const,
-                requestedSpecifier: request.specifier,
-                replacement: null,
-              })
-            }
-            if (request.mode === "candidate" && target !== undefined) {
-              return Effect.succeed({
-                decision: "candidate" as const,
-                requestedSpecifier: target,
-                replacement: target,
-              })
-            }
-            if (!tracked.has(request.specifier)) {
-              return Effect.succeed({
-                decision: "unmanaged" as const,
-                requestedSpecifier: request.specifier,
-                replacement: null,
-              })
-            }
-            return Effect.succeed({
-              decision: "upstream" as const,
-              requestedSpecifier: request.specifier,
-              replacement: null,
-            })
-          },
-        ),
-      }
-    },
-    catch: (cause) => new MetroConfigurationError({ cause }),
-  })
+          return {
+            runId: decoded.runId,
+            buildId: decoded.buildId,
+            ownershipFingerprint: decoded.ownershipFingerprint,
+            mode: decoded.mode,
+            upstreamNodeModulesPath: decoded.upstreamNodeModulesPath,
+            resolve: Effect.fn("ResolutionPolicy.resolve")(
+              (request: ResolutionRequest): Effect.Effect<ResolutionDirective> => {
+                const target = replacements.get(request.specifier)
+                const selfUpstream =
+                  target !== undefined &&
+                  request.originPackage !== null &&
+                  request.originPackage === packageName(target)
+                if (selfUpstream) {
+                  return Effect.succeed({
+                    decision: "self-upstream" as const,
+                    requestedSpecifier: request.specifier,
+                    replacement: null,
+                  })
+                }
+                if (request.mode === "candidate" && target !== undefined) {
+                  return Effect.succeed({
+                    decision: "candidate" as const,
+                    requestedSpecifier: target,
+                    replacement: target,
+                  })
+                }
+                if (!tracked.has(request.specifier)) {
+                  return Effect.succeed({
+                    decision: "unmanaged" as const,
+                    requestedSpecifier: request.specifier,
+                    replacement: null,
+                  })
+                }
+                return Effect.succeed({
+                  decision: "upstream" as const,
+                  requestedSpecifier: request.specifier,
+                  replacement: null,
+                })
+              },
+            ),
+          }
+        },
+        catch: (cause) => new MetroConfigurationError({ cause }),
+      }),
+    ),
+  )
 
 const policyLayer = (options: BetterNativeMetroOptions) =>
   Layer.effect(ResolutionPolicy)(makePolicy(options))
@@ -417,7 +421,11 @@ export const configure = (
   config: MetroConfig,
   options: BetterNativeMetroOptions,
 ): Effect.Effect<MetroConfig, MetroConfigurationError> =>
-  make(config).pipe(Effect.provide(layer(options)))
+  Effect.scoped(
+    Layer.build(layer(options)).pipe(
+      Effect.flatMap((context) => Effect.provide(make(config), context)),
+    ),
+  )
 
 /** Synchronous Metro entrypoint. Effect programs stay behind this reviewed boundary. */
 export const withBetterNative = (

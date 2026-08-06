@@ -10,6 +10,7 @@ import * as Crypto from "effect/Crypto"
 import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Encoding from "effect/Encoding"
+import * as Layer from "effect/Layer"
 import { withBetterNative, type ResolutionEvent } from "../../../src/BetterNativeMetroConfig.ts"
 
 const mode = process.argv[2]
@@ -27,7 +28,7 @@ class MetroBuildError extends Data.TaggedError("MetroBuildError")<{
   readonly cause: unknown
 }> {}
 
-Effect.gen(function* () {
+const program = Effect.gen(function* () {
   const crypto = yield* Crypto.Crypto
   const events: Array<ResolutionEvent> = []
   const metroConfig = getDefaultConfig(fixtureRoot)
@@ -74,4 +75,10 @@ Effect.gen(function* () {
       })}`,
     ),
   )
-}).pipe(Effect.provide(NodeServices.layer), NodeRuntime.runMain)
+})
+
+Effect.scoped(
+  Layer.build(NodeServices.layer).pipe(
+    Effect.flatMap((context) => Effect.provide(program, context)),
+  ),
+).pipe(NodeRuntime.runMain)

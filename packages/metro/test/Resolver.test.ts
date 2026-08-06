@@ -21,7 +21,7 @@ const harness = (options?: {
   readonly failure?: Error
   readonly previousResolver?: boolean
   readonly replacements?: ReadonlyArray<{ readonly source: string; readonly target: string }>
-  readonly environment?: string
+  readonly environment?: unknown
   readonly isEsmImport?: boolean
   readonly conditionNames?: ReadonlyArray<string>
   readonly conditionsByPlatform?: Readonly<Record<string, ReadonlyArray<string>>>
@@ -181,6 +181,13 @@ describe("withBetterNative", () => {
     })
   })
 
+  it("normalizes a non-string custom environment", () => {
+    const test = harness({ environment: 42 })
+    test.resolve(test.context, "expo-network", "ios")
+
+    assert.strictEqual(test.events[0]?.environment, null)
+  })
+
   it("replaces a different capability imported by a candidate", () => {
     const test = harness({
       originPackage: "@better-native/network",
@@ -246,6 +253,22 @@ describe("withBetterNative", () => {
     }
   })
 
+  it("records an unknown resolution returned by a malformed resolver", () => {
+    const malformed = { type: "unknown" } as unknown as Resolution
+    const test = harness({ resolution: malformed })
+
+    assert.strictEqual(test.resolve(test.context, "expo-network", "web"), malformed)
+    assert.deepInclude(test.events[0], {
+      outcome: {
+        kind: "failure",
+        name: "UnknownResolution",
+        message: "Unknown Metro resolution",
+      },
+      resolvedTarget: null,
+      resolvedPackage: null,
+    })
+  })
+
   it("rejects ambiguous configuration before Metro starts", () => {
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     const config = { resolver: {} } as MetroConfig
@@ -277,6 +300,17 @@ describe("withBetterNative", () => {
         mode: "candidate",
         upstreamNodeModulesPath: "/pinned-expo/node_modules",
         replacements: [{ source: "../expo-network", target: "@better-native/network/expo" }],
+      }),
+    )
+    assert.throws(() =>
+      withBetterNative(config, {
+        buildId: "invalid-observer-build",
+        runId: "invalid-observer-run",
+        mode: "candidate",
+        upstreamNodeModulesPath: "/pinned-expo/node_modules",
+        replacements: [],
+        // Exercise the runtime boundary for untyped Metro configuration consumers.
+        onResolution: "invalid" as never,
       }),
     )
     const configured = withBetterNative(config, {

@@ -3,6 +3,7 @@ import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Schema from "effect/Schema"
+import { provideLayer } from "../TestLayers.ts"
 import { EvidenceError, EvidenceStore, layer } from "./EvidenceStore.ts"
 
 const Record = Schema.Struct({ schemaVersion: Schema.Literal(1), value: Schema.String })
@@ -32,9 +33,9 @@ describe("EvidenceStore", () => {
           .pipe(Effect.flip)
         assert.instanceOf(failure, EvidenceError)
         assert.strictEqual(failure.operation, "preserve immutable evidence")
-      }).pipe(Effect.provide(layer(root)))
+      }).pipe(provideLayer(layer(root)))
       yield* program
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
   it.effect("rejects evidence directories redirected through symbolic links", () =>
@@ -52,10 +53,10 @@ describe("EvidenceStore", () => {
           schemaVersion: 1,
           value: "must stay inside root",
         })
-      }).pipe(Effect.provide(layer(root)), Effect.flip)
+      }).pipe(provideLayer(layer(root)), Effect.flip)
       assert.instanceOf(failure, EvidenceError)
       assert.strictEqual(failure.operation, "validate evidence directory")
       assert.isFalse(yield* fs.exists(`${outside}/record.json`))
-    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 })

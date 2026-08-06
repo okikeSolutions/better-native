@@ -32,6 +32,13 @@ vi.mock("expo-battery", () => ({
 const ExpoBattery = await import("expo-battery")
 const { Battery, BatteryFailure, BatteryService, BatteryState } = await import("../src/index")
 
+const provideLayer =
+  <ROut, E2, RIn>(layer: Layer.Layer<ROut, E2, RIn>) =>
+  <A, E, R>(effect: Effect.Effect<A, E, R>): Effect.Effect<A, E | E2, RIn | Exclude<R, ROut>> =>
+    Effect.scoped(
+      Layer.build(layer).pipe(Effect.flatMap((context) => Effect.provide(effect, context))),
+    )
+
 describe("@better-native/battery", () => {
   it("reads power state through an Effect service", async () => {
     const TestBattery = Layer.succeed(
@@ -53,7 +60,7 @@ describe("@better-native/battery", () => {
       }),
     )
 
-    const result = await Effect.runPromise(Battery.getPowerState.pipe(Effect.provide(TestBattery)))
+    const result = await Effect.runPromise(Battery.getPowerState.pipe(provideLayer(TestBattery)))
 
     expect(result).toEqual({
       batteryLevel: 0.82,
@@ -90,7 +97,7 @@ describe("@better-native/battery", () => {
     )
 
     await expect(
-      Effect.runPromise(Battery.isAvailable.pipe(Effect.provide(TestBattery))),
+      Effect.runPromise(Battery.isAvailable.pipe(provideLayer(TestBattery))),
     ).resolves.toBe(true)
   })
 
@@ -98,7 +105,7 @@ describe("@better-native/battery", () => {
     vi.mocked(ExpoBattery.isBatteryOptimizationEnabledAsync).mockResolvedValueOnce(true)
 
     await expect(
-      Effect.runPromise(Battery.isBatteryOptimizationEnabled.pipe(Effect.provide(Battery.live))),
+      Effect.runPromise(Battery.isBatteryOptimizationEnabled.pipe(provideLayer(Battery.live))),
     ).resolves.toBe(true)
   })
 
@@ -115,9 +122,7 @@ describe("@better-native/battery", () => {
       }),
     )
 
-    const exit = await Effect.runPromiseExit(
-      Battery.getPowerState.pipe(Effect.provide(Battery.live)),
-    )
+    const exit = await Effect.runPromiseExit(Battery.getPowerState.pipe(provideLayer(Battery.live)))
 
     expect(exit._tag).toBe("Failure")
     if (exit._tag === "Failure") {
@@ -156,7 +161,7 @@ describe("@better-native/battery", () => {
     )
 
     const result = await Effect.runPromise(
-      Battery.levelChanges.pipe(Stream.take(1), Stream.runCollect, Effect.provide(TestBattery)),
+      Battery.levelChanges.pipe(Stream.take(1), Stream.runCollect, provideLayer(TestBattery)),
     )
 
     expect(Array.from(result)).toEqual([{ batteryLevel: 0.82 }])
@@ -170,7 +175,7 @@ describe("@better-native/battery", () => {
     })
 
     const result = await Effect.runPromise(
-      Battery.levelChanges.pipe(Stream.take(1), Stream.runCollect, Effect.provide(Battery.live)),
+      Battery.levelChanges.pipe(Stream.take(1), Stream.runCollect, provideLayer(Battery.live)),
     )
 
     expect(Array.from(result)).toEqual([{ batteryLevel: 0.82 }])
@@ -188,7 +193,7 @@ describe("@better-native/battery", () => {
         return Battery.levelChanges.pipe(
           Stream.take(1),
           Stream.runDrain,
-          Effect.provide(Battery.live),
+          provideLayer(Battery.live),
         )
       },
     ],
@@ -202,7 +207,7 @@ describe("@better-native/battery", () => {
         return Battery.stateChanges.pipe(
           Stream.take(1),
           Stream.runDrain,
-          Effect.provide(Battery.live),
+          provideLayer(Battery.live),
         )
       },
     ],
@@ -216,7 +221,7 @@ describe("@better-native/battery", () => {
         return Battery.lowPowerModeChanges.pipe(
           Stream.take(1),
           Stream.runDrain,
-          Effect.provide(Battery.live),
+          provideLayer(Battery.live),
         )
       },
     ],
