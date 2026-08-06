@@ -1,0 +1,79 @@
+name: Paid DX eval campaign
+
+on:
+  workflow_dispatch:
+    inputs:
+      campaign:
+        description: Reviewed campaign definition
+        required: true
+        type: choice
+        default: checkpoint-5-diagnostic
+        options:
+          - checkpoint-5-diagnostic
+          - checkpoint-5-smoke
+      task:
+        description: Full campaign or one diagnostic task subset
+        required: true
+        type: choice
+        default: all
+        options:
+          - all
+          - network
+          - battery
+
+permissions:
+  contents: read
+
+concurrency:
+  group: paid-dx-evals-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  campaign:
+    name: ${{ inputs.campaign }} (${{ inputs.task }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment: paid-evals
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825a76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+
+      - name: Setup static profile
+        uses: ./.github/actions/setup-static
+
+      - name: Install rootless Podman
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes podman
+          test "$(podman info --format '{{.Host.Security.Rootless}}')" = "true"
+
+      - name: Pull pinned verifier image
+        run: >-
+          podman pull
+          docker.io/library/node@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd
+
+      - name: Review campaign plan
+        run: >-
+          bun run evals plan
+          --campaign ${{ inputs.campaign }}
+          --task ${{ inputs.task }}
+
+      - name: Run serialized paid campaign
+        run: >-
+          bun run evals run
+          --campaign ${{ inputs.campaign }}
+          --task ${{ inputs.task }}
+          --confirm-paid
+
+      - name: Upload eval reports and evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dx-evals-${{ inputs.campaign }}-${{ inputs.task }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/evals
+          if-no-files-found: warn
+          retention-days: 30
