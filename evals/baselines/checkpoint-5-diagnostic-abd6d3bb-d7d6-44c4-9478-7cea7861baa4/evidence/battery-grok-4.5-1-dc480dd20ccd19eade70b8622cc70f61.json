@@ -1,0 +1,60 @@
+{
+  "manifest": {
+    "schemaVersion": 1,
+    "runId": "battery-grok-4.5-1-dc480dd20ccd19eade70b8622cc70f61",
+    "taskId": "battery",
+    "taskVersion": "1",
+    "adapterId": "openrouter-coding-agent",
+    "instructionDigest": "894deab15070deea82e57ca7453e6616441a55ad4042162a8c508694890ceef7",
+    "evaluatorBundleDigest": "a2af8b2f00110f47c034a0e11f34b44d4edc3cfedb9cc70ce30854d17e21026f",
+    "taskExportDigest": "02d2af24ec2e366597c2eb6695582789e41f6b528243ef1bc7bf714c6d757f11",
+    "submissionDigest": "d801aa1fb7ddcc330a5e3173372ea6af4a3d08ec58074478e85aa5603e926658",
+    "observationDigest": "b886cad881d7f4fbe74bc6646c002856458b1e8b008144d959c230a9975bc1b6",
+    "gateDigest": "c89d861ebba46e6b51b404775009ae5e9a856aa226d79f8e27b55db637eb8e6b",
+    "isolationPolicy": {
+      "image": "docker.io/library/node@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd",
+      "timeoutMilliseconds": 15000,
+      "network": "none",
+      "filesystem": "read-only",
+      "user": "65532:65532"
+    },
+    "agentProfile": {
+      "schemaVersion": 1,
+      "id": "grok-4.5",
+      "model": "x-ai/grok-4.5",
+      "reasoningEffort": "medium",
+      "maxTurns": 12,
+      "maxOutputTokensPerTurn": 8192,
+      "maxTotalOutputTokens": 32768,
+      "maxObservedTotalTokens": 120000,
+      "timeoutMilliseconds": 300000,
+      "observedCostStopUsd": 0.5,
+      "promptCaching": "disabled",
+      "providerPolicy": {
+        "only": [
+          "xai/zdr"
+        ],
+        "allowFallbacks": false,
+        "requireParameters": true,
+        "dataCollection": "deny",
+        "zeroDataRetention": true
+      }
+    },
+    "usage": {
+      "model": "x-ai/grok-4.5",
+      "inputTokens": 18394,
+      "outputTokens": 2549,
+      "reasoningTokens": 1961,
+      "cachedInputTokens": 15616,
+      "totalTokens": 20943,
+      "toolCalls": 23,
+      "retries": 0,
+      "turns": 12,
+      "costUsd": 0.0255348
+    },
+    "agentExitReason": "turn-limit"
+  },
+  "algorithm": "hmac-sha256",
+  "signature": "bcc794bcdc6c33f6417db4046f9acad03ae12ca1901f267960ea859a77be274d",
+  "digest": "57a37a3524bc76495137030c86e25368ab76da8ea03c12f7f8ac6828eba97615"
+}

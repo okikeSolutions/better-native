@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "campaignId": "checkpoint-5-diagnostic",
+  "campaignRunId": "checkpoint-5-diagnostic-abd6d3bb-d7d6-44c4-9478-7cea7861baa4",
+  "startedAt": "2026-08-06T07:30:44.471Z",
+  "classification": "historical-blind-diagnostic",
+  "acceptedRegressionBaseline": false,
+  "immutable": true,
+  "summary": {
+    "trialAttempts": 10,
+    "infrastructureValid": 6,
+    "infrastructureFailed": 4,
+    "taskPassed": 0,
+    "taskFailed": 6,
+    "recordedTokens": 125005,
+    "providerCostUsd": 0.2773534
+  },
+  "files": [
+    {
+      "path": "outputFile.json",
+      "sha256": "69266637cf365d73401a5f0bb2e1bf8246c820101f06666c5819d6c6cbaa445b"
+    },
+    {
+      "path": "evidence/network-grok-4.5-1-76116c6fee0449543777f19bb8d43a1e.json",
+      "sha256": "1e5224be1f041f641610828d2f8b10ef22cd91f2afbd6a545212e0b55922dde4"
+    },
+    {
+      "path": "evidence/network-kimi-k3-1-e9c5257dd7163686bf3331be1d6d5de7.json",
+      "sha256": "298e778f4b4d89887d6c277b2e13a4b6bf9500b77696e53e7e4e26e008c06fbf"
+    },
+    {
+      "path": "evidence/network-claude-sonnet-5-1-36b5fd08572cf16964994507404d80b3.json",
+      "sha256": "1d89d1d6ba9cd3f2e21a2cb257c5058bb56248163d6b9e496f2885f76a4e9773"
+    },
+    {
+      "path": "evidence/battery-grok-4.5-1-dc480dd20ccd19eade70b8622cc70f61.json",
+      "sha256": "38b0328a3c792bfbf2358082d14230aa052f25cc9311dd1d84c2712bdb5a1c41"
+    },
+    {
+      "path": "evidence/battery-kimi-k3-1-fb96d73325f56e5b9f970a90879f8db8.json",
+      "sha256": "6c12f8b4a20a03eb12bf010b1113bf3c051031dddb495216578a9f0c9ad23e28"
+    },
+    {
+      "path": "evidence/battery-claude-sonnet-5-1-09edc88143502bc7962734adf8e8a614.json",
+      "sha256": "8694d280419387e4cb592ddebd9ae640caa9885d45713939b3ded83a14695b24"
+    }
+  ]
+}

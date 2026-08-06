@@ -1,0 +1,61 @@
+{
+  "manifest": {
+    "schemaVersion": 1,
+    "runId": "network-kimi-k3-1-e9c5257dd7163686bf3331be1d6d5de7",
+    "taskId": "network",
+    "taskVersion": "1",
+    "adapterId": "openrouter-coding-agent",
+    "instructionDigest": "17371d897155f14429173efe1e2b6a88527f0f2637a733686ea1321400a82601",
+    "evaluatorBundleDigest": "482c3d7478538f6d3fb61dfd65d08fbe0930c073b52a87a0f56a5c2eba9289ff",
+    "taskExportDigest": "f419191a97da5e69280789dce91929b074fb15c4a46daba0fe6fae0c85955094",
+    "submissionDigest": "7639bbc50d25d6fe653d0dc7c0c4bfb52d64f1194fca9498440c33353d363a1f",
+    "observationDigest": "1cdd9c146a0b5b4e138adbc2eb76143381456cae53cabfc1deb98706aff80311",
+    "gateDigest": "d07a1849ca7b44063d04fd6139445a939ec1326fea7693461353f72dcd9ca34a",
+    "isolationPolicy": {
+      "image": "docker.io/library/node@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd",
+      "timeoutMilliseconds": 15000,
+      "network": "none",
+      "filesystem": "read-only",
+      "user": "65532:65532"
+    },
+    "agentProfile": {
+      "schemaVersion": 1,
+      "id": "kimi-k3",
+      "model": "moonshotai/kimi-k3",
+      "reasoningEffort": "medium",
+      "maxTurns": 12,
+      "maxOutputTokensPerTurn": 8192,
+      "maxTotalOutputTokens": 32768,
+      "maxObservedTotalTokens": 120000,
+      "timeoutMilliseconds": 300000,
+      "observedCostStopUsd": 0.9,
+      "promptCaching": "disabled",
+      "providerPolicy": {
+        "only": [
+          "moonshotai/mxfp4"
+        ],
+        "allowFallbacks": false,
+        "requireParameters": true,
+        "dataCollection": "deny",
+        "zeroDataRetention": true
+      }
+    },
+    "usage": {
+      "model": "moonshotai/kimi-k3",
+      "inputTokens": 8072,
+      "outputTokens": 1256,
+      "reasoningTokens": 573,
+      "cachedInputTokens": 4864,
+      "totalTokens": 9328,
+      "toolCalls": 9,
+      "retries": 0,
+      "turns": 6,
+      "costUsd": 0.0299232,
+      "providerFingerprint": "fpv0_5f482f4a"
+    },
+    "agentExitReason": "submitted"
+  },
+  "algorithm": "hmac-sha256",
+  "signature": "448f2fc2aa2724f9f4949228f4db814d6e0496302b1329ea985d9079d4c9f32d",
+  "digest": "c7fcf100ac4fbd7a7d88689fc661e62ec40ac4a22700b03fe9232e708475425b"
+}
