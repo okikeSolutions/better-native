@@ -36,7 +36,17 @@ export class SecurityAuditError extends Data.TaggedError("SecurityAuditError")<{
   readonly issues: ReadonlyArray<string>
 }> {}
 
-const reviewed: ReadonlyArray<ReviewedException> = []
+const reviewed: ReadonlyArray<ReviewedException> = [
+  {
+    // Metro reads image dimensions from reviewed project assets during bundling. The affected
+    // image-size release has no patched successor, and this toolchain-only path is not shipped by
+    // a publishable Better Native runtime package. Keep the exception exact so a new path, version,
+    // owner, or resolved advisory fails closed.
+    owner: { lockKey: "metro", identifier: "metro@0.84.4" },
+    dependency: { lockKey: "image-size", name: "image-size", version: "1.2.1" },
+    advisories: ["GHSA-5p2g-fcmc-qvqq", "GHSA-w3rx-r6r6-pgpr"],
+  },
+]
 
 const advisoryId = (url: string): string => url.slice(url.lastIndexOf("/") + 1)
 
