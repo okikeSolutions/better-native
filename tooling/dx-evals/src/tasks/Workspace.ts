@@ -243,6 +243,10 @@ export const materializeCandidate = (task: TaskModel.TaskBase, submission: Valid
       directory: workspaceRoot,
       prefix: "trial-",
     })
+    // Native rootless Podman preserves host permissions for bind mounts. Temporary directories
+    // default to owner-only access, so the fixed unprivileged container user needs an explicit
+    // read-and-traverse boundary before the workspace is mounted read-only.
+    yield* fs.chmod(root, 0o755)
     yield* fs.writeFileString(
       path.join(root, "package.json"),
       '{"name":"@better-native/dx-eval-candidate","private":true,"type":"module"}\n',

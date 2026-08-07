@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync, readFileSync, statSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, describe, it } from "@effect/vitest"
@@ -26,6 +26,7 @@ describe("public submission compiler", () => {
           assert.isFalse(existsSync(`${request.workspace}/grader`))
           assert.isFalse(existsSync(`${request.workspace}/reference.patch`))
           assert.isFalse(existsSync(`${request.workspace}/broken.patch`))
+          assert.strictEqual(statSync(request.workspace).mode & 0o777, 0o755)
           assert.notInclude(
             readFileSync(`${request.workspace}/src/ObserveBattery.ts`, "utf8"),
             "reference",

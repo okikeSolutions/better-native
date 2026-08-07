@@ -65,6 +65,7 @@ export const observeSource = (source: string) =>
         directory: workspaceParent,
         prefix: "isolation-conformance-",
       })
+      yield* fs.chmod(workspace, 0o755)
       yield* fs.writeFileString(path.join(workspace, entrypoint), source)
       const observation = yield* isolation.observe({ workspace, entrypoint, exportName })
       return { observation, workspace }
