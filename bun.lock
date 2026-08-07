@@ -30,6 +30,7 @@
         "@better-native/keep-awake": "workspace:*",
         "@better-native/metro": "workspace:*",
         "@better-native/network": "workspace:*",
+        "@better-native/secure-store": "workspace:*",
         "@expo/html-elements": "57.0.0",
         "@expo/styleguide-base": "^1.0.1",
         "@expo/vector-icons": "^15.0.2",
@@ -222,6 +223,24 @@
         "expo": ">=57.0.0 <58.0.0",
         "expo-modules-core": ">=3.0.0 <4.0.0",
         "expo-network": ">=57.0.0 <58.0.0",
+        "react": ">=19.0.0",
+      },
+    },
+    "packages/secure-store": {
+      "name": "@better-native/secure-store",
+      "version": "0.0.0",
+      "dependencies": {
+        "effect": "4.0.0-beta.102",
+      },
+      "devDependencies": {
+        "@effect/docgen": "4.0.0-beta.102",
+        "expo": "57.0.9",
+        "expo-secure-store": "57.0.1",
+        "react": "19.2.3",
+      },
+      "peerDependencies": {
+        "expo": ">=57.0.0 <58.0.0",
+        "expo-secure-store": ">=57.0.0 <58.0.0",
         "react": ">=19.0.0",
       },
     },
@@ -560,6 +579,8 @@
     "@better-native/metro-paired-fixture": ["@better-native/metro-paired-fixture@workspace:packages/metro/test/fixtures/paired"],
 
     "@better-native/network": ["@better-native/network@workspace:packages/network"],
+
+    "@better-native/secure-store": ["@better-native/secure-store@workspace:packages/secure-store"],
 
     "@better-native/typescript-config": ["@better-native/typescript-config@workspace:packages/typescript-config"],
 
