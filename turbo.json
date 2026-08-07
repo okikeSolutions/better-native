@@ -16,6 +16,10 @@
       "dependsOn": ["^typecheck"],
       "outputs": []
     },
+    "@better-native/compatibility-suite#typecheck": {
+      "dependsOn": ["^typecheck", "^build"],
+      "outputs": []
+    },
     "check:effect": {
       "dependsOn": ["typecheck"],
       "outputs": []
@@ -61,9 +65,21 @@
       ],
       "outputs": []
     },
+    "//#compatibility:dependencies": {
+      "cache": false,
+      "dependsOn": [
+        "//#expo:toolchain",
+        "@better-native/network#build",
+        "@better-native/battery#build",
+        "@better-native/keep-awake#build",
+        "@better-native/secure-store#build",
+        "@better-native/metro#build"
+      ],
+      "outputs": []
+    },
     "//#compatibility:web": {
       "cache": false,
-      "dependsOn": ["//#expo:toolchain", "@better-native/metro#build"],
+      "dependsOn": ["//#compatibility:dependencies"],
       "outputs": []
     },
     "//#expo:toolchain": {

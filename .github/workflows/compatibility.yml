@@ -95,8 +95,8 @@ jobs:
         uses: ./.github/actions/setup-build
       - name: Install Playwright Chromium
         run: bun x playwright install --with-deps chromium
-      - name: Materialize pinned Expo
-        run: bun run expo:prepare
+      - name: Prepare compatibility dependencies
+        run: bun run compatibility:prepare
       - name: Run upstream web baseline
         run: >-
           bun run better-native supervise-web
@@ -133,8 +133,8 @@ jobs:
         uses: ./.github/actions/setup-build
       - name: Install Playwright Chromium
         run: bun x playwright install --with-deps chromium
-      - name: Materialize pinned Expo
-        run: bun run expo:prepare
+      - name: Prepare compatibility dependencies
+        run: bun run compatibility:prepare
       - name: Run paired web compatibility
         run: >-
           bun run better-native supervise-web-pair
@@ -216,8 +216,8 @@ jobs:
         uses: ./.github/actions/setup-expo-caches
         with:
           platform: ios
-      - name: Materialize pinned Expo
-        run: bun run expo:prepare
+      - name: Prepare compatibility dependencies
+        run: bun run compatibility:prepare
       - name: Build upstream or paired applications
         env:
           COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
@@ -436,8 +436,8 @@ jobs:
         uses: ./.github/actions/setup-expo-caches
         with:
           platform: android
-      - name: Materialize pinned Expo
-        run: bun run expo:prepare
+      - name: Prepare compatibility dependencies
+        run: bun run compatibility:prepare
       - name: Build upstream or paired applications
         env:
           COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
