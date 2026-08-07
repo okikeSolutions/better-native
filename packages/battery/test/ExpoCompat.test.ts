@@ -269,14 +269,14 @@ describe("@better-native/battery/expo", () => {
     const root = createRoot(document.createElement("div"))
     const registry = AtomRegistry.make()
     const releases = [
-      registry.mount(EffectBattery.levelAtom),
-      registry.mount(EffectBattery.stateAtom),
+      registry.mount(EffectBattery.batteryLevelAtom),
+      registry.mount(EffectBattery.batteryStateAtom),
       registry.mount(EffectBattery.lowPowerModeAtom),
       registry.mount(EffectBattery.powerStateAtom),
     ]
     const values = {
-      level: () => AsyncResult.getOrThrow(registry.get(EffectBattery.levelAtom)),
-      state: () => AsyncResult.getOrThrow(registry.get(EffectBattery.stateAtom)),
+      level: () => AsyncResult.getOrThrow(registry.get(EffectBattery.batteryLevelAtom)),
+      state: () => AsyncResult.getOrThrow(registry.get(EffectBattery.batteryStateAtom)),
       lowPowerMode: () => AsyncResult.getOrThrow(registry.get(EffectBattery.lowPowerModeAtom)),
       powerState: () => AsyncResult.getOrThrow(registry.get(EffectBattery.powerStateAtom)),
     }

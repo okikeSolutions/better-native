@@ -24,7 +24,7 @@
   },
   "scripts": {
     "build": "rm -rf build && tsc -p tsconfig.build.json",
-    "docs:api": "docgen --out ../../.artifacts/docs/api/battery",
+    "docs:api": "docgen",
     "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
     "typecheck": "tsc --noEmit"
   },

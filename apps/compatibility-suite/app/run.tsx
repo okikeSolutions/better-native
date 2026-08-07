@@ -2,8 +2,10 @@ import { useLocalSearchParams } from "expo-router"
 import { type ReactNode, useEffect, useState } from "react"
 import { ScrollView, StyleSheet, Text, View } from "react-native"
 import * as Encoding from "effect/Encoding"
+import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import * as Result from "effect/Result"
+import { CompatibilityConfiguration } from "../src/Configuration.ts"
 import { publishResult, rendersResultPayload } from "../src/ResultTransport"
 import { run, type RunSummary } from "../src/Runner.ts"
 import { runtime } from "../src/Runtime.ts"
@@ -45,6 +47,8 @@ export default function Run() {
     source?: string
     cohort?: string
     sources?: string
+    mode?: string
+    buildId?: string
   }>()
   const [summary, setSummary] = useState<RunSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -53,6 +57,8 @@ export default function Run() {
   const sourceId = typeof params.source === "string" ? params.source : undefined
   const cohort = typeof params.cohort === "string" ? params.cohort : undefined
   const sources = typeof params.sources === "string" ? params.sources : undefined
+  const mode = params.mode === "upstream" || params.mode === "candidate" ? params.mode : undefined
+  const buildId = typeof params.buildId === "string" ? params.buildId : undefined
   const selectionIdentity =
     sources === undefined ? (sourceId ?? cohort ?? "interactive-smoke") : "native-e2e"
 
@@ -60,18 +66,26 @@ export default function Run() {
     let active = true
     Promise.resolve()
       .then(() => selectionFor(runId, sourceId, cohort, sources))
-      .then((input) =>
-        runtime.runPromise(
-          run(input, {
-            setPortalChild,
-            cleanupPortal: () =>
-              new Promise<void>((resolve) => {
-                setPortalChild(null)
-                requestAnimationFrame(() => resolve())
-              }),
-          }),
-        ),
-      )
+      .then((input) => {
+        const program = run(input, {
+          setPortalChild,
+          cleanupPortal: () =>
+            new Promise<void>((resolve) => {
+              setPortalChild(null)
+              requestAnimationFrame(() => resolve())
+            }),
+        })
+        return runtime.runPromise(
+          mode === undefined || buildId === undefined
+            ? program
+            : program.pipe(
+                Effect.provideService(
+                  CompatibilityConfiguration,
+                  CompatibilityConfiguration.of({ mode, buildId }),
+                ),
+              ),
+        )
+      })
       .then(async (result) => {
         await publishResult(runId, result)
         if (active) setSummary(result)
@@ -82,7 +96,7 @@ export default function Run() {
     return () => {
       active = false
     }
-  }, [cohort, params.runId, runId, sourceId, sources])
+  }, [buildId, cohort, mode, params.runId, runId, sourceId, sources])
 
   const failed =
     summary?.results.filter(({ outcome }) =>

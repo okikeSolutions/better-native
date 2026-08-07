@@ -120,7 +120,10 @@ describe("withBetterNative", () => {
       "expo-networking",
       "expo-constants",
     ])
-    assert.deepEqual(test.nodeModulesPaths[0], ["/fixture/node_modules"])
+    assert.deepEqual(test.nodeModulesPaths[0], [
+      "/pinned-expo/node_modules",
+      "/fixture/node_modules",
+    ])
     assert.deepEqual(test.nodeModulesPaths[2], [
       "/pinned-expo/node_modules",
       "/fixture/node_modules",

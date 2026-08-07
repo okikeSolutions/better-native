@@ -36,15 +36,19 @@ describe("generated compatibility registry", () => {
   it("exposes platform-selected Expo Jasmine modules and every static case ID", () => {
     const basic = registry.find(({ path }) => path.endsWith("/tests/Basic.js"))
     const battery = registry.find(({ path }) => path.endsWith("/tests/Battery.js"))
+    const keepAwake = registry.find(({ path }) => path.endsWith("/tests/KeepAwake.js"))
     const network = registry.find(({ path }) => path.endsWith("/tests/Network.js"))
     assert.isDefined(basic)
     assert.isDefined(battery)
+    assert.isDefined(keepAwake)
     assert.isDefined(network)
     assert.isFunction(basic.load)
     assert.isFunction(battery.load)
+    assert.isFunction(keepAwake.load)
     assert.isFunction(network.load)
     assert.isAbove(basic.caseIds.length, 0)
     assert.isAbove(battery.caseIds.length, 0)
+    assert.isAbove(keepAwake.caseIds.length, 0)
     assert.isAbove(network.caseIds.length, 0)
     assert.strictEqual(
       new Set(registry.flatMap(({ caseIds }) => caseIds)).size,
@@ -52,13 +56,14 @@ describe("generated compatibility registry", () => {
     )
   })
 
-  it("includes Basic, Battery, and Network in the interactive smoke cohort", () => {
+  it("includes Basic, Battery, KeepAwake, and Network in the interactive smoke cohort", () => {
     const smokePaths = registry
       .filter(({ sourceId }) => interactiveSmokeSourceIds.has(sourceId))
       .map(({ path }) => path)
     assert.deepEqual(smokePaths, [
       "apps/test-suite/tests/Basic.js",
       "apps/test-suite/tests/Battery.js",
+      "apps/test-suite/tests/KeepAwake.js",
       "apps/test-suite/tests/Network.js",
     ])
   })
@@ -83,8 +88,26 @@ describe("generated compatibility registry", () => {
   })
 
   it("allows supplemental sources without upstream applicability", () => {
-    const supplemental = registry.find(({ authority }) => authority === "supplemental")
+    const supplemental = registry.find(
+      ({ sourceId }) =>
+        sourceId ===
+        "better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts",
+    )
     assert.isDefined(supplemental)
+    assert.deepEqual(supplemental.platforms, ["web", "ios", "android"])
+    assert.lengthOf(supplemental.caseIds, 7)
+    for (const behavior of [
+      "mounts and unmounts the hook",
+      "manages listener subscriptions",
+      "emits release events",
+      "preserves platform errors",
+      "isolates concurrent tags",
+    ]) {
+      assert.isTrue(
+        supplemental.caseIds.some((caseId) => caseId.includes(behavior)),
+        behavior,
+      )
+    }
     configureUpstreamSelection([])
     assert.isTrue(supplemental.selectedByUpstream)
   })

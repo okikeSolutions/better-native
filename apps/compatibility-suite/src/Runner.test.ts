@@ -42,6 +42,8 @@ const basicCase = basic.caseIds[0]
 if (basicCase === undefined) throw new Error("Basic registry case is missing")
 const battery = registry.find(({ path }) => path.endsWith("/tests/Battery.js"))
 if (battery === undefined) throw new Error("Battery registry source is missing")
+const keepAwake = registry.find(({ path }) => path.endsWith("/tests/KeepAwake.js"))
+if (keepAwake === undefined) throw new Error("KeepAwake registry source is missing")
 const network = registry.find(({ path }) => path.endsWith("/tests/Network.js"))
 if (network === undefined) throw new Error("Network registry source is missing")
 
@@ -118,38 +120,41 @@ describe("compatibility runner", () => {
     }),
   )
 
-  it.effect("runs Basic, Battery, and Network together in the interactive smoke cohort", () => {
-    const sources = [basic, battery, network].map(
-      (entry): RegistryEntry => ({
-        ...entry,
-        load: () => ({
-          name: entry.runtimeName ?? entry.path,
-          test: (jasmine: {
-            describe: (name: string, body: () => void) => void
-            it: (name: string, body: () => void) => void
-          }) => {
-            jasmine.describe(entry.runtimeName ?? entry.path, () => {
-              jasmine.it("runs", () => undefined)
-            })
-          },
-        }),
-      }),
-    )
-    return make(sources)
-      .run({ schemaVersion: 1, runId: "smoke-run", cohort: "interactive-smoke" }, tools)
-      .pipe(
-        provideLayer(configuration),
-        Effect.map((summary) => {
-          assert.lengthOf(summary.results, 3)
-          assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "passed"))
-          assert.isTrue(
-            sources.every(({ sourceId }) =>
-              summary.results.some(({ caseId }) => caseId.startsWith(`${sourceId}#`)),
-            ),
-          )
+  it.effect(
+    "runs Basic, Battery, KeepAwake, and Network together in the interactive smoke cohort",
+    () => {
+      const sources = [basic, battery, keepAwake, network].map(
+        (entry): RegistryEntry => ({
+          ...entry,
+          load: () => ({
+            name: entry.runtimeName ?? entry.path,
+            test: (jasmine: {
+              describe: (name: string, body: () => void) => void
+              it: (name: string, body: () => void) => void
+            }) => {
+              jasmine.describe(entry.runtimeName ?? entry.path, () => {
+                jasmine.it("runs", () => undefined)
+              })
+            },
+          }),
         }),
       )
-  })
+      return make(sources)
+        .run({ schemaVersion: 1, runId: "smoke-run", cohort: "interactive-smoke" }, tools)
+        .pipe(
+          provideLayer(configuration),
+          Effect.map((summary) => {
+            assert.lengthOf(summary.results, 4)
+            assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "passed"))
+            assert.isTrue(
+              sources.every(({ sourceId }) =>
+                summary.results.some(({ caseId }) => caseId.startsWith(`${sourceId}#`)),
+              ),
+            )
+          }),
+        )
+    },
+  )
 
   it.effect("runs the curated native E2E cohort without changing its membership", () => {
     const source: RegistryEntry = {

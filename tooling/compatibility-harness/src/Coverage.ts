@@ -1,18 +1,17 @@
 import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
-import * as Match from "effect/Match"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
 import ts from "typescript"
-import { ExpoRepository } from "./ExpoRepository.ts"
+import { ExpoRepository, GitRevision } from "./ExpoRepository.ts"
 import { HarnessError } from "./HarnessError.ts"
 
 type CoverageStatus =
   | "effect-api"
   | "effect-stream"
   | "expo-compat"
-  | "react-hook-pending"
+  | "intentional-divergence"
   | "missing"
 
 type CoverageEntry = {
@@ -20,26 +19,95 @@ type CoverageEntry = {
   readonly expoExport: string
   readonly status: CoverageStatus
   readonly target: string | null
+  readonly deprecated?: true
+  readonly deprecationReason?: string
+  readonly atomTarget?: string
+  readonly reason?: string
+}
+
+type TypeCoverageStatus = "effect-type" | "expo-compat-type" | "intentional-divergence" | "missing"
+
+type TypeCoverageEntry = {
+  readonly packageName: string
+  readonly expoType: string
+  readonly status: TypeCoverageStatus
+  readonly target: string | null
+  readonly reason?: string
 }
 
 type PackageSummary = {
   readonly packageName: string
   readonly expoExports: number
+  readonly deprecatedExpoApis: number
+  readonly accountedExports: number
+  readonly expoTypes: number
+  readonly accountedTypes: number
+  readonly effectTypes: number
+  readonly expoCompatTypes: number
+  readonly missingTypes: number
   readonly expoApi: number
   readonly effectApi: number
   readonly effectStream: number
   readonly reactHooks: number
   readonly effectAtoms: number
-  readonly reactHookPending: number
+  readonly intentionalDivergences: number
   readonly missing: number
-  readonly status: "complete" | "partial" | "missing"
+  readonly status: "complete" | "intentional-divergence" | "missing"
 }
 
 type CoverageReport = {
-  readonly schemaVersion: 1
+  readonly schemaVersion: 5
   readonly packages: ReadonlyArray<PackageSummary>
   readonly entries: ReadonlyArray<CoverageEntry>
+  readonly typeEntries: ReadonlyArray<TypeCoverageEntry>
 }
+
+export type TypeScriptExports = {
+  readonly valueNames: ReadonlySet<string>
+  readonly typeNames: ReadonlySet<string>
+  readonly types: ReadonlyMap<string, string>
+  readonly callable: ReadonlySet<string>
+}
+
+const TargetMapping = Schema.Struct({
+  package: Schema.String,
+  expoExport: Schema.String,
+  status: Schema.Literals(["effect-api", "effect-stream", "expo-compat"]),
+  target: Schema.String,
+  deprecated: Schema.optional(Schema.Literal(true)),
+  deprecationReason: Schema.optional(Schema.String),
+  atomTarget: Schema.optional(Schema.String),
+})
+
+const IntentionalDivergenceMapping = Schema.Struct({
+  package: Schema.String,
+  expoExport: Schema.String,
+  status: Schema.Literal("intentional-divergence"),
+  reason: Schema.String,
+})
+
+const TypeTargetMapping = Schema.Struct({
+  package: Schema.String,
+  expoType: Schema.String,
+  status: Schema.Literals(["effect-type", "expo-compat-type"]),
+  target: Schema.String,
+})
+
+const IntentionalTypeDivergenceMapping = Schema.Struct({
+  package: Schema.String,
+  expoType: Schema.String,
+  status: Schema.Literal("intentional-divergence"),
+  reason: Schema.String,
+})
+
+export const CoverageMappings = Schema.Struct({
+  schemaVersion: Schema.Literal(3),
+  expoRevision: GitRevision,
+  mappings: Schema.Array(Schema.Union([TargetMapping, IntentionalDivergenceMapping])),
+  typeMappings: Schema.Array(Schema.Union([TypeTargetMapping, IntentionalTypeDivergenceMapping])),
+})
+type CoverageMapping = Schema.Schema.Type<typeof CoverageMappings>["mappings"][number]
+type TypeCoverageMapping = Schema.Schema.Type<typeof CoverageMappings>["typeMappings"][number]
 
 const packageStem = (expoPackage: string): string => expoPackage.replace(/^expo-/, "")
 
@@ -55,76 +123,14 @@ const entrypointPath = (expoPackage: string): string =>
 const tsconfigPath = (expoPackage: string): string =>
   `packages/${packageStem(expoPackage)}/tsconfig.json`
 
-const expoValueExports = (source: string): ReadonlyArray<string> =>
-  [...source.matchAll(/^export const ([A-Za-z_$][\w$]*) = /gm)].map((match) => match[1]!).toSorted()
-
-const lowerFirst = (value: string): string =>
-  value.length === 0 ? value : `${value[0]!.toLowerCase()}${value.slice(1)}`
-
-const stripPackageToken = (value: string, expoPackage: string): string => {
-  const token = packageStem(expoPackage)
-    .split("-")
-    .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
-    .join("")
-  return value.startsWith(token) ? value.slice(token.length) : value
-}
-
-const asyncCandidates = (expoPackage: string, expoExport: string): ReadonlyArray<string> => {
-  const withoutAsync = expoExport.replace(/Async$/, "")
-  if (withoutAsync.startsWith("get")) {
-    const stem = withoutAsync.slice("get".length)
-    return [withoutAsync, `get${stripPackageToken(stem, expoPackage)}`]
-  }
-  return [withoutAsync]
-}
-
-const listenerCandidates = (expoPackage: string, expoExport: string): ReadonlyArray<string> => {
-  const eventStem = stripPackageToken(
-    expoExport.replace(/^add/, "").replace(/Listener$/, ""),
-    expoPackage,
-  )
-  return [`${lowerFirst(eventStem)}Changes`]
-}
-
-const exactCandidate = (expoExport: string): ReadonlyArray<string> => [expoExport]
-
-const candidates = (expoPackage: string, expoExport: string): ReadonlyArray<string> =>
-  Match.value(expoExport).pipe(
-    Match.when(
-      (name) => name.startsWith("use"),
-      () => exactCandidate(expoExport),
-    ),
-    Match.when(
-      (name) => name.startsWith("add") && name.endsWith("Listener"),
-      () => listenerCandidates(expoPackage, expoExport),
-    ),
-    Match.when(
-      (name) => name.endsWith("Async"),
-      () => asyncCandidates(expoPackage, expoExport),
-    ),
-    Match.orElse(() => exactCandidate(expoExport)),
-  )
-
-const statusFor = (expoExport: string, target: string | null): CoverageStatus =>
-  Match.value(expoExport).pipe(
-    Match.when(
-      (name) => name.startsWith("use") && target === null,
-      () => "react-hook-pending" as const,
-    ),
-    Match.when(
-      (name) => name.startsWith("use"),
-      () => "expo-compat" as const,
-    ),
-    Match.when(
-      () => target === null,
-      () => "missing" as const,
-    ),
-    Match.when(
-      (name) => name.startsWith("add") && name.endsWith("Listener"),
-      () => "effect-stream" as const,
-    ),
-    Match.orElse(() => "effect-api" as const),
-  )
+const expoPublicExports = (source: string) => ({
+  values: [...source.matchAll(/^export const ([A-Za-z_$][\w$]*) = /gm)]
+    .map((match) => match[1]!)
+    .toSorted(),
+  types: [...source.matchAll(/^export type ([A-Za-z_$][\w$]*) = /gm)]
+    .map((match) => match[1]!)
+    .toSorted(),
+})
 
 const loadExpoExports = Effect.fn("Coverage.loadExpoExports")(function* (expoPackage: string) {
   const repository = yield* ExpoRepository
@@ -141,7 +147,7 @@ const loadExpoExports = Effect.fn("Coverage.loadExpoExports")(function* (expoPac
         }),
     ),
   )
-  return expoValueExports(source)
+  return expoPublicExports(source)
 })
 
 const loadBetterNativeExports = Effect.fn("Coverage.loadBetterNativeExports")(function* (
@@ -178,18 +184,57 @@ const loadBetterNativeExports = Effect.fn("Coverage.loadBetterNativeExports")(fu
           ? {}
           : { projectReferences: parsed.projectReferences }),
       })
-      const source = program.getSourceFile(entryPoint)
-      const module =
-        source === undefined ? undefined : program.getTypeChecker().getSymbolAtLocation(source)
-      if (module === undefined) {
-        throw new Error(`TypeScript could not resolve ${betterNativePackage(expoPackage)}`)
+      const exportsAt = (sourcePath: string, moduleName: string): TypeScriptExports => {
+        const source = program.getSourceFile(sourcePath)
+        const checker = program.getTypeChecker()
+        if (source === undefined) {
+          throw new Error(`TypeScript could not load ${moduleName}`)
+        }
+        const module = checker.getSymbolAtLocation(source)
+        if (module === undefined) {
+          throw new Error(`TypeScript could not resolve ${moduleName}`)
+        }
+        const exportedSymbols = checker.getExportsOfModule(module)
+        const targetSymbol = (symbol: ts.Symbol) =>
+          (symbol.flags & ts.SymbolFlags.Alias) !== 0 ? checker.getAliasedSymbol(symbol) : symbol
+        return {
+          valueNames: new Set(
+            exportedSymbols.flatMap((symbol) =>
+              (targetSymbol(symbol).flags & ts.SymbolFlags.Value) !== 0 ? [symbol.name] : [],
+            ),
+          ),
+          typeNames: new Set(
+            exportedSymbols.flatMap((symbol) =>
+              (targetSymbol(symbol).flags & ts.SymbolFlags.Type) !== 0 ? [symbol.name] : [],
+            ),
+          ),
+          callable: new Set(
+            exportedSymbols.flatMap((symbol) => {
+              const type = checker.getTypeOfSymbolAtLocation(symbol, source)
+              return checker.getSignaturesOfType(type, ts.SignatureKind.Call).length > 0
+                ? [symbol.name]
+                : []
+            }),
+          ),
+          types: new Map(
+            exportedSymbols.map((symbol) => [
+              symbol.name,
+              checker.typeToString(
+                checker.getTypeOfSymbolAtLocation(symbol, source),
+                source,
+                ts.TypeFormatFlags.NoTruncation,
+              ),
+            ]),
+          ),
+        }
       }
-      return new Set(
-        program
-          .getTypeChecker()
-          .getExportsOfModule(module)
-          .map(({ name }) => name),
-      )
+      return {
+        root: exportsAt(entryPoint, betterNativePackage(expoPackage)),
+        expoCompat: exportsAt(
+          path.join(repository.root, expoCompatPath(expoPackage)),
+          `${betterNativePackage(expoPackage)}/expo`,
+        ),
+      }
     },
     catch: (cause) =>
       new HarnessError({
@@ -200,31 +245,283 @@ const loadBetterNativeExports = Effect.fn("Coverage.loadBetterNativeExports")(fu
   })
 })
 
-const coverageEntries = Effect.fn("Coverage.coverageEntries")(function* (expoPackage: string) {
+const mappingKey = (packageName: string, expoExport: string) => `${packageName}#${expoExport}`
+
+export const validateCoverageMappings = Effect.fn("Coverage.validateCoverageMappings")(function* (
+  decoded: Schema.Schema.Type<typeof CoverageMappings>,
+  expectedExpoRevision: string,
+) {
+  if (decoded.expoRevision !== expectedExpoRevision) {
+    return yield* new HarnessError({
+      operation: "validate API coverage mapping",
+      path: "compatibility/api-mappings.json",
+      cause: `Expo revision ${decoded.expoRevision} does not match pinned revision ${expectedExpoRevision}`,
+    })
+  }
+  const seen = new Set<string>()
+  const atomTargets = new Set<string>()
+  for (const mapping of decoded.mappings) {
+    const key = mappingKey(mapping.package, mapping.expoExport)
+    if (seen.has(key)) {
+      return yield* new HarnessError({
+        operation: "validate API coverage mapping",
+        path: "compatibility/api-mappings.json",
+        cause: `duplicate mapping ${key}`,
+      })
+    }
+    seen.add(key)
+    if (mapping.status === "intentional-divergence" && mapping.reason.trim().length === 0) {
+      return yield* new HarnessError({
+        operation: "validate API coverage mapping",
+        path: "compatibility/api-mappings.json",
+        cause: `missing reason for ${key}`,
+      })
+    }
+    if (mapping.status !== "intentional-divergence") {
+      if (
+        (mapping.deprecated === true &&
+          (mapping.deprecationReason === undefined ||
+            mapping.deprecationReason.trim().length === 0)) ||
+        (mapping.deprecated !== true && mapping.deprecationReason !== undefined)
+      ) {
+        return yield* new HarnessError({
+          operation: "validate API coverage mapping",
+          path: "compatibility/api-mappings.json",
+          cause: `invalid deprecation metadata for ${key}`,
+        })
+      }
+      if (mapping.atomTarget !== undefined) {
+        if (mapping.status !== "expo-compat" || !mapping.expoExport.startsWith("use")) {
+          return yield* new HarnessError({
+            operation: "validate API coverage mapping",
+            path: "compatibility/api-mappings.json",
+            cause: `atom target is only valid for an Expo-compatible hook mapping: ${key}`,
+          })
+        }
+        if (atomTargets.has(mapping.atomTarget)) {
+          return yield* new HarnessError({
+            operation: "validate API coverage mapping",
+            path: "compatibility/api-mappings.json",
+            cause: `duplicate atom target ${mapping.atomTarget}`,
+          })
+        }
+        atomTargets.add(mapping.atomTarget)
+      }
+    }
+  }
+  const seenTypes = new Set<string>()
+  for (const mapping of decoded.typeMappings) {
+    const key = mappingKey(mapping.package, mapping.expoType)
+    if (seenTypes.has(key)) {
+      return yield* new HarnessError({
+        operation: "validate API type coverage mapping",
+        path: "compatibility/api-mappings.json",
+        cause: `duplicate type mapping ${key}`,
+      })
+    }
+    seenTypes.add(key)
+    if (mapping.status === "intentional-divergence" && mapping.reason.trim().length === 0) {
+      return yield* new HarnessError({
+        operation: "validate API type coverage mapping",
+        path: "compatibility/api-mappings.json",
+        cause: `missing reason for type ${key}`,
+      })
+    }
+  }
+  return decoded
+})
+
+const loadCoverageMappings = Effect.fn("Coverage.loadCoverageMappings")(function* () {
+  const repository = yield* ExpoRepository
+  const decoded = yield* repository.readJson("compatibility/api-mappings.json", CoverageMappings)
+  return yield* validateCoverageMappings(decoded, repository.upstreams.expo.revision)
+})
+
+export const validateCoverageTarget = Effect.fn("Coverage.validateCoverageTarget")(function* (
+  expoPackage: string,
+  expoExport: string,
+  mapping: Exclude<CoverageMapping, { readonly status: "intentional-divergence" }>,
+  betterNativeExports: { readonly root: TypeScriptExports; readonly expoCompat: TypeScriptExports },
+) {
+  const key = mappingKey(expoPackage, expoExport)
+  const rootPrefix = `${betterNativePackage(expoPackage)}#`
+  const compatPrefix = `${betterNativePackage(expoPackage)}/expo#`
+  const expectedPrefix = mapping.status === "expo-compat" ? compatPrefix : rootPrefix
+  const targetExport = mapping.target.startsWith(expectedPrefix)
+    ? mapping.target.slice(expectedPrefix.length)
+    : undefined
+  const targetExists =
+    targetExport === expoExport &&
+    (mapping.status === "expo-compat"
+      ? betterNativeExports.expoCompat.valueNames.has(targetExport)
+      : betterNativeExports.root.valueNames.has(targetExport))
+  if (!targetExists) {
+    return yield* new HarnessError({
+      operation: "validate API coverage target",
+      path: "compatibility/api-mappings.json",
+      cause: `${key} maps to missing or invalid target ${mapping.target}`,
+    })
+  }
+
+  if (
+    mapping.status === "effect-stream" &&
+    targetExport !== undefined &&
+    !betterNativeExports.root.types.get(targetExport)?.includes('import("effect/Stream").Stream<')
+  ) {
+    return yield* new HarnessError({
+      operation: "validate API coverage target category",
+      path: "compatibility/api-mappings.json",
+      cause: `${key} maps to a target that is not an Effect Stream: ${mapping.target}`,
+    })
+  }
+
+  if (mapping.status === "effect-api" && targetExport !== undefined) {
+    const targetType = betterNativeExports.root.types.get(targetExport)
+    if (
+      (betterNativeExports.root.callable.has(targetExport) &&
+        !targetType?.includes('import("effect/Effect").Effect<')) ||
+      targetType?.includes('import("effect/Stream").Stream<') ||
+      targetType?.includes('import("effect/unstable/reactivity/Atom").Atom<')
+    ) {
+      return yield* new HarnessError({
+        operation: "validate API coverage target category",
+        path: "compatibility/api-mappings.json",
+        cause: `${key} maps to a target that is not an Effect value API: ${mapping.target}`,
+      })
+    }
+  }
+
+  if (mapping.atomTarget !== undefined) {
+    const atomPrefix = `${betterNativePackage(expoPackage)}#`
+    const atomExport = mapping.atomTarget.startsWith(atomPrefix)
+      ? mapping.atomTarget.slice(atomPrefix.length)
+      : undefined
+    if (
+      atomExport === undefined ||
+      !betterNativeExports.root.valueNames.has(atomExport) ||
+      !betterNativeExports.root.types
+        .get(atomExport)
+        ?.includes('import("effect/unstable/reactivity/Atom").Atom<')
+    ) {
+      return yield* new HarnessError({
+        operation: "validate API coverage atom target",
+        path: "compatibility/api-mappings.json",
+        cause: `${key} maps to missing or invalid atom target ${mapping.atomTarget}`,
+      })
+    }
+  }
+})
+
+export const validateCoverageTypeTarget = Effect.fn("Coverage.validateCoverageTypeTarget")(
+  function* (
+    expoPackage: string,
+    expoType: string,
+    mapping: Exclude<TypeCoverageMapping, { readonly status: "intentional-divergence" }>,
+    betterNativeExports: {
+      readonly root: TypeScriptExports
+      readonly expoCompat: TypeScriptExports
+    },
+  ) {
+    const key = mappingKey(expoPackage, expoType)
+    const rootPrefix = `${betterNativePackage(expoPackage)}#`
+    const compatPrefix = `${betterNativePackage(expoPackage)}/expo#`
+    const expectedPrefix = mapping.status === "expo-compat-type" ? compatPrefix : rootPrefix
+    const targetType = mapping.target.startsWith(expectedPrefix)
+      ? mapping.target.slice(expectedPrefix.length)
+      : undefined
+    const targetExists =
+      targetType === expoType &&
+      (mapping.status === "expo-compat-type"
+        ? betterNativeExports.expoCompat.typeNames.has(targetType)
+        : betterNativeExports.root.typeNames.has(targetType))
+    if (!targetExists) {
+      return yield* new HarnessError({
+        operation: "validate API type coverage target",
+        path: "compatibility/api-mappings.json",
+        cause: `${key} maps to missing or invalid type target ${mapping.target}`,
+      })
+    }
+  },
+)
+
+const coverageEntries = Effect.fn("Coverage.coverageEntries")(function* (
+  expoPackage: string,
+  mappings: ReadonlyMap<string, CoverageMapping>,
+  typeMappings: ReadonlyMap<string, TypeCoverageMapping>,
+) {
   const [expoExports, betterNativeExports] = yield* Effect.all([
     loadExpoExports(expoPackage),
     loadBetterNativeExports(expoPackage),
   ])
   return {
-    entries: expoExports.map((expoExport) => {
-      const targetExport = candidates(expoPackage, expoExport).find((candidate) =>
-        betterNativeExports.has(candidate),
-      )
-      let target: string | null = null
-      if (expoExport.startsWith("use")) {
-        target = `${betterNativePackage(expoPackage)}/expo#${expoExport}`
-      } else if (targetExport !== undefined) {
-        target = `${betterNativePackage(expoPackage)}#${targetExport}`
-      }
-      return {
-        packageName: expoPackage,
-        expoExport,
-        status: statusFor(expoExport, target),
-        target,
-      } satisfies CoverageEntry
-    }),
-    effectAtoms: [...betterNativeExports].filter((exportName) => exportName.endsWith("Atom"))
-      .length,
+    entries: yield* Effect.forEach(
+      expoExports.values,
+      (expoExport): Effect.Effect<CoverageEntry, HarnessError> => {
+        const key = mappingKey(expoPackage, expoExport)
+        const mapping = mappings.get(key)
+        if (mapping === undefined) {
+          return Effect.succeed({
+            packageName: expoPackage,
+            expoExport,
+            status: "missing" as const,
+            target: null,
+          } satisfies CoverageEntry)
+        }
+
+        const entry = {
+          packageName: expoPackage,
+          expoExport,
+          status: mapping.status,
+          target: mapping.status === "intentional-divergence" ? null : mapping.target,
+          ...(mapping.status === "intentional-divergence"
+            ? { reason: mapping.reason }
+            : {
+                ...(mapping.deprecated === true
+                  ? {
+                      deprecated: true as const,
+                      deprecationReason: mapping.deprecationReason!,
+                    }
+                  : {}),
+                ...(mapping.atomTarget === undefined ? {} : { atomTarget: mapping.atomTarget }),
+              }),
+        } satisfies CoverageEntry
+        return mapping.status === "intentional-divergence"
+          ? Effect.succeed(entry)
+          : validateCoverageTarget(expoPackage, expoExport, mapping, betterNativeExports).pipe(
+              Effect.as(entry),
+            )
+      },
+    ),
+    typeEntries: yield* Effect.forEach(
+      expoExports.types,
+      (expoType): Effect.Effect<TypeCoverageEntry, HarnessError> => {
+        const mapping = typeMappings.get(mappingKey(expoPackage, expoType))
+        if (mapping === undefined) {
+          return Effect.succeed({
+            packageName: expoPackage,
+            expoType,
+            status: "missing" as const,
+            target: null,
+          })
+        }
+        const entry = {
+          packageName: expoPackage,
+          expoType,
+          status: mapping.status,
+          target: mapping.status === "intentional-divergence" ? null : mapping.target,
+          ...(mapping.status === "intentional-divergence" ? { reason: mapping.reason } : {}),
+        } satisfies TypeCoverageEntry
+        return mapping.status === "intentional-divergence"
+          ? Effect.succeed(entry)
+          : validateCoverageTypeTarget(expoPackage, expoType, mapping, betterNativeExports).pipe(
+              Effect.as(entry),
+            )
+      },
+    ),
+    effectAtoms: expoExports.values.filter((expoExport) => {
+      const mapping = mappings.get(mappingKey(expoPackage, expoExport))
+      return mapping?.status !== "intentional-divergence" && mapping?.atomTarget !== undefined
+    }).length,
     packageName: expoPackage,
   }
 })
@@ -232,32 +529,49 @@ const coverageEntries = Effect.fn("Coverage.coverageEntries")(function* (expoPac
 const summarizePackage = (
   packageName: string,
   entries: ReadonlyArray<CoverageEntry>,
+  typeEntries: ReadonlyArray<TypeCoverageEntry>,
   effectAtoms: number,
 ): PackageSummary => {
   const count = (status: CoverageStatus) =>
     entries.filter((entry) => entry.status === status).length
   const missing = count("missing")
-  const hooks = count("expo-compat")
-  const pending = count("react-hook-pending")
+  const hooks = entries.filter(
+    (entry) => entry.status === "expo-compat" && entry.expoExport.startsWith("use"),
+  ).length
+  const missingTypes = typeEntries.filter(({ status }) => status === "missing").length
+  const intentionalDivergences =
+    count("intentional-divergence") +
+    typeEntries.filter(({ status }) => status === "intentional-divergence").length
   const expoApi = entries.filter(
     (entry) =>
       !entry.expoExport.startsWith("use") &&
       !(entry.expoExport.startsWith("add") && entry.expoExport.endsWith("Listener")),
   ).length
-  const status = Match.value({ hasMissing: missing > 0, hasPending: pending > 0 }).pipe(
-    Match.when({ hasMissing: true }, () => "missing" as const),
-    Match.when({ hasPending: true }, () => "partial" as const),
-    Match.orElse(() => "complete" as const),
-  )
+  let status: PackageSummary["status"] = "complete"
+  if (missing > 0 || missingTypes > 0) {
+    status = "missing"
+  } else if (intentionalDivergences > 0) {
+    status = "intentional-divergence"
+  }
   return {
     packageName,
     expoExports: entries.length,
+    deprecatedExpoApis: entries.filter((entry) => entry.deprecated === true).length,
+    accountedExports: entries.length - missing,
+    expoTypes: typeEntries.length,
+    accountedTypes: typeEntries.length - missingTypes,
+    effectTypes: typeEntries.filter(({ status: mappingStatus }) => mappingStatus === "effect-type")
+      .length,
+    expoCompatTypes: typeEntries.filter(
+      ({ status: mappingStatus }) => mappingStatus === "expo-compat-type",
+    ).length,
+    missingTypes,
     expoApi,
     effectApi: count("effect-api"),
     effectStream: count("effect-stream"),
     reactHooks: hooks,
     effectAtoms,
-    reactHookPending: pending,
+    intentionalDivergences,
     missing,
     status,
   }
@@ -265,15 +579,25 @@ const summarizePackage = (
 
 const summarize = (
   entries: ReadonlyArray<CoverageEntry>,
+  typeEntries: ReadonlyArray<TypeCoverageEntry>,
   atomsByPackage: ReadonlyMap<string, number>,
 ): ReadonlyArray<PackageSummary> => {
   const byPackage = new Map<string, Array<CoverageEntry>>()
+  const typesByPackage = new Map<string, Array<TypeCoverageEntry>>()
   for (const entry of entries) {
     byPackage.set(entry.packageName, [...(byPackage.get(entry.packageName) ?? []), entry])
   }
+  for (const entry of typeEntries) {
+    typesByPackage.set(entry.packageName, [...(typesByPackage.get(entry.packageName) ?? []), entry])
+  }
   return [...byPackage]
     .map(([packageName, packageEntries]) =>
-      summarizePackage(packageName, packageEntries, atomsByPackage.get(packageName) ?? 0),
+      summarizePackage(
+        packageName,
+        packageEntries,
+        typesByPackage.get(packageName) ?? [],
+        atomsByPackage.get(packageName) ?? 0,
+      ),
     )
     .toSorted((left, right) => left.packageName.localeCompare(right.packageName))
 }
@@ -302,16 +626,20 @@ const renderGrid = (
 
 const renderTable = (coverage: CoverageReport): string => {
   const summaryRows = coverage.packages.map((summary) => {
-    const betterNativeExports = summary.effectApi + summary.effectStream + summary.reactHooks
     return [
       summary.packageName,
       String(summary.expoExports),
-      String(betterNativeExports),
+      String(summary.deprecatedExpoApis),
+      String(summary.accountedExports),
+      String(summary.expoTypes),
+      String(summary.accountedTypes),
+      String(summary.missingTypes),
       String(summary.expoApi),
       String(summary.effectApi),
       String(summary.effectStream),
-      `${summary.reactHooks}/${summary.reactHooks + summary.reactHookPending}`,
+      String(summary.reactHooks),
       String(summary.effectAtoms),
+      String(summary.intentionalDivergences),
       String(summary.missing),
       summary.status,
     ]
@@ -323,12 +651,17 @@ const renderTable = (coverage: CoverageReport): string => {
       [
         "Package",
         "Expo exports",
-        "Covered exports",
+        "Deprecated APIs",
+        "Accounted",
+        "Expo types",
+        "Covered types",
+        "Missing types",
         "Expo API",
         "Effect API",
         "Streams",
         "React hooks",
         "Effect atoms",
+        "Divergences",
         "Missing",
         "Status",
       ],
@@ -389,19 +722,76 @@ const loadCoveragePackages = Effect.fn("Coverage.loadCoveragePackages")(function
     .toSorted()
 })
 
+export const validateNoStaleCoverageMappings = Effect.fn(
+  "Coverage.validateNoStaleCoverageMappings",
+)(function* (mappingEntries: ReadonlyArray<CoverageMapping>, entryKeys: ReadonlySet<string>) {
+  const staleMapping = mappingEntries.find(
+    (mapping) => !entryKeys.has(mappingKey(mapping.package, mapping.expoExport)),
+  )
+  if (staleMapping !== undefined) {
+    return yield* new HarnessError({
+      operation: "validate API coverage mapping",
+      path: "compatibility/api-mappings.json",
+      cause: `unknown mapping ${mappingKey(staleMapping.package, staleMapping.expoExport)}`,
+    })
+  }
+})
+
+export const validateNoStaleTypeCoverageMappings = Effect.fn(
+  "Coverage.validateNoStaleTypeCoverageMappings",
+)(function* (mappingEntries: ReadonlyArray<TypeCoverageMapping>, entryKeys: ReadonlySet<string>) {
+  const staleMapping = mappingEntries.find(
+    (mapping) => !entryKeys.has(mappingKey(mapping.package, mapping.expoType)),
+  )
+  if (staleMapping !== undefined) {
+    return yield* new HarnessError({
+      operation: "validate API type coverage mapping",
+      path: "compatibility/api-mappings.json",
+      cause: `unknown type mapping ${mappingKey(staleMapping.package, staleMapping.expoType)}`,
+    })
+  }
+})
+
 const makeReport = Effect.fn("Coverage.makeReport")(function* () {
-  const packages = yield* loadCoveragePackages()
-  const groups = yield* Effect.forEach(packages, coverageEntries, { concurrency: 2 })
+  const [packages, mappingConfig] = yield* Effect.all([
+    loadCoveragePackages(),
+    loadCoverageMappings(),
+  ])
+  const mappingEntries = mappingConfig.mappings
+  const typeMappingEntries = mappingConfig.typeMappings
+  const mappings = new Map(
+    mappingEntries.map((mapping) => [mappingKey(mapping.package, mapping.expoExport), mapping]),
+  )
+  const typeMappings = new Map(
+    typeMappingEntries.map((mapping) => [mappingKey(mapping.package, mapping.expoType), mapping]),
+  )
+  const groups = yield* Effect.forEach(
+    packages,
+    (packageName) => coverageEntries(packageName, mappings, typeMappings),
+    { concurrency: 2 },
+  )
   const entries = groups.flatMap((group) => group.entries)
+  const entryKeys = new Set(entries.map((entry) => mappingKey(entry.packageName, entry.expoExport)))
+  yield* validateNoStaleCoverageMappings(mappingEntries, entryKeys)
+  const typeEntries = groups.flatMap((group) => group.typeEntries)
+  const typeEntryKeys = new Set(
+    typeEntries.map((entry) => mappingKey(entry.packageName, entry.expoType)),
+  )
+  yield* validateNoStaleTypeCoverageMappings(typeMappingEntries, typeEntryKeys)
   const atomsByPackage = new Map(
     groups.map((group) => [group.packageName, group.effectAtoms] as const),
   )
   return {
-    schemaVersion: 1,
-    packages: summarize(entries, atomsByPackage),
+    schemaVersion: 5,
+    packages: summarize(entries, typeEntries, atomsByPackage),
     entries: entries.toSorted((left, right) =>
       `${left.packageName}#${left.expoExport}`.localeCompare(
         `${right.packageName}#${right.expoExport}`,
+      ),
+    ),
+    typeEntries: typeEntries.toSorted((left, right) =>
+      `${left.packageName}#${left.expoType}`.localeCompare(
+        `${right.packageName}#${right.expoType}`,
       ),
     ),
   } satisfies CoverageReport

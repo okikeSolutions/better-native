@@ -9,6 +9,7 @@ import * as Config from "../Config.ts"
 import * as Isolation from "../security/Isolation.ts"
 import * as Submission from "../security/Submission.ts"
 import * as Battery from "../tasks/Battery.ts"
+import * as KeepAwake from "../tasks/KeepAwake.ts"
 import * as Network from "../tasks/Network.ts"
 import * as PackageArtifact from "../tasks/PackageArtifact.ts"
 import * as Synthetic from "../tasks/Synthetic.ts"
@@ -19,7 +20,7 @@ const platformLayer = Layer.merge(Config.layer(repositoryRoot), NodeServices.lay
 const packageLayer = PackageArtifact.layer.pipe(Layer.provideMerge(platformLayer))
 const liveLayer = Isolation.layer.pipe(Layer.provideMerge(packageLayer))
 
-const referenceSubmission = (task: Battery.Task | Network.Task) =>
+const referenceSubmission = (task: Battery.Task | Network.Task | KeepAwake.Task) =>
   Effect.gen(function* () {
     const patch = readFileSync(`${task.root}/reference.patch`, "utf8")
     const content = yield* Submission.applySingleFilePatch(
@@ -33,10 +34,11 @@ const referenceSubmission = (task: Battery.Task | Network.Task) =>
   })
 
 describe("public submission compiler", () => {
-  it.effect("compiles the Network and Battery reference solutions", () =>
+  it.effect("compiles the Network, Battery, and Keep Awake reference solutions", () =>
     Effect.gen(function* () {
       const network = yield* Network.load
       const battery = yield* Battery.load
+      const keepAwake = yield* KeepAwake.load
       const networkResult = yield* CompileCheck.checkSubmission(
         network,
         yield* referenceSubmission(network),
@@ -45,6 +47,10 @@ describe("public submission compiler", () => {
         battery,
         yield* referenceSubmission(battery),
       )
+      const keepAwakeResult = yield* CompileCheck.checkSubmission(
+        keepAwake,
+        yield* referenceSubmission(keepAwake),
+      )
 
       assert.deepStrictEqual(networkResult, {
         status: "passed",
@@ -52,6 +58,11 @@ describe("public submission compiler", () => {
         truncated: false,
       })
       assert.deepStrictEqual(batteryResult, {
+        status: "passed",
+        diagnostics: [],
+        truncated: false,
+      })
+      assert.deepStrictEqual(keepAwakeResult, {
         status: "passed",
         diagnostics: [],
         truncated: false,
@@ -70,7 +81,7 @@ describe("public submission compiler", () => {
             content:
               'import { Battery } from "@better-native/battery"\n' +
               'import * as Stream from "effect/Stream"\n' +
-              "export const batteryLevels = Battery.levelChanges.pipe(\n" +
+              "export const batteryLevels = Battery.addBatteryLevelListener.pipe(\n" +
               "  Stream.map((event) => event.batteryLevel),\n" +
               "  Stream.provideLayer(Battery.live),\n" +
               ")\n",
@@ -124,7 +135,7 @@ describe("public submission compiler", () => {
               'import * as Effect from "effect/Effect"',
               'import * as Schema from "effect/Schema"',
               "export const NetworkSnapshot = Schema.Unknown",
-              "export const readNetwork: Effect.Effect<unknown, never, Network.NetworkService> = Network.getState",
+              "export const readNetwork: Effect.Effect<unknown, never, Network.NetworkService> = Network.getNetworkStateAsync",
             ].join("\n"),
           },
         ],

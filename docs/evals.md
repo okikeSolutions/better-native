@@ -876,6 +876,14 @@ normal completion, early downstream termination, listener cleanup, and listener-
 failure preserved as `BatteryFailure`. A fixed-value stream may reproduce happy-path values but
 still fails lifecycle and provisioning gates.
 
+### Checkpoint 4b: KeepAwake baseline — implemented
+
+The KeepAwake task consumes the packed public `@better-native/keep-awake` package against a
+controlled `expo-keep-awake` double. Its isolated scenarios cover Layer provisioning, an explicitly
+tagged lease that remains active until interruption, exactly-once scoped cleanup,
+`KeepAwakeUnavailable`, and activation failure preserved as `KeepAwakeFailure`. An unscoped lease
+may activate correctly but still fails the interruption-cleanup gate.
+
 ### Checkpoint 5: real execution and reporting — live pilot complete, human evidence pending
 
 The `openrouter-coding-agent`, bounded Effect AI toolkit and multi-turn loop, reviewed five-model
@@ -885,10 +893,11 @@ campaign plan are implemented. `checkpoint-5-smoke` declares one Network trial u
 compatible profile, DeepSeek V4 Flash 0731, with a USD 0.05 ceiling. It is the paid acceptance check
 for a valid provider response, nonzero usage and cost, complete process-authenticated evidence, and
 meaningful required-gate diagnostics. Task success remains diagnostic; infrastructure and evidence
-validity are mandatory. `checkpoint-5-diagnostic` then declares five Network trials followed by five
-Battery trials. Each of DeepSeek V4 Flash 0731, GPT-5.6 Luna, Grok 4.5, Kimi K3, and Claude Sonnet 5
-runs exactly once on each task. The full reviewed ceiling is USD 4.00; either task-only subset is USD
-2.50. The ten observations do not support model-ranking claims.
+validity are mandatory. `checkpoint-5-diagnostic` declares five Network trials, five Battery
+trials, and five KeepAwake trials. Each of DeepSeek V4 Flash 0731, GPT-5.6 Luna, Grok 4.5, Kimi K3,
+and Claude Sonnet 5 runs exactly once on each task. The full reviewed ceiling is USD 6.00; any
+task-only subset is USD 2.50. Existing paid observations predate the KeepAwake block and do not
+support model-ranking claims; paid KeepAwake execution remains pending.
 The serialized campaign ledger reserves each profile's declared maximum before execution, then
 settles a completed trial to its recorded actual provider cost. Provider failures or missing cost
 retain the conservative reservation, and the next trial still fails fast if it cannot fit beneath
@@ -1060,9 +1069,10 @@ this baseline does not mislabel its local HMAC as that facility.
 The first paid live campaign is preserved byte-for-byte under `evals/baselines/` as a historical
 blind diagnostic. It is not an accepted performance baseline: four provider attempts failed at the
 infrastructure boundary and none of the six infrastructure-valid trials passed every required task
-gate. Until both tasks have a valid blind pilot and the infrastructure has survived repeated
-real-adapter runs, there is no model success-rate claim and no pull-request threshold derived from
-agent performance.
+gate. Network and Battery now have later paid pilot evidence, while KeepAwake has deterministic
+coverage but no paid campaign result yet. Until every current task has valid blind evidence and the
+infrastructure has survived repeated real-adapter runs, there is no model success-rate claim and no
+pull-request threshold derived from agent performance.
 
 ### Next evidence milestones — pending
 

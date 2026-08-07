@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 2,
+  "taskType": "keep-awake",
+  "id": "keep-awake",
+  "version": "1",
+  "allowedSubmissionPaths": ["src/HoldScreenAwake.ts"],
+  "entrypoint": "src/HoldScreenAwake.ts",
+  "exportName": "holdScreenAwake",
+  "publicCompileContract": {
+    "kind": "effect-no-requirements",
+    "exportName": "holdScreenAwake"
+  },
+  "publicPackages": ["@better-native/keep-awake"]
+}

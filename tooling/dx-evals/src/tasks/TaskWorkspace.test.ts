@@ -10,6 +10,7 @@ import * as Isolation from "../security/Isolation.ts"
 import * as Submission from "../security/Submission.ts"
 import { exportTask, makeAgentWorkspaceSeed, materializeCandidate } from "./TaskWorkspace.ts"
 import * as Battery from "./Battery.ts"
+import * as KeepAwake from "./KeepAwake.ts"
 import * as Network from "./Network.ts"
 import * as PackageArtifact from "./PackageArtifact.ts"
 import * as Synthetic from "./Synthetic.ts"
@@ -203,6 +204,71 @@ describe("Battery task boundary", () => {
           assert.isFalse(existsSync(`${workspace.root}/node_modules/@better-native/battery/src`))
         }),
       ).pipe(provideLayer(baseLayer)),
+  )
+})
+
+describe("Keep Awake task boundary", () => {
+  it.effect("rejects duplicate grader scenarios", () =>
+    Effect.gen(function* () {
+      const result = yield* Effect.exit(
+        KeepAwake.validateScenarioIds([
+          "active-until-interrupt",
+          "unavailable",
+          "activation-failure",
+          "activation-failure",
+        ]),
+      )
+      assert.strictEqual(result._tag, "Failure")
+    }),
+  )
+
+  it.effect("exports only the Keep Awake fixture and public package identity", () =>
+    Effect.gen(function* () {
+      const task = yield* KeepAwake.load
+      const taskExport = exportTask(task)
+      assert.deepStrictEqual(
+        taskExport.files.map((file) => file.path),
+        ["instruction.md", "task.json", "fixture/src/HoldScreenAwake.ts"],
+      )
+      assert.deepStrictEqual(taskExport.publicPackages, ["@better-native/keep-awake"])
+    }).pipe(provideLayer(baseLayer)),
+  )
+
+  it.effect("binds the Keep Awake double into private evaluator evidence", () =>
+    Effect.gen(function* () {
+      const task = yield* KeepAwake.load
+      const paths = task.evaluatorBundle.map((file) => String(file.path))
+      assert.include(paths, "tooling/dx-evals/fixtures/expo-keep-awake/package.json")
+      assert.include(paths, "tooling/dx-evals/fixtures/expo-keep-awake/index.js")
+      assert.include(paths, "tooling/dx-evals/fixtures/expo-keep-awake/index.d.ts")
+      assert.include(paths, "tooling/dx-evals/runner/observe-keep-awake.ts")
+      assert.include(paths, "tooling/dx-evals/runner/worker-keep-awake.ts")
+    }).pipe(provideLayer(baseLayer)),
+  )
+
+  it.effect("gives agents the packed Keep Awake declaration graph", () =>
+    Effect.gen(function* () {
+      const task = yield* KeepAwake.load
+      const seed = yield* makeAgentWorkspaceSeed(task)
+      const paths = seed.files.map((file) => String(file.path))
+      const declarations = seed.files.find((file) => file.path.endsWith("build/index.d.ts"))
+
+      assert.deepStrictEqual(
+        paths.filter((path) => !path.startsWith("node_modules/effect/")),
+        [
+          "instruction.md",
+          "task.json",
+          "src/HoldScreenAwake.ts",
+          "public-packages/@better-native/keep-awake/package.json",
+          "public-packages/@better-native/keep-awake/build/Expo.d.ts",
+          "public-packages/@better-native/keep-awake/build/KeepAwake.d.ts",
+          "public-packages/@better-native/keep-awake/build/index.d.ts",
+        ],
+      )
+      assert.include(declarations?.content ?? "", 'export * as KeepAwake from "./KeepAwake.ts"')
+      assert.isTrue(seed.packageDigests.has("@better-native/keep-awake"))
+      assert.isFalse(paths.some((path) => path.endsWith(".js") || path.endsWith(".js.map")))
+    }).pipe(provideLayer(baseLayer)),
   )
 })
 

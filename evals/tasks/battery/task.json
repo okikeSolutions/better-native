@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "taskType": "battery",
   "id": "battery",
-  "version": "1",
+  "version": "2",
   "allowedSubmissionPaths": ["src/ObserveBattery.ts"],
   "entrypoint": "src/ObserveBattery.ts",
   "exportName": "batteryLevels",

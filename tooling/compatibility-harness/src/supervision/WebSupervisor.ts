@@ -5,6 +5,7 @@ import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Exit from "effect/Exit"
 import * as Layer from "effect/Layer"
+import * as Match from "effect/Match"
 import * as Schedule from "effect/Schedule"
 import * as Schema from "effect/Schema"
 import {
@@ -288,6 +289,9 @@ export class BrowserDriver extends Context.Service<BrowserDriver, BrowserDriverS
 ) {}
 
 const clipboardSourceId = "expo-app-suite#apps/test-suite/tests/Clipboard.js"
+const keepAwakeSourceId = "expo-app-suite#apps/test-suite/tests/KeepAwake.js"
+const keepAwakeCapabilitySourceId =
+  "better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts"
 
 /**
  * Returns browser permissions required by one known Expo source.
@@ -296,7 +300,11 @@ const clipboardSourceId = "expo-app-suite#apps/test-suite/tests/Clipboard.js"
  * @returns Permission names to grant before the browser run.
  */
 export const browserPermissionsForSource = (sourceId: string): ReadonlyArray<string> =>
-  sourceId === clipboardSourceId ? ["clipboard-read", "clipboard-write"] : []
+  Match.value(sourceId).pipe(
+    Match.when(clipboardSourceId, () => ["clipboard-read", "clipboard-write"]),
+    Match.whenOr(keepAwakeSourceId, keepAwakeCapabilitySourceId, () => ["screen-wake-lock"]),
+    Match.orElse(() => []),
+  )
 
 /**
  * Builds the Playwright driver with the harness browser policy.

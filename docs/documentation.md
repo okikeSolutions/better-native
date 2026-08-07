@@ -74,12 +74,13 @@ Every DX trial must record the exact instruction, declarations, generated refere
 handwritten guides exposed to the participant or agent. Changing that bundle changes the evaluated
 condition and requires a new baseline.
 
-The current deterministic Network and Battery tasks expose their instructions and built public
-declarations while withholding package source, reference patches, native doubles, and graders. A
-versioned generated-reference and handwritten-guide bundle has not yet been integrated into those
-tasks. Until it is, the task results test the declared instruction and public type surface rather
-than the discoverability of the complete documentation system. Paid diagnostic runs are recorded,
-but accepted performance baselines and human blind pilots remain pending, as recorded in
+The current deterministic Network, Battery, and KeepAwake tasks expose their instructions and built
+public declarations while withholding package source, reference patches, native doubles, and
+graders. A versioned generated-reference and handwritten-guide bundle has not yet been integrated
+into those tasks. Until it is, the task results test the declared instruction and public type
+surface rather than the discoverability of the complete documentation system. Paid Network and
+Battery diagnostic runs are recorded; paid KeepAwake execution, accepted performance baselines, and
+human blind pilots remain pending, as recorded in
 [the evaluation contract](./evals.md).
 
 ## Handwritten guides

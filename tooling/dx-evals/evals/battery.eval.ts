@@ -11,7 +11,7 @@ afterAll(disposeDxEvalRuntime)
 const input = {
   schemaVersion: 1,
   taskId: "battery",
-  taskVersion: "1",
+  taskVersion: "2",
 } as const
 const suiteRunId =
   process.env.BETTER_NATIVE_EVAL_RUN_ID ??
@@ -21,7 +21,7 @@ const trialRunId = (caseName: string) =>
 
 describeEval("Battery", { harness: dxHarness }, (it) => {
   it("passes the packed-package reference across every required gate", async ({ run }) => {
-    const runId = await trialRunId("battery-reference-1")
+    const runId = await trialRunId("battery-reference-2")
     const result = await run({ ...input, runId, adapterId: "reference" })
     const outcome = decodeTrialOutcomeSync(result.output)
 
@@ -42,7 +42,7 @@ describeEval("Battery", { harness: dxHarness }, (it) => {
   })
 
   it("rejects the no-op stream", async ({ run }) => {
-    const runId = await trialRunId("battery-noop-1")
+    const runId = await trialRunId("battery-noop-2")
     const result = await run({ ...input, runId, adapterId: "noop" })
     const outcome = decodeTrialOutcomeSync(result.output)
 
@@ -62,7 +62,7 @@ describeEval("Battery", { harness: dxHarness }, (it) => {
   })
 
   it("rejects a fixed stream that bypasses the scoped Battery layer", async ({ run }) => {
-    const runId = await trialRunId("battery-broken-1")
+    const runId = await trialRunId("battery-broken-2")
     const result = await run({ ...input, runId, adapterId: "broken" })
     const outcome = decodeTrialOutcomeSync(result.output)
     const lifecycle = outcome.requiredGates.find(

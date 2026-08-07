@@ -60,7 +60,9 @@ describe("@better-native/battery", () => {
       }),
     )
 
-    const result = await Effect.runPromise(Battery.getPowerState.pipe(provideLayer(TestBattery)))
+    const result = await Effect.runPromise(
+      Battery.getPowerStateAsync.pipe(provideLayer(TestBattery)),
+    )
 
     expect(result).toEqual({
       batteryLevel: 0.82,
@@ -70,8 +72,8 @@ describe("@better-native/battery", () => {
   })
 
   it("exports Effect atoms for React integrations", () => {
-    expect(Battery.levelAtom).toBeDefined()
-    expect(Battery.stateAtom).toBeDefined()
+    expect(Battery.batteryLevelAtom).toBeDefined()
+    expect(Battery.batteryStateAtom).toBeDefined()
     expect(Battery.lowPowerModeAtom).toBeDefined()
     expect(Battery.powerStateAtom).toBeDefined()
   })
@@ -97,7 +99,7 @@ describe("@better-native/battery", () => {
     )
 
     await expect(
-      Effect.runPromise(Battery.isAvailable.pipe(provideLayer(TestBattery))),
+      Effect.runPromise(Battery.isAvailableAsync.pipe(provideLayer(TestBattery))),
     ).resolves.toBe(true)
   })
 
@@ -105,7 +107,7 @@ describe("@better-native/battery", () => {
     vi.mocked(ExpoBattery.isBatteryOptimizationEnabledAsync).mockResolvedValueOnce(true)
 
     await expect(
-      Effect.runPromise(Battery.isBatteryOptimizationEnabled.pipe(provideLayer(Battery.live))),
+      Effect.runPromise(Battery.isBatteryOptimizationEnabledAsync.pipe(provideLayer(Battery.live))),
     ).resolves.toBe(true)
   })
 
@@ -122,7 +124,9 @@ describe("@better-native/battery", () => {
       }),
     )
 
-    const exit = await Effect.runPromiseExit(Battery.getPowerState.pipe(provideLayer(Battery.live)))
+    const exit = await Effect.runPromiseExit(
+      Battery.getPowerStateAsync.pipe(provideLayer(Battery.live)),
+    )
 
     expect(exit._tag).toBe("Failure")
     if (exit._tag === "Failure") {
@@ -161,7 +165,11 @@ describe("@better-native/battery", () => {
     )
 
     const result = await Effect.runPromise(
-      Battery.levelChanges.pipe(Stream.take(1), Stream.runCollect, provideLayer(TestBattery)),
+      Battery.addBatteryLevelListener.pipe(
+        Stream.take(1),
+        Stream.runCollect,
+        provideLayer(TestBattery),
+      ),
     )
 
     expect(Array.from(result)).toEqual([{ batteryLevel: 0.82 }])
@@ -175,7 +183,11 @@ describe("@better-native/battery", () => {
     })
 
     const result = await Effect.runPromise(
-      Battery.levelChanges.pipe(Stream.take(1), Stream.runCollect, provideLayer(Battery.live)),
+      Battery.addBatteryLevelListener.pipe(
+        Stream.take(1),
+        Stream.runCollect,
+        provideLayer(Battery.live),
+      ),
     )
 
     expect(Array.from(result)).toEqual([{ batteryLevel: 0.82 }])
@@ -190,7 +202,7 @@ describe("@better-native/battery", () => {
         vi.mocked(ExpoBattery.addBatteryLevelListener).mockImplementationOnce(() => {
           throw new Error("addBatteryLevelListener failed")
         })
-        return Battery.levelChanges.pipe(
+        return Battery.addBatteryLevelListener.pipe(
           Stream.take(1),
           Stream.runDrain,
           provideLayer(Battery.live),
@@ -204,7 +216,7 @@ describe("@better-native/battery", () => {
         vi.mocked(ExpoBattery.addBatteryStateListener).mockImplementationOnce(() => {
           throw new Error("addBatteryStateListener failed")
         })
-        return Battery.stateChanges.pipe(
+        return Battery.addBatteryStateListener.pipe(
           Stream.take(1),
           Stream.runDrain,
           provideLayer(Battery.live),
@@ -218,7 +230,7 @@ describe("@better-native/battery", () => {
         vi.mocked(ExpoBattery.addLowPowerModeListener).mockImplementationOnce(() => {
           throw new Error("addLowPowerModeListener failed")
         })
-        return Battery.lowPowerModeChanges.pipe(
+        return Battery.addLowPowerModeListener.pipe(
           Stream.take(1),
           Stream.runDrain,
           provideLayer(Battery.live),
@@ -276,14 +288,14 @@ describe("@better-native/battery", () => {
     })
     const registry = AtomRegistry.make()
     const cancel = [
-      registry.mount(Battery.levelAtom),
-      registry.mount(Battery.stateAtom),
+      registry.mount(Battery.batteryLevelAtom),
+      registry.mount(Battery.batteryStateAtom),
       registry.mount(Battery.lowPowerModeAtom),
       registry.mount(Battery.powerStateAtom),
     ]
     const values = {
-      level: () => AsyncResult.getOrThrow(registry.get(Battery.levelAtom)),
-      state: () => AsyncResult.getOrThrow(registry.get(Battery.stateAtom)),
+      level: () => AsyncResult.getOrThrow(registry.get(Battery.batteryLevelAtom)),
+      state: () => AsyncResult.getOrThrow(registry.get(Battery.batteryStateAtom)),
       lowPowerMode: () => AsyncResult.getOrThrow(registry.get(Battery.lowPowerModeAtom)),
       powerState: () => AsyncResult.getOrThrow(registry.get(Battery.powerStateAtom)),
     }

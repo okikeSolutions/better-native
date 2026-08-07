@@ -19,6 +19,15 @@
       "replacement": "@better-native/network/expo",
       "reason": "Bootstrap candidate routing through the @better-native/network Expo-compatible entrypoint before individual exports are promoted to effect ownership.",
       "issue": "bootstrap-network"
+    },
+    {
+      "package": "expo-keep-awake",
+      "subpath": ".",
+      "export": null,
+      "status": "effect",
+      "replacement": "@better-native/keep-awake/expo",
+      "reason": "Better Native owns the complete eight-export KeepAwake JavaScript contract with exact-name Effect APIs and an Expo-compatible entrypoint. Paired upstream/candidate evidence passes all reviewed cases on iOS, Android, and web with zero divergences; Expo remains the native capability provider behind the live layer.",
+      "issue": "promote-keep-awake-effect-ownership"
     }
   ]
 }

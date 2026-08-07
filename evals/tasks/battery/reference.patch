@@ -5,7 +5,7 @@
  import * as Stream from "effect/Stream"
  
 -export const batteryLevels = Stream.empty
-+export const batteryLevels = Battery.levelChanges.pipe(
++export const batteryLevels = Battery.addBatteryLevelListener.pipe(
 +  Stream.map((event) => event.batteryLevel),
 +  Stream.provide(Battery.live),
 +)

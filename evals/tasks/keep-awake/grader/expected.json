@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    { "id": "active-until-interrupt" },
+    { "id": "unavailable" },
+    { "id": "activation-failure" }
+  ]
+}

@@ -10,8 +10,8 @@ describe("reviewed eval campaigns", () => {
       const plan = yield* Campaigns.makePlan(campaign, "all")
 
       assert.strictEqual(plan.execution, "serialized")
-      assert.strictEqual(plan.trialCount, 10)
-      assert.strictEqual(plan.maximumCampaignCostUsd, 4)
+      assert.strictEqual(plan.trialCount, 15)
+      assert.strictEqual(plan.maximumCampaignCostUsd, 6)
       assert.strictEqual(Campaigns.reviewedMaximumKeyLimitUsd, 8)
       assert.deepStrictEqual(
         plan.trials.map(({ taskId }) => taskId),
@@ -26,6 +26,11 @@ describe("reviewed eval campaigns", () => {
           "battery",
           "battery",
           "battery",
+          "keep-awake",
+          "keep-awake",
+          "keep-awake",
+          "keep-awake",
+          "keep-awake",
         ],
       )
       assert.deepStrictEqual(
@@ -34,6 +39,7 @@ describe("reviewed eval campaigns", () => {
       )
       assert.strictEqual(plan.trials.filter(({ taskId }) => taskId === "network").length, 5)
       assert.strictEqual(plan.trials.filter(({ taskId }) => taskId === "battery").length, 5)
+      assert.strictEqual(plan.trials.filter(({ taskId }) => taskId === "keep-awake").length, 5)
     }),
   )
 
@@ -42,13 +48,17 @@ describe("reviewed eval campaigns", () => {
       const campaign = yield* Campaigns.get(Campaigns.defaultCampaignId)
       const network = yield* Campaigns.makePlan(campaign, "network")
       const battery = yield* Campaigns.makePlan(campaign, "battery")
+      const keepAwake = yield* Campaigns.makePlan(campaign, "keep-awake")
 
       assert.strictEqual(network.trialCount, 5)
       assert.strictEqual(battery.trialCount, 5)
+      assert.strictEqual(keepAwake.trialCount, 5)
       assert.strictEqual(network.maximumCampaignCostUsd, 2.5)
       assert.strictEqual(battery.maximumCampaignCostUsd, 2.5)
+      assert.strictEqual(keepAwake.maximumCampaignCostUsd, 2.5)
       assert.isTrue(network.trials.every(({ taskId }) => taskId === "network"))
       assert.isTrue(battery.trials.every(({ taskId }) => taskId === "battery"))
+      assert.isTrue(keepAwake.trials.every(({ taskId }) => taskId === "keep-awake"))
     }),
   )
 

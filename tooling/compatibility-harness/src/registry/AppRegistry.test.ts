@@ -51,6 +51,27 @@ describe("AppRegistry", () => {
     }).pipe(provideLayer(NodeServices.layer)),
   )
 
+  it.effect(
+    "selects the supplemental KeepAwake capability without expanding the native cohort",
+    () =>
+      Effect.gen(function* () {
+        const metadata = yield* AppRegistry.loadMetadata()
+        const sourceId =
+          "better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts"
+        assert.isFalse(
+          AppRegistry.appExecutionUnits(metadata, "ios").some((unit) => unit.sourceId === sourceId),
+        )
+        assert.strictEqual(
+          AppRegistry.appExecutionUnitForSource(metadata, "ios", sourceId)?.sourceId,
+          sourceId,
+        )
+        assert.strictEqual(
+          AppRegistry.appExecutionUnitForSource(metadata, "android", sourceId)?.sourceId,
+          sourceId,
+        )
+      }).pipe(provideLayer(NodeServices.layer)),
+  )
+
   it.effect("balances native shards by case count without changing curated membership", () =>
     Effect.gen(function* () {
       const metadata = yield* AppRegistry.loadMetadata()

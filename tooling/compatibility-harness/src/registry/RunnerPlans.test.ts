@@ -20,7 +20,8 @@ describe("generated runner plan ledger", () => {
           .map(({ sourceId }) => sourceId),
       )
       const ledger = RunnerPlans.make(corpus, app)
-      assert.strictEqual(ledger.entries.length + app.size, corpus.sources.length)
+      const corpusAppSources = corpus.sources.filter(({ id }) => app.has(id))
+      assert.strictEqual(ledger.entries.length + corpusAppSources.length, corpus.sources.length)
       assert.deepEqual(RunnerPlans.issues(corpus, ledger, app), [])
       assert.isTrue(
         ledger.entries.every((entry) =>

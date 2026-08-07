@@ -1,11 +1,15 @@
 {
   "schemaVersion": 1,
   "expoRevision": "534c99966e34580f56242eb92aac7689b9089cc7",
-  "ownershipFingerprint": "dbf4cf3483f5347423b87d50b727cfc619ba3ac9c8efe54fef1f21899806e356",
+  "ownershipFingerprint": "b3bb37da463b189a65e99b6066afa47e2b3bce49c9b4e4c34bf9f40061c6d9d2",
   "replacements": [
     {
       "source": "expo-battery",
       "target": "@better-native/battery/expo"
+    },
+    {
+      "source": "expo-keep-awake",
+      "target": "@better-native/keep-awake/expo"
     },
     {
       "source": "expo-network",

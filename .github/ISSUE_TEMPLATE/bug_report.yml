@@ -1,0 +1,101 @@
+name: Bug report
+description: Report a reproducible problem in better-native.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve better-native. Please search existing issues before filing a new one and share the smallest reproduction you can.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the project is affected?
+      options:
+        - Effect-native package API
+        - Expo compatibility or behavior
+        - Metro or module resolution
+        - Compatibility suite or harness
+        - Developer-experience evals
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: package
+    attributes:
+      label: Package or component
+      description: Name the affected package, tool, or app if known.
+      placeholder: "@better-native/network"
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Problem
+      description: What happened, and what did you expect instead?
+      placeholder: |
+        Actual behavior:
+        Expected behavior:
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Provide a minimal repository, code sample, or exact sequence of commands and actions.
+      placeholder: |
+        1. Install ...
+        2. Run ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      multiple: true
+      options:
+        - iOS
+        - Android
+        - Web
+        - Node.js or tooling
+        - Platform-independent
+    validations:
+      required: true
+
+  - type: textarea
+    id: versions
+    attributes:
+      label: Versions and environment
+      description: Include better-native, Expo/React Native, Bun or Node, OS, and device or browser versions where relevant.
+      render: shell
+      placeholder: |
+        better-native:
+        Expo / React Native:
+        Bun / Node:
+        OS:
+        Device / simulator / browser:
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or additional context
+      description: Paste relevant logs, screenshots, compatibility evidence, or other context. Remove secrets and personal information.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues and did not find a duplicate.
+          required: true
+        - label: I removed secrets and personal information from the reproduction and logs.
+          required: true

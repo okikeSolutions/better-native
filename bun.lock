@@ -27,6 +27,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@better-native/battery": "workspace:*",
+        "@better-native/keep-awake": "workspace:*",
         "@better-native/metro": "workspace:*",
         "@better-native/network": "workspace:*",
         "@expo/html-elements": "57.0.0",
@@ -152,6 +153,24 @@
       "peerDependencies": {
         "expo": ">=57.0.0 <58.0.0",
         "expo-battery": ">=57.0.0 <58.0.0",
+        "react": ">=19.0.0",
+      },
+    },
+    "packages/keep-awake": {
+      "name": "@better-native/keep-awake",
+      "version": "0.0.0",
+      "dependencies": {
+        "effect": "4.0.0-beta.102",
+      },
+      "devDependencies": {
+        "@effect/docgen": "4.0.0-beta.102",
+        "expo": "57.0.9",
+        "expo-keep-awake": "57.0.1",
+        "react": "19.2.3",
+      },
+      "peerDependencies": {
+        "expo": ">=57.0.0 <58.0.0",
+        "expo-keep-awake": ">=57.0.0 <58.0.0",
         "react": ">=19.0.0",
       },
     },
@@ -533,6 +552,8 @@
     "@better-native/dx-evals": ["@better-native/dx-evals@workspace:tooling/dx-evals"],
 
     "@better-native/expo-catalog": ["@better-native/expo-catalog@workspace:tooling/expo-catalog"],
+
+    "@better-native/keep-awake": ["@better-native/keep-awake@workspace:packages/keep-awake"],
 
     "@better-native/metro": ["@better-native/metro@workspace:packages/metro"],
 

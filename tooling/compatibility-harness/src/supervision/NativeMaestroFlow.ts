@@ -22,6 +22,8 @@ export const make = (request: NativeRunRequest): string => {
   const link = `better-native://run?${new URLSearchParams({
     runId: request.id,
     source: request.unit.sourceId,
+    mode: request.build.record.mode,
+    buildId: request.build.record.id,
   }).toString()}`
   return [
     `appId: ${request.device.applicationId}`,
@@ -56,6 +58,8 @@ export const makeBatch = (request: NativeBatchRequest): string => {
   const link = `better-native://run?${new URLSearchParams({
     runId: request.id,
     sources: request.units.map(({ sourceId }) => encodeSourceId(sourceId)).join(","),
+    mode: request.build.record.mode,
+    buildId: request.build.record.id,
   }).toString()}`
   return [
     `appId: ${request.device.applicationId}`,

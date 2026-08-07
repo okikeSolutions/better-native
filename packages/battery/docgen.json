@@ -1,5 +1,6 @@
 {
   "$schema": "../../node_modules/@effect/docgen/schema.json",
+  "outDir": "../../.artifacts/docs/api/battery",
   "srcLink": "https://github.com/okikeSolutions/better-native/tree/main/packages/battery/src/",
   "exclude": ["src/Expo.ts", "src/index.ts"],
   "enforceDescriptions": true,

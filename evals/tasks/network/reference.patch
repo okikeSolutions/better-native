@@ -23,7 +23,7 @@
 +])
  
 -export const readNetwork = Effect.succeed({ status: "not-implemented" })
-+export const readNetwork = Network.getState.pipe(
++export const readNetwork = Network.getNetworkStateAsync.pipe(
 +  Effect.map((state) => ({ status: "available" as const, state })),
 +  Effect.catch((error) =>
 +    Match.value(error).pipe(

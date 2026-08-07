@@ -38,7 +38,7 @@ export const PowerState = Schema.Struct({
 })
 
 /**
- * Power-state snapshot returned by {@link getPowerState}.
+ * Power-state snapshot returned by {@link getPowerStateAsync}.
  *
  * @category models
  * @since 0.0.0
@@ -139,7 +139,7 @@ const getPowerStateFromExpoParts = method(
  * @category readings
  * @since 0.0.0
  */
-export const isAvailable = Effect.flatMap(Battery, (battery) => battery.isAvailable)
+export const isAvailableAsync = Effect.flatMap(Battery, (battery) => battery.isAvailable)
 
 /**
  * Reads the current battery level as a number from `0` to `1`.
@@ -149,7 +149,7 @@ export const isAvailable = Effect.flatMap(Battery, (battery) => battery.isAvaila
  * @category readings
  * @since 0.0.0
  */
-export const getLevel = Effect.flatMap(Battery, (battery) => battery.getLevel)
+export const getBatteryLevelAsync = Effect.flatMap(Battery, (battery) => battery.getLevel)
 
 /**
  * Reads the current battery state.
@@ -159,7 +159,7 @@ export const getLevel = Effect.flatMap(Battery, (battery) => battery.getLevel)
  * @category readings
  * @since 0.0.0
  */
-export const getState = Effect.flatMap(Battery, (battery) => battery.getState)
+export const getBatteryStateAsync = Effect.flatMap(Battery, (battery) => battery.getState)
 
 /**
  * Checks whether low-power mode is currently enabled.
@@ -169,7 +169,7 @@ export const getState = Effect.flatMap(Battery, (battery) => battery.getState)
  * @category readings
  * @since 0.0.0
  */
-export const isLowPowerModeEnabled = Effect.flatMap(
+export const isLowPowerModeEnabledAsync = Effect.flatMap(
   Battery,
   (battery) => battery.isLowPowerModeEnabled,
 )
@@ -182,7 +182,7 @@ export const isLowPowerModeEnabled = Effect.flatMap(
  * @category readings
  * @since 0.0.0
  */
-export const isBatteryOptimizationEnabled = Effect.flatMap(
+export const isBatteryOptimizationEnabledAsync = Effect.flatMap(
   Battery,
   (battery) => battery.isBatteryOptimizationEnabled,
 )
@@ -196,7 +196,7 @@ export const isBatteryOptimizationEnabled = Effect.flatMap(
  * @category readings
  * @since 0.0.0
  */
-export const getPowerState = Effect.flatMap(Battery, (battery) => battery.getPowerState)
+export const getPowerStateAsync = Effect.flatMap(Battery, (battery) => battery.getPowerState)
 
 /**
  * Streams battery-level change events.
@@ -206,7 +206,9 @@ export const getPowerState = Effect.flatMap(Battery, (battery) => battery.getPow
  * @category streams
  * @since 0.0.0
  */
-export const levelChanges = Stream.unwrap(Effect.map(Battery, (battery) => battery.levelChanges))
+export const addBatteryLevelListener = Stream.unwrap(
+  Effect.map(Battery, (battery) => battery.levelChanges),
+)
 
 /**
  * Streams battery-state change events.
@@ -216,7 +218,9 @@ export const levelChanges = Stream.unwrap(Effect.map(Battery, (battery) => batte
  * @category streams
  * @since 0.0.0
  */
-export const stateChanges = Stream.unwrap(Effect.map(Battery, (battery) => battery.stateChanges))
+export const addBatteryStateListener = Stream.unwrap(
+  Effect.map(Battery, (battery) => battery.stateChanges),
+)
 
 /**
  * Streams low-power-mode change events.
@@ -226,7 +230,7 @@ export const stateChanges = Stream.unwrap(Effect.map(Battery, (battery) => batte
  * @category streams
  * @since 0.0.0
  */
-export const lowPowerModeChanges = Stream.unwrap(
+export const addLowPowerModeListener = Stream.unwrap(
   Effect.map(Battery, (battery) => battery.lowPowerModeChanges),
 )
 
@@ -305,10 +309,10 @@ export const live = Layer.succeed(
  * @category atoms
  * @since 0.0.0
  */
-export const levelAtom = Atom.make(
+export const batteryLevelAtom = Atom.make(
   Stream.merge(
-    Stream.fromEffect(getLevel),
-    Stream.map(levelChanges, (event) => event.batteryLevel),
+    Stream.fromEffect(getBatteryLevelAsync),
+    Stream.map(addBatteryLevelListener, (event) => event.batteryLevel),
   ).pipe(Stream.provide(live)),
   { initialValue: -1 },
 )
@@ -322,10 +326,10 @@ export const levelAtom = Atom.make(
  * @category atoms
  * @since 0.0.0
  */
-export const stateAtom = Atom.make(
+export const batteryStateAtom = Atom.make(
   Stream.merge(
-    Stream.fromEffect(getState),
-    Stream.map(stateChanges, (event) => event.batteryState),
+    Stream.fromEffect(getBatteryStateAsync),
+    Stream.map(addBatteryStateListener, (event) => event.batteryState),
   ).pipe(Stream.provide(live)),
   { initialValue: BatteryState.UNKNOWN },
 )
@@ -341,8 +345,8 @@ export const stateAtom = Atom.make(
  */
 export const lowPowerModeAtom = Atom.make(
   Stream.merge(
-    Stream.fromEffect(isLowPowerModeEnabled),
-    Stream.map(lowPowerModeChanges, (event) => event.lowPowerMode),
+    Stream.fromEffect(isLowPowerModeEnabledAsync),
+    Stream.map(addLowPowerModeListener, (event) => event.lowPowerMode),
   ).pipe(Stream.provide(live)),
   { initialValue: false },
 )
@@ -365,15 +369,21 @@ const initialPowerState: PowerState = {
 const powerStateChanges = Stream.merge(
   Stream.merge(
     Stream.merge(
-      Stream.map(Stream.fromEffect(getPowerState), (value) => ({
+      Stream.map(Stream.fromEffect(getPowerStateAsync), (value) => ({
         _tag: "snapshot" as const,
         value,
       })),
-      Stream.map(levelChanges, (event) => ({ _tag: "level" as const, value: event.batteryLevel })),
+      Stream.map(addBatteryLevelListener, (event) => ({
+        _tag: "level" as const,
+        value: event.batteryLevel,
+      })),
     ),
-    Stream.map(stateChanges, (event) => ({ _tag: "state" as const, value: event.batteryState })),
+    Stream.map(addBatteryStateListener, (event) => ({
+      _tag: "state" as const,
+      value: event.batteryState,
+    })),
   ),
-  Stream.map(lowPowerModeChanges, (event) => ({
+  Stream.map(addLowPowerModeListener, (event) => ({
     _tag: "lowPowerMode" as const,
     value: event.lowPowerMode,
   })),
@@ -389,6 +399,16 @@ const powerStateChanges = Stream.merge(
   }),
 )
 
+/**
+ * Atom containing the combined battery level, battery state, and low-power-mode snapshot.
+ *
+ * React applications can consume this atom with `@effect/atom-react`. The atom begins with the
+ * documented unknown snapshot, applies the first native read, and then updates individual fields
+ * from their corresponding native event streams.
+ *
+ * @category atoms
+ * @since 0.0.0
+ */
 export const powerStateAtom = Atom.make(powerStateChanges.pipe(Stream.provide(live)), {
   initialValue: initialPowerState,
 })

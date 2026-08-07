@@ -7,7 +7,7 @@ Export:
 
 - `NetworkSnapshot`, an Effect Schema for the output contract below; and
 - `readNetwork`, one Effect operation that reads the current network state through
-  `Network.getState` and has `Network.live` already provided. The exported Effect is the application
+  `Network.getNetworkStateAsync` and has `Network.live` already provided. The exported Effect is the application
   boundary: it must have no remaining service requirements.
 
 The operation must call the native read exactly once and succeed with one of these JSON values:

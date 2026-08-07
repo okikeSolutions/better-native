@@ -1,5 +1,6 @@
 {
   "$schema": "../../node_modules/@effect/docgen/schema.json",
+  "outDir": "../../.artifacts/docs/api/network",
   "srcLink": "https://github.com/okikeSolutions/better-native/tree/main/packages/network/src/",
   "exclude": ["src/Expo.ts", "src/index.ts"],
   "enforceDescriptions": true,
