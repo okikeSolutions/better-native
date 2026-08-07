@@ -50,7 +50,7 @@ export const NetworkState = Schema.Struct({
 })
 
 /**
- * Network-state value returned by {@link getState}.
+ * Network-state value returned by {@link getNetworkStateAsync}.
  *
  * @category models
  * @since 0.0.0
@@ -143,7 +143,7 @@ const decodeNetworkState = (value: unknown) =>
  * @category readings
  * @since 0.0.0
  */
-export const getState = Effect.flatMap(Network, (network) => network.getState)
+export const getNetworkStateAsync = Effect.flatMap(Network, (network) => network.getState)
 
 /**
  * Reads the current IPv4 address.
@@ -154,7 +154,7 @@ export const getState = Effect.flatMap(Network, (network) => network.getState)
  * @category readings
  * @since 0.0.0
  */
-export const getIpAddress = Effect.flatMap(Network, (network) => network.getIpAddress)
+export const getIpAddressAsync = Effect.flatMap(Network, (network) => network.getIpAddress)
 
 /**
  * Checks whether airplane mode is enabled.
@@ -165,7 +165,7 @@ export const getIpAddress = Effect.flatMap(Network, (network) => network.getIpAd
  * @category readings
  * @since 0.0.0
  */
-export const isAirplaneModeEnabled = Effect.flatMap(
+export const isAirplaneModeEnabledAsync = Effect.flatMap(
   Network,
   (network) => network.isAirplaneModeEnabled,
 )
@@ -178,7 +178,9 @@ export const isAirplaneModeEnabled = Effect.flatMap(
  * @category streams
  * @since 0.0.0
  */
-export const stateChanges = Stream.unwrap(Effect.map(Network, (network) => network.stateChanges))
+export const addNetworkStateListener = Stream.unwrap(
+  Effect.map(Network, (network) => network.stateChanges),
+)
 
 const makeStateChanges = Stream.callback<NetworkStateEvent, NetworkFailure>((queue) =>
   Effect.acquireRelease(
@@ -223,7 +225,9 @@ export const live = Layer.succeed(
  * @category atoms
  * @since 0.0.0
  */
-export const stateAtom = Atom.make(
-  Stream.merge(Stream.fromEffect(getState), stateChanges).pipe(Stream.provide(live)),
+export const networkStateAtom = Atom.make(
+  Stream.merge(Stream.fromEffect(getNetworkStateAsync), addNetworkStateListener).pipe(
+    Stream.provide(live),
+  ),
   { initialValue: {} },
 )

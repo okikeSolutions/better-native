@@ -11,7 +11,7 @@ afterAll(disposeDxEvalRuntime)
 const input = {
   schemaVersion: 1,
   taskId: "network",
-  taskVersion: "2",
+  taskVersion: "3",
 } as const
 const suiteRunId =
   process.env.BETTER_NATIVE_EVAL_RUN_ID ??
@@ -21,7 +21,7 @@ const trialRunId = (caseName: string) =>
 
 describeEval("Network", { harness: dxHarness }, (it) => {
   it("passes the packed-package reference across every required gate", async ({ run }) => {
-    const runId = await trialRunId("network-reference-1")
+    const runId = await trialRunId("network-reference-3")
     const result = await run({ ...input, runId, adapterId: "reference" })
     const outcome = decodeTrialOutcomeSync(result.output)
 
@@ -41,7 +41,7 @@ describeEval("Network", { harness: dxHarness }, (it) => {
   })
 
   it("rejects the no-op consumer", async ({ run }) => {
-    const runId = await trialRunId("network-noop-1")
+    const runId = await trialRunId("network-noop-3")
     const result = await run({ ...input, runId, adapterId: "noop" })
     const outcome = decodeTrialOutcomeSync(result.output)
 
@@ -60,7 +60,7 @@ describeEval("Network", { harness: dxHarness }, (it) => {
   })
 
   it("rejects collapsed unavailable and failure handling", async ({ run }) => {
-    const runId = await trialRunId("network-broken-1")
+    const runId = await trialRunId("network-broken-3")
     const result = await run({ ...input, runId, adapterId: "broken" })
     const outcome = decodeTrialOutcomeSync(result.output)
     const unavailable = outcome.requiredGates.find(

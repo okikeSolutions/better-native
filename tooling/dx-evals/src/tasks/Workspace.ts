@@ -56,21 +56,27 @@ export const readTaskFiles = (directory: string, fixturePath: Domain.TaskRelativ
       fs.readFileString(path.join(root, "task.json")),
       fs.readFileString(path.join(root, "grader", "expected.json")),
     ])
-    return { root, instruction, fixtureSource, encodedDefinition, encodedExpected }
+    return {
+      root,
+      instruction,
+      fixtureSource,
+      encodedDefinition,
+      encodedExpected,
+    }
   })
 
 /** Reads the private implementation inputs whose digest makes an eval decision reproducible. */
 export const readEvaluatorBundle = (
   taskName: string,
   taskModule: string,
-  runnerStem: "effect" | "network" | "battery",
+  runnerStem: "effect" | "network" | "battery" | "keep-awake",
 ) =>
   Effect.gen(function* () {
     const config = yield* Config.DxEvalConfig
     const fs = yield* FileSystem.FileSystem
     const controlledDoublePaths = Match.value(runnerStem).pipe(
       Match.when("effect", () => []),
-      Match.whenOr("network", "battery", (nativeModule) => [
+      Match.whenOr("network", "battery", "keep-awake", (nativeModule) => [
         `tooling/dx-evals/fixtures/expo-${nativeModule}/package.json`,
         `tooling/dx-evals/fixtures/expo-${nativeModule}/index.js`,
         `tooling/dx-evals/fixtures/expo-${nativeModule}/index.d.ts`,
@@ -114,7 +120,10 @@ export const readEvaluatorBundle = (
 /** Exports instructions, public metadata, fixtures, and declared public package identities. */
 export const exportTask = (task: TaskModel.TaskBase): TaskModel.TaskExport => ({
   files: [
-    { path: Domain.TaskRelativePath.make("instruction.md"), content: task.instruction },
+    {
+      path: Domain.TaskRelativePath.make("instruction.md"),
+      content: task.instruction,
+    },
     {
       path: Domain.TaskRelativePath.make("task.json"),
       content: `${JSON.stringify(task.definition, null, 2)}\n`,
@@ -159,7 +168,10 @@ const readPublicEffectSurface = Effect.gen(function* () {
 export const makeAgentWorkspaceSeed = (task: TaskModel.TaskBase) =>
   Effect.gen(function* () {
     const files: Array<TaskModel.FixtureFile> = [
-      { path: Domain.TaskRelativePath.make("instruction.md"), content: task.instruction },
+      {
+        path: Domain.TaskRelativePath.make("instruction.md"),
+        content: task.instruction,
+      },
       {
         path: Domain.TaskRelativePath.make("task.json"),
         content: `${JSON.stringify(task.definition, null, 2)}\n`,
@@ -197,7 +209,9 @@ const installPackedPackage = (workspace: string, spec: TaskModel.PackedPackageSp
     const artifact = yield* artifacts.prepare(spec)
     const installedRoot = yield* artifacts.install(artifact, workspace)
     if (yield* fs.exists(path.join(installedRoot, "src"))) {
-      return yield* new TaskBundleInvalid({ reason: `private-${spec.taskName}-package-entry` })
+      return yield* new TaskBundleInvalid({
+        reason: `private-${spec.taskName}-package-entry`,
+      })
     }
     const doubleSource = path.join(
       config.repositoryRoot,
@@ -234,11 +248,15 @@ export const materializeCandidate = (task: TaskModel.TaskBase, submission: Valid
       '{"name":"@better-native/dx-eval-candidate","private":true,"type":"module"}\n',
     )
     for (const file of task.fixtureFiles) {
-      yield* fs.makeDirectory(path.dirname(path.join(root, file.path)), { recursive: true })
+      yield* fs.makeDirectory(path.dirname(path.join(root, file.path)), {
+        recursive: true,
+      })
       yield* fs.writeFileString(path.join(root, file.path), file.content)
     }
     for (const entry of submission.entries) {
-      yield* fs.makeDirectory(path.dirname(path.join(root, entry.path)), { recursive: true })
+      yield* fs.makeDirectory(path.dirname(path.join(root, entry.path)), {
+        recursive: true,
+      })
       yield* fs.writeFileString(path.join(root, entry.path), entry.content)
     }
     const packageDigest = yield* Match.value(task.packedPackage).pipe(

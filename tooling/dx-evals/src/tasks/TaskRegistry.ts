@@ -2,12 +2,13 @@ import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import type * as Domain from "../Domain.ts"
 import * as Battery from "./Battery.ts"
+import * as KeepAwake from "./KeepAwake.ts"
 import * as Network from "./Network.ts"
 import * as Synthetic from "./Synthetic.ts"
 import * as Workspace from "./Workspace.ts"
 
 /** One reviewed DX task revision available to the current harness. */
-export type Task = Synthetic.Task | Network.Task | Battery.Task
+export type Task = Synthetic.Task | Network.Task | Battery.Task | KeepAwake.Task
 
 /** Loads one task from the closed reviewed task registry. */
 export const loadTask = (taskId: Domain.TaskId) =>
@@ -15,6 +16,7 @@ export const loadTask = (taskId: Domain.TaskId) =>
     Match.when("synthetic-effect", () => Synthetic.load),
     Match.when("network", () => Network.load),
     Match.when("battery", () => Battery.load),
+    Match.when("keep-awake", () => KeepAwake.load),
     Match.orElse(() =>
       Effect.fail(new Workspace.TaskBundleInvalid({ reason: `unknown-task:${taskId}` })),
     ),

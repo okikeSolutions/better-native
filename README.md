@@ -30,14 +30,15 @@ The human and agent developer-experience evaluation contract lives in
 
 ## DX eval status
 
-The custom Vitest Evals harness, synthetic proof, and deterministic Network and Battery baselines
-are implemented. Network covers one-shot Effect adoption; Battery adds scoped Stream consumption,
-listener cleanup, and typed failure preservation. The OpenRouter coding-agent adapter, reviewed
-five-model profiles, fake-model tests, and cost controls are also implemented.
+The custom Vitest Evals harness, synthetic proof, and deterministic Network, Battery, and KeepAwake
+baselines are implemented. Network covers one-shot Effect adoption; Battery adds scoped Stream
+consumption and listener cleanup; KeepAwake adds an interruption-safe scoped lease. The OpenRouter
+coding-agent adapter, reviewed five-model profiles, fake-model tests, and cost controls are also
+implemented.
 Required-gate outcomes are exposed as deterministic Vitest Evals judge scores; the current tasks do
 not use a second LLM judge because their acceptance criteria are executable.
 Per-trial provider cost is an observed post-response stop. The selected campaign has an in-process
-fail-fast USD 4.00 allocation, while the reusable dedicated OpenRouter key supplies a reviewed USD
+fail-fast USD 6.00 allocation, while the reusable dedicated OpenRouter key supplies a reviewed USD
 8.00 server-side ceiling on total eval-key exposure.
 Candidate observations are produced through Effect `NodeWorker`/`NodeWorkerRunner` with a
 nonce-authenticated protocol inside a rootless, non-root Podman sandbox. Evidence is single-use and

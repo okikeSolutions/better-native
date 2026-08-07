@@ -56,6 +56,7 @@ tooling/expo-catalog           Private declaration-only fallback for external pa
 evals/tasks                    Versioned public DX task fixtures and runtime-withheld controls
 packages/typescript-config     Private shared TypeScript presets
 compatibility/ownership.json   Reviewed per-export ownership overrides
+compatibility/api-mappings.json Reviewed Expo-to-Effect semantic API mappings
 compatibility/surface-lock.json Reviewed lock for the complete discovered export denominator
 compatibility/expectations.json Case-level known upstream or candidate behavior
 compatibility/suites.json      Declarative upstream test discovery rules
@@ -66,9 +67,9 @@ vendor/effect                  Pinned Effect source
 
 The compatibility and DX harnesses support different claims. Compatibility measures behavior
 against pinned Expo source. DX evals measure task completion through the declared public
-better-native boundary; their current synthetic, Network, and Battery instruments are implemented,
-and the first paid model campaigns are recorded, while human blind pilots and calibrated regression
-thresholds remain pending. See
+better-native boundary; their current synthetic, Network, Battery, and KeepAwake instruments are
+implemented. Paid Network and Battery pilot evidence is recorded, while paid KeepAwake execution,
+human blind pilots, and calibrated regression thresholds remain pending. See
 [the evaluation contract](./evals.md) for the current checkpoint status and evidence limits.
 
 ## Harness configuration
@@ -365,6 +366,15 @@ The repository derives a manifest-resolution catalog and an indexed test corpus 
 `ExpoInstallation` validates the fixture's declared dependency map against `bun.lock` and the installed package manifests. It records expected, declared, resolved, and installed versions and preserves integrity information. Pinned manifests and tracked files define Expo-owned target entrypoints and wildcard expansion. Installed manifests and files define target entrypoints only for bundled external packages absent from the pinned workspace. Registry installations are retained separately for toolchain validation and comparison, and a different published package revision remains explicit non-blocking evidence instead of being treated as equivalent to the pinned target.
 
 Static declaration extraction builds the current export denominator from those concrete target entrypoints. Every discovered export is present in the generated ownership ledger, with `upstream` filled explicitly when no reviewed override exists. `compatibility/surface-lock.json` makes additions, removals, and extraction drift reviewable instead of silently changing the denominator.
+
+Effect-native API migration coverage joins that generated runtime-export denominator with the
+reviewed mappings in `compatibility/api-mappings.json`. Separate runtime and public-type mappings
+explicitly classify exact-name Effect APIs, Effect Streams, Effect-native types, Expo-compatible
+hooks and types, orthogonal deprecation metadata, explicit hook-to-Atom counterparts, and
+intentional divergences. The harness requires mapped exports and types to retain their Expo names,
+validates root and Expo-compatible targets against the package's TypeScript value and type exports,
+rejects duplicate or stale mappings, and reports every newly discovered unmapped export as missing;
+it never infers ownership from spelling conventions.
 
 Static extraction is deliberately honest about uncertainty: entrypoints whose named exports cannot be established are recorded as `opaque-module`. Platform-conditioned Metro resolution and exports that require runtime discovery remain unresolved until the paired resolver records observations. Likewise, the corpus records statically identifiable JavaScript and TypeScript cases now, while native and dynamically generated case identifiers require their runner adapters.
 

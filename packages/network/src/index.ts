@@ -1,11 +1,11 @@
 export * as Network from "./Network.ts"
 export {
-  getIpAddress,
-  getState,
-  isAirplaneModeEnabled,
+  addNetworkStateListener,
+  getIpAddressAsync,
+  getNetworkStateAsync,
+  isAirplaneModeEnabledAsync,
   live,
-  stateAtom,
-  stateChanges,
+  networkStateAtom,
   Network as NetworkService,
   NetworkFailure,
   NetworkState,

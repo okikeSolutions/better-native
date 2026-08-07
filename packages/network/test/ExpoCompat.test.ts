@@ -118,9 +118,9 @@ describe("@better-native/network/expo", () => {
     vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true)
     const root = createRoot(document.createElement("div"))
     const registry = AtomRegistry.make()
-    const release = registry.mount(EffectNetwork.stateAtom)
+    const release = registry.mount(EffectNetwork.networkStateAtom)
     const value = () => {
-      const result = registry.get(EffectNetwork.stateAtom)
+      const result = registry.get(EffectNetwork.networkStateAtom)
       if (!AsyncResult.isSuccess(result)) throw new Error("expected atom value")
       return result.value
     }

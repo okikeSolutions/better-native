@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 3,
+  "expoRevision": "534c99966e34580f56242eb92aac7689b9089cc7",
+  "mappings": [
+    {
+      "package": "expo-battery",
+      "expoExport": "addBatteryLevelListener",
+      "status": "effect-stream",
+      "target": "@better-native/battery#addBatteryLevelListener"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "addBatteryStateListener",
+      "status": "effect-stream",
+      "target": "@better-native/battery#addBatteryStateListener"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "addLowPowerModeListener",
+      "status": "effect-stream",
+      "target": "@better-native/battery#addLowPowerModeListener"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "BatteryState",
+      "status": "effect-api",
+      "target": "@better-native/battery#BatteryState"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "getBatteryLevelAsync",
+      "status": "effect-api",
+      "target": "@better-native/battery#getBatteryLevelAsync"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "getBatteryStateAsync",
+      "status": "effect-api",
+      "target": "@better-native/battery#getBatteryStateAsync"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "getPowerStateAsync",
+      "status": "effect-api",
+      "target": "@better-native/battery#getPowerStateAsync"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "isAvailableAsync",
+      "status": "effect-api",
+      "target": "@better-native/battery#isAvailableAsync"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "isBatteryOptimizationEnabledAsync",
+      "status": "effect-api",
+      "target": "@better-native/battery#isBatteryOptimizationEnabledAsync"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "isLowPowerModeEnabledAsync",
+      "status": "effect-api",
+      "target": "@better-native/battery#isLowPowerModeEnabledAsync"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "useBatteryLevel",
+      "status": "expo-compat",
+      "target": "@better-native/battery/expo#useBatteryLevel",
+      "atomTarget": "@better-native/battery#batteryLevelAtom"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "useBatteryState",
+      "status": "expo-compat",
+      "target": "@better-native/battery/expo#useBatteryState",
+      "atomTarget": "@better-native/battery#batteryStateAtom"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "useLowPowerMode",
+      "status": "expo-compat",
+      "target": "@better-native/battery/expo#useLowPowerMode",
+      "atomTarget": "@better-native/battery#lowPowerModeAtom"
+    },
+    {
+      "package": "expo-battery",
+      "expoExport": "usePowerState",
+      "status": "expo-compat",
+      "target": "@better-native/battery/expo#usePowerState",
+      "atomTarget": "@better-native/battery#powerStateAtom"
+    },
+
+    {
+      "package": "expo-keep-awake",
+      "expoExport": "addListener",
+      "status": "effect-stream",
+      "target": "@better-native/keep-awake#addListener"
+    },
+    {
+      "package": "expo-keep-awake",
+      "expoExport": "activateKeepAwake",
+      "status": "effect-api",
+      "target": "@better-native/keep-awake#activateKeepAwake",
+      "deprecated": true,
+      "deprecationReason": "Expo deprecates activateKeepAwake in favor of activateKeepAwakeAsync; both map to the Effect-native activate operation."
+    },
+    {
+      "package": "expo-keep-awake",
+      "expoExport": "activateKeepAwakeAsync",
+      "status": "effect-api",
+      "target": "@better-native/keep-awake#activateKeepAwakeAsync"
+    },
+    {
+      "package": "expo-keep-awake",
+      "expoExport": "deactivateKeepAwake",
+      "status": "effect-api",
+      "target": "@better-native/keep-awake#deactivateKeepAwake"
+    },
+    {
+      "package": "expo-keep-awake",
+      "expoExport": "ExpoKeepAwakeTag",
+      "status": "effect-api",
+      "target": "@better-native/keep-awake#ExpoKeepAwakeTag"
+    },
+    {
+      "package": "expo-keep-awake",
+      "expoExport": "isAvailableAsync",
+      "status": "effect-api",
+      "target": "@better-native/keep-awake#isAvailableAsync"
+    },
+    {
+      "package": "expo-keep-awake",
+      "expoExport": "KeepAwakeEventState",
+      "status": "effect-api",
+      "target": "@better-native/keep-awake#KeepAwakeEventState"
+    },
+    {
+      "package": "expo-keep-awake",
+      "expoExport": "useKeepAwake",
+      "status": "expo-compat",
+      "target": "@better-native/keep-awake/expo#useKeepAwake",
+      "atomTarget": "@better-native/keep-awake#keepAwakeAtom"
+    },
+
+    {
+      "package": "expo-network",
+      "expoExport": "addNetworkStateListener",
+      "status": "effect-stream",
+      "target": "@better-native/network#addNetworkStateListener"
+    },
+    {
+      "package": "expo-network",
+      "expoExport": "getIpAddressAsync",
+      "status": "effect-api",
+      "target": "@better-native/network#getIpAddressAsync"
+    },
+    {
+      "package": "expo-network",
+      "expoExport": "getNetworkStateAsync",
+      "status": "effect-api",
+      "target": "@better-native/network#getNetworkStateAsync"
+    },
+    {
+      "package": "expo-network",
+      "expoExport": "isAirplaneModeEnabledAsync",
+      "status": "effect-api",
+      "target": "@better-native/network#isAirplaneModeEnabledAsync"
+    },
+    {
+      "package": "expo-network",
+      "expoExport": "NetworkStateType",
+      "status": "effect-api",
+      "target": "@better-native/network#NetworkStateType"
+    },
+    {
+      "package": "expo-network",
+      "expoExport": "useNetworkState",
+      "status": "expo-compat",
+      "target": "@better-native/network/expo#useNetworkState",
+      "atomTarget": "@better-native/network#networkStateAtom"
+    }
+  ],
+  "typeMappings": [
+    {
+      "package": "expo-battery",
+      "expoType": "BatteryLevelEvent",
+      "status": "effect-type",
+      "target": "@better-native/battery#BatteryLevelEvent"
+    },
+    {
+      "package": "expo-battery",
+      "expoType": "BatteryState",
+      "status": "effect-type",
+      "target": "@better-native/battery#BatteryState"
+    },
+    {
+      "package": "expo-battery",
+      "expoType": "BatteryStateEvent",
+      "status": "effect-type",
+      "target": "@better-native/battery#BatteryStateEvent"
+    },
+    {
+      "package": "expo-battery",
+      "expoType": "PowerModeEvent",
+      "status": "effect-type",
+      "target": "@better-native/battery#PowerModeEvent"
+    },
+    {
+      "package": "expo-battery",
+      "expoType": "PowerState",
+      "status": "effect-type",
+      "target": "@better-native/battery#PowerState"
+    },
+    {
+      "package": "expo-battery",
+      "expoType": "Subscription",
+      "status": "effect-type",
+      "target": "@better-native/battery#Subscription"
+    },
+    {
+      "package": "expo-keep-awake",
+      "expoType": "KeepAwakeEvent",
+      "status": "effect-type",
+      "target": "@better-native/keep-awake#KeepAwakeEvent"
+    },
+    {
+      "package": "expo-keep-awake",
+      "expoType": "KeepAwakeEventState",
+      "status": "effect-type",
+      "target": "@better-native/keep-awake#KeepAwakeEventState"
+    },
+    {
+      "package": "expo-keep-awake",
+      "expoType": "KeepAwakeListener",
+      "status": "expo-compat-type",
+      "target": "@better-native/keep-awake/expo#KeepAwakeListener"
+    },
+    {
+      "package": "expo-keep-awake",
+      "expoType": "KeepAwakeOptions",
+      "status": "expo-compat-type",
+      "target": "@better-native/keep-awake/expo#KeepAwakeOptions"
+    },
+    {
+      "package": "expo-network",
+      "expoType": "NetworkState",
+      "status": "effect-type",
+      "target": "@better-native/network#NetworkState"
+    },
+    {
+      "package": "expo-network",
+      "expoType": "NetworkStateEvent",
+      "status": "effect-type",
+      "target": "@better-native/network#NetworkStateEvent"
+    },
+    {
+      "package": "expo-network",
+      "expoType": "NetworkStateType",
+      "status": "effect-type",
+      "target": "@better-native/network#NetworkStateType"
+    }
+  ]
+}

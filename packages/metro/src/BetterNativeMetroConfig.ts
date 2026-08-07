@@ -370,7 +370,7 @@ export const make: (
       // replaces explicitly migrated specifiers; every other tracked import is
       // resolved from the same pinned installation.
       const resolutionContext =
-        directive.decision === "unmanaged" || directive.decision === "candidate"
+        directive.decision === "unmanaged"
           ? context
           : {
               ...context,

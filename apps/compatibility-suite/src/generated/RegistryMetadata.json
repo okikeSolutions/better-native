@@ -56046,6 +56046,31 @@
       "authority": "supplemental",
       "runtimeName": null,
       "reason": "Executed from the pinned Expo tools workspace so its package configuration and generated inputs remain authoritative."
+    },
+    {
+      "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts",
+      "path": "src/capabilities/KeepAwake.ts",
+      "caseIds": [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts#KeepAwake capability balances the default tag@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts#KeepAwake capability balances an explicit tag@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts#KeepAwake capability mounts and unmounts the hook@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts#KeepAwake capability manages listener subscriptions@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts#KeepAwake capability emits release events@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts#KeepAwake capability preserves platform errors@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts#KeepAwake capability isolates concurrent tags@1"
+      ],
+      "runner": "expo-jasmine",
+      "execution": "native-app",
+      "platforms": [
+        "web",
+        "ios",
+        "android"
+      ],
+      "executability": "runnable",
+      "registration": "lazy",
+      "authority": "supplemental",
+      "runtimeName": "KeepAwake capability",
+      "reason": null
     }
   ]
 }

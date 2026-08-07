@@ -26,6 +26,7 @@ export const nativeE2eSourceIds: ReadonlySet<string> = new Set(metadata.nativeE2
 const interactiveSmokePaths = new Set([
   "apps/test-suite/tests/Basic.js",
   "apps/test-suite/tests/Battery.js",
+  "apps/test-suite/tests/KeepAwake.js",
   "apps/test-suite/tests/Network.js",
 ])
 /** Pinned Expo modules exercised by the app's default interactive run. */

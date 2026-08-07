@@ -65,8 +65,8 @@ their observable boundary.
 
 ## Capability and entrypoint tests
 
-Each Effect-native capability test suite covers the public behavior that can be controlled on the
-host:
+Effect-native capability test suites cover the applicable public behavior that can be controlled on
+the host:
 
 - successful native reads;
 - native rejection, unavailable, and invalid-payload failures;
@@ -78,9 +78,9 @@ Native modules are represented by controlled test doubles in this layer. That ma
 paths reproducible, but it does not prove an iOS or Android implementation. Tests must assert
 observable outcomes—not implementation details or coverage-only branches.
 
-The compatibility app has an `interactive-smoke` selection for Basic, Battery, and Network. It is
-a developer-facing app-runner check: it proves those three generated Expo test modules are selected
-and normalized together. It does not modify Expo's curated `native-e2e` cohort.
+The compatibility app has an `interactive-smoke` selection for Basic, Battery, KeepAwake, and
+Network. It is a developer-facing app-runner check: it proves those four generated Expo test modules
+are selected and normalized together. It does not modify Expo's curated `native-e2e` cohort.
 
 ## Native parity evidence
 
@@ -94,6 +94,12 @@ Native parity is a paired comparison, not a host-test result:
 
 The curated `native-e2e` cohort remains owned by pinned Expo source and must not be changed to
 improve Better Native coverage. Capability-specific parity runs are separate and opt-in.
+Use `--source <source-id>` on paired web or native execution and on `compare-runs` for these scoped
+runs. Reviewed supplemental sources may cover a platform behavior that the pinned source cannot
+validly exercise; they must remain separate from the upstream native cohort and explain that scope.
+The reviewed KeepAwake capability is one such source: it is selectable on web, iOS, and Android and
+exercises balanced tags, hook mount/unmount, listener cleanup, web release events, platform-specific
+errors, and concurrent-tag isolation. Its inclusion does not add it to Expo's curated native cohort.
 
 Android executes the complete pinned cohort in one app session. Hosted iOS CI partitions the same
 unchanged source set into two deterministic shards, balanced by each source's statically discovered

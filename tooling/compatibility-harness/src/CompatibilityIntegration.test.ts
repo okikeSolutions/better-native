@@ -5,6 +5,7 @@ import * as Layer from "effect/Layer"
 import * as TestConsole from "effect/testing/TestConsole"
 import * as Compatibility from "./Compatibility.ts"
 import * as Coverage from "./Coverage.ts"
+import { Ownership } from "./Domain.ts"
 import * as ExpoRepository from "./ExpoRepository.ts"
 import * as HarnessConfig from "./HarnessConfig.ts"
 import { provideLayer } from "./TestLayers.ts"
@@ -28,10 +29,30 @@ describe("compatibility denominator integration", () => {
         yield* Coverage.report({ json: false })
         yield* Coverage.report({ json: true })
 
+        const repository = yield* ExpoRepository.ExpoRepository
+        const ownership = yield* repository.readJson("compatibility/ownership.json", Ownership)
+        const keepAwake = ownership.overrides.find(
+          (entry) => entry.package === "expo-keep-awake" && entry.subpath === ".",
+        )
+
         const output = (yield* TestConsole.logLines).join("\n")
+        assert.strictEqual(keepAwake?.status, "effect")
+        assert.strictEqual(keepAwake?.replacement, "@better-native/keep-awake/expo")
+        assert.match(keepAwake?.reason ?? "", /paired upstream\/candidate evidence/i)
         assert.include(output, "Validated Expo")
         assert.include(output, "Better Native API coverage")
-        assert.include(output, '"schemaVersion": 1')
+        assert.include(output, '"schemaVersion": 5')
+        assert.include(output, '"expoTypes": 4')
+        assert.include(output, '"accountedTypes": 4')
+        assert.include(output, '"expoType": "KeepAwakeOptions"')
+        assert.include(output, '"target": "@better-native/keep-awake/expo#KeepAwakeOptions"')
+        assert.include(output, '"deprecatedExpoApis": 1')
+        assert.include(output, '"deprecated": true')
+        assert.include(output, '"atomTarget": "@better-native/keep-awake#keepAwakeAtom"')
+        assert.include(output, '"target": "@better-native/keep-awake#ExpoKeepAwakeTag"')
+        assert.include(output, '"target": "@better-native/keep-awake#activateKeepAwake"')
+        assert.include(output, '"target": "@better-native/keep-awake#addListener"')
+        assert.include(output, '"target": "@better-native/keep-awake#KeepAwakeEventState"')
       }).pipe(provideLayer(layer)),
     120_000,
   )

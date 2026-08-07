@@ -25,13 +25,16 @@ is not falsely attributed to the parent Vitest V8 process.
 | Pinned revisions      | `compatibility/upstreams.json`                            | The exact Expo and Effect sources being evaluated.       |
 | Expo API denominator  | Expo package manifests and exports                        | Catalog, installation, surface, and ownership artifacts. |
 | Replacement policy    | `compatibility/ownership.json`                            | Candidate module replacements and their rationale.       |
+| API migration mapping | `compatibility/api-mappings.json`                         | Reviewed exact-name Effect and Expo-compatible mappings. |
 | Behavioral exceptions | `compatibility/expectations.json`                         | Explicitly allowed upstream/candidate divergences.       |
 | Test denominator      | `compatibility/suites.json` plus the pinned Expo checkout | Discovered sources, cases, and runner plans.             |
 | Run evidence          | `.artifacts/builds` and `.artifacts/runs`                 | Append-only records used for a compatibility verdict.    |
 
 Generated application registry files live in
 `apps/compatibility-suite/src/generated`. Do not hand-edit them; update the
-inputs above and regenerate instead.
+inputs above and regenerate instead. API migration mappings are reviewed input,
+not a second export denominator: the harness joins them to the exports derived
+from pinned Expo and rejects duplicate, stale, renamed, or missing targets.
 
 ## Local setup
 
@@ -116,43 +119,59 @@ you need flags that are not exposed by an alias.
 
 ## Coverage report
 
-`coverage` answers whether each configured Better Native package has a public API
-corresponding to the Expo exports routed to it by the generated replacement
+`coverage` answers whether each configured Better Native package has public values and types
+corresponding to the Expo surface routed to it by the generated replacement
 manifest. It is not native behavior evidence; behavior support still comes from
 harness runs and comparison evidence.
 
-The terminal report has one Expo package per row. It keeps comparison at the count level; use `--json` when you need per-export mappings.
+The terminal report has one Expo package per row. It keeps comparison at the count level; use
+`--json` when you need per-export and per-type mappings. The report derives separate runtime-value
+and public-type denominators from the generated Expo-compatible entrypoints, then classifies each
+entry with the reviewed explicit mapping. It does not infer correspondence from similar names.
 
 Summary columns:
 
-| Column            | Meaning                                                                                                                        |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `Package`         | Expo package being replaced.                                                                                                   |
-| `Expo exports`    | Runtime exports discovered from the generated Expo-compatible entrypoint.                                                      |
-| `Covered exports` | Total Expo exports covered by Better Native, including Effect-native APIs, streams, and Expo-compatible exports.               |
-| `Expo API`        | Expo async/value exports, excluding listener exports and React hooks.                                                          |
-| `Effect API`      | Async/value exports represented by Effect-native public APIs.                                                                  |
-| `Streams`         | Listener exports represented as scoped `Stream` APIs.                                                                          |
-| `React hooks`     | Expo React hook exports covered by the generated Expo-compatible entrypoint.                                                   |
-| `Effect atoms`    | Effect Atom exports for React integrations such as `@effect/atom-react`.                                                       |
-| `Missing`         | Exports with no inferred Better Native public target.                                                                          |
-| `Status`          | `complete` when no exports are missing or pending, `partial` when hooks are pending, or `missing` when exports have no target. |
+| Column            | Meaning                                                                                               |
+| ----------------- | ----------------------------------------------------------------------------------------------------- |
+| `Package`         | Expo package being replaced.                                                                          |
+| `Expo exports`    | Runtime exports discovered from the generated Expo-compatible entrypoint.                             |
+| `Deprecated APIs` | Expo exports carrying reviewed deprecation metadata while retaining their primary API classification. |
+| `Accounted`       | Expo exports with an explicit Effect-native, Expo-compatible, or intentional-divergence mapping.      |
+| `Expo types`      | Public types discovered from the generated Expo-compatible entrypoint.                                |
+| `Covered types`   | Expo public types with an exact Effect-native, Expo-compatible, or divergence mapping.                |
+| `Missing types`   | Expo public types without an explicit reviewed type mapping.                                          |
+| `Expo API`        | Expo async/value exports, excluding listener exports and React hooks.                                 |
+| `Effect API`      | Async/value exports represented by exact-name Effect-native public APIs.                              |
+| `Streams`         | Listener exports represented as exact-name scoped `Stream` APIs.                                      |
+| `React hooks`     | Expo React hook exports covered by the generated Expo-compatible entrypoint.                          |
+| `Effect atoms`    | Effect Atom exports for React integrations such as `@effect/atom-react`.                              |
+| `Divergences`     | Expo exports with a documented intentional divergence.                                                |
+| `Missing`         | Expo exports without an explicit mapping.                                                             |
+| `Status`          | `complete`, `intentional-divergence`, or `missing`, based on the explicit mappings.                   |
 
-Machine-readable mode prints per-export mappings in the `entries` array of a JSON object:
+Machine-readable mode prints runtime mappings in `entries` and public-type mappings in
+`typeEntries`:
 
 ```json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 5,
   "packages": [
     {
       "packageName": "expo-battery",
       "expoExports": 14,
+      "deprecatedExpoApis": 0,
+      "accountedExports": 14,
+      "expoTypes": 6,
+      "accountedTypes": 6,
+      "effectTypes": 6,
+      "expoCompatTypes": 0,
+      "missingTypes": 0,
       "expoApi": 7,
       "effectApi": 7,
       "effectStream": 3,
       "reactHooks": 4,
       "effectAtoms": 4,
-      "reactHookPending": 0,
+      "intentionalDivergences": 0,
       "missing": 0,
       "status": "complete"
     }
@@ -162,13 +181,22 @@ Machine-readable mode prints per-export mappings in the `entries` array of a JSO
       "packageName": "expo-battery",
       "expoExport": "getBatteryLevelAsync",
       "status": "effect-api",
-      "target": "@better-native/battery#getLevel"
+      "target": "@better-native/battery#getBatteryLevelAsync"
     },
     {
       "packageName": "expo-battery",
       "expoExport": "useBatteryLevel",
       "status": "expo-compat",
-      "target": "@better-native/battery/expo#useBatteryLevel"
+      "target": "@better-native/battery/expo#useBatteryLevel",
+      "atomTarget": "@better-native/battery#batteryLevelAtom"
+    }
+  ],
+  "typeEntries": [
+    {
+      "packageName": "expo-battery",
+      "expoType": "BatteryLevelEvent",
+      "status": "effect-type",
+      "target": "@better-native/battery#BatteryLevelEvent"
     }
   ]
 }
@@ -176,20 +204,27 @@ Machine-readable mode prints per-export mappings in the `entries` array of a JSO
 
 Entry statuses are:
 
-| Status               | Meaning                                                                                                        |
-| -------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `effect-api`         | The Expo export maps to an Effect-native value API.                                                            |
-| `effect-stream`      | The Expo listener export maps to a scoped Effect `Stream`.                                                     |
-| `expo-compat`        | The Expo export is covered by the generated Expo-compatible entrypoint rather than the Effect-native root API. |
-| `react-hook-pending` | The Expo hook export has no Better Native public hook target yet.                                              |
-| `missing`            | No Better Native public target was inferred.                                                                   |
+| Status                   | Meaning                                                                                                        |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `effect-api`             | The Expo export maps to an Effect-native value API.                                                            |
+| `effect-stream`          | The Expo listener export maps to a scoped Effect `Stream`.                                                     |
+| `expo-compat`            | The Expo export is covered by the generated Expo-compatible entrypoint rather than the Effect-native root API. |
+| `effect-type`            | The Expo public type maps to an exact-name type exported by the Effect-native root entrypoint.                 |
+| `expo-compat-type`       | The Expo public type is retained exactly by the generated Expo-compatible entrypoint.                          |
+| `intentional-divergence` | The Expo export is deliberately not reproduced, with a required reason.                                        |
+| `missing`                | No explicit Better Native runtime or public-type mapping exists.                                               |
 
-Current coverage is expected to be `complete` for `expo-battery` and
-`expo-network`. React hook exports are reported as `expo-compat` because hooks
-belong to the Expo-compatible entrypoint. Effect-native React state should be exposed
-through Effect atoms that can be consumed by packages such as `@effect/atom-react`.
-A future package should not stay `partial` unless the pending surface is deliberate
-and documented.
+React hook exports are reported as `expo-compat` because hooks belong to the Expo-compatible
+entrypoint. Effect-native React state is exposed through exact semantic counterparts ending in
+`Atom`, such as `batteryLevelAtom`, `networkStateAtom`, and `keepAwakeAtom`; atom counts are additive
+and do not consume another Expo export. Deprecated Expo APIs remain visible in `Deprecated APIs`
+while retaining their primary `effect-api`, `effect-stream`, or `expo-compat` classification.
+Target validation rejects renamed or missing exports and checks callable Effect APIs, Streams, and
+Atoms against their declared TypeScript categories. Duplicate and stale mappings fail before a
+report can be accepted.
+Intentional divergences remain
+visible even when no exports are missing. Run `bun run coverage` for the current result instead of
+copying a point-in-time total into documentation.
 
 ## Docs and docgen workflow
 
@@ -249,6 +284,10 @@ then invoke `supervise-native` or `supervise-native-pair` with the build record,
 binary path, device ID, and optional shard settings. The exact artifact handoff
 and simulator/emulator setup used by CI are in
 `.github/workflows/compatibility.yml`.
+
+Both native commands accept `--source <source-id>` for an opt-in capability run. Pass the same
+`--source` to `compare-runs` so completeness is checked against that reviewed source instead of the
+full platform cohort. Omitting the flag preserves the fail-closed full-corpus comparison.
 
 Useful platform requirements include Xcode and a booted iOS simulator for iOS,
 or JDK 17, Android tooling, and an emulator for Android. Maestro is required for

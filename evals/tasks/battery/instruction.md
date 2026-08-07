@@ -5,7 +5,7 @@ and normal `effect/*` entrypoints.
 
 Export `batteryLevels`, an Effect `Stream` that:
 
-- consumes `Battery.levelChanges`;
+- consumes `Battery.addBatteryLevelListener`;
 - emits only each event's numeric `batteryLevel`;
 - provides `Battery.live` at the application boundary; and
 - preserves `BatteryFailure` in the stream error channel when native listener registration fails.

@@ -1,9 +1,11 @@
 import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
+import * as Option from "effect/Option"
 import * as Command from "effect/unstable/cli/Command"
 import * as Flag from "effect/unstable/cli/Flag"
 import { ExpoRepository } from "../ExpoRepository.ts"
+import { TestSourceId } from "../Domain.ts"
 import { HarnessError } from "../HarnessError.ts"
 import * as AppRegistry from "../registry/AppRegistry.ts"
 import * as RunnerPlanExecution from "../registry/RunnerPlanExecution.ts"
@@ -19,6 +21,7 @@ import { shardCountFlag, shardIndexFlag, timeoutMillisFlag } from "./Shared.ts"
 
 const upstreamEvidenceFlag = Flag.string("upstream")
 const candidateEvidenceFlag = Flag.string("candidate")
+const comparisonSourceFlag = Flag.string("source").pipe(Flag.optional)
 /**
  * Compares upstream and candidate evidence and emits a differential verdict.
  *
@@ -27,8 +30,12 @@ const candidateEvidenceFlag = Flag.string("candidate")
  */
 export const compareRuns = Command.make(
   "compare-runs",
-  { upstream: upstreamEvidenceFlag, candidate: candidateEvidenceFlag },
-  Effect.fn("Command.compareRuns")(function* ({ upstream, candidate }) {
+  {
+    upstream: upstreamEvidenceFlag,
+    candidate: candidateEvidenceFlag,
+    source: comparisonSourceFlag,
+  },
+  Effect.fn("Command.compareRuns")(function* ({ upstream, candidate, source }) {
     const [upstreamRecords, candidateRecords, expectations, metadata, runnerPlans, replacements] =
       yield* Effect.all(
         [
@@ -42,12 +49,16 @@ export const compareRuns = Command.make(
         { concurrency: "unbounded" },
       )
     const platform = upstreamRecords[0]?.plan.platform ?? candidateRecords[0]?.plan.platform
-    const expectedSources = Match.value(platform).pipe(
-      Match.whenOr("web", "ios", "android", (supported) =>
-        AppRegistry.runnableSourceIds(metadata, supported),
-      ),
-      Match.orElse(() => []),
-    )
+    const expectedSources = Option.match(source, {
+      onNone: () =>
+        Match.value(platform).pipe(
+          Match.whenOr("web", "ios", "android", (supported) =>
+            AppRegistry.runnableSourceIds(metadata, supported),
+          ),
+          Match.orElse(() => []),
+        ),
+      onSome: (sourceId) => [TestSourceId.make(sourceId)],
+    })
     const candidateTreatmentEvidence = yield* RunComparison.loadCandidateTreatmentEvidence(
       candidate,
       candidateRecords,

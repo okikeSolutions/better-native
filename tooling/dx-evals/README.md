@@ -86,10 +86,15 @@ cleanup after normal completion and early downstream termination, and preservati
 listener-registration failure as `BatteryFailure`. A fixed-value stream can match the happy-path
 values but still fails the lifecycle and provisioning gates.
 
-Paid Network and Battery trials are opt-in. A reviewed campaign registry expands the same coding
-harness across exact model configurations, disables automatic fallbacks, orders Network before
-Battery, reserves the full per-trial cost allocation, and records tokens, turns, cost, serving
-provider, and fingerprint. Fake-LanguageModel tests exercise the actual Effect AI toolkit and
+The KeepAwake task packs `@better-native/keep-awake` and supplies a controlled
+`expo-keep-awake` double. Its scenarios verify Layer provisioning, an explicitly tagged lease that
+stays active until interruption, exactly-once scoped cleanup, typed unavailability, and typed native
+activation failure. An unscoped lease activates but fails the cleanup gate.
+
+Paid Network, Battery, and KeepAwake trials are opt-in. A reviewed campaign registry expands the
+same coding harness across exact model configurations, disables automatic fallbacks, orders the
+three task blocks, reserves the full per-trial cost allocation, and records tokens, turns, cost,
+serving provider, and fingerprint. Fake-LanguageModel tests exercise the actual Effect AI toolkit and
 bounded multi-turn loop without network access. Following Pi's construction, the system prompt lists
 the tools actually exposed and keeps exploration proportional instead of requiring a declaration
 graph traversal before editing. Runtime guidance tracks whether the candidate changed after its
@@ -192,8 +197,9 @@ result, and it isolates the old 12-request ceiling as a material source of trunc
 
 ### First live model matrix
 
-The first live campaign deliberately spans price, provider, and model-family differences. Every
-profile runs once on each task so a model is never confounded with only Network or only Battery.
+The reviewed diagnostic campaign deliberately spans price, provider, and model-family differences.
+Every profile is scheduled once on Network, Battery, and KeepAwake so a model is never confounded
+with only one task. Existing paid pilot evidence predates the KeepAwake block.
 
 | Profile                  | Pinned model                      | Pinned ZDR provider     | Token parameter         | Role                               | Observed stop per trial |
 | ------------------------ | --------------------------------- | ----------------------- | ----------------------- | ---------------------------------- | ----------------------: |
@@ -205,8 +211,8 @@ profile runs once on each task so a model is never confounded with only Network 
 
 All selected endpoints advertise reasoning and the bounded tool-calling parameters used by the
 adapter under zero-data-retention routing. Provider and model fallback remain disabled. The stops
-reserve USD 2.50 for either task subset. The complete ten-trial campaign has a tighter explicit USD
-4.00 campaign-wide ceiling. They are conservative post-response controls, not price forecasts; the
+reserve USD 2.50 for any task subset. The complete fifteen-trial campaign has a tighter explicit USD
+6.00 campaign-wide ceiling. They are conservative post-response controls, not price forecasts; the
 first run's actual usage and cost are
 recorded as evidence. Prompt caching is disabled for this baseline.
 
@@ -238,7 +244,7 @@ gates. No provider fallback or automatic retry was added, and historical reports
 The required-gate judge is blocking at score `1` for reference controls. Expected no-op and broken
 controls, and the first uncalibrated live campaign, record the score with no threshold so the report
 shows partial credit and failed-gate rationale without confusing task failure with infrastructure
-failure. No LLM judge is used: Network and Battery are fully determined by isolated executable
+failure. No LLM judge is used: Network, Battery, and KeepAwake are fully determined by isolated executable
 checks, and adding a grading model would add cost, variance, and correlated model bias without
 covering a currently unmeasurable criterion.
 
@@ -262,7 +268,7 @@ cross-process publication signature; that requires the later publisher described
 `OPENROUTER_API_KEY` is one reusable key dedicated to eval execution, with a finite server-side
 spending limit no greater than the reviewed global USD 8.00 ceiling. Live preflight reads current-key
 metadata and rejects unlimited or broader keys, then requires `limit_remaining` to cover the exact
-selected campaign allocation. The complete diagnostic campaign allocation is USD 4.00; a
+selected campaign allocation. The complete diagnostic campaign allocation is USD 6.00; a
 single-task diagnostic subset is USD 2.50; the smoke allocation is USD 0.05. The in-process campaign
 budget rejects reservations beyond the selected allocation before another trial starts. Because
 execution is serialized, each completed trial's worst-case reservation is atomically settled to its

@@ -1,6 +1,7 @@
 const targets = [
   "apps/compatibility-suite/src/generated",
   "packages/battery/src/Expo.ts",
+  "packages/keep-awake/src/Expo.ts",
   "packages/network/src/Expo.ts",
 ]
 

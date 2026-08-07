@@ -1,8 +1,9 @@
 import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
+import * as Option from "effect/Option"
 import * as Command from "effect/unstable/cli/Command"
 import * as Flag from "effect/unstable/cli/Flag"
-import { RunId } from "../Domain.ts"
+import { RunId, type RegistryMetadata } from "../Domain.ts"
 import { HarnessError } from "../HarnessError.ts"
 import * as AppRegistry from "../registry/AppRegistry.ts"
 import { AppBuildImporter } from "../build/AppBuildImporter.ts"
@@ -19,6 +20,22 @@ import {
 
 const recordPathFlag = Flag.string("record")
 const binaryPathFlag = Flag.string("binary")
+const nativeSourceFlag = Flag.string("source").pipe(Flag.optional)
+
+const selectNativeUnits = (
+  metadata: RegistryMetadata,
+  platform: "ios" | "android",
+  source: Option.Option<string>,
+  shardIndex: number,
+  shardCount: number,
+) =>
+  Option.match(source, {
+    onNone: () => AppRegistry.appExecutionShards(metadata, platform, shardCount)[shardIndex] ?? [],
+    onSome: (sourceId) => {
+      const unit = AppRegistry.appExecutionUnitForSource(metadata, platform, sourceId)
+      return unit === null ? [] : [unit]
+    },
+  })
 
 /**
  * Runs one generated native source against an imported build.
@@ -29,6 +46,7 @@ export const supervisedNative = Command.make(
     platform: nativePlatform,
     recordPath: recordPathFlag,
     binaryPath: binaryPathFlag,
+    source: nativeSourceFlag,
     deviceId: deviceIdFlag,
     runId: runIdFlag,
     shardIndex: shardIndexFlag,
@@ -39,6 +57,7 @@ export const supervisedNative = Command.make(
     platform,
     recordPath,
     binaryPath,
+    source,
     deviceId,
     runId,
     shardIndex,
@@ -54,7 +73,7 @@ export const supervisedNative = Command.make(
     const builds = yield* AppBuildImporter
     const native = yield* NativeSupervisor
     const metadata = yield* AppRegistry.loadMetadata()
-    const units = AppRegistry.appExecutionShards(metadata, platform, shardCount)[shardIndex] ?? []
+    const units = selectNativeUnits(metadata, platform, source, shardIndex, shardCount)
     if (units.length === 0) {
       return yield* new HarnessError({
         operation: "select native shard",
@@ -101,6 +120,7 @@ export const supervisedNativePair = Command.make(
     upstreamBinaryPath: upstreamBinaryPathFlag,
     candidateRecordPath: candidateRecordPathFlag,
     candidateBinaryPath: candidateBinaryPathFlag,
+    source: nativeSourceFlag,
     deviceId: deviceIdFlag,
     runId: runIdFlag,
     shardIndex: shardIndexFlag,
@@ -113,6 +133,7 @@ export const supervisedNativePair = Command.make(
     upstreamBinaryPath,
     candidateRecordPath,
     candidateBinaryPath,
+    source,
     deviceId,
     runId,
     shardIndex,
@@ -128,7 +149,7 @@ export const supervisedNativePair = Command.make(
     const builds = yield* AppBuildImporter
     const native = yield* NativeSupervisor
     const metadata = yield* AppRegistry.loadMetadata()
-    const units = AppRegistry.appExecutionShards(metadata, platform, shardCount)[shardIndex] ?? []
+    const units = selectNativeUnits(metadata, platform, source, shardIndex, shardCount)
     if (units.length === 0) {
       return yield* new HarnessError({
         operation: "select native shard",

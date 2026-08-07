@@ -27,7 +27,7 @@ export default defineConfig({
     pool: "threads",
     include: [
       "tooling/**/{src,test}/**/*.test.ts",
-      "tooling/dx-evals/evals/{synthetic,network,battery}.eval.ts",
+      "tooling/dx-evals/evals/{synthetic,network,battery,keep-awake}.eval.ts",
       "packages/**/{src,test}/**/*.test.ts",
       "apps/**/{src,test}/**/*.test.ts",
     ],

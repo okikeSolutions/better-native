@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@better-native/battery": "workspace:*",
+    "@better-native/keep-awake": "workspace:*",
     "@better-native/metro": "workspace:*",
     "@better-native/network": "workspace:*",
     "@expo/html-elements": "57.0.0",

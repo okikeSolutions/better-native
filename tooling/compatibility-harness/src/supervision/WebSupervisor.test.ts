@@ -135,6 +135,16 @@ describe("WebSupervisor failure evidence", () => {
       ["clipboard-read", "clipboard-write"],
     )
     assert.deepEqual(
+      browserPermissionsForSource("expo-app-suite#apps/test-suite/tests/KeepAwake.js"),
+      ["screen-wake-lock"],
+    )
+    assert.deepEqual(
+      browserPermissionsForSource(
+        "better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts",
+      ),
+      ["screen-wake-lock"],
+    )
+    assert.deepEqual(
       browserPermissionsForSource("expo-app-suite#apps/test-suite/tests/Network.js"),
       [],
     )
