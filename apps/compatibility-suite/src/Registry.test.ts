@@ -38,25 +38,29 @@ describe("generated compatibility registry", () => {
     const battery = registry.find(({ path }) => path.endsWith("/tests/Battery.js"))
     const keepAwake = registry.find(({ path }) => path.endsWith("/tests/KeepAwake.js"))
     const network = registry.find(({ path }) => path.endsWith("/tests/Network.js"))
+    const secureStore = registry.find(({ path }) => path.endsWith("/tests/SecureStore.js"))
     assert.isDefined(basic)
     assert.isDefined(battery)
     assert.isDefined(keepAwake)
     assert.isDefined(network)
+    assert.isDefined(secureStore)
     assert.isFunction(basic.load)
     assert.isFunction(battery.load)
     assert.isFunction(keepAwake.load)
     assert.isFunction(network.load)
+    assert.isFunction(secureStore.load)
     assert.isAbove(basic.caseIds.length, 0)
     assert.isAbove(battery.caseIds.length, 0)
     assert.isAbove(keepAwake.caseIds.length, 0)
     assert.isAbove(network.caseIds.length, 0)
+    assert.isAbove(secureStore.caseIds.length, 0)
     assert.strictEqual(
       new Set(registry.flatMap(({ caseIds }) => caseIds)).size,
       registry.reduce((total, source) => total + source.caseIds.length, 0),
     )
   })
 
-  it("includes Basic, Battery, KeepAwake, and Network in the interactive smoke cohort", () => {
+  it("includes the reviewed capabilities in the interactive smoke cohort", () => {
     const smokePaths = registry
       .filter(({ sourceId }) => interactiveSmokeSourceIds.has(sourceId))
       .map(({ path }) => path)
@@ -65,6 +69,7 @@ describe("generated compatibility registry", () => {
       "apps/test-suite/tests/Battery.js",
       "apps/test-suite/tests/KeepAwake.js",
       "apps/test-suite/tests/Network.js",
+      "apps/test-suite/tests/SecureStore.js",
     ])
   })
 
@@ -110,5 +115,50 @@ describe("generated compatibility registry", () => {
     }
     configureUpstreamSelection([])
     assert.isTrue(supplemental.selectedByUpstream)
+  })
+
+  it("registers the web-only SecureStore capability with reviewed cases", () => {
+    const supplemental = registry.find(
+      ({ sourceId }) =>
+        sourceId ===
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.web.ts",
+    )
+    assert.isDefined(supplemental)
+    assert.deepEqual(supplemental.platforms, ["web"])
+    assert.lengthOf(supplemental.caseIds, 3)
+    for (const behavior of [
+      "actual Expo web implementation as unavailable",
+      "unsupported asynchronous web operations",
+      "unsupported synchronous web operations",
+    ]) {
+      assert.isTrue(
+        supplemental.caseIds.some((caseId) => caseId.includes(behavior)),
+        behavior,
+      )
+    }
+    configureUpstreamSelection([])
+    assert.isTrue(supplemental.selectedByUpstream)
+  })
+
+  it("registers reviewed native SecureStore capability sources", () => {
+    const core = registry.find(
+      ({ sourceId }) =>
+        sourceId ===
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts",
+    )
+    const nativeFailure = registry.find(
+      ({ sourceId }) =>
+        sourceId ===
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStoreNativeFailure.ios.ts",
+    )
+    assert.isDefined(core)
+    assert.deepEqual(core.platforms, ["ios", "android"])
+    assert.lengthOf(core.caseIds, 5)
+    assert.isDefined(nativeFailure)
+    assert.deepEqual(nativeFailure.platforms, ["ios"])
+    assert.lengthOf(nativeFailure.caseIds, 1)
+    configureUpstreamSelection([])
+    assert.isTrue(core.selectedByUpstream)
+    assert.isTrue(nativeFailure.selectedByUpstream)
   })
 })

@@ -3,6 +3,7 @@ const targets = [
   "packages/battery/src/Expo.ts",
   "packages/keep-awake/src/Expo.ts",
   "packages/network/src/Expo.ts",
+  "packages/secure-store/src/Expo.ts",
 ]
 
 const snapshot = async (): Promise<ReadonlyMap<string, string>> => {

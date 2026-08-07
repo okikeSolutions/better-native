@@ -11,7 +11,7 @@ const config: ExpoConfig = {
   ios: { bundleIdentifier: "dev.betternative.compatibility" },
   android: { package: "dev.betternative.compatibility" },
   web: { bundler: "metro", output: "static" },
-  plugins: ["expo-router"],
+  plugins: ["expo-router", "expo-secure-store"],
   experiments: { autolinkingModuleResolution: true, typedRoutes: true },
   extra: {
     eas: { projectId: compatibilityProjectId },

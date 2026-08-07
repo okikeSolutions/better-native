@@ -28,6 +28,7 @@ const interactiveSmokePaths = new Set([
   "apps/test-suite/tests/Battery.js",
   "apps/test-suite/tests/KeepAwake.js",
   "apps/test-suite/tests/Network.js",
+  "apps/test-suite/tests/SecureStore.js",
 ])
 /** Pinned Expo modules exercised by the app's default interactive run. */
 export const interactiveSmokeSourceIds: ReadonlySet<string> = new Set(

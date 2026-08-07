@@ -26,19 +26,25 @@ describe("compatibility denominator integration", () => {
     () =>
       Effect.gen(function* () {
         yield* Compatibility.validate()
-        yield* Coverage.report({ json: false })
-        yield* Coverage.report({ json: true })
+        const coverage = yield* Coverage.inspect()
+        yield* Coverage.print(coverage, { json: false })
+        yield* Coverage.print(coverage, { json: true })
 
         const repository = yield* ExpoRepository.ExpoRepository
         const ownership = yield* repository.readJson("compatibility/ownership.json", Ownership)
         const keepAwake = ownership.overrides.find(
           (entry) => entry.package === "expo-keep-awake" && entry.subpath === ".",
         )
+        const secureStore = ownership.overrides.find(
+          (entry) => entry.package === "expo-secure-store" && entry.subpath === ".",
+        )
 
         const output = (yield* TestConsole.logLines).join("\n")
         assert.strictEqual(keepAwake?.status, "effect")
         assert.strictEqual(keepAwake?.replacement, "@better-native/keep-awake/expo")
         assert.match(keepAwake?.reason ?? "", /paired upstream\/candidate evidence/i)
+        assert.strictEqual(secureStore?.status, "upstream")
+        assert.strictEqual(secureStore?.replacement, "@better-native/secure-store/expo")
         assert.include(output, "Validated Expo")
         assert.include(output, "Better Native API coverage")
         assert.include(output, '"schemaVersion": 5')
@@ -53,6 +59,9 @@ describe("compatibility denominator integration", () => {
         assert.include(output, '"target": "@better-native/keep-awake#activateKeepAwake"')
         assert.include(output, '"target": "@better-native/keep-awake#addListener"')
         assert.include(output, '"target": "@better-native/keep-awake#KeepAwakeEventState"')
+        assert.include(output, '"packageName": "expo-secure-store"')
+        assert.include(output, '"target": "@better-native/secure-store#getItemAsync"')
+        assert.include(output, '"expoType": "SecureStoreOptions"')
       }).pipe(provideLayer(layer)),
     120_000,
   )

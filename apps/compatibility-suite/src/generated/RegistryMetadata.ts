@@ -56091,6 +56091,64 @@ export const metadata: {
       "authority": "supplemental",
       "runtimeName": "KeepAwake capability",
       "reason": null
+    },
+    {
+      "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.web.ts",
+      "path": "src/capabilities/SecureStore.web.ts",
+      "caseIds": [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.web.ts#SecureStore web capability reports the actual Expo web implementation as unavailable@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.web.ts#SecureStore web capability maps unsupported asynchronous web operations to SecureStoreFailure@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.web.ts#SecureStore web capability maps unsupported synchronous web operations to SecureStoreFailure@1"
+      ],
+      "runner": "expo-jasmine",
+      "execution": "web-app",
+      "platforms": [
+        "web"
+      ],
+      "executability": "runnable",
+      "registration": "lazy",
+      "authority": "supplemental",
+      "runtimeName": "SecureStore web capability",
+      "reason": null
+    },
+    {
+      "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts",
+      "path": "src/capabilities/SecureStore.ts",
+      "caseIds": [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts#SecureStore Effect capability reports availability and biometric capability through the live layer@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts#SecureStore Effect capability round trips and deletes an asynchronous value with options@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts#SecureStore Effect capability round trips synchronously and observes asynchronous deletion@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts#SecureStore Effect capability keeps values isolated by keychain service@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts#SecureStore Effect capability preserves validation failures in the typed error channel@1"
+      ],
+      "runner": "expo-jasmine",
+      "execution": "native-app",
+      "platforms": [
+        "ios",
+        "android"
+      ],
+      "executability": "runnable",
+      "registration": "lazy",
+      "authority": "supplemental",
+      "runtimeName": "SecureStore Effect capability",
+      "reason": null
+    },
+    {
+      "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStoreNativeFailure.ios.ts",
+      "path": "src/capabilities/SecureStoreNativeFailure.ios.ts",
+      "caseIds": [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStoreNativeFailure.ios.ts#SecureStore native failure capability preserves an iOS keychain entitlement failure@1"
+      ],
+      "runner": "expo-jasmine",
+      "execution": "native-app",
+      "platforms": [
+        "ios"
+      ],
+      "executability": "runnable",
+      "registration": "lazy",
+      "authority": "supplemental",
+      "runtimeName": "SecureStore native failure capability",
+      "reason": null
     }
   ]
 }

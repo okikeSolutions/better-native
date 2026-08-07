@@ -82,6 +82,29 @@ describe("Ownership", () => {
     )
   })
 
+  it("routes an upstream-owned compatibility wrapper without claiming migrated ownership", () => {
+    const ownership: Ownership = {
+      schemaVersion: 1,
+      expoRevision: "expo",
+      overrides: [
+        {
+          package: PackageName.make("expo-example"),
+          subpath: Subpath.make("."),
+          export: null,
+          status: "upstream",
+          replacement: "@better-native/example/expo",
+          reason: "The wrapper delegates the complete contract upstream.",
+          issue: "https://example.invalid/2",
+        },
+      ],
+    }
+
+    assert.deepEqual(OwnershipModel.issues(surface, ownership), [])
+    assert.deepEqual(OwnershipModel.replacements(ownership), [
+      { source: "expo-example", target: "@better-native/example/expo" },
+    ])
+  })
+
   it("detects additions and disappearances against the surface lock", () => {
     assert.deepEqual(
       OwnershipModel.lockIssues(surface, {

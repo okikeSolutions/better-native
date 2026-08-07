@@ -55,7 +55,7 @@ type PackageSummary = {
   readonly status: "complete" | "intentional-divergence" | "missing"
 }
 
-type CoverageReport = {
+export type CoverageReport = {
   readonly schemaVersion: 5
   readonly packages: ReadonlyArray<PackageSummary>
   readonly entries: ReadonlyArray<CoverageEntry>
@@ -124,10 +124,10 @@ const tsconfigPath = (expoPackage: string): string =>
   `packages/${packageStem(expoPackage)}/tsconfig.json`
 
 const expoPublicExports = (source: string) => ({
-  values: [...source.matchAll(/^export const ([A-Za-z_$][\w$]*) = /gm)]
+  values: [...source.matchAll(/^export const ([A-Za-z_$][\w$]*)\s*=/gm)]
     .map((match) => match[1]!)
     .toSorted(),
-  types: [...source.matchAll(/^export type ([A-Za-z_$][\w$]*) = /gm)]
+  types: [...source.matchAll(/^export type ([A-Za-z_$][\w$]*)\s*=/gm)]
     .map((match) => match[1]!)
     .toSorted(),
 })
@@ -752,7 +752,14 @@ export const validateNoStaleTypeCoverageMappings = Effect.fn(
   }
 })
 
-const makeReport = Effect.fn("Coverage.makeReport")(function* () {
+/**
+ * Inspects replacement packages and builds the complete API coverage model.
+ *
+ * @remarks
+ * This is the expensive repository-discovery boundary. Callers that need more
+ * than one output format should reuse the returned report with {@link print}.
+ */
+export const inspect = Effect.fn("Coverage.inspect")(function* () {
   const [packages, mappingConfig] = yield* Effect.all([
     loadCoveragePackages(),
     loadCoverageMappings(),
@@ -797,6 +804,16 @@ const makeReport = Effect.fn("Coverage.makeReport")(function* () {
   } satisfies CoverageReport
 })
 
+/** Prints an already-inspected coverage model without rediscovering repository state. */
+export const print = Effect.fn("Coverage.print")(function* (
+  coverage: CoverageReport,
+  options: { readonly json: boolean },
+) {
+  return yield* Console.log(
+    options.json ? JSON.stringify(coverage, null, 2) : renderTable(coverage),
+  )
+})
+
 /**
  * Prints Effect-native API coverage for configured Expo replacements.
  *
@@ -809,8 +826,6 @@ const makeReport = Effect.fn("Coverage.makeReport")(function* () {
  * @throws {@link HarnessError} when catalog or generated entrypoints cannot be inspected.
  */
 export const report = Effect.fn("Coverage.report")(function* (options: { readonly json: boolean }) {
-  const coverage = yield* makeReport()
-  return yield* Console.log(
-    options.json ? JSON.stringify(coverage, null, 2) : renderTable(coverage),
-  )
+  const coverage = yield* inspect()
+  return yield* print(coverage, options)
 })

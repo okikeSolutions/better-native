@@ -46,13 +46,14 @@ export const issues = (
     if (override.reason.trim().length === 0) output.push(`missing reason for ${key}`)
     if (override.issue.trim().length === 0) output.push(`missing issue for ${key}`)
     const requiresReplacement = override.status === "effect" || override.status === "fallback"
+    const permitsReplacement = requiresReplacement || override.status === "upstream"
     if (
       requiresReplacement &&
       (override.replacement === null || override.replacement.length === 0)
     ) {
       output.push(`missing concrete replacement for ${key}`)
     }
-    if (!requiresReplacement && override.replacement !== null) {
+    if (!permitsReplacement && override.replacement !== null) {
       output.push(`unexpected replacement for ${key}`)
     }
   }
@@ -73,7 +74,7 @@ export const issues = (
 }
 
 /**
- * Converts effect and fallback overrides into Metro replacement entries.
+ * Converts reviewed overrides with candidate entrypoints into Metro replacement entries.
  *
  * @param ownership - Reviewed ownership configuration.
  * @returns Sorted source-to-target replacements for candidate resolution.
@@ -82,7 +83,9 @@ export const replacements = (ownership: OwnershipModel) => {
   const values = new Map<string, string>()
   for (const override of ownership.overrides) {
     if (
-      (override.status === "effect" || override.status === "fallback") &&
+      (override.status === "upstream" ||
+        override.status === "effect" ||
+        override.status === "fallback") &&
       override.replacement !== null
     ) {
       const source =
