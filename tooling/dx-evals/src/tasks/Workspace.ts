@@ -69,14 +69,14 @@ export const readTaskFiles = (directory: string, fixturePath: Domain.TaskRelativ
 export const readEvaluatorBundle = (
   taskName: string,
   taskModule: string,
-  runnerStem: "effect" | "network" | "battery" | "keep-awake",
+  runnerStem: "effect" | "network" | "battery" | "keep-awake" | "secure-store",
 ) =>
   Effect.gen(function* () {
     const config = yield* Config.DxEvalConfig
     const fs = yield* FileSystem.FileSystem
     const controlledDoublePaths = Match.value(runnerStem).pipe(
       Match.when("effect", () => []),
-      Match.whenOr("network", "battery", "keep-awake", (nativeModule) => [
+      Match.whenOr("network", "battery", "keep-awake", "secure-store", (nativeModule) => [
         `tooling/dx-evals/fixtures/expo-${nativeModule}/package.json`,
         `tooling/dx-evals/fixtures/expo-${nativeModule}/index.js`,
         `tooling/dx-evals/fixtures/expo-${nativeModule}/index.d.ts`,

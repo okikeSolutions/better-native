@@ -9,7 +9,13 @@ import * as Domain from "../Domain.ts"
 export const campaignNames = ["checkpoint-5-diagnostic", "checkpoint-5-smoke"] as const
 
 /** Task subset accepted by the unified campaign CLI. */
-export const TaskSelection = Schema.Literals(["all", "network", "battery", "keep-awake"])
+export const TaskSelection = Schema.Literals([
+  "all",
+  "network",
+  "battery",
+  "keep-awake",
+  "secure-store",
+])
 /** Decoded task subset accepted by {@link TaskSelection}. */
 export type TaskSelection = Schema.Schema.Type<typeof TaskSelection>
 
@@ -58,9 +64,10 @@ const rawCampaigns = [
   {
     schemaVersion: 1,
     id: Domain.CampaignId.make("checkpoint-5-diagnostic"),
-    description: "Five diagnostic real-agent profiles across Network, Battery, and KeepAwake",
-    maximumCampaignCostUsd: 6,
-    // Every reviewed model sees all three tasks exactly once. Keeping the task blocks contiguous makes
+    description:
+      "Five diagnostic real-agent profiles across Network, Battery, KeepAwake, and SecureStore",
+    maximumCampaignCostUsd: 8,
+    // Every reviewed model sees all four tasks exactly once. Keeping the task blocks contiguous makes
     // execution and report review predictable without confounding a model with only one task.
     trials: [
       {
@@ -153,6 +160,36 @@ const rawCampaigns = [
         agentProfileId: Domain.AgentProfileId.make("claude-sonnet-5"),
         repetition: 1,
       },
+      {
+        taskId: Domain.TaskId.make("secure-store"),
+        taskVersion: Domain.TaskVersion.make("1"),
+        agentProfileId: Domain.AgentProfileId.make("deepseek-v4-flash-0731"),
+        repetition: 1,
+      },
+      {
+        taskId: Domain.TaskId.make("secure-store"),
+        taskVersion: Domain.TaskVersion.make("1"),
+        agentProfileId: Domain.AgentProfileId.make("gpt-5.6-luna"),
+        repetition: 1,
+      },
+      {
+        taskId: Domain.TaskId.make("secure-store"),
+        taskVersion: Domain.TaskVersion.make("1"),
+        agentProfileId: Domain.AgentProfileId.make("grok-4.5"),
+        repetition: 1,
+      },
+      {
+        taskId: Domain.TaskId.make("secure-store"),
+        taskVersion: Domain.TaskVersion.make("1"),
+        agentProfileId: Domain.AgentProfileId.make("kimi-k3"),
+        repetition: 1,
+      },
+      {
+        taskId: Domain.TaskId.make("secure-store"),
+        taskVersion: Domain.TaskVersion.make("1"),
+        agentProfileId: Domain.AgentProfileId.make("claude-sonnet-5"),
+        repetition: 1,
+      },
     ],
   },
 ] as const
@@ -197,7 +234,7 @@ export const selectTrials = (
 ): ReadonlyArray<CampaignTrial> => {
   const taskTrials = Match.value(task).pipe(
     Match.when("all", () => campaign.trials),
-    Match.whenOr("network", "battery", "keep-awake", (taskId) =>
+    Match.whenOr("network", "battery", "keep-awake", "secure-store", (taskId) =>
       campaign.trials.filter((trial) => trial.taskId === taskId),
     ),
     Match.exhaustive,
@@ -273,4 +310,4 @@ export const makePlan = (
   })
 
 /** Reviewed global key ceiling above the full campaign reservation. */
-export const reviewedMaximumKeyLimitUsd = 8
+export const reviewedMaximumKeyLimitUsd = 10

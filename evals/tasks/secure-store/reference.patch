@@ -1,0 +1,16 @@
+--- a/src/ReadTemporarySecret.ts
++++ b/src/ReadTemporarySecret.ts
+@@ -1,3 +1,11 @@
++import { SecureStore } from "@better-native/secure-store"
+ import * as Effect from "effect/Effect"
+-
+-export const temporarySecret = Effect.succeed("controlled-secret")
++
++const key = "dx.eval.token"
++const options = { keychainService: "dx-eval" }
++
++export const temporarySecret = Effect.acquireUseRelease(
++  SecureStore.setItemAsync(key, "controlled-secret", options),
++  () => SecureStore.getItemAsync(key, options),
++  () => SecureStore.deleteItemAsync(key, options),
++).pipe(Effect.provide(SecureStore.live))

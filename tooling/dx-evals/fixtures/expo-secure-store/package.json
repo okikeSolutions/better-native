@@ -1,0 +1,7 @@
+{
+  "name": "expo-secure-store",
+  "version": "57.0.1",
+  "type": "module",
+  "types": "./index.d.ts",
+  "exports": "./index.js"
+}

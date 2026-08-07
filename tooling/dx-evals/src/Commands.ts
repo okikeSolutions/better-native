@@ -83,7 +83,13 @@ const campaignFlag = Flag.choice("campaign", Campaigns.campaignNames).pipe(
   Flag.withDefault("checkpoint-5-diagnostic"),
   Flag.withDescription("Select a reviewed campaign definition"),
 )
-const taskFlag = Flag.choice("task", ["all", "network", "battery", "keep-awake"] as const).pipe(
+const taskFlag = Flag.choice("task", [
+  "all",
+  "network",
+  "battery",
+  "keep-awake",
+  "secure-store",
+] as const).pipe(
   Flag.withDefault("all"),
   Flag.withDescription("Run all campaign tasks or one diagnostic subset"),
 )

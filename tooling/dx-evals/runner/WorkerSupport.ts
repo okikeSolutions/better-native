@@ -1,5 +1,7 @@
 import * as Data from "effect/Data"
+import * as Context from "effect/Context"
 import * as Effect from "effect/Effect"
+import type * as Exit from "effect/Exit"
 import * as Match from "effect/Match"
 import type * as Schema from "effect/Schema"
 import { isBuiltin, registerHooks } from "node:module"
@@ -147,3 +149,26 @@ export const invalidRequest = () => new WorkerExecutionFailure({ operation: "inv
 
 export const candidateEffectFailure = (cause: unknown) =>
   new WorkerExecutionFailure({ operation: "candidate-effect", cause })
+
+/** Outcome of validating and executing one candidate Effect. */
+export interface CandidateEffectResult {
+  readonly effectIsValid: boolean
+  readonly exit: Exit.Exit<unknown, WorkerExecutionFailure> | undefined
+}
+
+/** Executes a candidate Effect without inheriting any trusted worker services. */
+export const runCandidateEffect = (value: unknown): Effect.Effect<CandidateEffectResult> => {
+  const isRunnable = (
+    candidate: unknown,
+  ): candidate is Effect.Effect<unknown, WorkerExecutionFailure, never> =>
+    Effect.isEffect(candidate)
+  if (!isRunnable(value)) {
+    return Effect.succeed({ effectIsValid: false as const, exit: undefined })
+  }
+  return value.pipe(
+    Effect.mapError(candidateEffectFailure),
+    Effect.setContext(Context.empty()),
+    Effect.exit,
+    Effect.map((exit) => ({ effectIsValid: true as const, exit })),
+  )
+}

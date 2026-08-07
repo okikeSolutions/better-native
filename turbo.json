@@ -34,7 +34,8 @@
         "check:effect",
         "@better-native/network#build",
         "@better-native/battery#build",
-        "@better-native/keep-awake#build"
+        "@better-native/keep-awake#build",
+        "@better-native/secure-store#build"
       ],
       "passThroughEnv": ["BETTER_NATIVE_EVAL_RUN_ID"],
       "outputs": []
@@ -46,7 +47,8 @@
         "check:effect",
         "@better-native/network#build",
         "@better-native/battery#build",
-        "@better-native/keep-awake#build"
+        "@better-native/keep-awake#build",
+        "@better-native/secure-store#build"
       ],
       "passThroughEnv": [
         "OPENROUTER_API_KEY",
