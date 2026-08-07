@@ -67,9 +67,10 @@ vendor/effect                  Pinned Effect source
 
 The compatibility and DX harnesses support different claims. Compatibility measures behavior
 against pinned Expo source. DX evals measure task completion through the declared public
-better-native boundary; their current synthetic, Network, Battery, and KeepAwake instruments are
-implemented. Paid Network and Battery pilot evidence is recorded, while paid KeepAwake execution,
-human blind pilots, and calibrated regression thresholds remain pending. See
+better-native boundary; their current synthetic, Network, Battery, KeepAwake, and SecureStore
+instruments are implemented. Paid Network and Battery pilot evidence is recorded, while paid
+KeepAwake and SecureStore execution, human blind pilots, and calibrated regression thresholds
+remain pending. See
 [the evaluation contract](./evals.md) for the current checkpoint status and evidence limits.
 
 ## Harness configuration
@@ -389,9 +390,15 @@ allowed only when it identifies the exact owner, locked dependency path, version
 the audit policy also fails if that path changes or the exception becomes stale. Exceptions are
 never allowed for publishable `@better-native/*` runtime packages.
 
-There are currently no reviewed advisory exceptions. Root-level Bun overrides resolve vulnerable
-Sentry, XML, routing, image-processing, UUID, and React Server Component transitive packages to
-patched versions. `bun audit` must report zero vulnerabilities; `bun run security:audit`
-additionally rejects unreviewed findings and stale exceptions. Every override remains subject to
-generated surface-lock, type, test, and compatibility validation so that a security update cannot
-silently change the pinned Expo contract.
+The sole reviewed exception is `image-size@1.2.1` through `metro@0.84.4` for
+`GHSA-5p2g-fcmc-qvqq` and `GHSA-w3rx-r6r6-pgpr`. Both denial-of-service advisories currently affect
+every published `image-size` version and have no patched release. Metro uses this dependency only
+while bundling reviewed project assets; it is not shipped by a publishable Better Native runtime
+package or exposed to remote image input in repository automation. The exception must be removed
+when Metro changes the dependency or a patched compatible release exists.
+
+Root-level Bun overrides resolve other vulnerable Sentry, XML, routing, image-processing, UUID, and
+React Server Component transitive packages to patched versions. `bun audit` may report only the
+exact reviewed exception; `bun run security:audit` rejects unreviewed findings and stale exceptions.
+Every override remains subject to generated surface-lock, type, test, and compatibility validation
+so that a security update cannot silently change the pinned Expo contract.

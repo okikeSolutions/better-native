@@ -792,11 +792,11 @@ layers of control:
 - the process-owned campaign budget reserves each trial's reviewed cost allocation before its first
   request and fails before the declared campaign allocation can be exceeded;
 - live preflight requires one reusable key dedicated to eval execution, with a finite
-  provider-enforced limit no greater than the reviewed global USD 8.00 ceiling and enough remaining
+  provider-enforced limit no greater than the reviewed global USD 10.00 ceiling and enough remaining
   allowance for every not-yet-reserved trial in the selected campaign;
-- the initial campaign runs five Network trials followed by five Battery trials in one serialized
-  Vitest invocation, uses exact model slugs, disables model and provider fallback, and records the
-  actual provider, fingerprint, usage, and cost; and
+- the current `checkpoint-5-diagnostic` campaign declares five trials for each of Network, Battery,
+  KeepAwake, and SecureStore in one serialized Vitest invocation, uses exact model slugs, disables
+  model and provider fallback, and records the actual provider, fingerprint, usage, and cost; and
 - `evals plan` prints the complete selected matrix and conservative maximum cost without reading a
   secret or making a provider request.
 
@@ -884,6 +884,14 @@ tagged lease that remains active until interruption, exactly-once scoped cleanup
 `KeepAwakeUnavailable`, and activation failure preserved as `KeepAwakeFailure`. An unscoped lease
 may activate correctly but still fails the interruption-cleanup gate.
 
+### Checkpoint 4c: SecureStore baseline — implemented
+
+The SecureStore task consumes the packed public `@better-native/secure-store` package against a
+controlled `expo-secure-store` double. Its isolated scenarios cover Layer provisioning, exact key
+and option forwarding, write/read round trips, cleanup after success and read failure, and native
+read and write failures preserved as `SecureStoreFailure`. Reference passes; no-op and unbracketed
+cleanup controls fail their expected gates.
+
 ### Checkpoint 5: real execution and reporting — live pilot complete, human evidence pending
 
 The `openrouter-coding-agent`, bounded Effect AI toolkit and multi-turn loop, reviewed five-model
@@ -893,11 +901,11 @@ campaign plan are implemented. `checkpoint-5-smoke` declares one Network trial u
 compatible profile, DeepSeek V4 Flash 0731, with a USD 0.05 ceiling. It is the paid acceptance check
 for a valid provider response, nonzero usage and cost, complete process-authenticated evidence, and
 meaningful required-gate diagnostics. Task success remains diagnostic; infrastructure and evidence
-validity are mandatory. `checkpoint-5-diagnostic` declares five Network trials, five Battery
-trials, and five KeepAwake trials. Each of DeepSeek V4 Flash 0731, GPT-5.6 Luna, Grok 4.5, Kimi K3,
-and Claude Sonnet 5 runs exactly once on each task. The full reviewed ceiling is USD 6.00; any
-task-only subset is USD 2.50. Existing paid observations predate the KeepAwake block and do not
-support model-ranking claims; paid KeepAwake execution remains pending.
+validity are mandatory. `checkpoint-5-diagnostic` declares five trials each for Network, Battery,
+KeepAwake, and SecureStore. DeepSeek V4 Flash 0731, GPT-5.6 Luna, Grok 4.5, Kimi K3, and Claude
+Sonnet 5 run exactly once on each task. The full reviewed ceiling is USD 8.00; any task-only subset
+is USD 2.50. Existing paid observations predate the KeepAwake and SecureStore blocks and do not
+support model-ranking claims; paid KeepAwake and SecureStore execution remains pending.
 The serialized campaign ledger reserves each profile's declared maximum before execution, then
 settles a completed trial to its recorded actual provider cost. Provider failures or missing cost
 retain the conservative reservation, and the next trial still fails fast if it cannot fit beneath
@@ -1053,7 +1061,7 @@ requests and performs no automatic agent retry.
 Reviewed profile literals are runtime-decoded with Effect Schema, including a non-empty provider
 allowlist. Each request clamps output to the remaining per-trial output-token budget; aggregate
 input-plus-output tokens and actual provider cost are observed stop thresholds. One reusable
-dedicated OpenRouter key has a reviewed finite USD 8.00 server limit bounding total eval-key
+dedicated OpenRouter key has a reviewed finite USD 10.00 server limit bounding total eval-key
 exposure. The selected campaign has a separate fail-fast reservation budget. The
 `observedCostStopUsd` profile field is intentionally named as a soft, post-response stop because one
 response can cross it. A `submit` tool call does not bypass token, cost, or missing-cost checks, and
@@ -1069,10 +1077,10 @@ this baseline does not mislabel its local HMAC as that facility.
 The first paid live campaign is preserved byte-for-byte under `evals/baselines/` as a historical
 blind diagnostic. It is not an accepted performance baseline: four provider attempts failed at the
 infrastructure boundary and none of the six infrastructure-valid trials passed every required task
-gate. Network and Battery now have later paid pilot evidence, while KeepAwake has deterministic
-coverage but no paid campaign result yet. Until every current task has valid blind evidence and the
-infrastructure has survived repeated real-adapter runs, there is no model success-rate claim and no
-pull-request threshold derived from agent performance.
+gate. Network and Battery now have later paid pilot evidence, while KeepAwake and SecureStore have
+deterministic coverage but no paid campaign results yet. Until every current task has valid blind
+evidence and the infrastructure has survived repeated real-adapter runs, there is no model
+success-rate claim and no pull-request threshold derived from agent performance.
 
 ### Next evidence milestones — pending
 

@@ -16,6 +16,27 @@ Run all host tests with:
 bun run test
 ```
 
+The host suite excludes Vitest Evals task controls. Run the secretless reference, no-op, and broken
+controls through their dedicated configuration with:
+
+```sh
+bun run evals validate
+```
+
+Keeping these suites separate prevents package eval subprocesses from competing with host-test
+workers. Deterministic eval validation uses at most two files in parallel, while paid campaigns
+remain serialized. Vitest's experimental filesystem module cache is enabled for both suites so
+repeated migration-focused invocations can reuse transformed modules. The host suite reserves half
+of the available logical CPUs for the compiler, Podman, Metro, and other child processes launched
+by its workers, with a four-worker ceiling to avoid sandbox availability failures. Native-package
+reference and negative compile contracts use one test file per
+scenario under `tooling/dx-evals/src/agent/compile-contracts`, allowing Vitest and CI shards to
+schedule each isolated container compilation independently. Podman conformance tests are grouped
+by security boundary under `tooling/dx-evals/src/security/isolation` so filesystem, network,
+observation-integrity, runtime-restriction, and timeout checks can be scheduled separately.
+Synthetic TrialRunner controls are likewise split by adapter and diagnostic scenario under
+`tooling/dx-evals/src/trial-runner`.
+
 Run static checks with:
 
 ```sh
@@ -71,6 +92,7 @@ the host:
 - successful native reads;
 - native rejection, unavailable, and invalid-payload failures;
 - stream listener registration and scoped cleanup;
+- secure key-value reads, writes, deletion, option forwarding, and typed native failures;
 - initial Atom values, updates, bursts, and release behavior; and
 - Expo-compatible entrypoint exports and hook lifecycle behavior.
 
@@ -78,9 +100,10 @@ Native modules are represented by controlled test doubles in this layer. That ma
 paths reproducible, but it does not prove an iOS or Android implementation. Tests must assert
 observable outcomes—not implementation details or coverage-only branches.
 
-The compatibility app has an `interactive-smoke` selection for Basic, Battery, KeepAwake, and
-Network. It is a developer-facing app-runner check: it proves those four generated Expo test modules
-are selected and normalized together. It does not modify Expo's curated `native-e2e` cohort.
+The compatibility app has an `interactive-smoke` selection for Basic, Battery, KeepAwake, Network,
+and SecureStore. It is a developer-facing app-runner check: it proves those five generated Expo test
+modules are selected and normalized together. It does not modify Expo's curated `native-e2e`
+cohort.
 
 ## Native parity evidence
 
@@ -100,6 +123,15 @@ validly exercise; they must remain separate from the upstream native cohort and 
 The reviewed KeepAwake capability is one such source: it is selectable on web, iOS, and Android and
 exercises balanced tags, hook mount/unmount, listener cleanup, web release events, platform-specific
 errors, and concurrent-tag isolation. Its inclusion does not add it to Expo's curated native cohort.
+The reviewed SecureStore web capability is separately selectable on web and exercises Expo's actual
+unavailable result plus typed `SecureStoreFailure` mapping for unsupported asynchronous and
+synchronous storage operations. It does not claim iOS or Android behavior.
+The native SecureStore capability is separately selectable on iOS and Android and exercises
+`SecureStore.live`, raw-Expo capability-result agreement, synchronous and asynchronous round trips,
+deletion and `null`, keychain-service isolation, and typed validation failure. An additional iOS-only
+source exercises a missing-keychain-entitlement failure. Biometric writes, authenticated reads,
+success, and cancellation remain physical-device evidence because unattended simulator runs do not
+reliably display an authentication prompt—even when biometric capability reports unavailable.
 
 Android executes the complete pinned cohort in one app session. Hosted iOS CI partitions the same
 unchanged source set into two deterministic shards, balanced by each source's statically discovered

@@ -28,18 +28,28 @@ The documentation target lives in [docs/documentation.md](./docs/documentation.m
 The human and agent developer-experience evaluation contract lives in
 [docs/evals.md](./docs/evals.md).
 
+Package guides:
+
+- [Battery](./packages/battery/README.md)
+- [Network](./packages/network/README.md)
+- [KeepAwake](./packages/keep-awake/README.md)
+- [SecureStore](./packages/secure-store/README.md)
+- [Metro integration](./packages/metro/README.md)
+
 ## DX eval status
 
-The custom Vitest Evals harness, synthetic proof, and deterministic Network, Battery, and KeepAwake
-baselines are implemented. Network covers one-shot Effect adoption; Battery adds scoped Stream
-consumption and listener cleanup; KeepAwake adds an interruption-safe scoped lease. The OpenRouter
+The custom Vitest Evals harness, synthetic proof, and deterministic Network, Battery, KeepAwake, and
+SecureStore baselines are implemented. Network covers one-shot Effect adoption; Battery adds scoped
+Stream consumption and listener cleanup; KeepAwake adds an interruption-safe scoped lease; and
+SecureStore adds option forwarding, bracketed cleanup, and typed native failures. The OpenRouter
 coding-agent adapter, reviewed five-model profiles, fake-model tests, and cost controls are also
 implemented.
 Required-gate outcomes are exposed as deterministic Vitest Evals judge scores; the current tasks do
 not use a second LLM judge because their acceptance criteria are executable.
-Per-trial provider cost is an observed post-response stop. The selected campaign has an in-process
-fail-fast USD 6.00 allocation, while the reusable dedicated OpenRouter key supplies a reviewed USD
-8.00 server-side ceiling on total eval-key exposure.
+Per-trial provider cost is an observed post-response stop. The complete diagnostic campaign has an
+in-process fail-fast USD 8.00 allocation, while the reusable dedicated OpenRouter key supplies a
+reviewed USD 10.00 server-side ceiling on total eval-key exposure. A task-only diagnostic subset
+retains a USD 2.50 allocation.
 Candidate observations are produced through Effect `NodeWorker`/`NodeWorkerRunner` with a
 nonce-authenticated protocol inside a rootless, non-root Podman sandbox. Evidence is single-use and
 process-authenticated, and binds the
@@ -47,9 +57,9 @@ task instruction, private evaluator bundle, submission, gates, usage, and isolat
 
 The first paid blind diagnostic is preserved unchanged, but it has not been accepted or calibrated
 as a performance baseline, so the repository does not currently claim a measured agent success rate
-or that either API is broadly “easy.” A one-trial `checkpoint-5-smoke` campaign validates paid
+or that any current API is broadly “easy.” A one-trial `checkpoint-5-smoke` campaign validates paid
 Network execution with the cheapest compatible profile before the reviewed Checkpoint 5 diagnostic
-campaign runs five pinned models once on Network and once on Battery.
+campaign runs five pinned models once on each of Network, Battery, KeepAwake, and SecureStore.
 Deterministic validation is secretless and never makes provider calls; making it a required
 branch-protection check remains an operator step.
 
