@@ -15,22 +15,16 @@ host tests alone are not native-parity evidence.
 
 ## Installation
 
-This package is currently a private workspace prototype. Inside this repository, declare it with
-Effect and Expo's native capability provider:
+Install the native provider, this package, and its Effect peer in one Expo CLI transaction:
 
-```json
-{
-  "dependencies": {
-    "@better-native/network": "workspace:*",
-    "effect": "4.0.0-beta.102",
-    "expo-network": "57.0.1"
-  }
-}
+```sh
+npx expo install expo-network @better-native/network@alpha effect@4.0.0-beta.102
 ```
 
-Expo applications should resolve the native dependency with `npx expo install expo-network` and
-rebuild the native application after changing native dependencies. Expo automatically adds the
-Android network- and Wi-Fi-state permissions required by the module.
+Expo selects the `expo-network` version compatible with the application's SDK. The Better Native
+and Effect specifications remain explicit because Expo does not version those third-party
+packages. Rebuild the native application after changing native dependencies. Expo automatically
+adds the Android network- and Wi-Fi-state permissions required by the module.
 
 ## Effect API
 
@@ -83,7 +77,7 @@ behavior. Import from the package root when opting into Effects, Streams, and ty
 
 ## Evidence boundary
 
-The compatibility ownership ledger currently classifies Network as `fallback`: candidate bundles
-route through the Expo-compatible wrapper, but the package has not been promoted to Effect ownership.
-Use `bun run coverage` to inspect exact API mappings and paired compatibility runs for platform
-behavior evidence.
+The compatibility ownership ledger classifies Network as `effect`. Paired Release comparisons pass
+the reviewed Effect reads, typed native unavailability, Stream lifecycle, and Atom hydration on iOS,
+Android, and web with zero divergences. Expo remains the native capability provider behind
+`Network.live`. Use `bun run coverage` to inspect exact API mappings.

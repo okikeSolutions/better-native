@@ -15,34 +15,20 @@ API mapping coverage alone is not evidence of native behavioral parity.
 
 ## Installation
 
-This package is currently a private workspace prototype and is not published to a package registry.
-Inside this repository, declare it as a workspace dependency alongside the Expo native module and
-Effect:
-
-```json
-{
-  "dependencies": {
-    "@better-native/keep-awake": "workspace:*",
-    "effect": "4.0.0-beta.102",
-    "expo-keep-awake": "57.0.1"
-  }
-}
-```
-
-Then install the workspace from the repository root:
+Install the native provider, this package, and its Effect peer in one Expo CLI transaction:
 
 ```sh
-bun install
+npx expo install expo-keep-awake @better-native/keep-awake@alpha effect@4.0.0-beta.102
 ```
 
-The version numbers above describe this repository's current toolchain, not a general compatibility
-promise. Keep `expo` and `expo-keep-awake` on versions supported by the consuming Expo SDK. Expo
-projects should use `npx expo install expo-keep-awake` when resolving the native dependency.
+Expo selects the `expo-keep-awake` version compatible with the application's SDK. The Better Native
+and Effect specifications remain explicit because Expo does not version those third-party
+packages.
 
 `expo-keep-awake` remains installed because Better Native delegates to its native module. After
-changing native dependencies, rebuild the development client or native application; restarting
-Metro alone does not update native binaries. The module does not require an application permission
-or package-specific config plugin.
+changing native dependencies, rebuild the development client or native application when the
+provider is not already present in that binary; restarting Metro alone does not update native
+binaries. The module does not require an application permission or package-specific config plugin.
 
 ## Scoped Effect API
 

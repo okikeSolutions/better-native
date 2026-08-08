@@ -8,28 +8,21 @@ surface for incremental migration.
 
 ## Installation
 
-This package is currently a private workspace prototype. Declare it alongside Effect and Expo's
-native capability provider:
+Install the native provider, this package, and its Effect peer in one Expo CLI transaction:
 
-```json
-{
-  "dependencies": {
-    "@better-native/secure-store": "workspace:*",
-    "effect": "4.0.0-beta.102",
-    "expo-secure-store": "57.0.1"
-  }
-}
+```sh
+npx expo install expo-secure-store @better-native/secure-store@alpha effect@4.0.0-beta.102
 ```
 
-Expo applications should resolve the native module with `npx expo install expo-secure-store` and
-rebuild the native application after installation. See Expo's
+Expo selects the `expo-secure-store` version compatible with the application's SDK. The Better
+Native and Effect specifications remain explicit because Expo does not version those third-party
+packages. Rebuild the native application after installation when its provider or configuration
+changed. See Expo's
 [SecureStore documentation](https://docs.expo.dev/versions/latest/sdk/securestore/) for config-plugin,
 Face ID permission, Android backup, and export-compliance configuration.
 
-The versions above describe this repository's current Expo 57 toolchain, not a compatibility range
-for every Expo application. In particular, biometric authentication is not fully available in Expo
-Go because the required Face ID usage description is absent; use a configured development or release
-build for that behavior.
+Biometric authentication is not fully available in Expo Go because the required Face ID usage
+description is absent; use a configured development or release build for that behavior.
 
 ## Effect API
 
@@ -82,7 +75,10 @@ Android values do not survive uninstall. iOS Keychain values can persist across 
 behavior is not guaranteed. Values protected with `requireAuthentication` can become inaccessible
 when biometric enrollment changes.
 
-The Expo-compatible surface remains upstream-owned while candidate routing exercises this wrapper.
-Unit and compile checks establish host-side type, delegation, and error-channel contracts; paired
-iOS and Android compatibility evidence is still required before promoting the package to Effect
-ownership.
+The compatibility ownership ledger classifies SecureStore as `effect`. Paired Release comparisons
+pass the reviewed Effect boundary on iOS and Android, the actual unsupported web behavior, and a
+genuine iOS Keychain entitlement rejection with zero divergences. Expo remains the native
+capability provider behind `SecureStore.live`. Unit and compile checks separately establish the
+host-side type, delegation, and error-channel contracts. Biometric success and cancellation still
+require separately recorded physical-device evidence because they are interactive and depend on
+enrolled device state.

@@ -136,7 +136,6 @@ export const load = Effect.gen(function* () {
       taskName: "keep-awake",
       packageDirectory: "keep-awake",
       packageName: "@better-native/keep-awake",
-      archiveName: "better-native-keep-awake-0.0.0.tgz",
       nativeDouble: "expo-keep-awake",
     },
     evaluatorBundle: yield* Workspace.readEvaluatorBundle(

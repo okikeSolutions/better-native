@@ -139,7 +139,6 @@ export const load = Effect.gen(function* () {
       taskName: "network",
       packageDirectory: "network",
       packageName: "@better-native/network",
-      archiveName: "better-native-network-0.0.0.tgz",
       nativeDouble: "expo-network",
     },
     evaluatorBundle,

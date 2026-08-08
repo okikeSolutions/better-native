@@ -60,7 +60,6 @@ export interface PackedPackageSpec {
   readonly taskName: string
   readonly packageDirectory: string
   readonly packageName: string
-  readonly archiveName: string
   readonly nativeDouble: string
 }
 

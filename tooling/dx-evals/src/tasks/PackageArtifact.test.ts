@@ -12,7 +12,6 @@ const spec: TaskModel.PackedPackageSpec = {
   taskName: "example",
   packageDirectory: "example",
   packageName: "@better-native/example",
-  archiveName: "better-native-example-0.0.0.tgz",
   nativeDouble: "expo-example",
 }
 

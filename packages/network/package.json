@@ -1,47 +1,63 @@
 {
   "name": "@better-native/network",
-  "version": "0.0.0",
-  "private": true,
-  "homepage": "https://github.com/okikeSolutions/better-native#readme",
+  "version": "0.0.1-alpha.1",
+  "private": false,
+  "description": "Effect-native network state for Expo applications.",
+  "keywords": [
+    "effect",
+    "expo",
+    "network",
+    "react-native"
+  ],
+  "homepage": "https://github.com/okikeSolutions/better-native/tree/main/packages/network#readme",
+  "bugs": "https://github.com/okikeSolutions/better-native/issues",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/okikeSolutions/better-native.git",
+    "url": "git+https://github.com/okikeSolutions/better-native.git",
     "directory": "packages/network"
   },
   "files": [
-    "build"
+    "build",
+    "LICENSE",
+    "README.md"
   ],
   "type": "module",
+  "sideEffects": false,
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
   "exports": {
     ".": {
       "types": "./build/index.d.ts",
-      "import": "./build/index.js"
+      "import": "./build/index.js",
+      "default": "./build/index.js"
     },
     "./expo": {
       "types": "./build/Expo.d.ts",
-      "import": "./build/Expo.js"
-    }
+      "import": "./build/Expo.js",
+      "default": "./build/Expo.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "rm -rf build && tsc -p tsconfig.build.json",
+    "prepack": "bun run build",
     "docs:api": "docgen",
     "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "effect": "4.0.0-beta.102"
-  },
   "devDependencies": {
     "@effect/docgen": "4.0.0-beta.102",
+    "effect": "4.0.0-beta.102",
     "expo": "57.0.9",
-    "expo-modules-core": "3.0.11",
     "expo-network": "57.0.1",
     "react": "19.2.3"
   },
   "peerDependencies": {
-    "expo": ">=57.0.0 <58.0.0",
-    "expo-modules-core": ">=3.0.0 <4.0.0",
-    "expo-network": ">=57.0.0 <58.0.0",
-    "react": ">=19.0.0"
+    "effect": "4.0.0-beta.102",
+    "expo-network": ">=57.0.0 <58.0.0"
   }
 }

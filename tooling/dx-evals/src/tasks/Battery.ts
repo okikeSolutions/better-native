@@ -134,7 +134,6 @@ export const load = Effect.gen(function* () {
       taskName: "battery",
       packageDirectory: "battery",
       packageName: "@better-native/battery",
-      archiveName: "better-native-battery-0.0.0.tgz",
       nativeDouble: "expo-battery",
     },
     evaluatorBundle,

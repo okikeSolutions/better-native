@@ -15,21 +15,15 @@ Native integration, not a separate statement of Expo's native contract.
 
 ## Installation
 
-This package is currently a private workspace prototype. Inside this repository, declare it with
-Effect and Expo's native capability provider:
+Install the native provider, this package, and its Effect peer in one Expo CLI transaction:
 
-```json
-{
-  "dependencies": {
-    "@better-native/battery": "workspace:*",
-    "effect": "4.0.0-beta.102",
-    "expo-battery": "57.0.1"
-  }
-}
+```sh
+npx expo install expo-battery @better-native/battery@alpha effect@4.0.0-beta.102
 ```
 
-Expo applications should use `npx expo install expo-battery` to select the version compatible with
-their Expo SDK, then rebuild after changing native dependencies.
+Expo selects the `expo-battery` version compatible with the application's SDK. The Better Native
+and Effect specifications remain explicit because Expo does not version those third-party
+packages. Rebuild after changing native dependencies.
 
 ## Effect API
 
@@ -73,8 +67,8 @@ behavior. Import from the package root when opting into Effects, Streams, Atoms,
 
 ## Evidence boundary
 
-The compatibility ownership ledger currently classifies Battery as `fallback`: candidate bundles
-route through the Expo-compatible wrapper, but the package has not been promoted to Effect ownership.
-Use `bun run coverage` to inspect exact API mappings and paired compatibility runs for platform
-behavior evidence. Simulator evidence cannot establish physical-device battery level, charging, or
-low-power events.
+The compatibility ownership ledger classifies Battery as `effect`. Paired Release comparisons pass
+the reviewed Effect reads, combined power state, Streams, and Atoms on iOS, Android, and web with
+zero divergences. Expo remains the native capability provider behind `Battery.live`. Use
+`bun run coverage` to inspect exact API mappings. Simulator and emulator evidence cannot establish
+physical-device battery level, charging, or low-power events; those remain separate device evidence.

@@ -125,7 +125,6 @@ export const load = Effect.gen(function* () {
       taskName: "secure-store",
       packageDirectory: "secure-store",
       packageName: "@better-native/secure-store",
-      archiveName: "better-native-secure-store-0.0.0.tgz",
       nativeDouble: "expo-secure-store",
     },
     evaluatorBundle: yield* Workspace.readEvaluatorBundle(

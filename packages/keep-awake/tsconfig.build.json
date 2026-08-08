@@ -5,6 +5,7 @@
     "allowImportingTsExtensions": true,
     "declaration": true,
     "declarationMap": false,
+    "inlineSources": true,
     "noEmit": false,
     "outDir": "build",
     "rewriteRelativeImportExtensions": true,

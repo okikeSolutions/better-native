@@ -6,7 +6,6 @@ import * as Queue from "effect/Queue"
 import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
 import * as Atom from "effect/unstable/reactivity/Atom"
-import type { EventSubscription } from "expo-modules-core"
 import * as ExpoNetwork from "expo-network"
 
 /**
@@ -71,7 +70,7 @@ export type NetworkStateEvent = ExpoNetwork.NetworkStateEvent
  * @category models
  * @since 0.0.0
  */
-export type Subscription = EventSubscription
+export type Subscription = ReturnType<typeof ExpoNetwork.addNetworkStateListener>
 
 /**
  * Tagged error for network operations that are unavailable on the current platform.

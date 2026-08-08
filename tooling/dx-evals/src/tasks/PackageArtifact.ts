@@ -27,7 +27,6 @@ const PackedPackageSpecSchema = Schema.Struct({
   taskName: Domain.NonEmptyString,
   packageDirectory: Domain.NonEmptyString,
   packageName: Domain.NonEmptyString,
-  archiveName: Domain.NonEmptyString,
   nativeDouble: Domain.NonEmptyString,
 })
 
@@ -78,7 +77,6 @@ const specKey = (spec: TaskModel.PackedPackageSpec): string =>
     taskName: spec.taskName,
     packageDirectory: spec.packageDirectory,
     packageName: spec.packageName,
-    archiveName: spec.archiveName,
     nativeDouble: spec.nativeDouble,
   })
 
@@ -384,7 +382,6 @@ export const layer = Layer.effect(
           directory: cacheRoot,
           prefix: `${spec.taskName}-pack-`,
         })
-        const archivePath = path.join(scratch, spec.archiveName)
         yield* runTrustedCommand(
           spawner,
           ChildProcess.make(
@@ -394,11 +391,21 @@ export const layer = Layer.effect(
           ),
           `${spec.taskName}-package-pack-failed`,
         )
-        if (!(yield* fs.exists(archivePath))) {
+        const archiveNames = (yield* fs.readDirectory(scratch)).filter((name) =>
+          name.endsWith(".tgz"),
+        )
+        if (archiveNames.length !== 1) {
           return yield* new TaskBundleInvalid({
             reason: `${spec.taskName}-package-archive-not-produced`,
           })
         }
+        const archiveName = archiveNames[0]
+        if (archiveName === undefined) {
+          return yield* new TaskBundleInvalid({
+            reason: `${spec.taskName}-package-archive-not-produced`,
+          })
+        }
+        const archivePath = path.join(scratch, archiveName)
         const [listing, verboseListing] = yield* Effect.all([
           runTrustedCommand(
             spawner,
