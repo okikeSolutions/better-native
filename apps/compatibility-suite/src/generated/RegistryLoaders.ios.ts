@@ -68,6 +68,8 @@ export const loaders: RegistryLoaders = new Map([
   ["expo-app-suite#apps/test-suite/tests/TaskManager.js", () => require("@better-native/expo-source/apps/test-suite/tests/TaskManager.js") as unknown],
   ["expo-app-suite#apps/test-suite/tests/Video.tsx", () => require("@better-native/expo-source/apps/test-suite/tests/Video.tsx") as unknown],
   ["better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts", () => require("../capabilities/KeepAwake.ts") as unknown],
+  ["better-native-capability#apps/compatibility-suite/src/capabilities/Network.ts", () => require("../capabilities/Network.ts") as unknown],
+  ["better-native-capability#apps/compatibility-suite/src/capabilities/Battery.ts", () => require("../capabilities/Battery.ts") as unknown],
   ["better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts", () => require("../capabilities/SecureStore.ts") as unknown],
   ["better-native-capability#apps/compatibility-suite/src/capabilities/SecureStoreNativeFailure.ios.ts", () => require("../capabilities/SecureStoreNativeFailure.ios.ts") as unknown],
 ]) as RegistryLoaders

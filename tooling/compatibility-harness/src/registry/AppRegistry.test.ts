@@ -72,6 +72,33 @@ describe("AppRegistry", () => {
       }).pipe(provideLayer(NodeServices.layer)),
   )
 
+  it.effect("selects supplemental Network and Battery capabilities on every platform", () =>
+    Effect.gen(function* () {
+      const metadata = yield* AppRegistry.loadMetadata()
+      const sourceIds = [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Network.ts",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Battery.ts",
+      ]
+      for (const sourceId of sourceIds) {
+        assert.strictEqual(
+          AppRegistry.appExecutionUnitForSource(metadata, "web", sourceId)?.sourceId,
+          sourceId,
+        )
+        assert.strictEqual(
+          AppRegistry.appExecutionUnitForSource(metadata, "ios", sourceId)?.sourceId,
+          sourceId,
+        )
+        assert.strictEqual(
+          AppRegistry.appExecutionUnitForSource(metadata, "android", sourceId)?.sourceId,
+          sourceId,
+        )
+        assert.isFalse(
+          AppRegistry.appExecutionUnits(metadata, "ios").some((unit) => unit.sourceId === sourceId),
+        )
+      }
+    }).pipe(provideLayer(NodeServices.layer)),
+  )
+
   it.effect("selects the supplemental SecureStore capability only on web", () =>
     Effect.gen(function* () {
       const metadata = yield* AppRegistry.loadMetadata()

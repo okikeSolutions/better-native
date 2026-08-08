@@ -32,6 +32,12 @@ describe("compatibility denominator integration", () => {
 
         const repository = yield* ExpoRepository.ExpoRepository
         const ownership = yield* repository.readJson("compatibility/ownership.json", Ownership)
+        const battery = ownership.overrides.find(
+          (entry) => entry.package === "expo-battery" && entry.subpath === ".",
+        )
+        const network = ownership.overrides.find(
+          (entry) => entry.package === "expo-network" && entry.subpath === ".",
+        )
         const keepAwake = ownership.overrides.find(
           (entry) => entry.package === "expo-keep-awake" && entry.subpath === ".",
         )
@@ -40,11 +46,18 @@ describe("compatibility denominator integration", () => {
         )
 
         const output = (yield* TestConsole.logLines).join("\n")
+        assert.strictEqual(battery?.status, "effect")
+        assert.strictEqual(battery?.replacement, "@better-native/battery/expo")
+        assert.match(battery?.reason ?? "", /paired upstream\/candidate Release evidence/i)
+        assert.strictEqual(network?.status, "effect")
+        assert.strictEqual(network?.replacement, "@better-native/network/expo")
+        assert.match(network?.reason ?? "", /paired upstream\/candidate Release evidence/i)
         assert.strictEqual(keepAwake?.status, "effect")
         assert.strictEqual(keepAwake?.replacement, "@better-native/keep-awake/expo")
         assert.match(keepAwake?.reason ?? "", /paired upstream\/candidate evidence/i)
-        assert.strictEqual(secureStore?.status, "upstream")
+        assert.strictEqual(secureStore?.status, "effect")
         assert.strictEqual(secureStore?.replacement, "@better-native/secure-store/expo")
+        assert.match(secureStore?.reason ?? "", /paired upstream\/candidate evidence/i)
         assert.include(output, "Validated Expo")
         assert.include(output, "Better Native API coverage")
         assert.include(output, '"schemaVersion": 5')

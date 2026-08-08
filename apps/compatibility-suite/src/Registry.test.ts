@@ -117,6 +117,46 @@ describe("generated compatibility registry", () => {
     assert.isTrue(supplemental.selectedByUpstream)
   })
 
+  it("registers reviewed Network and Battery Effect capability sources", () => {
+    const expected = [
+      {
+        sourceId: "better-native-capability#apps/compatibility-suite/src/capabilities/Network.ts",
+        cases: 5,
+        behaviors: [
+          "current native state",
+          "native IPv4 address",
+          "typed native unavailability",
+          "native state stream",
+          "live network atom",
+        ],
+      },
+      {
+        sourceId: "better-native-capability#apps/compatibility-suite/src/capabilities/Battery.ts",
+        cases: 4,
+        behaviors: [
+          "native battery capabilities",
+          "combined native power state",
+          "native battery streams",
+          "live battery atoms",
+        ],
+      },
+    ] as const
+    for (const entry of expected) {
+      const supplemental = registry.find(({ sourceId }) => sourceId === entry.sourceId)
+      assert.isDefined(supplemental)
+      assert.deepEqual(supplemental.platforms, ["web", "ios", "android"])
+      assert.lengthOf(supplemental.caseIds, entry.cases)
+      for (const behavior of entry.behaviors) {
+        assert.isTrue(
+          supplemental.caseIds.some((caseId) => caseId.includes(behavior)),
+          behavior,
+        )
+      }
+      configureUpstreamSelection([])
+      assert.isTrue(supplemental.selectedByUpstream)
+    }
+  })
+
   it("registers the web-only SecureStore capability with reviewed cases", () => {
     const supplemental = registry.find(
       ({ sourceId }) =>

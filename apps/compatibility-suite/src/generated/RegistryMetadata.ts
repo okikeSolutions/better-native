@@ -56093,6 +56093,51 @@ export const metadata: {
       "reason": null
     },
     {
+      "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/Network.ts",
+      "path": "src/capabilities/Network.ts",
+      "caseIds": [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Network.ts#Network Effect capability reads and validates the current native state through the live layer@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Network.ts#Network Effect capability reads a native IPv4 address through the live layer@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Network.ts#Network Effect capability preserves airplane-mode values or typed native unavailability@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Network.ts#Network Effect capability acquires and releases the native state stream@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Network.ts#Network Effect capability hydrates and releases the live network atom@1"
+      ],
+      "runner": "expo-jasmine",
+      "execution": "native-app",
+      "platforms": [
+        "web",
+        "ios",
+        "android"
+      ],
+      "executability": "runnable",
+      "registration": "lazy",
+      "authority": "supplemental",
+      "runtimeName": "Network Effect capability",
+      "reason": null
+    },
+    {
+      "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/Battery.ts",
+      "path": "src/capabilities/Battery.ts",
+      "caseIds": [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Battery.ts#Battery Effect capability reads native battery capabilities through the live layer@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Battery.ts#Battery Effect capability reads and validates the combined native power state@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Battery.ts#Battery Effect capability acquires and releases all native battery streams@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Battery.ts#Battery Effect capability hydrates and releases all live battery atoms@1"
+      ],
+      "runner": "expo-jasmine",
+      "execution": "native-app",
+      "platforms": [
+        "web",
+        "ios",
+        "android"
+      ],
+      "executability": "runnable",
+      "registration": "lazy",
+      "authority": "supplemental",
+      "runtimeName": "Battery Effect capability",
+      "reason": null
+    },
+    {
       "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.web.ts",
       "path": "src/capabilities/SecureStore.web.ts",
       "caseIds": [

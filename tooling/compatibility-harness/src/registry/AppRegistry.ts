@@ -41,6 +41,47 @@ const keepAwakeCapabilityCases = [
   TestCaseId.make(`${keepAwakeCapabilitySourceId}#KeepAwake capability isolates concurrent tags@1`),
 ] as const
 
+const networkCapabilitySourceId = TestSourceId.make(
+  "better-native-capability#apps/compatibility-suite/src/capabilities/Network.ts",
+)
+const networkCapabilityPath = "src/capabilities/Network.ts"
+const networkCapabilityCases = [
+  TestCaseId.make(
+    `${networkCapabilitySourceId}#Network Effect capability reads and validates the current native state through the live layer@1`,
+  ),
+  TestCaseId.make(
+    `${networkCapabilitySourceId}#Network Effect capability reads a native IPv4 address through the live layer@1`,
+  ),
+  TestCaseId.make(
+    `${networkCapabilitySourceId}#Network Effect capability preserves airplane-mode values or typed native unavailability@1`,
+  ),
+  TestCaseId.make(
+    `${networkCapabilitySourceId}#Network Effect capability acquires and releases the native state stream@1`,
+  ),
+  TestCaseId.make(
+    `${networkCapabilitySourceId}#Network Effect capability hydrates and releases the live network atom@1`,
+  ),
+] as const
+
+const batteryCapabilitySourceId = TestSourceId.make(
+  "better-native-capability#apps/compatibility-suite/src/capabilities/Battery.ts",
+)
+const batteryCapabilityPath = "src/capabilities/Battery.ts"
+const batteryCapabilityCases = [
+  TestCaseId.make(
+    `${batteryCapabilitySourceId}#Battery Effect capability reads native battery capabilities through the live layer@1`,
+  ),
+  TestCaseId.make(
+    `${batteryCapabilitySourceId}#Battery Effect capability reads and validates the combined native power state@1`,
+  ),
+  TestCaseId.make(
+    `${batteryCapabilitySourceId}#Battery Effect capability acquires and releases all native battery streams@1`,
+  ),
+  TestCaseId.make(
+    `${batteryCapabilitySourceId}#Battery Effect capability hydrates and releases all live battery atoms@1`,
+  ),
+] as const
+
 const secureStoreWebCapabilitySourceId = TestSourceId.make(
   "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.web.ts",
 )
@@ -498,6 +539,12 @@ const loaderSource = (
   entries.push(
     `  [${JSON.stringify(keepAwakeCapabilitySourceId)}, () => require("../capabilities/KeepAwake.ts") as unknown],`,
   )
+  entries.push(
+    `  [${JSON.stringify(networkCapabilitySourceId)}, () => require("../capabilities/Network.ts") as unknown],`,
+  )
+  entries.push(
+    `  [${JSON.stringify(batteryCapabilitySourceId)}, () => require("../capabilities/Battery.ts") as unknown],`,
+  )
   if (platform === "web") {
     entries.push(
       `  [${JSON.stringify(secureStoreWebCapabilitySourceId)}, () => require("../capabilities/SecureStore.web.ts") as unknown],`,
@@ -668,6 +715,32 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
       registration: "lazy",
       authority: "supplemental",
       runtimeName: "KeepAwake capability",
+      reason: null,
+    },
+    {
+      sourceId: networkCapabilitySourceId,
+      path: networkCapabilityPath,
+      caseIds: networkCapabilityCases,
+      runner: "expo-jasmine",
+      execution: "native-app",
+      platforms: ["web", "ios", "android"],
+      executability: "runnable",
+      registration: "lazy",
+      authority: "supplemental",
+      runtimeName: "Network Effect capability",
+      reason: null,
+    },
+    {
+      sourceId: batteryCapabilitySourceId,
+      path: batteryCapabilityPath,
+      caseIds: batteryCapabilityCases,
+      runner: "expo-jasmine",
+      execution: "native-app",
+      platforms: ["web", "ios", "android"],
+      executability: "runnable",
+      registration: "lazy",
+      authority: "supplemental",
+      runtimeName: "Battery Effect capability",
       reason: null,
     },
     {

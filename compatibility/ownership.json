@@ -6,19 +6,19 @@
       "package": "expo-battery",
       "subpath": ".",
       "export": null,
-      "status": "fallback",
+      "status": "effect",
       "replacement": "@better-native/battery/expo",
-      "reason": "Bootstrap candidate routing through the @better-native/battery Expo-compatible entrypoint before individual exports are promoted to effect ownership.",
-      "issue": "bootstrap-battery"
+      "reason": "Better Native owns the complete Battery JavaScript contract through typed Effect reads, Streams, Atoms, and an Expo-compatible entrypoint. Paired upstream/candidate Release evidence passes all reviewed cases on iOS, Android, and web with zero divergences; Expo remains the native capability provider behind the live layer.",
+      "issue": "promote-battery-effect-ownership"
     },
     {
       "package": "expo-network",
       "subpath": ".",
       "export": null,
-      "status": "fallback",
+      "status": "effect",
       "replacement": "@better-native/network/expo",
-      "reason": "Bootstrap candidate routing through the @better-native/network Expo-compatible entrypoint before individual exports are promoted to effect ownership.",
-      "issue": "bootstrap-network"
+      "reason": "Better Native owns the complete Network JavaScript contract through typed Effect reads, failures, Streams, Atoms, and an Expo-compatible entrypoint. Paired upstream/candidate Release evidence passes all reviewed cases on iOS, Android, and web with zero divergences, including genuine iOS native unavailability; Expo remains the native capability provider behind the live layer.",
+      "issue": "promote-network-effect-ownership"
     },
     {
       "package": "expo-keep-awake",
@@ -33,10 +33,10 @@
       "package": "expo-secure-store",
       "subpath": ".",
       "export": null,
-      "status": "upstream",
+      "status": "effect",
       "replacement": "@better-native/secure-store/expo",
-      "reason": "The Expo-compatible entrypoint delegates the complete JavaScript contract to the pinned Expo provider. Candidate routing validates the wrapper without claiming migrated Expo ownership while the separate Effect API gathers paired iOS and Android evidence.",
-      "issue": "bootstrap-secure-store"
+      "reason": "Better Native owns the complete SecureStore JavaScript contract through typed Effect APIs and an Expo-compatible entrypoint. Paired upstream/candidate evidence passes the reviewed Effect boundary on iOS and Android, the actual unsupported web behavior, and a genuine iOS Keychain entitlement rejection with zero divergences; Expo remains the native capability provider behind the live layer.",
+      "issue": "promote-secure-store-effect-ownership"
     }
   ]
 }
