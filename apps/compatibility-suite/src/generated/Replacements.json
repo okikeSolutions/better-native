@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "expoRevision": "534c99966e34580f56242eb92aac7689b9089cc7",
-  "ownershipFingerprint": "b3bb37da463b189a65e99b6066afa47e2b3bce49c9b4e4c34bf9f40061c6d9d2",
+  "ownershipFingerprint": "4be551bc54a354d5a8dfe77439d2c373c9066408f1eeee9c73b3046fcc1168e1",
   "replacements": [
     {
       "source": "expo-battery",
@@ -14,6 +14,10 @@
     {
       "source": "expo-network",
       "target": "@better-native/network/expo"
+    },
+    {
+      "source": "expo-secure-store",
+      "target": "@better-native/secure-store/expo"
     }
   ],
   "trackedSpecifiers": [

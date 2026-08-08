@@ -179,6 +179,95 @@
       "status": "expo-compat",
       "target": "@better-native/network/expo#useNetworkState",
       "atomTarget": "@better-native/network#networkStateAtom"
+    },
+
+    {
+      "package": "expo-secure-store",
+      "expoExport": "AFTER_FIRST_UNLOCK",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#AFTER_FIRST_UNLOCK"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "ALWAYS",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#ALWAYS",
+      "deprecated": true,
+      "deprecationReason": "Expo recommends an accessibility level with user protection, such as AFTER_FIRST_UNLOCK."
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "ALWAYS_THIS_DEVICE_ONLY",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#ALWAYS_THIS_DEVICE_ONLY",
+      "deprecated": true,
+      "deprecationReason": "Expo recommends an accessibility level with user protection, such as AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY."
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "WHEN_PASSCODE_SET_THIS_DEVICE_ONLY",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#WHEN_PASSCODE_SET_THIS_DEVICE_ONLY"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "WHEN_UNLOCKED",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#WHEN_UNLOCKED"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "WHEN_UNLOCKED_THIS_DEVICE_ONLY",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#WHEN_UNLOCKED_THIS_DEVICE_ONLY"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "canUseBiometricAuthentication",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#canUseBiometricAuthentication"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "deleteItemAsync",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#deleteItemAsync"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "getItem",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#getItem"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "getItemAsync",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#getItemAsync"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "isAvailableAsync",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#isAvailableAsync"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "setItem",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#setItem"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoExport": "setItemAsync",
+      "status": "effect-api",
+      "target": "@better-native/secure-store#setItemAsync"
     }
   ],
   "typeMappings": [
@@ -259,6 +348,18 @@
       "expoType": "NetworkStateType",
       "status": "effect-type",
       "target": "@better-native/network#NetworkStateType"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoType": "KeychainAccessibilityConstant",
+      "status": "effect-type",
+      "target": "@better-native/secure-store#KeychainAccessibilityConstant"
+    },
+    {
+      "package": "expo-secure-store",
+      "expoType": "SecureStoreOptions",
+      "status": "effect-type",
+      "target": "@better-native/secure-store#SecureStoreOptions"
     }
   ]
 }

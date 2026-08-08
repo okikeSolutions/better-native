@@ -35,6 +35,25 @@ const manifest: Evidence.EvidenceManifest = {
 }
 
 describe("evidence authenticity", () => {
+  it.effect("creates shared artifact directories idempotently across workers", () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const fs = yield* FileSystem.FileSystem
+        const repositoryRoot = yield* fs.makeTempDirectoryScoped({ prefix: "dx-artifacts-" })
+        const configLayer = Config.layer(repositoryRoot)
+        const directories = yield* Effect.all(
+          Array.from({ length: 8 }, () =>
+            ArtifactStore.ensureDirectory("shared/workspaces").pipe(provideLayer(configLayer)),
+          ),
+          { concurrency: "unbounded" },
+        )
+
+        assert.strictEqual(new Set(directories).size, 1)
+        assert.isTrue(yield* fs.exists(directories[0]!))
+      }),
+    ).pipe(provideLayer(NodeServices.layer)),
+  )
+
   it.effect("accepts authentic evidence and rejects tampering or a foreign signature", () =>
     Effect.gen(function* () {
       const evidence = yield* Evidence.Evidence

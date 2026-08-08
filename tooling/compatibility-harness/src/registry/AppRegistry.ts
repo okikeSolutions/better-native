@@ -41,6 +41,54 @@ const keepAwakeCapabilityCases = [
   TestCaseId.make(`${keepAwakeCapabilitySourceId}#KeepAwake capability isolates concurrent tags@1`),
 ] as const
 
+const secureStoreWebCapabilitySourceId = TestSourceId.make(
+  "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.web.ts",
+)
+const secureStoreWebCapabilityPath = "src/capabilities/SecureStore.web.ts"
+const secureStoreWebCapabilityCases = [
+  TestCaseId.make(
+    `${secureStoreWebCapabilitySourceId}#SecureStore web capability reports the actual Expo web implementation as unavailable@1`,
+  ),
+  TestCaseId.make(
+    `${secureStoreWebCapabilitySourceId}#SecureStore web capability maps unsupported asynchronous web operations to SecureStoreFailure@1`,
+  ),
+  TestCaseId.make(
+    `${secureStoreWebCapabilitySourceId}#SecureStore web capability maps unsupported synchronous web operations to SecureStoreFailure@1`,
+  ),
+] as const
+
+const secureStoreCapabilitySourceId = TestSourceId.make(
+  "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts",
+)
+const secureStoreCapabilityPath = "src/capabilities/SecureStore.ts"
+const secureStoreCapabilityCases = [
+  TestCaseId.make(
+    `${secureStoreCapabilitySourceId}#SecureStore Effect capability reports availability and biometric capability through the live layer@1`,
+  ),
+  TestCaseId.make(
+    `${secureStoreCapabilitySourceId}#SecureStore Effect capability round trips and deletes an asynchronous value with options@1`,
+  ),
+  TestCaseId.make(
+    `${secureStoreCapabilitySourceId}#SecureStore Effect capability round trips synchronously and observes asynchronous deletion@1`,
+  ),
+  TestCaseId.make(
+    `${secureStoreCapabilitySourceId}#SecureStore Effect capability keeps values isolated by keychain service@1`,
+  ),
+  TestCaseId.make(
+    `${secureStoreCapabilitySourceId}#SecureStore Effect capability preserves validation failures in the typed error channel@1`,
+  ),
+] as const
+
+const secureStoreNativeFailureSourceId = TestSourceId.make(
+  "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStoreNativeFailure.ios.ts",
+)
+const secureStoreNativeFailurePath = "src/capabilities/SecureStoreNativeFailure.ios.ts"
+const secureStoreNativeFailureCases = [
+  TestCaseId.make(
+    `${secureStoreNativeFailureSourceId}#SecureStore native failure capability preserves an iOS keychain entitlement failure@1`,
+  ),
+] as const
+
 const executionRunner = (platform: Platform): ExecutionUnit["runner"] =>
   Match.value(platform).pipe(
     Match.when("web", () => "web-app" as const),
@@ -450,6 +498,20 @@ const loaderSource = (
   entries.push(
     `  [${JSON.stringify(keepAwakeCapabilitySourceId)}, () => require("../capabilities/KeepAwake.ts") as unknown],`,
   )
+  if (platform === "web") {
+    entries.push(
+      `  [${JSON.stringify(secureStoreWebCapabilitySourceId)}, () => require("../capabilities/SecureStore.web.ts") as unknown],`,
+    )
+  } else {
+    entries.push(
+      `  [${JSON.stringify(secureStoreCapabilitySourceId)}, () => require("../capabilities/SecureStore.ts") as unknown],`,
+    )
+  }
+  if (platform === "ios") {
+    entries.push(
+      `  [${JSON.stringify(secureStoreNativeFailureSourceId)}, () => require("../capabilities/SecureStoreNativeFailure.ios.ts") as unknown],`,
+    )
+  }
   return [
     'import type { RegistryLoaders } from "../Registry.ts"',
     "",
@@ -606,6 +668,45 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
       registration: "lazy",
       authority: "supplemental",
       runtimeName: "KeepAwake capability",
+      reason: null,
+    },
+    {
+      sourceId: secureStoreWebCapabilitySourceId,
+      path: secureStoreWebCapabilityPath,
+      caseIds: secureStoreWebCapabilityCases,
+      runner: "expo-jasmine",
+      execution: "web-app",
+      platforms: ["web"],
+      executability: "runnable",
+      registration: "lazy",
+      authority: "supplemental",
+      runtimeName: "SecureStore web capability",
+      reason: null,
+    },
+    {
+      sourceId: secureStoreCapabilitySourceId,
+      path: secureStoreCapabilityPath,
+      caseIds: secureStoreCapabilityCases,
+      runner: "expo-jasmine",
+      execution: "native-app",
+      platforms: ["ios", "android"],
+      executability: "runnable",
+      registration: "lazy",
+      authority: "supplemental",
+      runtimeName: "SecureStore Effect capability",
+      reason: null,
+    },
+    {
+      sourceId: secureStoreNativeFailureSourceId,
+      path: secureStoreNativeFailurePath,
+      caseIds: secureStoreNativeFailureCases,
+      runner: "expo-jasmine",
+      execution: "native-app",
+      platforms: ["ios"],
+      executability: "runnable",
+      registration: "lazy",
+      authority: "supplemental",
+      runtimeName: "SecureStore native failure capability",
       reason: null,
     },
   ]

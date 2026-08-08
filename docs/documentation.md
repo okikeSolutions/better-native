@@ -74,13 +74,13 @@ Every DX trial must record the exact instruction, declarations, generated refere
 handwritten guides exposed to the participant or agent. Changing that bundle changes the evaluated
 condition and requires a new baseline.
 
-The current deterministic Network, Battery, and KeepAwake tasks expose their instructions and built
-public declarations while withholding package source, reference patches, native doubles, and
-graders. A versioned generated-reference and handwritten-guide bundle has not yet been integrated
-into those tasks. Until it is, the task results test the declared instruction and public type
-surface rather than the discoverability of the complete documentation system. Paid Network and
-Battery diagnostic runs are recorded; paid KeepAwake execution, accepted performance baselines, and
-human blind pilots remain pending, as recorded in
+The current deterministic Network, Battery, KeepAwake, and SecureStore tasks expose their
+instructions and built public declarations while withholding package source, reference patches,
+native doubles, and graders. A versioned generated-reference and handwritten-guide bundle has not
+yet been integrated into those tasks. Until it is, the task results test the declared instruction
+and public type surface rather than the discoverability of the complete documentation system. Paid
+Network and Battery diagnostic runs are recorded; paid KeepAwake and SecureStore execution,
+accepted performance baselines, and human blind pilots remain pending, as recorded in
 [the evaluation contract](./evals.md).
 
 ## Handwritten guides
@@ -95,6 +95,14 @@ Generated API documentation does not replace explanations that require product o
 - lifecycle, background, and platform limitations where applicable.
 
 Do not duplicate Expo's upstream API prose. Link to the applicable upstream documentation and document only better-native behavior, integration, evidence, and intentional differences.
+
+Current package guides:
+
+- [Battery](../packages/battery/README.md)
+- [Network](../packages/network/README.md)
+- [KeepAwake](../packages/keep-awake/README.md)
+- [SecureStore](../packages/secure-store/README.md)
+- [private Metro compatibility integration](../packages/metro/README.md)
 
 ## Generation flow
 

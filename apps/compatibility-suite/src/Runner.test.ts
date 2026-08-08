@@ -46,6 +46,8 @@ const keepAwake = registry.find(({ path }) => path.endsWith("/tests/KeepAwake.js
 if (keepAwake === undefined) throw new Error("KeepAwake registry source is missing")
 const network = registry.find(({ path }) => path.endsWith("/tests/Network.js"))
 if (network === undefined) throw new Error("Network registry source is missing")
+const secureStore = registry.find(({ path }) => path.endsWith("/tests/SecureStore.js"))
+if (secureStore === undefined) throw new Error("SecureStore registry source is missing")
 
 const outcomeTag = (outcome: CaseResult["outcome"]): string =>
   Match.value(outcome).pipe(
@@ -120,41 +122,38 @@ describe("compatibility runner", () => {
     }),
   )
 
-  it.effect(
-    "runs Basic, Battery, KeepAwake, and Network together in the interactive smoke cohort",
-    () => {
-      const sources = [basic, battery, keepAwake, network].map(
-        (entry): RegistryEntry => ({
-          ...entry,
-          load: () => ({
-            name: entry.runtimeName ?? entry.path,
-            test: (jasmine: {
-              describe: (name: string, body: () => void) => void
-              it: (name: string, body: () => void) => void
-            }) => {
-              jasmine.describe(entry.runtimeName ?? entry.path, () => {
-                jasmine.it("runs", () => undefined)
-              })
-            },
-          }),
+  it.effect("runs all reviewed capabilities together in the interactive smoke cohort", () => {
+    const sources = [basic, battery, keepAwake, network, secureStore].map(
+      (entry): RegistryEntry => ({
+        ...entry,
+        load: () => ({
+          name: entry.runtimeName ?? entry.path,
+          test: (jasmine: {
+            describe: (name: string, body: () => void) => void
+            it: (name: string, body: () => void) => void
+          }) => {
+            jasmine.describe(entry.runtimeName ?? entry.path, () => {
+              jasmine.it("runs", () => undefined)
+            })
+          },
+        }),
+      }),
+    )
+    return make(sources)
+      .run({ schemaVersion: 1, runId: "smoke-run", cohort: "interactive-smoke" }, tools)
+      .pipe(
+        provideLayer(configuration),
+        Effect.map((summary) => {
+          assert.lengthOf(summary.results, 5)
+          assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "passed"))
+          assert.isTrue(
+            sources.every(({ sourceId }) =>
+              summary.results.some(({ caseId }) => caseId.startsWith(`${sourceId}#`)),
+            ),
+          )
         }),
       )
-      return make(sources)
-        .run({ schemaVersion: 1, runId: "smoke-run", cohort: "interactive-smoke" }, tools)
-        .pipe(
-          provideLayer(configuration),
-          Effect.map((summary) => {
-            assert.lengthOf(summary.results, 4)
-            assert.isTrue(summary.results.every(({ outcome }) => outcome._tag === "passed"))
-            assert.isTrue(
-              sources.every(({ sourceId }) =>
-                summary.results.some(({ caseId }) => caseId.startsWith(`${sourceId}#`)),
-              ),
-            )
-          }),
-        )
-    },
-  )
+  })
 
   it.effect("runs the curated native E2E cohort without changing its membership", () => {
     const source: RegistryEntry = {
@@ -223,7 +222,44 @@ describe("compatibility runner", () => {
       )
   })
 
-  it.effect("rejects duplicate or non-curated explicit native sources", () =>
+  it.effect("runs an explicit supplemental native source without adding it to the cohort", () => {
+    const source: RegistryEntry = {
+      ...battery,
+      sourceId: "better-native-capability#test/Supplemental.ts",
+      path: "test/Supplemental.ts",
+      caseIds: ["better-native-capability#test/Supplemental.ts#runs@1"],
+      execution: "native-app",
+      executability: "runnable",
+      authority: "supplemental",
+      load: () => ({
+        name: "Supplemental native capability",
+        test: (jasmine: {
+          describe: (name: string, body: () => void) => void
+          it: (name: string, body: () => void) => void
+        }) => {
+          jasmine.describe("Supplemental native capability", () => {
+            jasmine.it("runs", () => undefined)
+          })
+        },
+      }),
+    }
+
+    return make([source])
+      .run(
+        { schemaVersion: 1, runId: "supplemental-native-run", sourceIds: [source.sourceId] },
+        tools,
+      )
+      .pipe(
+        provideLayer(configuration),
+        Effect.map((summary) => {
+          assert.lengthOf(summary.results, 1)
+          assert.strictEqual(summary.results[0]?.outcome._tag, "passed")
+          assert.isFalse(metadata.nativeE2eSourceIds.includes(source.sourceId))
+        }),
+      )
+  })
+
+  it.effect("rejects duplicate or non-curated upstream explicit native sources", () =>
     Effect.forEach(
       [[basic.sourceId, basic.sourceId], [battery.sourceId]],
       (sourceIds) =>

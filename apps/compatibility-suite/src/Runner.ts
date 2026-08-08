@@ -393,13 +393,19 @@ const decodeRunSelectionWith = (entries: ReadonlyArray<RegistryEntry>, input: un
     Effect.flatMap((selection): Effect.Effect<RunSelection, RunSelectionError> => {
       if ("cohort" in selection) return Effect.succeed(selection)
       if ("sourceIds" in selection) {
+        const isAllowedExplicitNativeSource = (sourceId: string): boolean => {
+          const entry = entries.find((candidate) => candidate.sourceId === sourceId)
+          return (
+            entry !== undefined &&
+            (nativeE2eSourceIds.has(sourceId) ||
+              (entry.authority === "supplemental" &&
+                entry.execution === "native-app" &&
+                entry.executability === "runnable"))
+          )
+        }
         const isValid =
           new Set(selection.sourceIds).size === selection.sourceIds.length &&
-          selection.sourceIds.every(
-            (sourceId) =>
-              nativeE2eSourceIds.has(sourceId) &&
-              entries.some((entry) => entry.sourceId === sourceId),
-          )
+          selection.sourceIds.every(isAllowedExplicitNativeSource)
         return isValid
           ? Effect.succeed(selection)
           : Effect.fail(new RunSelectionError({ reason: "invalid pinned native source selection" }))

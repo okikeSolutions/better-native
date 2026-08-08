@@ -14,14 +14,14 @@ JSON-safe outcomes and transcript events.
 
 ## Current status
 
-The foundation, synthetic proof, Network baseline, and Battery baseline are implemented and pass
-secretless validation. The reviewed `checkpoint-5-smoke` campaign selects one Network trial with
-the cheapest compatible profile before the larger `checkpoint-5-diagnostic` campaign runs five
-pinned profiles once on Network and once on Battery. The first diagnostic campaign is preserved
-unchanged under `evals/baselines/`; it is not an accepted performance baseline. Human blind pilots,
-calibrated thresholds, and model success-rate claims remain pending.
+The foundation, synthetic proof, Network, Battery, KeepAwake, and SecureStore baselines are
+implemented and pass secretless validation. The reviewed `checkpoint-5-smoke` campaign selects one
+Network trial with the cheapest compatible profile before the larger `checkpoint-5-diagnostic`
+campaign runs five pinned profiles once on each native task. Earlier diagnostic evidence is
+preserved unchanged under `evals/baselines/`; it is not an accepted performance baseline. Human
+blind pilots, calibrated thresholds, and model success-rate claims remain pending.
 
-The synthetic foundation, Network, and Battery tasks provide:
+The synthetic foundation and four native tasks provide:
 
 - versioned trial, gate, transcript, usage, and evidence schemas with Effect-branded identities,
   validated paths, and cryptographic values;
@@ -91,9 +91,15 @@ The KeepAwake task packs `@better-native/keep-awake` and supplies a controlled
 stays active until interruption, exactly-once scoped cleanup, typed unavailability, and typed native
 activation failure. An unscoped lease activates but fails the cleanup gate.
 
-Paid Network, Battery, and KeepAwake trials are opt-in. A reviewed campaign registry expands the
+The SecureStore task packs `@better-native/secure-store` and supplies a controlled
+`expo-secure-store` double. Its scenarios verify Layer provisioning, option forwarding, a write/read
+round trip, cleanup after success and read failure, and preservation of native read and write
+failures as `SecureStoreFailure`. An implementation without bracketed cleanup fails only the
+cleanup gate.
+
+Paid Network, Battery, KeepAwake, and SecureStore trials are opt-in. A reviewed campaign registry expands the
 same coding harness across exact model configurations, disables automatic fallbacks, orders the
-three task blocks, reserves the full per-trial cost allocation, and records tokens, turns, cost,
+four task blocks, reserves the full per-trial cost allocation, and records tokens, turns, cost,
 serving provider, and fingerprint. Fake-LanguageModel tests exercise the actual Effect AI toolkit and
 bounded multi-turn loop without network access. Following Pi's construction, the system prompt lists
 the tools actually exposed and keeps exploration proportional instead of requiring a declaration
@@ -149,7 +155,7 @@ bun run evals run --campaign checkpoint-5-smoke --confirm-paid
 ```
 
 The run uses the reusable dedicated eval key. Its finite server-side limit must be no greater than
-the reviewed global USD 8.00 ceiling, and its remaining allowance must cover the selected USD 0.05
+the reviewed global USD 10.00 ceiling, and its remaining allowance must cover the selected USD 0.05
 campaign allocation. Acceptance requires valid infrastructure, nonzero input/output/total tokens
 and actual cost, at least one required gate with a non-empty rationale, a canonical transcript, and
 process-authenticated public evidence. Task success is diagnostic at this stage; infrastructure and
@@ -198,8 +204,9 @@ result, and it isolates the old 12-request ceiling as a material source of trunc
 ### First live model matrix
 
 The reviewed diagnostic campaign deliberately spans price, provider, and model-family differences.
-Every profile is scheduled once on Network, Battery, and KeepAwake so a model is never confounded
-with only one task. Existing paid pilot evidence predates the KeepAwake block.
+Every profile is scheduled once on Network, Battery, KeepAwake, and SecureStore so a model is never
+confounded with only one task. Existing paid pilot evidence predates the KeepAwake and SecureStore
+blocks.
 
 | Profile                  | Pinned model                      | Pinned ZDR provider     | Token parameter         | Role                               | Observed stop per trial |
 | ------------------------ | --------------------------------- | ----------------------- | ----------------------- | ---------------------------------- | ----------------------: |
@@ -211,8 +218,8 @@ with only one task. Existing paid pilot evidence predates the KeepAwake block.
 
 All selected endpoints advertise reasoning and the bounded tool-calling parameters used by the
 adapter under zero-data-retention routing. Provider and model fallback remain disabled. The stops
-reserve USD 2.50 for any task subset. The complete fifteen-trial campaign has a tighter explicit USD
-6.00 campaign-wide ceiling. They are conservative post-response controls, not price forecasts; the
+reserve USD 2.50 for any task subset. The complete twenty-trial campaign has a tighter explicit USD
+8.00 campaign-wide ceiling. They are conservative post-response controls, not price forecasts; the
 first run's actual usage and cost are
 recorded as evidence. Prompt caching is disabled for this baseline.
 
@@ -244,9 +251,9 @@ gates. No provider fallback or automatic retry was added, and historical reports
 The required-gate judge is blocking at score `1` for reference controls. Expected no-op and broken
 controls, and the first uncalibrated live campaign, record the score with no threshold so the report
 shows partial credit and failed-gate rationale without confusing task failure with infrastructure
-failure. No LLM judge is used: Network, Battery, and KeepAwake are fully determined by isolated executable
-checks, and adding a grading model would add cost, variance, and correlated model bias without
-covering a currently unmeasurable criterion.
+failure. No LLM judge is used: Network, Battery, KeepAwake, and SecureStore are fully determined by
+isolated executable checks, and adding a grading model would add cost, variance, and correlated
+model bias without covering a currently unmeasurable criterion.
 
 Claude Opus 5 and GPT-5.6 Sol are deferred to a separately reviewed premium-frontier campaign. This
 keeps the first live run useful for validating the adapter and comparing cost tiers without paying
@@ -255,7 +262,7 @@ flagship rates while the live evidence path is still being piloted.
 Per-request output is clamped to the remaining output-token allowance. Total tokens and provider
 cost are necessarily observed after each response. `observedCostStopUsd` is therefore a soft stop
 that prevents another request after the observed threshold; one response can cross it. The reusable
-dedicated OpenRouter key's reviewed USD 8.00 server limit bounds total eval-key exposure rather than
+dedicated OpenRouter key's reviewed USD 10.00 server limit bounds total eval-key exposure rather than
 one campaign's exact spend. Missing actual cost evidence fails the trial, including when the model
 has already called `submit`.
 
@@ -266,9 +273,9 @@ usage, exit reason, and isolation policy. It is not yet a durable
 cross-process publication signature; that requires the later publisher described in the contract.
 
 `OPENROUTER_API_KEY` is one reusable key dedicated to eval execution, with a finite server-side
-spending limit no greater than the reviewed global USD 8.00 ceiling. Live preflight reads current-key
+spending limit no greater than the reviewed global USD 10.00 ceiling. Live preflight reads current-key
 metadata and rejects unlimited or broader keys, then requires `limit_remaining` to cover the exact
-selected campaign allocation. The complete diagnostic campaign allocation is USD 6.00; a
+selected campaign allocation. The complete diagnostic campaign allocation is USD 8.00; a
 single-task diagnostic subset is USD 2.50; the smoke allocation is USD 0.05. The in-process campaign
 budget rejects reservations beyond the selected allocation before another trial starts. Because
 execution is serialized, each completed trial's worst-case reservation is atomically settled to its

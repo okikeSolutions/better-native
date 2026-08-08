@@ -21,9 +21,9 @@ const ensureDirectoryEntry = (fs: FileSystem.FileSystem, target: string, linkRea
     // readLink observes a link without following it, including a dangling link. Check both before
     // and after creation so pre-existing redirections fail before child paths are created.
     yield* rejectSymbolicLink(fs, target, linkReason)
-    if (!(yield* fs.exists(target))) {
-      yield* fs.makeDirectory(target, { mode: 0o700 })
-    }
+    // Recursive mkdir is idempotent when independent eval workers create the same reviewed root.
+    // The link and directory-type checks on both sides retain the fail-closed path policy.
+    yield* fs.makeDirectory(target, { mode: 0o700, recursive: true })
     yield* rejectSymbolicLink(fs, target, linkReason)
     const info = yield* fs.stat(target)
     if (info.type !== "Directory") {

@@ -148,10 +148,32 @@ describe("hosted compatibility workflow", () => {
         androidEmulator,
         /steps\.attempt-1\.outcome == 'failure' && hashFiles\('\.artifacts\/runs\/\*\*\/flow\.yaml'\) != ''/,
       )
-      assert.strictEqual(workflow.match(/run: bun run expo:prepare/g)?.length, 4)
+      assert.strictEqual(workflow.match(/run: bun run compatibility:prepare/g)?.length, 4)
+      assert.notMatch(workflow, /run: bun run expo:prepare/)
+      assert.match(
+        rootPackage,
+        /"compatibility:prepare": "turbo run \/\/#compatibility:dependencies/,
+      )
+      const turboTasks = (
+        JSON.parse(turboConfig) as {
+          readonly tasks: Readonly<Record<string, { readonly dependsOn?: ReadonlyArray<string> }>>
+        }
+      ).tasks
+      assert.deepStrictEqual(
+        turboTasks["@better-native/compatibility-suite#typecheck"]?.dependsOn,
+        ["^typecheck", "^build"],
+      )
+      assert.deepStrictEqual(turboTasks["//#compatibility:dependencies"]?.dependsOn, [
+        "//#expo:toolchain",
+        "@better-native/network#build",
+        "@better-native/battery#build",
+        "@better-native/keep-awake#build",
+        "@better-native/secure-store#build",
+        "@better-native/metro#build",
+      ])
       assert.match(workflow, /Setup device-test profile/)
       assert.match(workflow, /Setup compare profile/)
-      assert.match(workflow, /Materialize pinned Expo/)
+      assert.match(workflow, /Prepare compatibility dependencies/)
       assert.match(workflow, /workspace="ios-\$\{mode\}"/)
       assert.match(workflow, /workspace="android-\$\{mode\}"/)
       assert.match(cacheSetup, /native-v1-/)

@@ -44,16 +44,18 @@ const runtimePhases = [
     code: (
       <div className="font-mono text-[11px] leading-6 text-muted-foreground sm:text-xs">
         <p>
-          <span className="text-primary">import</span> &#123; Effect, Schema &#125;{" "}
+          <span className="text-primary">import</span> &#123; Battery &#125;{" "}
           <span className="text-primary">from</span>{" "}
-          <span className="text-foreground">"effect"</span>
+          <span className="text-foreground">"@better-native/battery"</span>
         </p>
-        <p className="mt-4 text-foreground">const device = Effect.gen(function* () &#123;</p>
-        <p className="pl-4">
-          const battery = <span className="text-primary">yield*</span> Device.battery
+        <p>
+          <span className="text-primary">import</span> * as Effect{" "}
+          <span className="text-primary">from</span>{" "}
+          <span className="text-foreground">"effect/Effect"</span>
         </p>
-        <p className="pl-4">return Schema.decodeUnknown(Battery)(battery)</p>
-        <p className="text-foreground">&#125;)</p>
+        <p className="mt-4 text-foreground">const power = Battery.getPowerStateAsync.pipe(</p>
+        <p className="pl-4">Effect.provide(Battery.live),</p>
+        <p className="text-foreground">)</p>
       </div>
     ),
   },
@@ -67,7 +69,7 @@ const runtimePhases = [
     code: (
       <div className="font-mono text-[11px] leading-6 text-muted-foreground sm:text-xs">
         <p>
-          <span className="text-primary">expo-device</span> / battery adapter
+          <span className="text-primary">expo-battery</span> / Effect live layer
         </p>
         <p className="mt-4 text-foreground">request: native module</p>
         <p>platform: iOS · Android · Web</p>
@@ -324,7 +326,7 @@ function LandingPrototype() {
               </div>
               <div className="border-t border-border py-3 sm:border-l sm:border-t-0 sm:pl-4">
                 <dt className="text-muted-foreground">Current work</dt>
-                <dd className="mt-1 text-primary">Compatibility baseline</dd>
+                <dd className="mt-1 text-primary">Capability prototypes</dd>
               </div>
             </dl>
           </div>
@@ -355,8 +357,8 @@ function LandingPrototype() {
                 A disciplined bridge between Effect and the Expo ecosystem.
               </h2>
               <p className="mt-5 max-w-xl leading-7 text-muted-foreground">
-                The harness tests a concrete baseline against pinned revisions before capability
-                packages are introduced.
+                The harness tests each capability package against a concrete surface derived from
+                pinned upstream revisions.
               </p>
             </div>
             <div className="grid gap-3 font-mono text-xs">
@@ -372,7 +374,7 @@ function LandingPrototype() {
               <Separator />
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">status</span>
-                <span className="text-primary">establishing baseline</span>
+                <span className="text-primary">four native prototypes</span>
               </div>
             </div>
           </div>
@@ -435,13 +437,13 @@ function LandingPrototype() {
             {[
               [
                 "Now",
-                "Compatibility harness",
-                "Pinned revisions, generated manifest, and an executable suite.",
+                "Capability prototypes",
+                "Battery, Network, KeepAwake, and SecureStore on the shared harness.",
               ],
               [
                 "Next",
-                "Capability packages",
-                "Small, explicit APIs around native and Expo features.",
+                "Native evidence",
+                "Expand paired device runs and blind developer-experience pilots.",
               ],
               [
                 "Then",
@@ -478,8 +480,8 @@ function LandingPrototype() {
           <AccordionItem value="item-1">
             <AccordionTrigger>Is this ready for production?</AccordionTrigger>
             <AccordionContent>
-              Not yet. The project is establishing the compatibility harness before it exposes
-              capability packages. The landing page reflects that early, evidence-first stage.
+              Not yet. Four private capability prototypes are implemented, but platform evidence,
+              blind pilots, publishing, and stable-version guarantees are still incomplete.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-2">

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "taskType": "secure-store",
+  "id": "secure-store",
+  "version": "1",
+  "allowedSubmissionPaths": ["src/ReadTemporarySecret.ts"],
+  "entrypoint": "src/ReadTemporarySecret.ts",
+  "exportName": "temporarySecret",
+  "publicPackages": ["@better-native/secure-store"]
+}

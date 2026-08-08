@@ -69,14 +69,14 @@ export const readTaskFiles = (directory: string, fixturePath: Domain.TaskRelativ
 export const readEvaluatorBundle = (
   taskName: string,
   taskModule: string,
-  runnerStem: "effect" | "network" | "battery" | "keep-awake",
+  runnerStem: "effect" | "network" | "battery" | "keep-awake" | "secure-store",
 ) =>
   Effect.gen(function* () {
     const config = yield* Config.DxEvalConfig
     const fs = yield* FileSystem.FileSystem
     const controlledDoublePaths = Match.value(runnerStem).pipe(
       Match.when("effect", () => []),
-      Match.whenOr("network", "battery", "keep-awake", (nativeModule) => [
+      Match.whenOr("network", "battery", "keep-awake", "secure-store", (nativeModule) => [
         `tooling/dx-evals/fixtures/expo-${nativeModule}/package.json`,
         `tooling/dx-evals/fixtures/expo-${nativeModule}/index.js`,
         `tooling/dx-evals/fixtures/expo-${nativeModule}/index.d.ts`,
@@ -243,6 +243,10 @@ export const materializeCandidate = (task: TaskModel.TaskBase, submission: Valid
       directory: workspaceRoot,
       prefix: "trial-",
     })
+    // Native rootless Podman preserves host permissions for bind mounts. Temporary directories
+    // default to owner-only access, so the fixed unprivileged container user needs an explicit
+    // read-and-traverse boundary before the workspace is mounted read-only.
+    yield* fs.chmod(root, 0o755)
     yield* fs.writeFileString(
       path.join(root, "package.json"),
       '{"name":"@better-native/dx-eval-candidate","private":true,"type":"module"}\n',

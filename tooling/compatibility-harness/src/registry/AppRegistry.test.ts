@@ -72,6 +72,52 @@ describe("AppRegistry", () => {
       }).pipe(provideLayer(NodeServices.layer)),
   )
 
+  it.effect("selects the supplemental SecureStore capability only on web", () =>
+    Effect.gen(function* () {
+      const metadata = yield* AppRegistry.loadMetadata()
+      const sourceId =
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.web.ts"
+      assert.strictEqual(
+        AppRegistry.appExecutionUnitForSource(metadata, "web", sourceId)?.sourceId,
+        sourceId,
+      )
+      assert.isNull(AppRegistry.appExecutionUnitForSource(metadata, "ios", sourceId))
+      assert.isNull(AppRegistry.appExecutionUnitForSource(metadata, "android", sourceId))
+      assert.isFalse(
+        AppRegistry.appExecutionUnits(metadata, "ios").some((unit) => unit.sourceId === sourceId),
+      )
+    }).pipe(provideLayer(NodeServices.layer)),
+  )
+
+  it.effect("selects native SecureStore capabilities without expanding the native cohort", () =>
+    Effect.gen(function* () {
+      const metadata = yield* AppRegistry.loadMetadata()
+      const coreId =
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts"
+      const failureId =
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStoreNativeFailure.ios.ts"
+      assert.strictEqual(
+        AppRegistry.appExecutionUnitForSource(metadata, "ios", coreId)?.sourceId,
+        coreId,
+      )
+      assert.strictEqual(
+        AppRegistry.appExecutionUnitForSource(metadata, "android", coreId)?.sourceId,
+        coreId,
+      )
+      assert.strictEqual(
+        AppRegistry.appExecutionUnitForSource(metadata, "ios", failureId)?.sourceId,
+        failureId,
+      )
+      assert.isNull(AppRegistry.appExecutionUnitForSource(metadata, "web", coreId))
+      assert.isNull(AppRegistry.appExecutionUnitForSource(metadata, "android", failureId))
+      assert.isFalse(
+        AppRegistry.appExecutionUnits(metadata, "ios").some(
+          (unit) => unit.sourceId === coreId || unit.sourceId === failureId,
+        ),
+      )
+    }).pipe(provideLayer(NodeServices.layer)),
+  )
+
   it.effect("balances native shards by case count without changing curated membership", () =>
     Effect.gen(function* () {
       const metadata = yield* AppRegistry.loadMetadata()

@@ -16,9 +16,15 @@ export default defineConfig({
     include: ["tooling/dx-evals/evals/**/*.eval.ts"],
     testTimeout: liveEnabled ? 330_000 : 30_000,
     hookTimeout: liveEnabled ? 330_000 : 30_000,
-    fileParallelism: false,
+    // Paid campaigns remain strictly serialized. Secretless controls may use
+    // two workers without recreating the resource contention of the root suite.
+    fileParallelism: !liveEnabled,
+    maxWorkers: liveEnabled ? 1 : 2,
     sequence: {
       concurrent: false,
+    },
+    experimental: {
+      fsModuleCache: true,
     },
     reporters: ["vitest-evals/reporter", "json"],
     outputFile: {

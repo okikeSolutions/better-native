@@ -1,4 +1,5 @@
 import { existsSync, readdirSync } from "node:fs"
+import { availableParallelism } from "node:os"
 
 import { defineConfig } from "vitest/config"
 
@@ -18,6 +19,10 @@ const packageThresholds = Object.fromEntries(
     .map((entry) => [`packages/${entry.name}/src/**/*.ts`, productThresholds]),
 )
 
+const maxWorkers = Math.min(4, Math.max(1, Math.floor(availableParallelism() / 2)))
+
+const coverageEnabled = process.argv.includes("--coverage")
+
 export default defineConfig({
   test: {
     // Catalog tests scan the complete pinned Expo worktree. Keep this above
@@ -25,12 +30,25 @@ export default defineConfig({
     // failures while process-level hang tests retain their own tight bounds.
     testTimeout: 60_000,
     pool: "threads",
+    // Compiler, Podman, Metro, and repository-integration tests are CPU and
+    // memory intensive. Leave half the machine to child processes and cap the
+    // host suite at the measured four-worker Podman concurrency ceiling.
+    maxWorkers,
     include: [
       "tooling/**/{src,test}/**/*.test.ts",
-      "tooling/dx-evals/evals/{synthetic,network,battery,keep-awake}.eval.ts",
       "packages/**/{src,test}/**/*.test.ts",
       "apps/**/{src,test}/**/*.test.ts",
+      // The ordinary host suite stays separate from process-heavy eval controls. Coverage still
+      // executes those controls because they exercise the DX controller's public harness paths.
+      ...(coverageEnabled
+        ? ["tooling/dx-evals/evals/{synthetic,network,battery,keep-awake,secure-store}.eval.ts"]
+        : []),
     ],
+    experimental: {
+      // Migration work repeatedly exercises a small test slice with a large
+      // Effect module graph. Persist transforms between those invocations.
+      fsModuleCache: true,
+    },
     sequence: {
       concurrent: false,
     },

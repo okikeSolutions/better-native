@@ -36,3 +36,6 @@ jobs:
 
       - name: Check
         run: bun run check
+
+      - name: Validate deterministic DX evals
+        run: bun run evals validate

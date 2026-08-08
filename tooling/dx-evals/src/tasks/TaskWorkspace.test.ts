@@ -12,6 +12,7 @@ import { exportTask, makeAgentWorkspaceSeed, materializeCandidate } from "./Task
 import * as Battery from "./Battery.ts"
 import * as KeepAwake from "./KeepAwake.ts"
 import * as Network from "./Network.ts"
+import * as SecureStore from "./SecureStore.ts"
 import * as PackageArtifact from "./PackageArtifact.ts"
 import * as Synthetic from "./Synthetic.ts"
 import { provideLayer } from "../TestLayers.ts"
@@ -267,6 +268,70 @@ describe("Keep Awake task boundary", () => {
       )
       assert.include(declarations?.content ?? "", 'export * as KeepAwake from "./KeepAwake.ts"')
       assert.isTrue(seed.packageDigests.has("@better-native/keep-awake"))
+      assert.isFalse(paths.some((path) => path.endsWith(".js") || path.endsWith(".js.map")))
+    }).pipe(provideLayer(baseLayer)),
+  )
+})
+
+describe("SecureStore task boundary", () => {
+  it.effect("rejects duplicate grader scenarios", () =>
+    Effect.gen(function* () {
+      const result = yield* Effect.exit(
+        SecureStore.validateScenarioIds([
+          "round-trip",
+          "read-failure",
+          "write-failure",
+          "write-failure",
+        ]),
+      )
+      assert.strictEqual(result._tag, "Failure")
+    }),
+  )
+
+  it.effect("exports only the SecureStore fixture and public package identity", () =>
+    Effect.gen(function* () {
+      const task = yield* SecureStore.load
+      const taskExport = exportTask(task)
+      assert.deepStrictEqual(
+        taskExport.files.map((file) => file.path),
+        ["instruction.md", "task.json", "fixture/src/ReadTemporarySecret.ts"],
+      )
+      assert.deepStrictEqual(taskExport.publicPackages, ["@better-native/secure-store"])
+    }).pipe(provideLayer(baseLayer)),
+  )
+
+  it.effect("binds the SecureStore double and runner into private evaluator evidence", () =>
+    Effect.gen(function* () {
+      const task = yield* SecureStore.load
+      const paths = task.evaluatorBundle.map((file) => String(file.path))
+      assert.include(paths, "tooling/dx-evals/fixtures/expo-secure-store/package.json")
+      assert.include(paths, "tooling/dx-evals/fixtures/expo-secure-store/index.js")
+      assert.include(paths, "tooling/dx-evals/fixtures/expo-secure-store/index.d.ts")
+      assert.include(paths, "tooling/dx-evals/runner/observe-secure-store.ts")
+      assert.include(paths, "tooling/dx-evals/runner/worker-secure-store.ts")
+    }).pipe(provideLayer(baseLayer)),
+  )
+
+  it.effect("gives agents the packed SecureStore declaration graph", () =>
+    Effect.gen(function* () {
+      const task = yield* SecureStore.load
+      const seed = yield* makeAgentWorkspaceSeed(task)
+      const paths = seed.files.map((file) => String(file.path))
+      const declarations = seed.files.find((file) => file.path.endsWith("build/index.d.ts"))
+      assert.deepStrictEqual(
+        paths.filter((path) => !path.startsWith("node_modules/effect/")),
+        [
+          "instruction.md",
+          "task.json",
+          "src/ReadTemporarySecret.ts",
+          "public-packages/@better-native/secure-store/package.json",
+          "public-packages/@better-native/secure-store/build/Expo.d.ts",
+          "public-packages/@better-native/secure-store/build/SecureStore.d.ts",
+          "public-packages/@better-native/secure-store/build/index.d.ts",
+        ],
+      )
+      assert.include(declarations?.content ?? "", 'export * as SecureStore from "./SecureStore.ts"')
+      assert.isTrue(seed.packageDigests.has("@better-native/secure-store"))
       assert.isFalse(paths.some((path) => path.endsWith(".js") || path.endsWith(".js.map")))
     }).pipe(provideLayer(baseLayer)),
   )

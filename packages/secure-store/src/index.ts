@@ -1,0 +1,23 @@
+export * as SecureStore from "./SecureStore.ts"
+export {
+  AFTER_FIRST_UNLOCK,
+  AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
+  ALWAYS,
+  ALWAYS_THIS_DEVICE_ONLY,
+  canUseBiometricAuthentication,
+  deleteItemAsync,
+  getItem,
+  getItemAsync,
+  isAvailableAsync,
+  live,
+  SecureStore as SecureStoreService,
+  SecureStoreFailure,
+  setItem,
+  setItemAsync,
+  WHEN_PASSCODE_SET_THIS_DEVICE_ONLY,
+  WHEN_UNLOCKED,
+  WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+  type KeychainAccessibilityConstant,
+  type SecureStoreOptions,
+  type Service,
+} from "./SecureStore.ts"
