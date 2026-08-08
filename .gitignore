@@ -78,6 +78,7 @@ apps/compatibility-suite/.expo/
 apps/compatibility-suite/android/
 apps/compatibility-suite/ios/
 apps/landing/dist/
+packages/cli/dist/
 
 # Turborepo
 .turbo

@@ -14,7 +14,7 @@ import { supervisedNative, supervisedNativePair } from "./commands/NativeCommand
 import { supervisedExternal, supervisedRunnerPlans, compareRuns } from "./commands/RunCommands.ts"
 
 /** Root CLI command exposing every compatibility harness workflow. */
-export const command = Command.make("better-native").pipe(
+export const command = Command.make("compatibility-harness").pipe(
   Command.withDescription("Expo compatibility harness for better-native"),
   Command.withSubcommands([
     generate,

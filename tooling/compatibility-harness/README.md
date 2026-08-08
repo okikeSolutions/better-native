@@ -6,10 +6,10 @@ Expo and Effect revisions, generates a runnable compatibility app, captures
 immutable build and run evidence, and compares an upstream Expo baseline with a
 candidate build that routes configured APIs to Better Native.
 
-Run the CLI from the repository root through the `better-native` script:
+Run the CLI from the repository root through the `compatibility-harness` script:
 
 ```sh
-bun run better-native --help
+bun run compatibility-harness --help
 ```
 
 The root `bun run test:coverage` command includes this harness's complete `src` controller as its
@@ -76,13 +76,13 @@ bun run check:generated
 # Print the current compatibility denominator and coverage report.
 bun run matrix
 bun run coverage
-bun run better-native coverage --json
+bun run compatibility-harness coverage --json
 
 # Render Effect-native API reference Markdown from source TSDoc.
 bun run docs:api
 
 # Inspect installed Expo packages and expanded wildcard entrypoints.
-bun run better-native doctor
+bun run compatibility-harness doctor
 ```
 
 `generate` also writes inspection artifacts under `.artifacts/compatibility`.
@@ -92,30 +92,30 @@ Those files are diagnostic outputs, while the generated files checked by
 ## Command reference
 
 Root scripts are convenience aliases for harness subcommands. Prefer the root
-scripts for common local workflows and `bun run better-native <subcommand>` when
+scripts for common local workflows and `bun run compatibility-harness <subcommand>` when
 you need flags that are not exposed by an alias.
 
-| Command                                                             | Purpose                                                                                     | Primary output                                                               |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `bun run better-native validate` / `bun run compatibility`          | Validate pinned sources, surface lock, ownership policy, expectations, and suite discovery. | Terminal verdict.                                                            |
-| `bun run better-native generate` / `bun run generate`               | Regenerate compatibility catalog artifacts and compatibility-suite generated files.         | `.artifacts/compatibility/*` and `apps/compatibility-suite/src/generated/*`. |
-| `bun run better-native matrix` / `bun run matrix`                   | Print the current compatibility denominator.                                                | Terminal summary.                                                            |
-| `bun run better-native doctor`                                      | Inspect installed Expo packages and expanded wildcard entrypoints.                          | Terminal diagnostics.                                                        |
-| `bun run better-native coverage` / `bun run coverage`               | Print Better Native API coverage for replaced Expo packages.                                | Terminal table.                                                              |
-| `bun run better-native coverage --json` / `bun run coverage --json` | Print machine-readable API coverage.                                                        | JSON object on stdout.                                                       |
-| `bun run better-native security-audit` / `bun run security:audit`   | Audit dependency exceptions against reviewed Expo paths.                                    | Terminal verdict.                                                            |
-| `bun run better-native update-surface-lock`                         | Deliberately update the pinned Expo surface lock after reviewing surface drift.             | `compatibility/surface-lock.json`.                                           |
-| `bun run better-native prepare-expo` / `bun run expo:toolchain`     | Prepare and validate the pinned Expo toolchain.                                             | Toolchain evidence under `.artifacts`.                                       |
-| `bun run better-native supervise-build`                             | Build one isolated upstream or candidate app.                                               | Build record JSON.                                                           |
-| `bun run better-native supervise-build-pair`                        | Build upstream and candidate apps from one pinned Expo materialization.                     | Paired build records.                                                        |
-| `bun run better-native supervise-web` / `bun run compatibility:web` | Build and execute an upstream or candidate web compatibility run.                           | Run evidence under `.artifacts/runs`.                                        |
-| `bun run better-native supervise-web-pair`                          | Execute paired upstream and candidate web runs.                                             | Paired run evidence.                                                         |
-| `bun run better-native probe-web`                                   | Probe one opaque Expo export resolution.                                                    | Probe JSON.                                                                  |
-| `bun run better-native supervise-native`                            | Execute one generated source shard against an imported native build.                        | Native run evidence.                                                         |
-| `bun run better-native supervise-native-pair`                       | Execute paired native shards against imported upstream and candidate builds.                | Paired native run evidence.                                                  |
-| `bun run better-native supervise-external`                          | Execute one reviewed external-run request.                                                  | Normalized external evidence.                                                |
-| `bun run better-native supervise-runner-plans`                      | Execute a shard of generated external runner plans.                                         | Runner-plan report JSON.                                                     |
-| `bun run better-native compare-runs`                                | Compare upstream and candidate evidence and reject regressions or missing coverage.         | Differential verdict JSON.                                                   |
+| Command                                                                     | Purpose                                                                                     | Primary output                                                               |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `bun run compatibility-harness validate` / `bun run compatibility`          | Validate pinned sources, surface lock, ownership policy, expectations, and suite discovery. | Terminal verdict.                                                            |
+| `bun run compatibility-harness generate` / `bun run generate`               | Regenerate compatibility catalog artifacts and compatibility-suite generated files.         | `.artifacts/compatibility/*` and `apps/compatibility-suite/src/generated/*`. |
+| `bun run compatibility-harness matrix` / `bun run matrix`                   | Print the current compatibility denominator.                                                | Terminal summary.                                                            |
+| `bun run compatibility-harness doctor`                                      | Inspect installed Expo packages and expanded wildcard entrypoints.                          | Terminal diagnostics.                                                        |
+| `bun run compatibility-harness coverage` / `bun run coverage`               | Print Better Native API coverage for replaced Expo packages.                                | Terminal table.                                                              |
+| `bun run compatibility-harness coverage --json` / `bun run coverage --json` | Print machine-readable API coverage.                                                        | JSON object on stdout.                                                       |
+| `bun run compatibility-harness security-audit` / `bun run security:audit`   | Audit dependency exceptions against reviewed Expo paths.                                    | Terminal verdict.                                                            |
+| `bun run compatibility-harness update-surface-lock`                         | Deliberately update the pinned Expo surface lock after reviewing surface drift.             | `compatibility/surface-lock.json`.                                           |
+| `bun run compatibility-harness prepare-expo` / `bun run expo:toolchain`     | Prepare and validate the pinned Expo toolchain.                                             | Toolchain evidence under `.artifacts`.                                       |
+| `bun run compatibility-harness supervise-build`                             | Build one isolated upstream or candidate app.                                               | Build record JSON.                                                           |
+| `bun run compatibility-harness supervise-build-pair`                        | Build upstream and candidate apps from one pinned Expo materialization.                     | Paired build records.                                                        |
+| `bun run compatibility-harness supervise-web` / `bun run compatibility:web` | Build and execute an upstream or candidate web compatibility run.                           | Run evidence under `.artifacts/runs`.                                        |
+| `bun run compatibility-harness supervise-web-pair`                          | Execute paired upstream and candidate web runs.                                             | Paired run evidence.                                                         |
+| `bun run compatibility-harness probe-web`                                   | Probe one opaque Expo export resolution.                                                    | Probe JSON.                                                                  |
+| `bun run compatibility-harness supervise-native`                            | Execute one generated source shard against an imported native build.                        | Native run evidence.                                                         |
+| `bun run compatibility-harness supervise-native-pair`                       | Execute paired native shards against imported upstream and candidate builds.                | Paired native run evidence.                                                  |
+| `bun run compatibility-harness supervise-external`                          | Execute one reviewed external-run request.                                                  | Normalized external evidence.                                                |
+| `bun run compatibility-harness supervise-runner-plans`                      | Execute a shard of generated external runner plans.                                         | Runner-plan report JSON.                                                     |
+| `bun run compatibility-harness compare-runs`                                | Compare upstream and candidate evidence and reject regressions or missing coverage.         | Differential verdict JSON.                                                   |
 
 ## Coverage report
 
@@ -262,12 +262,12 @@ For the differential check, `GITHUB_SHA` identifies the candidate revision:
 
 ```sh
 export GITHUB_SHA="$(git rev-parse HEAD)"
-bun run better-native supervise-web-pair \
+bun run compatibility-harness supervise-web-pair \
   --build-id local-web-pair \
   --timeout-ms 1500000 \
   --port 8091
 
-bun run better-native compare-runs \
+bun run compatibility-harness compare-runs \
   --upstream .artifacts/runs/local-web-pair-upstream-run \
   --candidate .artifacts/runs/local-web-pair-candidate-run
 ```
@@ -300,7 +300,7 @@ The generated runner-plan ledger accounts for Expo tests that cannot run inside
 the compatibility app. Run a family or a shard with an explicit report path:
 
 ```sh
-bun run better-native supervise-runner-plans \
+bun run compatibility-harness supervise-runner-plans \
   --runner jest \
   --shard-index 0 \
   --shard-count 1 \
@@ -324,7 +324,7 @@ legitimate Expo surface change, review the generated surface and update the
 lock deliberately:
 
 ```sh
-bun run better-native update-surface-lock
+bun run compatibility-harness update-surface-lock
 bun run generate
 bun run compatibility
 ```

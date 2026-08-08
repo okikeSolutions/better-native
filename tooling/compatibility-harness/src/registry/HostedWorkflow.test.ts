@@ -189,7 +189,7 @@ describe("hosted compatibility workflow", () => {
       assert.match(workflow, /Refusing unsafe archive entry/)
       assert.match(workflow, /\$\{BUILD_ID\}-upstream\/record\.json/)
       assert.notMatch(workflow, /COMPATIBILITY_MODE:\+-upstream/)
-      assert.match(rootPackage, /"better-native": "node --experimental-strip-types/)
+      assert.match(rootPackage, /"compatibility-harness": "node --experimental-strip-types/)
       assert.match(harnessPackage, /"@effect\/platform-node": "4\.0\.0-beta\.102"/)
       assert.notMatch(harnessPackage, /@effect\/platform-bun/)
     }).pipe(provideLayer(NodeServices.layer)),

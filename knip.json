@@ -29,6 +29,10 @@
       "entry": ["src/BetterNativeMetroConfig.ts", "test/**/*.test.ts"],
       "project": ["src/**/*.ts", "test/**/*.test.ts"]
     },
+    "packages/cli": {
+      "entry": ["src/bin.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.test.ts"]
+    },
     "packages/metro/test/fixtures/paired": {
       "entry": ["BuildProcess.ts", "index.js"],
       "project": ["*.{ts,js}"],

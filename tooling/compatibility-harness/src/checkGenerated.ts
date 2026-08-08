@@ -30,7 +30,7 @@ const snapshot = async (): Promise<ReadonlyMap<string, string>> => {
 }
 
 const before = await snapshot()
-const generated = Bun.spawn(["bun", "run", "better-native", "generate"], {
+const generated = Bun.spawn(["bun", "run", "compatibility-harness", "generate"], {
   cwd: process.cwd(),
   stdin: "inherit",
   stdout: "inherit",

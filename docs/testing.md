@@ -113,7 +113,7 @@ Native parity is a paired comparison, not a host-test result:
 2. Build a candidate Release app that resolves the reviewed replacements.
 3. Run the same source or explicit smoke selection on the same simulator, emulator, or device state.
 4. Capture each app's chunked `BETTER_NATIVE_RESULT_V1` result and immutable build/run evidence.
-5. Compare the records with `bun run better-native compare-runs`.
+5. Compare the records with `bun run compatibility-harness compare-runs`.
 
 The curated `native-e2e` cohort remains owned by pinned Expo source and must not be changed to
 improve Better Native coverage. Capability-specific parity runs are separate and opt-in.
@@ -123,6 +123,11 @@ validly exercise; they must remain separate from the upstream native cohort and 
 The reviewed KeepAwake capability is one such source: it is selectable on web, iOS, and Android and
 exercises balanced tags, hook mount/unmount, listener cleanup, web release events, platform-specific
 errors, and concurrent-tag isolation. Its inclusion does not add it to Expo's curated native cohort.
+The reviewed Network and Battery Effect capabilities are likewise selectable without changing that
+cohort. Network exercises live state and IPv4 reads, airplane-mode values or typed native
+unavailability, Stream acquisition and release, and Atom hydration. Battery exercises every live
+read, the combined power state, all three native Stream lifecycles, and all four Atom lifecycles.
+Paired Release comparisons for both sources pass on web, iOS, and Android with zero divergences.
 The reviewed SecureStore web capability is separately selectable on web and exercises Expo's actual
 unavailable result plus typed `SecureStoreFailure` mapping for unsupported asynchronous and
 synchronous storage operations. It does not claim iOS or Android behavior.
