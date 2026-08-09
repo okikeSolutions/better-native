@@ -18,8 +18,8 @@ const deniedIdentifiers = new Set([
   "require",
 ])
 
-const isAllowedModule = (specifier: string, publicPackage: string) =>
-  specifier === publicPackage || specifier === "effect" || specifier.startsWith("effect/")
+const isAllowedModule = (specifier: string, publicPackages: ReadonlySet<string>) =>
+  publicPackages.has(specifier) || specifier === "effect" || specifier.startsWith("effect/")
 
 const isModuleDeclaration = (node: ts.Node): node is ts.ImportDeclaration | ts.ExportDeclaration =>
   ts.isImportDeclaration(node) || ts.isExportDeclaration(node)
@@ -42,7 +42,10 @@ const isDeniedIdentifier = (node: ts.Node): node is ts.Identifier =>
  * Checks candidate syntax through TypeScript's AST instead of regexes, including computed imports,
  * CommonJS loading, process globals, and deep/internal package paths.
  */
-export const checkPublicConsumer = (source: string, publicPackage: string): Result => {
+export const checkPublicConsumerSet = (
+  source: string,
+  expectedPublicPackages: ReadonlyArray<string>,
+): Result => {
   const file = ts.createSourceFile(
     "candidate.ts",
     source,
@@ -51,15 +54,16 @@ export const checkPublicConsumer = (source: string, publicPackage: string): Resu
     ts.ScriptKind.TS,
   )
   const reasons = new Set<string>()
-  let importsPublicPackage = false
+  const publicPackages = new Set(expectedPublicPackages)
+  const importedPublicPackages = new Set<string>()
 
   const checkModule = (value: ts.Expression | undefined) => {
     if (value === undefined || !ts.isStringLiteralLike(value)) {
       reasons.add("dynamic-module-specifier")
       return
     }
-    if (value.text === publicPackage) importsPublicPackage = true
-    if (!isAllowedModule(value.text, publicPackage)) reasons.add(`forbidden-module:${value.text}`)
+    if (publicPackages.has(value.text)) importedPublicPackages.add(value.text)
+    if (!isAllowedModule(value.text, publicPackages)) reasons.add(`forbidden-module:${value.text}`)
   }
 
   const visit = (node: ts.Node): void => {
@@ -82,6 +86,14 @@ export const checkPublicConsumer = (source: string, publicPackage: string): Resu
     ts.forEachChild(node, visit)
   }
   visit(file)
-  if (!importsPublicPackage) reasons.add("missing-public-package-import")
+  for (const publicPackage of expectedPublicPackages) {
+    if (!importedPublicPackages.has(publicPackage)) {
+      reasons.add(`missing-public-package-import:${publicPackage}`)
+    }
+  }
   return { passed: reasons.size === 0, reasons: [...reasons].toSorted() }
 }
+
+/** Checks a consumer that is expected to import one public capability package. */
+export const checkPublicConsumer = (source: string, publicPackage: string): Result =>
+  checkPublicConsumerSet(source, [publicPackage])

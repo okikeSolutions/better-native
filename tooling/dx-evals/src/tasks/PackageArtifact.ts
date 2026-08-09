@@ -37,7 +37,7 @@ const PackageManifest = Schema.Struct({
 
 /** One validated local package archive shared by agent discovery and clean-room execution. */
 export interface PackedPackageArtifact {
-  readonly spec: TaskModel.PackedPackageSpec
+  readonly spec: TaskModel.PackedPackageUnitSpec
   readonly archivePath: string
   readonly digest: Domain.Sha256Digest
   readonly manifestContent: string
@@ -47,7 +47,7 @@ export interface PackedPackageArtifact {
 /** Managed package-artifact operations. */
 export interface Service {
   readonly prepare: (
-    spec: TaskModel.PackedPackageSpec,
+    spec: TaskModel.PackedPackageUnitSpec,
   ) => Effect.Effect<PackedPackageArtifact, TaskBundleInvalid | PlatformError.PlatformError>
   readonly install: (
     artifact: PackedPackageArtifact,
@@ -72,7 +72,7 @@ const decodeSpec = (encoded: string) =>
     Effect.mapError(() => new TaskBundleInvalid({ reason: "invalid-packed-package-cache-key" })),
   )
 
-const specKey = (spec: TaskModel.PackedPackageSpec): string =>
+const specKey = (spec: TaskModel.PackedPackageUnitSpec): string =>
   JSON.stringify({
     taskName: spec.taskName,
     packageDirectory: spec.packageDirectory,
@@ -375,7 +375,7 @@ export const layer = Layer.effect(
       prefix: "artifacts-",
     })
 
-    const prepare = (spec: TaskModel.PackedPackageSpec) =>
+    const prepare = (spec: TaskModel.PackedPackageUnitSpec) =>
       Effect.gen(function* () {
         const packageRoot = path.join(config.repositoryRoot, "packages", spec.packageDirectory)
         const scratch = yield* fs.makeTempDirectory({

@@ -55,12 +55,17 @@ export interface FixtureFile {
   readonly content: string
 }
 
-/** Public package and native double installed into a clean-room candidate workspace. */
-export interface PackedPackageSpec {
+/** One public package and controlled native double installed for a DX task. */
+export interface PackedPackageUnitSpec {
   readonly taskName: string
   readonly packageDirectory: string
   readonly packageName: string
   readonly nativeDouble: string
+}
+
+/** Primary public package plus any public companion packages required by its contract. */
+export interface PackedPackageSpec extends PackedPackageUnitSpec {
+  readonly companionPackages?: ReadonlyArray<PackedPackageUnitSpec>
 }
 
 /** Shared task data consumed by task-independent workspace machinery. */
@@ -94,6 +99,7 @@ export interface CandidateWorkspace {
   readonly root: string
   readonly packageSource: "none" | "packed-public-package"
   readonly packageDigest: Domain.Sha256Digest | null
+  readonly packageDigests: ReadonlyMap<string, Domain.Sha256Digest>
 }
 
 /** Task-owned verification output consumed by the generic trial runner. */

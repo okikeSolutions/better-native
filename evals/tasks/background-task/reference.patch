@@ -1,0 +1,21 @@
+--- a/src/ObserveTask.ts
++++ b/src/ObserveTask.ts
+@@ -1,3 +1,16 @@
+ import * as Effect from "effect/Effect"
++import * as Layer from "effect/Layer"
++import * as ManagedRuntime from "effect/ManagedRuntime"
++import { BackgroundTask } from "@better-native/background-task"
++import { TaskManager } from "@better-native/task-manager"
+-
++
+-export const registration = Effect.succeed("registered")
++const runtime = ManagedRuntime.make(Layer.empty)
++const definition = BackgroundTask.defineTask(
++  "dx.eval.background",
++  runtime,
++  ({ data }) => Effect.succeed((data as { readonly value: string }).value),
++)
++
++export const registration = BackgroundTask.register(definition, {
++  minimumInterval: 15,
++}).pipe(Effect.provide(Layer.merge(BackgroundTask.live, TaskManager.live)))

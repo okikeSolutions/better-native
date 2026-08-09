@@ -1,0 +1,16 @@
+--- a/src/ObserveNotifications.ts
++++ b/src/ObserveNotifications.ts
+@@ -1,3 +1,11 @@
+ import * as Effect from "effect/Effect"
++import { Notifications } from "@better-native/notifications"
++import * as Stream from "effect/Stream"
+-
++
+-export const observeNotification = Effect.succeed("missing")
++export const observeNotification = Notifications.addNotificationReceivedListener.pipe(
++  Stream.runHead,
++  Effect.map((notification) =>
++    notification.pipe((value) => value._tag === "Some" ? value.value.request.identifier : "missing")
++  ),
++  Effect.provide(Notifications.live),
++)

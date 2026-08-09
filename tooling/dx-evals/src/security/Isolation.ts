@@ -34,6 +34,11 @@ export interface IsolationRequest {
     | "observe-battery.ts"
     | "observe-keep-awake.ts"
     | "observe-secure-store.ts"
+    | "observe-sqlite.ts"
+    | "observe-task-manager.ts"
+    | "observe-background-task.ts"
+    | "observe-location.ts"
+    | "observe-notifications.ts"
     | "check-types.ts"
   readonly runnerArguments?: ReadonlyArray<string>
   readonly publicCompileContract?: TaskModel.PublicCompileContract

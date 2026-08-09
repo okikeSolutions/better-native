@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "taskType": "task-manager",
+  "id": "task-manager",
+  "version": "1",
+  "allowedSubmissionPaths": ["src/ObserveTask.ts"],
+  "entrypoint": "src/ObserveTask.ts",
+  "exportName": "defined",
+  "publicPackages": ["@better-native/task-manager"]
+}

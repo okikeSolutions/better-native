@@ -74,12 +74,13 @@ Every DX trial must record the exact instruction, declarations, generated refere
 handwritten guides exposed to the participant or agent. Changing that bundle changes the evaluated
 condition and requires a new baseline.
 
-The current deterministic Network, Battery, KeepAwake, and SecureStore tasks expose their
+The current deterministic Network, Battery, KeepAwake, SecureStore, SQLite, Task Manager,
+Background Task, Location, and Notifications tasks expose their
 instructions and built public declarations while withholding package source, reference patches,
 native doubles, and graders. A versioned generated-reference and handwritten-guide bundle has not
 yet been integrated into those tasks. Until it is, the task results test the declared instruction
 and public type surface rather than the discoverability of the complete documentation system. Paid
-Network and Battery diagnostic runs are recorded; paid KeepAwake and SecureStore execution,
+Network and Battery diagnostic runs are recorded; paid KeepAwake, SecureStore, and SQLite execution,
 accepted performance baselines, and human blind pilots remain pending, as recorded in
 [the evaluation contract](./evals.md).
 
@@ -102,6 +103,11 @@ Current package guides:
 - [Network](../packages/network/README.md)
 - [KeepAwake](../packages/keep-awake/README.md)
 - [SecureStore](../packages/secure-store/README.md)
+- [SQLite](../packages/sqlite/README.md)
+- [Task Manager](../packages/task-manager/README.md)
+- [Background Task](../packages/background-task/README.md)
+- [Location](../packages/location/README.md)
+- [Notifications](../packages/notifications/README.md)
 - [private Metro compatibility integration](../packages/metro/README.md)
 
 ## Generation flow

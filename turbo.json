@@ -39,7 +39,12 @@
         "@better-native/network#build",
         "@better-native/battery#build",
         "@better-native/keep-awake#build",
-        "@better-native/secure-store#build"
+        "@better-native/secure-store#build",
+        "@better-native/sqlite#build",
+        "@better-native/task-manager#build",
+        "@better-native/background-task#build",
+        "@better-native/location#build",
+        "@better-native/notifications#build"
       ],
       "passThroughEnv": ["BETTER_NATIVE_EVAL_RUN_ID"],
       "outputs": []
@@ -52,7 +57,12 @@
         "@better-native/network#build",
         "@better-native/battery#build",
         "@better-native/keep-awake#build",
-        "@better-native/secure-store#build"
+        "@better-native/secure-store#build",
+        "@better-native/sqlite#build",
+        "@better-native/task-manager#build",
+        "@better-native/background-task#build",
+        "@better-native/location#build",
+        "@better-native/notifications#build"
       ],
       "passThroughEnv": [
         "OPENROUTER_API_KEY",
@@ -73,6 +83,11 @@
         "@better-native/battery#build",
         "@better-native/keep-awake#build",
         "@better-native/secure-store#build",
+        "@better-native/sqlite#build",
+        "@better-native/task-manager#build",
+        "@better-native/background-task#build",
+        "@better-native/location#build",
+        "@better-native/notifications#build",
         "@better-native/metro#build"
       ],
       "outputs": []

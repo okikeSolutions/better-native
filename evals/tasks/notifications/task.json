@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "taskType": "notifications",
+  "id": "notifications",
+  "version": "1",
+  "allowedSubmissionPaths": ["src/ObserveNotifications.ts"],
+  "entrypoint": "src/ObserveNotifications.ts",
+  "exportName": "observeNotification",
+  "publicPackages": ["@better-native/notifications"]
+}

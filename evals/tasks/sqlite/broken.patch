@@ -1,0 +1,18 @@
+--- a/src/ReadTemporaryValue.ts
++++ b/src/ReadTemporaryValue.ts
+@@ -1,3 +1,13 @@
++import { SqliteClient } from "@better-native/sqlite"
+ import * as Effect from "effect/Effect"
++import * as SqlClient from "effect/unstable/sql/SqlClient"
+-
++
+-export const temporaryValue = Effect.succeed("controlled-value")
++export const temporaryValue = Effect.scoped(
++  Effect.gen(function* () {
++    const sql = yield* SqlClient.SqlClient
++    yield* sql`CREATE TABLE IF NOT EXISTS values (value TEXT NOT NULL)`
++    yield* sql`INSERT INTO values (value) VALUES (${"controlled-value"})`
++    const rows = yield* sql<{ readonly value: string }>`SELECT value FROM values`
++    return rows[0]?.value ?? ""
++  }).pipe(Effect.provide(SqliteClient.layer({ databaseName: "dx.eval.sqlite" }))),
++)

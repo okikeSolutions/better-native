@@ -1,0 +1,7 @@
+{
+  "name": "expo-background-task",
+  "version": "0.0.0-dx-eval",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts"
+}

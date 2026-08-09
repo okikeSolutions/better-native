@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "taskType": "location",
+  "id": "location",
+  "version": "1",
+  "allowedSubmissionPaths": ["src/ObserveLocation.ts"],
+  "entrypoint": "src/ObserveLocation.ts",
+  "exportName": "observeLocation",
+  "publicPackages": ["@better-native/location"]
+}

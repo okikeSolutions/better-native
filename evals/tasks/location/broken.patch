@@ -1,0 +1,9 @@
+--- a/src/ObserveLocation.ts
++++ b/src/ObserveLocation.ts
+@@ -1,3 +1,4 @@
+ import * as Effect from "effect/Effect"
++import { Location } from "@better-native/location"
+-
++
+-export const observeLocation = Effect.succeed(0)
++export const observeLocation = Location.getCurrentPositionAsync().pipe(Effect.map((value) => value.coords.latitude), Effect.provide(Location.live))

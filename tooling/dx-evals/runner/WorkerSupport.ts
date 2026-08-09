@@ -89,6 +89,10 @@ export const lockDownTrustedWorker = Effect.try({
 export const lockDownCandidateImports = (options?: {
   readonly controlledModuleUrl?: string
   readonly allowedImporterUrlPrefix?: string
+  readonly controlledModules?: ReadonlyArray<{
+    readonly url: string
+    readonly allowedImporterUrlPrefix: string
+  }>
 }) =>
   Effect.try({
     try: () => {
@@ -101,13 +105,25 @@ export const lockDownCandidateImports = (options?: {
           if (resolved.url.startsWith("file:///runner/")) {
             throw new Error("candidate access to trusted runner modules is disabled")
           }
-          if (
-            options?.controlledModuleUrl !== undefined &&
-            resolved.url === options.controlledModuleUrl &&
-            (context.parentURL === undefined ||
-              options.allowedImporterUrlPrefix === undefined ||
-              !context.parentURL.startsWith(options.allowedImporterUrlPrefix))
-          ) {
+          const controlledModules = [
+            ...(options?.controlledModuleUrl === undefined ||
+            options.allowedImporterUrlPrefix === undefined
+              ? []
+              : [
+                  {
+                    url: options.controlledModuleUrl,
+                    allowedImporterUrlPrefix: options.allowedImporterUrlPrefix,
+                  },
+                ]),
+            ...(options?.controlledModules ?? []),
+          ]
+          const deniedControlledModule = controlledModules.some(
+            (controlled) =>
+              resolved.url === controlled.url &&
+              (context.parentURL === undefined ||
+                !context.parentURL.startsWith(controlled.allowedImporterUrlPrefix)),
+          )
+          if (deniedControlledModule) {
             throw new Error("direct candidate access to the controlled native double is disabled")
           }
           return resolved

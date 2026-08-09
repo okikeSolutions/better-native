@@ -69,20 +69,42 @@ export const readTaskFiles = (directory: string, fixturePath: Domain.TaskRelativ
 export const readEvaluatorBundle = (
   taskName: string,
   taskModule: string,
-  runnerStem: "effect" | "network" | "battery" | "keep-awake" | "secure-store",
+  runnerStem:
+    | "effect"
+    | "network"
+    | "battery"
+    | "keep-awake"
+    | "secure-store"
+    | "sqlite"
+    | "task-manager"
+    | "background-task"
+    | "location"
+    | "notifications",
 ) =>
   Effect.gen(function* () {
     const config = yield* Config.DxEvalConfig
     const fs = yield* FileSystem.FileSystem
-    const controlledDoublePaths = Match.value(runnerStem).pipe(
+    const controlledDoubleNames = Match.value(runnerStem).pipe(
       Match.when("effect", () => []),
-      Match.whenOr("network", "battery", "keep-awake", "secure-store", (nativeModule) => [
-        `tooling/dx-evals/fixtures/expo-${nativeModule}/package.json`,
-        `tooling/dx-evals/fixtures/expo-${nativeModule}/index.js`,
-        `tooling/dx-evals/fixtures/expo-${nativeModule}/index.d.ts`,
-      ]),
+      Match.when("background-task", () => ["background-task", "task-manager"]),
+      Match.whenOr(
+        "network",
+        "battery",
+        "keep-awake",
+        "secure-store",
+        "sqlite",
+        "task-manager",
+        "location",
+        "notifications",
+        (nativeModule) => [nativeModule],
+      ),
       Match.exhaustive,
     )
+    const controlledDoublePaths = controlledDoubleNames.flatMap((nativeModule) => [
+      `tooling/dx-evals/fixtures/expo-${nativeModule}/package.json`,
+      `tooling/dx-evals/fixtures/expo-${nativeModule}/index.js`,
+      `tooling/dx-evals/fixtures/expo-${nativeModule}/index.d.ts`,
+    ])
     const paths = [
       `evals/tasks/${taskName}/grader/expected.json`,
       "tooling/dx-evals/src/Config.ts",
@@ -182,16 +204,17 @@ export const makeAgentWorkspaceSeed = (task: TaskModel.TaskBase) =>
     const packageDigests = new Map<string, Domain.Sha256Digest>()
     if (task.packedPackage !== null) {
       const artifacts = yield* PackageArtifact.PackageArtifacts
-      const artifact = yield* artifacts.prepare(task.packedPackage)
-      packageDigests.set(task.packedPackage.packageName, artifact.digest)
-      files.push(
-        ...artifact.publicFiles.map((file) => ({
-          path: Domain.TaskRelativePath.make(
-            `public-packages/${task.packedPackage!.packageName}/${file.path}`,
-          ),
-          content: file.content,
-        })),
-      )
+      const specs = [task.packedPackage, ...(task.packedPackage.companionPackages ?? [])]
+      for (const spec of specs) {
+        const artifact = yield* artifacts.prepare(spec)
+        packageDigests.set(spec.packageName, artifact.digest)
+        files.push(
+          ...artifact.publicFiles.map((file) => ({
+            path: Domain.TaskRelativePath.make(`public-packages/${spec.packageName}/${file.path}`),
+            content: file.content,
+          })),
+        )
+      }
     }
     return {
       files,
@@ -200,7 +223,7 @@ export const makeAgentWorkspaceSeed = (task: TaskModel.TaskBase) =>
     } satisfies TaskModel.AgentWorkspaceSeed
   })
 
-const installPackedPackage = (workspace: string, spec: TaskModel.PackedPackageSpec) =>
+const installPackedPackage = (workspace: string, spec: TaskModel.PackedPackageUnitSpec) =>
   Effect.gen(function* () {
     const config = yield* Config.DxEvalConfig
     const fs = yield* FileSystem.FileSystem
@@ -230,7 +253,7 @@ const installPackedPackage = (workspace: string, spec: TaskModel.PackedPackageSp
     )
     yield* fs.copyFile(path.join(doubleSource, "index.js"), path.join(doubleRoot, "index.js"))
     yield* fs.copyFile(path.join(doubleSource, "index.d.ts"), path.join(doubleRoot, "index.d.ts"))
-    return artifact.digest
+    return { digest: artifact.digest, installedRoot }
   })
 
 /** Reconstructs a clean candidate workspace from pristine fixtures and validated changed files. */
@@ -263,14 +286,28 @@ export const materializeCandidate = (task: TaskModel.TaskBase, submission: Valid
       })
       yield* fs.writeFileString(path.join(root, entry.path), entry.content)
     }
-    const packageDigest = yield* Match.value(task.packedPackage).pipe(
-      Match.when(null, () => Effect.succeed(null)),
+    const packageDigests = yield* Match.value(task.packedPackage).pipe(
+      Match.when(null, () => Effect.succeed(new Map<string, Domain.Sha256Digest>())),
       Match.when(
         (spec): spec is TaskModel.PackedPackageSpec => spec !== null,
-        (spec) => installPackedPackage(root, spec),
+        (spec) =>
+          Effect.gen(function* () {
+            const digests = new Map<string, Domain.Sha256Digest>()
+            const primary = yield* installPackedPackage(root, spec)
+            digests.set(spec.packageName, primary.digest)
+            for (const companion of spec.companionPackages ?? []) {
+              const installed = yield* installPackedPackage(root, companion)
+              digests.set(companion.packageName, installed.digest)
+            }
+            return digests
+          }),
       ),
       Match.exhaustive,
     )
+    const packageDigest =
+      task.packedPackage === null
+        ? null
+        : (packageDigests.get(task.packedPackage.packageName) ?? null)
     return {
       root,
       packageSource: Match.value(packageDigest).pipe(
@@ -282,5 +319,6 @@ export const materializeCandidate = (task: TaskModel.TaskBase, submission: Valid
         Match.exhaustive,
       ),
       packageDigest,
+      packageDigests,
     } satisfies TaskModel.CandidateWorkspace
   })

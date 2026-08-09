@@ -14,14 +14,15 @@ JSON-safe outcomes and transcript events.
 
 ## Current status
 
-The foundation, synthetic proof, Network, Battery, KeepAwake, and SecureStore baselines are
-implemented and pass secretless validation. The reviewed `checkpoint-5-smoke` campaign selects one
-Network trial with the cheapest compatible profile before the larger `checkpoint-5-diagnostic`
-campaign runs five pinned profiles once on each native task. Earlier diagnostic evidence is
+The foundation, synthetic proof, Network, Battery, KeepAwake, SecureStore, SQLite, Task Manager,
+Background Task, Location, and Notifications baselines are implemented and pass secretless validation. The
+reviewed `checkpoint-5-smoke` campaign selects one Network trial with the cheapest compatible
+profile before the larger `checkpoint-5-diagnostic` campaign runs five pinned profiles on Network,
+Battery, KeepAwake, SecureStore, and SQLite. Earlier diagnostic evidence is
 preserved unchanged under `evals/baselines/`; it is not an accepted performance baseline. Human
 blind pilots, calibrated thresholds, and model success-rate claims remain pending.
 
-The synthetic foundation and four native tasks provide:
+The synthetic foundation and nine deterministic package tasks provide:
 
 - versioned trial, gate, transcript, usage, and evidence schemas with Effect-branded identities,
   validated paths, and cryptographic values;
@@ -97,9 +98,33 @@ round trip, cleanup after success and read failure, and preservation of native r
 failures as `SecureStoreFailure`. An implementation without bracketed cleanup fails only the
 cleanup gate.
 
-Paid Network, Battery, KeepAwake, and SecureStore trials are opt-in. A reviewed campaign registry expands the
-same coding harness across exact model configurations, disables automatic fallbacks, orders the
-four task blocks, reserves the full per-trial cost allocation, and records tokens, turns, cost,
+The SQLite task packs `@better-native/sqlite` and verifies an Effect SQL layer, parameterized
+queries, typed `SqlError` failures, transaction rollback, scoped query streams, and client release.
+Its broken control bypasses the Effect SQL boundary and therefore fails the transaction, stream,
+and lifecycle gates. SQLite remains outside the paid campaign until a separate campaign review.
+
+The Task Manager task packs `@better-native/task-manager` and verifies synchronous module-scope
+definition through a headless-safe `ManagedRuntime`, availability and registry inspection, typed
+native failures, and persistent unregister semantics. Its broken control defines the task lazily.
+
+The Background Task task packs both `@better-native/background-task` and its Task Manager
+companion. It verifies a proven module-scope task definition, restricted-platform outcomes,
+persistent registration, result mapping, and expiration-listener cleanup. Its broken control uses
+an unproven task name and omits the scoped expiration boundary.
+
+The Location task packs `@better-native/location` and supplies a controlled `expo-location`
+double. It verifies a balanced-accuracy position Stream, Layer provisioning, and exactly-once
+native subscription cleanup after the first observation. A one-shot read fails the Stream and
+cleanup gates. Location is not currently part of the paid campaign registry.
+
+The Notifications task packs `@better-native/notifications` and supplies a controlled
+`expo-notifications` double. It verifies one foreground-delivery Stream value, Layer provisioning,
+and exactly-once listener cleanup after downstream completion. A one-shot last-response read fails
+the Stream and cleanup gates. Notifications is not currently part of the paid campaign registry.
+
+Paid Network, Battery, KeepAwake, and SecureStore trials are opt-in. A reviewed campaign
+registry expands the same coding harness across exact model configurations, disables automatic
+fallbacks, orders the four task blocks, reserves the full per-trial cost allocation, and records tokens, turns, cost,
 serving provider, and fingerprint. Fake-LanguageModel tests exercise the actual Effect AI toolkit and
 bounded multi-turn loop without network access. Following Pi's construction, the system prompt lists
 the tools actually exposed and keeps exploration proportional instead of requiring a declaration

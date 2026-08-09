@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "taskType": "background-task",
+  "id": "background-task",
+  "version": "1",
+  "allowedSubmissionPaths": ["src/ObserveTask.ts"],
+  "entrypoint": "src/ObserveTask.ts",
+  "exportName": "registration",
+  "publicPackages": ["@better-native/background-task", "@better-native/task-manager"]
+}

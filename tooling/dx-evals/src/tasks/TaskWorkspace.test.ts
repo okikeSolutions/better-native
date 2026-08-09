@@ -10,6 +10,7 @@ import * as Isolation from "../security/Isolation.ts"
 import * as Submission from "../security/Submission.ts"
 import { exportTask, makeAgentWorkspaceSeed, materializeCandidate } from "./TaskWorkspace.ts"
 import * as Battery from "./Battery.ts"
+import * as BackgroundTask from "./BackgroundTask.ts"
 import * as KeepAwake from "./KeepAwake.ts"
 import * as Network from "./Network.ts"
 import * as SecureStore from "./SecureStore.ts"
@@ -446,5 +447,29 @@ describe("Network task boundary", () => {
           assert.isFalse(existsSync(`${workspace.root}/node_modules/@better-native/network/src`))
         }),
       ).pipe(provideLayer(baseLayer)),
+  )
+})
+
+describe("Background Task package boundary", () => {
+  it.effect("seals both the primary and Task Manager companion package digests", () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const task = yield* BackgroundTask.load
+        const seed = yield* makeAgentWorkspaceSeed(task)
+        const submission = yield* validateEmptySubmission(task.definition.entrypoint)
+        const workspace = yield* materializeCandidate(task, submission)
+
+        assert.strictEqual(workspace.packageDigests.size, 2)
+        assert.strictEqual(
+          workspace.packageDigests.get("@better-native/background-task"),
+          seed.packageDigests.get("@better-native/background-task"),
+        )
+        assert.strictEqual(
+          workspace.packageDigests.get("@better-native/task-manager"),
+          seed.packageDigests.get("@better-native/task-manager"),
+        )
+        assert.isFalse(existsSync(`${workspace.root}/node_modules/@better-native/task-manager/src`))
+      }),
+    ).pipe(provideLayer(baseLayer)),
   )
 })

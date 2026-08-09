@@ -1,0 +1,16 @@
+--- a/src/ObserveTask.ts
++++ b/src/ObserveTask.ts
+@@ -1,3 +1,11 @@
+ import * as Effect from "effect/Effect"
++import { TaskManager } from "@better-native/task-manager"
++import * as ManagedRuntime from "effect/ManagedRuntime"
+-
++
+-export const defined = Effect.succeed(true)
++const runtime = ManagedRuntime.make(TaskManager.live)
++
++TaskManager.defineTask("dx.eval.task", runtime, ({ data }) =>
++  Effect.succeed((data as { readonly value: string }).value),
++)
++
++export const defined = TaskManager.isTaskDefined("dx.eval.task").pipe(Effect.provide(TaskManager.live))

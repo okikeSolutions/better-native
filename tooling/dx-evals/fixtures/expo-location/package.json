@@ -1,0 +1,11 @@
+{
+  "name": "expo-location",
+  "version": "57.0.7",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  }
+}

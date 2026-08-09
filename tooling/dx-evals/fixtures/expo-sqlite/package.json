@@ -1,0 +1,11 @@
+{
+  "name": "expo-sqlite",
+  "version": "57.0.1",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  }
+}

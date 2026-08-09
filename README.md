@@ -34,14 +34,22 @@ Package guides:
 - [Network](./packages/network/README.md)
 - [KeepAwake](./packages/keep-awake/README.md)
 - [SecureStore](./packages/secure-store/README.md)
+- [SQLite](./packages/sqlite/README.md)
+- [Task Manager](./packages/task-manager/README.md)
+- [Background Task](./packages/background-task/README.md)
+- [Location](./packages/location/README.md)
+- [Notifications](./packages/notifications/README.md)
 - [Metro integration](./packages/metro/README.md)
 
 ## DX eval status
 
-The custom Vitest Evals harness, synthetic proof, and deterministic Network, Battery, KeepAwake, and
-SecureStore baselines are implemented. Network covers one-shot Effect adoption; Battery adds scoped
-Stream consumption and listener cleanup; KeepAwake adds an interruption-safe scoped lease; and
-SecureStore adds option forwarding, bracketed cleanup, and typed native failures. The OpenRouter
+The custom Vitest Evals harness, synthetic proof, and deterministic Network, Battery, KeepAwake,
+SecureStore, SQLite, Task Manager, Background Task, Location, and Notifications baselines are implemented. Network covers
+one-shot Effect adoption; Battery adds scoped Stream consumption and listener cleanup; KeepAwake
+adds an interruption-safe scoped lease; SecureStore adds option forwarding, bracketed cleanup, and
+typed native failures; and the background tasks cover eager headless definition, persistent
+registration, and restricted-platform outcomes; Location covers scoped position Streams and native
+subscription cleanup; Notifications covers scoped delivery Streams and listener cleanup. The OpenRouter
 coding-agent adapter, reviewed five-model profiles, fake-model tests, and cost controls are also
 implemented.
 Required-gate outcomes are exposed as deterministic Vitest Evals judge scores; the current tasks do

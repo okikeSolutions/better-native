@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "taskType": "sqlite",
+  "id": "sqlite",
+  "version": "1",
+  "allowedSubmissionPaths": ["src/ReadTemporaryValue.ts"],
+  "entrypoint": "src/ReadTemporaryValue.ts",
+  "exportName": "temporaryValue",
+  "publicPackages": ["@better-native/sqlite"]
+}
