@@ -1675,17 +1675,6 @@
       ]
     },
     {
-      "specifier": "expo-notifications",
-      "platforms": [
-        "android",
-        "ios",
-        "macos",
-        "server",
-        "tvos",
-        "web"
-      ]
-    },
-    {
       "specifier": "expo-notifications/app.plugin",
       "platforms": [
         "android",

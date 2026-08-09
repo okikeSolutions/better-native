@@ -1,4 +1,5 @@
 import * as Effect from "effect/Effect"
+import * as FileSystem from "effect/FileSystem"
 import * as Match from "effect/Match"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
@@ -73,6 +74,38 @@ const filesBelow = (files: ReadonlyArray<string>, directory: string): ReadonlyAr
     .toSorted()
 }
 
+const withoutDotSlash = (value: string): string => (value.startsWith("./") ? value.slice(2) : value)
+
+// Expo Notifications publishes generated declarations from a gitignored build directory. Keep the
+// fallback explicit and reviewable: materialized outputs must never silently widen every package's
+// wildcard entrypoints or replace the tracked pinned source inventory.
+const materializedPinnedSurfacePackages = new Set<string>(["expo-notifications"])
+
+/**
+ * Finds concrete manifest targets omitted by Git's tracked-file inventory.
+ *
+ * Expo workspace packages commonly gitignore generated `build` declarations while retaining
+ * manifests that point at those files. The prepared pinned checkout materializes those outputs;
+ * excluding them would collapse a public package to an opaque `$module` surface.
+ */
+export const missingManifestTargets = (
+  targetFiles: ReadonlyArray<string>,
+  entrypoints: InstalledPackage["targetEntrypoints"],
+): ReadonlyArray<string> => {
+  const tracked = new Set(targetFiles)
+  return [
+    ...new Set(
+      entrypoints.flatMap((entrypoint) =>
+        entrypoint.resolutionBranches.flatMap(({ target }) => {
+          if (target === null || target.includes("*")) return []
+          const normalized = withoutDotSlash(target)
+          return tracked.has(normalized) ? [] : [normalized]
+        }),
+      ),
+    ),
+  ].toSorted()
+}
+
 /**
  * Inspects the package installation used to derive the Expo compatibility surface.
  *
@@ -87,6 +120,7 @@ const filesBelow = (files: ReadonlyArray<string>, directory: string): ReadonlyAr
  */
 export const inspect = Effect.fn("ExpoInstallation.inspect")(function* (catalog: Catalog) {
   const repository = yield* ExpoRepository
+  const fs = yield* FileSystem.FileSystem
   const path = yield* Path.Path
   const lock = yield* BunLock.read(path.join(repository.root, "bun.lock"))
   const appManifest = yield* repository.readJson(
@@ -150,12 +184,34 @@ export const inspect = Effect.fn("ExpoInstallation.inspect")(function* (catalog:
           pinnedDirectory === null
             ? (installed?.packagePath ?? null)
             : path.relative(repository.root, path.join(repository.expoRoot, pinnedDirectory))
-        const targetFiles =
+        const trackedTargetFiles =
           pinnedDirectory === null
             ? (installed?.files ?? [])
             : filesBelow(expoFiles, pinnedDirectory)
         const targetEntrypoints =
           targetSource === "pinned" ? catalogPackage.entrypoints : (installed?.entrypoints ?? [])
+        const materializedTargetFiles =
+          pinnedDirectory === null || !materializedPinnedSurfacePackages.has(name)
+            ? []
+            : yield* Effect.forEach(
+                missingManifestTargets(trackedTargetFiles, targetEntrypoints),
+                (target) =>
+                  Effect.gen(function* () {
+                    const packageRoot = path.join(repository.expoRoot, pinnedDirectory)
+                    const absoluteTarget = path.join(packageRoot, target)
+                    if (!(yield* fs.exists(absoluteTarget))) return []
+                    const directory = path.dirname(target)
+                    if (directory === ".") return [target]
+                    const files = yield* fs.glob("**/*", {
+                      root: path.join(packageRoot, directory),
+                    })
+                    return files.map((file) => path.join(directory, file).replaceAll("\\", "/"))
+                  }),
+                { concurrency: 4 },
+              ).pipe(Effect.map((groups) => groups.flat()))
+        const targetFiles = [
+          ...new Set([...trackedTargetFiles, ...materializedTargetFiles]),
+        ].toSorted()
         if (targetSource === "pinned" && targetFiles.length === 0) {
           return yield* failure(
             "resolve pinned Expo target files",

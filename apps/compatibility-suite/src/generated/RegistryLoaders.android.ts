@@ -70,5 +70,10 @@ export const loaders: RegistryLoaders = new Map([
   ["better-native-capability#apps/compatibility-suite/src/capabilities/KeepAwake.ts", () => require("../capabilities/KeepAwake.ts") as unknown],
   ["better-native-capability#apps/compatibility-suite/src/capabilities/Network.ts", () => require("../capabilities/Network.ts") as unknown],
   ["better-native-capability#apps/compatibility-suite/src/capabilities/Battery.ts", () => require("../capabilities/Battery.ts") as unknown],
+  ["better-native-capability#apps/compatibility-suite/src/capabilities/SQLite.ts", () => require("../capabilities/SQLite.ts") as unknown],
+  ["better-native-capability#apps/compatibility-suite/src/capabilities/TaskManager.ts", () => require("../capabilities/TaskManager.ts") as unknown],
+  ["better-native-capability#apps/compatibility-suite/src/capabilities/BackgroundTask.ts", () => require("../capabilities/BackgroundTask.ts") as unknown],
+  ["better-native-capability#apps/compatibility-suite/src/capabilities/Location.ts", () => require("../capabilities/Location.ts") as unknown],
+  ["better-native-capability#apps/compatibility-suite/src/capabilities/Notifications.ts", () => require("../capabilities/Notifications.ts") as unknown],
   ["better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts", () => require("../capabilities/SecureStore.ts") as unknown],
 ]) as RegistryLoaders

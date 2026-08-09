@@ -1,8 +1,20 @@
 {
   "schemaVersion": 1,
   "expoRevision": "534c99966e34580f56242eb92aac7689b9089cc7",
-  "ownershipFingerprint": "1fe811580033413e7a768ddf4a05487fd3912a1ec84b12d91582c734bc8664cf",
+  "ownershipFingerprint": "532c726928eb4565c3de09ecd099b0c86ebbcd885d48f48510cc9362d9e580b4",
   "replacements": [
+    {
+      "source": "expo-background-task",
+      "target": "@better-native/background-task/expo"
+    },
+    {
+      "source": "expo-background-task/app.plugin",
+      "target": "@better-native/background-task/app.plugin"
+    },
+    {
+      "source": "expo-background-task/package.json",
+      "target": "@better-native/background-task/package.json"
+    },
     {
       "source": "expo-battery",
       "target": "@better-native/battery/expo"
@@ -12,12 +24,68 @@
       "target": "@better-native/keep-awake/expo"
     },
     {
+      "source": "expo-location",
+      "target": "@better-native/location/expo"
+    },
+    {
+      "source": "expo-location/app.plugin",
+      "target": "@better-native/location/app.plugin"
+    },
+    {
+      "source": "expo-location/package.json",
+      "target": "@better-native/location/package.json"
+    },
+    {
       "source": "expo-network",
       "target": "@better-native/network/expo"
     },
     {
+      "source": "expo-notifications",
+      "target": "@better-native/notifications/expo"
+    },
+    {
+      "source": "expo-notifications/app.plugin",
+      "target": "@better-native/notifications/app.plugin"
+    },
+    {
+      "source": "expo-notifications/package.json",
+      "target": "@better-native/notifications/package.json"
+    },
+    {
       "source": "expo-secure-store",
       "target": "@better-native/secure-store/expo"
+    },
+    {
+      "source": "expo-sqlite",
+      "target": "@better-native/sqlite/expo"
+    },
+    {
+      "source": "expo-sqlite/app.plugin.js",
+      "target": "@better-native/sqlite/app.plugin.js"
+    },
+    {
+      "source": "expo-sqlite/kv-store",
+      "target": "@better-native/sqlite/kv-store"
+    },
+    {
+      "source": "expo-sqlite/localStorage/install",
+      "target": "@better-native/sqlite/localStorage/install"
+    },
+    {
+      "source": "expo-sqlite/plugin",
+      "target": "@better-native/sqlite/plugin"
+    },
+    {
+      "source": "expo-task-manager",
+      "target": "@better-native/task-manager/expo"
+    },
+    {
+      "source": "expo-task-manager/app.plugin",
+      "target": "@better-native/task-manager/app.plugin"
+    },
+    {
+      "source": "expo-task-manager/package.json",
+      "target": "@better-native/task-manager/package.json"
     }
   ],
   "trackedSpecifiers": [

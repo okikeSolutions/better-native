@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { metadata as generatedMetadata } from "./generated/RegistryMetadata"
+import { metadata as generatedMetadata } from "./generated/RuntimeRegistryMetadata"
 import { loaders } from "./generated/RegistryLoaders"
 
 let authoritativeNames: ReadonlySet<string> | null = null
@@ -29,6 +29,7 @@ const interactiveSmokePaths = new Set([
   "apps/test-suite/tests/KeepAwake.js",
   "apps/test-suite/tests/Network.js",
   "apps/test-suite/tests/SecureStore.js",
+  "apps/test-suite/tests/SQLite.ts",
 ])
 /** Pinned Expo modules exercised by the app's default interactive run. */
 export const interactiveSmokeSourceIds: ReadonlySet<string> = new Set(

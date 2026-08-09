@@ -8,6 +8,22 @@ import { ExpoRepository } from "../ExpoRepository.ts"
 import { HarnessError } from "../HarnessError.ts"
 
 type ExportKind = "type" | "value" | "both"
+type TypeParameters = { readonly declaration: string; readonly application: string }
+type ExportInfo = { readonly kind: ExportKind; readonly typeParameters?: TypeParameters }
+
+// Re-exports from external packages cannot be resolved through Expo's local source graph. Keep
+// the small reviewed exceptions here so generated bridges retain the declaration shape exposed by
+// the installed public package instead of emitting an invalid non-generic or value-as-type alias.
+const externalTypeOverrides: Readonly<Record<string, Readonly<Record<string, TypeParameters>>>> = {
+  "expo-location": {
+    PermissionHookOptions: {
+      declaration: "<Options extends object>",
+      application: "<Options>",
+    },
+  },
+}
+
+const valueTypeOverrides = new Set(["expo-location#EventEmitter"])
 
 const mergeExportKind = (left: ExportKind | undefined, right: ExportKind): ExportKind =>
   Match.value(left).pipe(
@@ -30,9 +46,20 @@ const addExport = (name: string, kind: ExportKind, values: Set<string>, types: S
     Match.exhaustive,
   )
 
-const exportedDeclarations = (sourceText: string): Map<string, ExportKind> => {
+const typeParametersOf = (
+  source: ts.SourceFile,
+  nodes: ts.NodeArray<ts.TypeParameterDeclaration> | undefined,
+): TypeParameters | undefined => {
+  if (nodes === undefined || nodes.length === 0) return undefined
+  return {
+    declaration: `<${nodes.map((node) => node.getText(source)).join(", ")}>`,
+    application: `<${nodes.map((node) => node.name.text).join(", ")}>`,
+  }
+}
+
+const exportedDeclarations = (sourceText: string): Map<string, ExportInfo> => {
   const source = ts.createSourceFile("module.ts", sourceText, ts.ScriptTarget.Latest, true)
-  const exports = new Map<string, ExportKind>()
+  const exports = new Map<string, ExportInfo>()
   for (const statement of source.statements) {
     const modifiers = ts.canHaveModifiers(statement) ? ts.getModifiers(statement) : undefined
     const isExported = modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
@@ -48,14 +75,19 @@ const exportedDeclarations = (sourceText: string): Map<string, ExportKind> => {
         Match.when(ts.isEnumDeclaration, () => "both" as const),
         Match.orElse(() => "value" as const),
       )
-      exports.set(name, mergeExportKind(exports.get(name), kind))
+      const typeParameters = ts.isEnumDeclaration(statement)
+        ? undefined
+        : typeParametersOf(source, statement.typeParameters)
+      exports.set(name, {
+        kind: mergeExportKind(exports.get(name)?.kind, kind),
+        ...(typeParameters === undefined ? {} : { typeParameters }),
+      })
     } else if (ts.isVariableStatement(statement)) {
       for (const declaration of statement.declarationList.declarations) {
         if (ts.isIdentifier(declaration.name)) {
-          exports.set(
-            declaration.name.text,
-            mergeExportKind(exports.get(declaration.name.text), "value"),
-          )
+          exports.set(declaration.name.text, {
+            kind: mergeExportKind(exports.get(declaration.name.text)?.kind, "value"),
+          })
         }
       }
     } else if (
@@ -63,7 +95,11 @@ const exportedDeclarations = (sourceText: string): Map<string, ExportKind> => {
       statement.name !== undefined
     ) {
       const name = statement.name.text
-      exports.set(name, mergeExportKind(exports.get(name), "type"))
+      const typeParameters = typeParametersOf(source, statement.typeParameters)
+      exports.set(name, {
+        kind: mergeExportKind(exports.get(name)?.kind, "type"),
+        ...(typeParameters === undefined ? {} : { typeParameters }),
+      })
     }
   }
   return exports
@@ -82,6 +118,7 @@ const relativeModulePath = (specifier: string): string | null =>
 export interface CollectedExports {
   readonly values: ReadonlyArray<string>
   readonly types: ReadonlyArray<string>
+  readonly typeParameters: ReadonlyMap<string, TypeParameters>
 }
 
 /**
@@ -98,6 +135,7 @@ export const collectExports = <E, R>(
   Effect.gen(function* () {
     const values = new Set<string>()
     const types = new Set<string>()
+    const typeParameters = new Map<string, TypeParameters>()
     const pending = [entry]
     const visited = new Set<string>()
     while (pending.length > 0) {
@@ -108,8 +146,9 @@ export const collectExports = <E, R>(
       const sourceText = yield* readSource(current)
       const local = exportedDeclarations(sourceText)
       const source = ts.createSourceFile(current, sourceText, ts.ScriptTarget.Latest, true)
-      for (const [name, kind] of local) {
-        addExport(name, kind, values, types)
+      for (const [name, info] of local) {
+        addExport(name, info.kind, values, types)
+        if (info.typeParameters !== undefined) typeParameters.set(name, info.typeParameters)
       }
       for (const statement of source.statements) {
         if (!ts.isExportDeclaration(statement)) continue
@@ -129,30 +168,42 @@ export const collectExports = <E, R>(
           continue
         }
         if (!ts.isNamedExports(statement.exportClause)) continue
-        const targetKindsEffect: Effect.Effect<Map<string, ExportKind>, E, R> = Match.value(
+        const targetKindsEffect: Effect.Effect<Map<string, ExportInfo>, E, R> = Match.value(
           target,
         ).pipe(
-          Match.when(null, () => Effect.succeed(new Map<string, ExportKind>())),
+          Match.when(null, () => Effect.succeed(new Map<string, ExportInfo>())),
           Match.orElse((file) => Effect.map(readSource(file), exportedDeclarations)),
         )
         const targetKinds = yield* targetKindsEffect
         for (const element of statement.exportClause.elements) {
           const exported = element.name.text
           const imported = element.propertyName?.text ?? exported
+          const targetInfo = targetKinds.get(imported)
           const kind = Match.value(statement.isTypeOnly || element.isTypeOnly).pipe(
             Match.when(true, () => "type" as const),
-            Match.when(false, () => targetKinds.get(imported) ?? "both"),
+            Match.when(false, () => targetInfo?.kind ?? "both"),
             Match.exhaustive,
           )
           addExport(exported, kind, values, types)
+          if (targetInfo?.typeParameters !== undefined) {
+            typeParameters.set(exported, targetInfo.typeParameters)
+          }
         }
       }
     }
-    return { values: [...values].toSorted(), types: [...types].toSorted() }
+    return { values: [...values].toSorted(), types: [...types].toSorted(), typeParameters }
   })
 
-const resolveSourceModule = (path: Path.Path, sourceFile: string, specifier: string): string =>
-  path.normalize(path.join(path.dirname(sourceFile), `${specifier}.ts`))
+const resolveSourceModule = (
+  path: Path.Path,
+  expoFiles: ReadonlySet<string>,
+  sourceFile: string,
+  specifier: string,
+): string => {
+  const stem = path.normalize(path.join(path.dirname(sourceFile), specifier))
+  const candidates = [`${stem}.ts`, `${stem}.tsx`, `${stem}/index.ts`, `${stem}/index.tsx`]
+  return candidates.find((candidate) => expoFiles.has(candidate)) ?? candidates[0]!
+}
 
 const mainSourceFile = (expoPackage: string, manifest: unknown): string | null => {
   const main = Match.value(manifest).pipe(
@@ -195,6 +246,7 @@ const source = Effect.fn("ExpoCompatEntrypoint.source")(function* (expoPackage: 
     Match.exhaustive,
   )
   const textByFile = new Map<string, string>()
+  const expoFiles = new Set(yield* repository.expoFiles)
   const readSource = Effect.fn("ExpoCompatEntrypoint.readSource")(function* (file: string) {
     const cached = textByFile.get(file)
     if (cached !== undefined) return cached
@@ -202,23 +254,28 @@ const source = Effect.fn("ExpoCompatEntrypoint.source")(function* (expoPackage: 
     textByFile.set(file, text)
     return text
   })
-  const { values, types } = yield* collectExports(
+  const { values, types, typeParameters } = yield* collectExports(
     sourceEntry,
     readSource,
-    (sourceFile, specifier) => resolveSourceModule(path, sourceFile, specifier),
+    (sourceFile, specifier) => resolveSourceModule(path, expoFiles, sourceFile, specifier),
   )
   const namespace = expoPackage
     .split("-")
     .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
     .join("")
   const renderValue = (name: string) => {
-    const line = `export const ${name} = ${namespace}.${name}`
-    return line.length > 100 ? `export const ${name} =\n  ${namespace}.${name}` : line
+    const line = `export const ${name}: typeof ${namespace}.${name} = ${namespace}.${name}`
+    return line.length > 100
+      ? `export const ${name}: typeof ${namespace}.${name} =\n  ${namespace}.${name}`
+      : line
   }
   return [
     "// @generated by better-native compatibility harness",
     "// Do not edit manually.",
     `// Source: ${expoPackage} at Expo ${repository.upstreams.expo.revision}`,
+    ...(values.some((name) => name.startsWith("_"))
+      ? ["/* oxlint-disable no-underscore-dangle -- exact Expo compatibility exports */"]
+      : []),
     "",
     `import * as ${namespace} from "${expoPackage}"`,
     "",
@@ -228,7 +285,16 @@ const source = Effect.fn("ExpoCompatEntrypoint.source")(function* (expoPackage: 
       Match.when(false, () => []),
       Match.exhaustive,
     ),
-    ...types.map((name) => `export type ${name} = ${namespace}.${name}`),
+    ...types.map((name) => {
+      const parameters = typeParameters.get(name) ?? externalTypeOverrides[expoPackage]?.[name]
+      const reference = valueTypeOverrides.has(`${expoPackage}#${name}`)
+        ? `typeof ${namespace}.${name}`
+        : `${namespace}.${name}${parameters?.application ?? ""}`
+      const line = `export type ${name}${parameters?.declaration ?? ""} = ${reference}`
+      return line.length > 100
+        ? `export type ${name}${parameters?.declaration ?? ""} =\n  ${reference}`
+        : line
+    }),
     "",
   ].join("\n")
 })

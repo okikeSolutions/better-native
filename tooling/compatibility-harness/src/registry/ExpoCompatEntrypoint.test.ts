@@ -17,7 +17,7 @@ describe("ExpoCompatEntrypoint", () => {
       ["src/named.ts", "export const named = 1\nexport interface NamedType {}"],
       [
         "src/types.ts",
-        "export enum RuntimeEnum { Value = 'value' }\nexport type Model = { readonly id: string }",
+        "export enum RuntimeEnum { Value = 'value' }\nexport type Model<T extends object = object> = T & { readonly id: string }",
       ],
       ["src/cycle-a.ts", "export class CycleValue {}\nexport * from './cycle-b'"],
       ["src/cycle-b.ts", "export interface CycleType {}\nexport * from './cycle-a'"],
@@ -36,6 +36,10 @@ describe("ExpoCompatEntrypoint", () => {
 
       assert.deepEqual(result.values, ["CycleValue", "RuntimeEnum", "direct", "named"])
       assert.deepEqual(result.types, ["AliasedType", "CycleType", "Model", "RuntimeEnum"])
+      assert.deepEqual(result.typeParameters.get("Model"), {
+        declaration: "<T extends object = object>",
+        application: "<T>",
+      })
     })
   })
 

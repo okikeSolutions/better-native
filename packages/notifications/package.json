@@ -1,0 +1,91 @@
+{
+  "name": "@better-native/notifications",
+  "version": "0.0.1-alpha.1",
+  "private": false,
+  "description": "Effect-native notifications, push tokens, scheduling, and background delivery for Expo applications.",
+  "keywords": [
+    "effect",
+    "expo",
+    "notifications",
+    "push",
+    "react-native"
+  ],
+  "homepage": "https://github.com/okikeSolutions/better-native/tree/main/packages/notifications#readme",
+  "bugs": "https://github.com/okikeSolutions/better-native/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okikeSolutions/better-native.git",
+    "directory": "packages/notifications"
+  },
+  "files": [
+    "build",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "./build/index.js",
+    "./build/Module.js",
+    "./build/Notifications.js",
+    "./build/Expo.js"
+  ],
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "import": "./build/index.js",
+      "default": "./build/index.js"
+    },
+    "./expo": {
+      "types": "./build/Expo.d.ts",
+      "import": "./build/Expo.js",
+      "default": "./build/Expo.js"
+    },
+    "./app.plugin": {
+      "types": "./build/Plugin.d.ts",
+      "import": "./build/Plugin.js",
+      "default": "./build/Plugin.js"
+    },
+    "./background": {
+      "types": "./build/Background.d.ts",
+      "import": "./build/Background.js",
+      "default": "./build/Background.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf build && tsc -p tsconfig.build.json",
+    "prepack": "bun run build",
+    "test": "vitest run --root ../.. packages/notifications/test",
+    "typecheck": "tsc --noEmit",
+    "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
+    "docs:api": "docgen"
+  },
+  "devDependencies": {
+    "@better-native/task-manager": "workspace:*",
+    "@effect/docgen": "4.0.0-beta.102",
+    "effect": "4.0.0-beta.102",
+    "expo": "57.0.9",
+    "expo-notifications": "57.0.8",
+    "react": "19.2.3"
+  },
+  "peerDependencies": {
+    "@better-native/task-manager": "0.0.1-alpha.1",
+    "effect": "4.0.0-beta.102",
+    "expo-notifications": ">=57.0.0 <58.0.0",
+    "expo-task-manager": ">=57.0.0 <58.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@better-native/task-manager": {
+      "optional": true
+    },
+    "expo-task-manager": {
+      "optional": true
+    }
+  }
+}

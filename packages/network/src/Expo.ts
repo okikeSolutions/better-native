@@ -4,12 +4,15 @@
 
 import * as ExpoNetwork from "expo-network"
 
-export const NetworkStateType = ExpoNetwork.NetworkStateType
-export const addNetworkStateListener = ExpoNetwork.addNetworkStateListener
-export const getIpAddressAsync = ExpoNetwork.getIpAddressAsync
-export const getNetworkStateAsync = ExpoNetwork.getNetworkStateAsync
-export const isAirplaneModeEnabledAsync = ExpoNetwork.isAirplaneModeEnabledAsync
-export const useNetworkState = ExpoNetwork.useNetworkState
+export const NetworkStateType: typeof ExpoNetwork.NetworkStateType = ExpoNetwork.NetworkStateType
+export const addNetworkStateListener: typeof ExpoNetwork.addNetworkStateListener =
+  ExpoNetwork.addNetworkStateListener
+export const getIpAddressAsync: typeof ExpoNetwork.getIpAddressAsync = ExpoNetwork.getIpAddressAsync
+export const getNetworkStateAsync: typeof ExpoNetwork.getNetworkStateAsync =
+  ExpoNetwork.getNetworkStateAsync
+export const isAirplaneModeEnabledAsync: typeof ExpoNetwork.isAirplaneModeEnabledAsync =
+  ExpoNetwork.isAirplaneModeEnabledAsync
+export const useNetworkState: typeof ExpoNetwork.useNetworkState = ExpoNetwork.useNetworkState
 
 export type NetworkState = ExpoNetwork.NetworkState
 export type NetworkStateEvent = ExpoNetwork.NetworkStateEvent

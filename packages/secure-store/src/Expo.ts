@@ -4,21 +4,28 @@
 
 import * as ExpoSecureStore from "expo-secure-store"
 
-export const AFTER_FIRST_UNLOCK = ExpoSecureStore.AFTER_FIRST_UNLOCK
-export const AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY =
+export const AFTER_FIRST_UNLOCK: typeof ExpoSecureStore.AFTER_FIRST_UNLOCK =
+  ExpoSecureStore.AFTER_FIRST_UNLOCK
+export const AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY: typeof ExpoSecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY =
   ExpoSecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY
-export const ALWAYS = ExpoSecureStore.ALWAYS
-export const ALWAYS_THIS_DEVICE_ONLY = ExpoSecureStore.ALWAYS_THIS_DEVICE_ONLY
-export const WHEN_PASSCODE_SET_THIS_DEVICE_ONLY = ExpoSecureStore.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY
-export const WHEN_UNLOCKED = ExpoSecureStore.WHEN_UNLOCKED
-export const WHEN_UNLOCKED_THIS_DEVICE_ONLY = ExpoSecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY
-export const canUseBiometricAuthentication = ExpoSecureStore.canUseBiometricAuthentication
-export const deleteItemAsync = ExpoSecureStore.deleteItemAsync
-export const getItem = ExpoSecureStore.getItem
-export const getItemAsync = ExpoSecureStore.getItemAsync
-export const isAvailableAsync = ExpoSecureStore.isAvailableAsync
-export const setItem = ExpoSecureStore.setItem
-export const setItemAsync = ExpoSecureStore.setItemAsync
+export const ALWAYS: typeof ExpoSecureStore.ALWAYS = ExpoSecureStore.ALWAYS
+export const ALWAYS_THIS_DEVICE_ONLY: typeof ExpoSecureStore.ALWAYS_THIS_DEVICE_ONLY =
+  ExpoSecureStore.ALWAYS_THIS_DEVICE_ONLY
+export const WHEN_PASSCODE_SET_THIS_DEVICE_ONLY: typeof ExpoSecureStore.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY =
+  ExpoSecureStore.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY
+export const WHEN_UNLOCKED: typeof ExpoSecureStore.WHEN_UNLOCKED = ExpoSecureStore.WHEN_UNLOCKED
+export const WHEN_UNLOCKED_THIS_DEVICE_ONLY: typeof ExpoSecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY =
+  ExpoSecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY
+export const canUseBiometricAuthentication: typeof ExpoSecureStore.canUseBiometricAuthentication =
+  ExpoSecureStore.canUseBiometricAuthentication
+export const deleteItemAsync: typeof ExpoSecureStore.deleteItemAsync =
+  ExpoSecureStore.deleteItemAsync
+export const getItem: typeof ExpoSecureStore.getItem = ExpoSecureStore.getItem
+export const getItemAsync: typeof ExpoSecureStore.getItemAsync = ExpoSecureStore.getItemAsync
+export const isAvailableAsync: typeof ExpoSecureStore.isAvailableAsync =
+  ExpoSecureStore.isAvailableAsync
+export const setItem: typeof ExpoSecureStore.setItem = ExpoSecureStore.setItem
+export const setItemAsync: typeof ExpoSecureStore.setItemAsync = ExpoSecureStore.setItemAsync
 
 export type KeychainAccessibilityConstant = ExpoSecureStore.KeychainAccessibilityConstant
 export type SecureStoreOptions = ExpoSecureStore.SecureStoreOptions

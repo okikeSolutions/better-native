@@ -268,6 +268,797 @@
       "expoExport": "setItemAsync",
       "status": "effect-api",
       "target": "@better-native/secure-store#setItemAsync"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "addDatabaseChangeListener",
+      "status": "effect-stream",
+      "target": "@better-native/sqlite#addDatabaseChangeListener"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "backupDatabaseAsync",
+      "status": "effect-api",
+      "target": "@better-native/sqlite#backupDatabaseAsync"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "backupDatabaseSync",
+      "status": "effect-api",
+      "target": "@better-native/sqlite#backupDatabaseSync"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "deleteDatabaseAsync",
+      "status": "effect-api",
+      "target": "@better-native/sqlite#deleteDatabaseAsync"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "deleteDatabaseSync",
+      "status": "effect-api",
+      "target": "@better-native/sqlite#deleteDatabaseSync"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "deserializeDatabaseAsync",
+      "status": "effect-api",
+      "target": "@better-native/sqlite#deserializeDatabaseAsync"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "deserializeDatabaseSync",
+      "status": "effect-api",
+      "target": "@better-native/sqlite#deserializeDatabaseSync"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "importDatabaseFromAssetAsync",
+      "status": "effect-api",
+      "target": "@better-native/sqlite#importDatabaseFromAssetAsync"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "openDatabaseAsync",
+      "status": "effect-api",
+      "target": "@better-native/sqlite#openDatabaseAsync"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "openDatabaseSync",
+      "status": "effect-api",
+      "target": "@better-native/sqlite#openDatabaseSync"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "SQLiteDatabase",
+      "status": "expo-compat",
+      "target": "@better-native/sqlite/expo#SQLiteDatabase"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "SQLiteProvider",
+      "status": "expo-compat",
+      "target": "@better-native/sqlite/expo#SQLiteProvider"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "SQLiteSession",
+      "status": "expo-compat",
+      "target": "@better-native/sqlite/expo#SQLiteSession"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "SQLiteStatement",
+      "status": "expo-compat",
+      "target": "@better-native/sqlite/expo#SQLiteStatement"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "SQLiteTaggedQuery",
+      "status": "expo-compat",
+      "target": "@better-native/sqlite/expo#SQLiteTaggedQuery"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "bundledExtensions",
+      "status": "expo-compat",
+      "target": "@better-native/sqlite/expo#bundledExtensions"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "deepEqual",
+      "status": "expo-compat",
+      "target": "@better-native/sqlite/expo#deepEqual"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "defaultDatabaseDirectory",
+      "status": "expo-compat",
+      "target": "@better-native/sqlite/expo#defaultDatabaseDirectory"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoExport": "useSQLiteContext",
+      "status": "expo-compat",
+      "target": "@better-native/sqlite/expo#useSQLiteContext",
+      "atomTarget": "@better-native/sqlite#sqliteClientAtom"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoExport": "defineTask",
+      "status": "expo-compat",
+      "target": "@better-native/task-manager/expo#defineTask"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoExport": "getRegisteredTasksAsync",
+      "status": "effect-api",
+      "target": "@better-native/task-manager#getRegisteredTasksAsync"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoExport": "getTaskOptionsAsync",
+      "status": "effect-api",
+      "target": "@better-native/task-manager#getTaskOptionsAsync"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoExport": "isAvailableAsync",
+      "status": "effect-api",
+      "target": "@better-native/task-manager#isAvailableAsync"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoExport": "isTaskDefined",
+      "status": "effect-api",
+      "target": "@better-native/task-manager#isTaskDefined"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoExport": "isTaskRegisteredAsync",
+      "status": "effect-api",
+      "target": "@better-native/task-manager#isTaskRegisteredAsync"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoExport": "unregisterAllTasksAsync",
+      "status": "effect-api",
+      "target": "@better-native/task-manager#unregisterAllTasksAsync"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoExport": "unregisterTaskAsync",
+      "status": "effect-api",
+      "target": "@better-native/task-manager#unregisterTaskAsync"
+    },
+    {
+      "package": "expo-background-task",
+      "expoExport": "BackgroundTaskResult",
+      "status": "effect-api",
+      "target": "@better-native/background-task#BackgroundTaskResult"
+    },
+    {
+      "package": "expo-background-task",
+      "expoExport": "BackgroundTaskStatus",
+      "status": "effect-api",
+      "target": "@better-native/background-task#BackgroundTaskStatus"
+    },
+    {
+      "package": "expo-background-task",
+      "expoExport": "addExpirationListener",
+      "status": "effect-stream",
+      "target": "@better-native/background-task#addExpirationListener"
+    },
+    {
+      "package": "expo-background-task",
+      "expoExport": "getStatusAsync",
+      "status": "effect-api",
+      "target": "@better-native/background-task#getStatusAsync"
+    },
+    {
+      "package": "expo-background-task",
+      "expoExport": "registerTaskAsync",
+      "status": "effect-api",
+      "target": "@better-native/background-task#registerTaskAsync"
+    },
+    {
+      "package": "expo-background-task",
+      "expoExport": "triggerTaskWorkerForTestingAsync",
+      "status": "effect-api",
+      "target": "@better-native/background-task#triggerTaskWorkerForTestingAsync"
+    },
+    {
+      "package": "expo-background-task",
+      "expoExport": "unregisterTaskAsync",
+      "status": "effect-api",
+      "target": "@better-native/background-task#unregisterTaskAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "Accuracy",
+      "status": "effect-api",
+      "target": "@better-native/location#Accuracy"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "ActivityType",
+      "status": "effect-api",
+      "target": "@better-native/location#ActivityType"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "EventEmitter",
+      "status": "expo-compat",
+      "target": "@better-native/location/expo#EventEmitter"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "GeofencingEventType",
+      "status": "effect-api",
+      "target": "@better-native/location#GeofencingEventType"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "GeofencingRegionState",
+      "status": "effect-api",
+      "target": "@better-native/location#GeofencingRegionState"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "LocationAccuracy",
+      "status": "effect-api",
+      "target": "@better-native/location#LocationAccuracy"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "LocationActivityType",
+      "status": "effect-api",
+      "target": "@better-native/location#LocationActivityType"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "LocationGeofencingEventType",
+      "status": "effect-api",
+      "target": "@better-native/location#LocationGeofencingEventType"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "LocationGeofencingRegionState",
+      "status": "effect-api",
+      "target": "@better-native/location#LocationGeofencingRegionState"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "MotionActivityConfidence",
+      "status": "effect-api",
+      "target": "@better-native/location#MotionActivityConfidence"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "MotionActivityType",
+      "status": "effect-api",
+      "target": "@better-native/location#MotionActivityType"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "PermissionStatus",
+      "status": "effect-api",
+      "target": "@better-native/location#PermissionStatus"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "_getCurrentWatchId",
+      "status": "expo-compat",
+      "target": "@better-native/location/expo#_getCurrentWatchId"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "enableNetworkProviderAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#enableNetworkProviderAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "geocodeAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#geocodeAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "getBackgroundPermissionsAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#getBackgroundPermissionsAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "getCurrentPositionAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#getCurrentPositionAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "getForegroundPermissionsAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#getForegroundPermissionsAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "getHeadingAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#getHeadingAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "getLastKnownPositionAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#getLastKnownPositionAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "getMotionActivityAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#getMotionActivityAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "getMotionActivityPermissionsAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#getMotionActivityPermissionsAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "getProviderStatusAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#getProviderStatusAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "hasServicesEnabledAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#hasServicesEnabledAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "hasStartedGeofencingAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#hasStartedGeofencingAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "hasStartedLocationUpdatesAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#hasStartedLocationUpdatesAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "installWebGeolocationPolyfill",
+      "status": "expo-compat",
+      "target": "@better-native/location/expo#installWebGeolocationPolyfill"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "isBackgroundLocationAvailableAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#isBackgroundLocationAvailableAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "requestBackgroundPermissionsAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#requestBackgroundPermissionsAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "requestForegroundPermissionsAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#requestForegroundPermissionsAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "requestMotionActivityPermissionsAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#requestMotionActivityPermissionsAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "reverseGeocodeAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#reverseGeocodeAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "startGeofencingAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#startGeofencingAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "startLocationUpdatesAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#startLocationUpdatesAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "stopGeofencingAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#stopGeofencingAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "stopLocationUpdatesAsync",
+      "status": "effect-api",
+      "target": "@better-native/location#stopLocationUpdatesAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "useBackgroundPermissions",
+      "status": "expo-compat",
+      "target": "@better-native/location/expo#useBackgroundPermissions",
+      "atomTarget": "@better-native/location#backgroundPermissionAtom"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "useForegroundPermissions",
+      "status": "expo-compat",
+      "target": "@better-native/location/expo#useForegroundPermissions",
+      "atomTarget": "@better-native/location#foregroundPermissionAtom"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "useMotionActivityPermissions",
+      "status": "expo-compat",
+      "target": "@better-native/location/expo#useMotionActivityPermissions",
+      "atomTarget": "@better-native/location#motionActivityPermissionAtom"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "watchHeadingAsync",
+      "status": "effect-stream",
+      "target": "@better-native/location#watchHeadingAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "watchMotionActivityAsync",
+      "status": "effect-stream",
+      "target": "@better-native/location#watchMotionActivityAsync"
+    },
+    {
+      "package": "expo-location",
+      "expoExport": "watchPositionAsync",
+      "status": "effect-stream",
+      "target": "@better-native/location#watchPositionAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "AndroidAudioContentType",
+      "status": "effect-api",
+      "target": "@better-native/notifications#AndroidAudioContentType"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "AndroidAudioUsage",
+      "status": "effect-api",
+      "target": "@better-native/notifications#AndroidAudioUsage"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "AndroidImportance",
+      "status": "effect-api",
+      "target": "@better-native/notifications#AndroidImportance"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "AndroidNotificationPriority",
+      "status": "effect-api",
+      "target": "@better-native/notifications#AndroidNotificationPriority"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "AndroidNotificationVisibility",
+      "status": "effect-api",
+      "target": "@better-native/notifications#AndroidNotificationVisibility"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "BackgroundNotificationTaskResult",
+      "status": "effect-api",
+      "target": "@better-native/notifications#BackgroundNotificationTaskResult"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "DEFAULT_ACTION_IDENTIFIER",
+      "status": "effect-api",
+      "target": "@better-native/notifications#DEFAULT_ACTION_IDENTIFIER"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "IosAlertStyle",
+      "status": "effect-api",
+      "target": "@better-native/notifications#IosAlertStyle"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "IosAllowsPreviews",
+      "status": "effect-api",
+      "target": "@better-native/notifications#IosAllowsPreviews"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "IosAuthorizationStatus",
+      "status": "effect-api",
+      "target": "@better-native/notifications#IosAuthorizationStatus"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "NotificationTimeoutError",
+      "status": "effect-api",
+      "target": "@better-native/notifications#NotificationTimeoutError"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "PermissionStatus",
+      "status": "effect-api",
+      "target": "@better-native/notifications#PermissionStatus"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "SchedulableTriggerInputTypes",
+      "status": "effect-api",
+      "target": "@better-native/notifications#SchedulableTriggerInputTypes"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "addNotificationReceivedListener",
+      "status": "effect-stream",
+      "target": "@better-native/notifications#addNotificationReceivedListener"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "addNotificationResponseClearedListener",
+      "status": "effect-stream",
+      "target": "@better-native/notifications#addNotificationResponseClearedListener"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "addNotificationResponseReceivedListener",
+      "status": "effect-stream",
+      "target": "@better-native/notifications#addNotificationResponseReceivedListener"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "addNotificationsDroppedListener",
+      "status": "effect-stream",
+      "target": "@better-native/notifications#addNotificationsDroppedListener"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "addPushTokenListener",
+      "status": "effect-stream",
+      "target": "@better-native/notifications#addPushTokenListener"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "cancelAllScheduledNotificationsAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#cancelAllScheduledNotificationsAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "cancelScheduledNotificationAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#cancelScheduledNotificationAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "clearLastNotificationResponse",
+      "status": "effect-api",
+      "target": "@better-native/notifications#clearLastNotificationResponse"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "clearLastNotificationResponseAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#clearLastNotificationResponseAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "deleteNotificationCategoryAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#deleteNotificationCategoryAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "deleteNotificationChannelAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#deleteNotificationChannelAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "deleteNotificationChannelGroupAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#deleteNotificationChannelGroupAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "dismissAllNotificationsAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#dismissAllNotificationsAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "dismissNotificationAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#dismissNotificationAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getAllScheduledNotificationsAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getAllScheduledNotificationsAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getBadgeCountAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getBadgeCountAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getDevicePushTokenAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getDevicePushTokenAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getExpoPushTokenAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getExpoPushTokenAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getLastNotificationResponse",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getLastNotificationResponse"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getLastNotificationResponseAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getLastNotificationResponseAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getNextTriggerDateAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getNextTriggerDateAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getNotificationCategoriesAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getNotificationCategoriesAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getNotificationChannelAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getNotificationChannelAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getNotificationChannelGroupAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getNotificationChannelGroupAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getNotificationChannelGroupsAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getNotificationChannelGroupsAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getNotificationChannelsAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getNotificationChannelsAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getPermissionsAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getPermissionsAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "getPresentedNotificationsAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#getPresentedNotificationsAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "registerTaskAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#registerTaskAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "requestPermissionsAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#requestPermissionsAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "scheduleNotificationAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#scheduleNotificationAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "setAutoServerRegistrationEnabledAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#setAutoServerRegistrationEnabledAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "setBadgeCountAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#setBadgeCountAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "setNotificationCategoryAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#setNotificationCategoryAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "setNotificationChannelAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#setNotificationChannelAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "setNotificationChannelGroupAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#setNotificationChannelGroupAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "setNotificationHandler",
+      "status": "expo-compat",
+      "target": "@better-native/notifications/expo#setNotificationHandler"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "subscribeToTopicAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#subscribeToTopicAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "unregisterForNotificationsAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#unregisterForNotificationsAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "unregisterTaskAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#unregisterTaskAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "unsubscribeFromTopicAsync",
+      "status": "effect-api",
+      "target": "@better-native/notifications#unsubscribeFromTopicAsync"
+    },
+    {
+      "package": "expo-notifications",
+      "expoExport": "useLastNotificationResponse",
+      "status": "expo-compat",
+      "target": "@better-native/notifications/expo#useLastNotificationResponse",
+      "atomTarget": "@better-native/notifications#lastNotificationResponseAtom"
     }
   ],
   "typeMappings": [
@@ -360,6 +1151,822 @@
       "expoType": "SecureStoreOptions",
       "status": "effect-type",
       "target": "@better-native/secure-store#SecureStoreOptions"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoType": "Changeset",
+      "status": "effect-type",
+      "target": "@better-native/sqlite#Changeset"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoType": "DatabaseChangeEvent",
+      "status": "effect-type",
+      "target": "@better-native/sqlite#DatabaseChangeEvent"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoType": "SQLiteBindParams",
+      "status": "effect-type",
+      "target": "@better-native/sqlite#SQLiteBindParams"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoType": "SQLiteBindValue",
+      "status": "effect-type",
+      "target": "@better-native/sqlite#SQLiteBindValue"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoType": "SQLiteExecuteAsyncResult",
+      "status": "effect-type",
+      "target": "@better-native/sqlite#SQLiteExecuteAsyncResult"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoType": "SQLiteExecuteSyncResult",
+      "status": "effect-type",
+      "target": "@better-native/sqlite#SQLiteExecuteSyncResult"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoType": "SQLiteOpenOptions",
+      "status": "effect-type",
+      "target": "@better-native/sqlite#SQLiteOpenOptions"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoType": "SQLiteProviderAssetSource",
+      "status": "effect-type",
+      "target": "@better-native/sqlite#SQLiteProviderAssetSource"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoType": "SQLiteProviderProps",
+      "status": "effect-type",
+      "target": "@better-native/sqlite#SQLiteProviderProps"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoType": "SQLiteRunResult",
+      "status": "effect-type",
+      "target": "@better-native/sqlite#SQLiteRunResult"
+    },
+    {
+      "package": "expo-sqlite",
+      "expoType": "SQLiteVariadicBindParams",
+      "status": "effect-type",
+      "target": "@better-native/sqlite#SQLiteVariadicBindParams"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoType": "RegisteredTask",
+      "status": "effect-type",
+      "target": "@better-native/task-manager#RegisteredTask"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoType": "TaskManagerError",
+      "status": "effect-type",
+      "target": "@better-native/task-manager#TaskManagerError"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoType": "TaskManagerTask",
+      "status": "effect-type",
+      "target": "@better-native/task-manager#TaskManagerTask"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoType": "TaskManagerTaskBody",
+      "status": "effect-type",
+      "target": "@better-native/task-manager#TaskManagerTaskBody"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoType": "TaskManagerTaskBodyExecutionInfo",
+      "status": "effect-type",
+      "target": "@better-native/task-manager#TaskManagerTaskBodyExecutionInfo"
+    },
+    {
+      "package": "expo-task-manager",
+      "expoType": "TaskManagerTaskExecutor",
+      "status": "effect-type",
+      "target": "@better-native/task-manager#TaskManagerTaskExecutor"
+    },
+    {
+      "package": "expo-background-task",
+      "expoType": "BackgroundTaskOptions",
+      "status": "effect-type",
+      "target": "@better-native/background-task#BackgroundTaskOptions"
+    },
+    {
+      "package": "expo-background-task",
+      "expoType": "BackgroundTaskResult",
+      "status": "effect-type",
+      "target": "@better-native/background-task#BackgroundTaskResult"
+    },
+    {
+      "package": "expo-background-task",
+      "expoType": "BackgroundTaskStatus",
+      "status": "effect-type",
+      "target": "@better-native/background-task#BackgroundTaskStatus"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "Accuracy",
+      "status": "effect-type",
+      "target": "@better-native/location#Accuracy"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "ActivityType",
+      "status": "effect-type",
+      "target": "@better-native/location#ActivityType"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "EventEmitter",
+      "status": "expo-compat-type",
+      "target": "@better-native/location/expo#EventEmitter"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "GeofencingEventType",
+      "status": "effect-type",
+      "target": "@better-native/location#GeofencingEventType"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "GeofencingRegionState",
+      "status": "effect-type",
+      "target": "@better-native/location#GeofencingRegionState"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationAccuracy",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationAccuracy"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationActivityType",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationActivityType"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationCallback",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationCallback"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationErrorCallback",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationErrorCallback"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationGeocodedAddress",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationGeocodedAddress"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationGeocodedLocation",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationGeocodedLocation"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationGeofencingEventType",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationGeofencingEventType"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationGeofencingRegionState",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationGeofencingRegionState"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationHeadingCallback",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationHeadingCallback"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationHeadingObject",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationHeadingObject"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationLastKnownOptions",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationLastKnownOptions"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationObject",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationObject"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationObjectCoords",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationObjectCoords"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationOptions",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationOptions"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationPermissionResponse",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationPermissionResponse"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationProviderStatus",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationProviderStatus"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationRegion",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationRegion"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationSubscription",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationSubscription"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationTaskOptions",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationTaskOptions"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "LocationTaskServiceOptions",
+      "status": "effect-type",
+      "target": "@better-native/location#LocationTaskServiceOptions"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "MotionActivityCallback",
+      "status": "effect-type",
+      "target": "@better-native/location#MotionActivityCallback"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "MotionActivityConfidence",
+      "status": "effect-type",
+      "target": "@better-native/location#MotionActivityConfidence"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "MotionActivityObject",
+      "status": "effect-type",
+      "target": "@better-native/location#MotionActivityObject"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "MotionActivityState",
+      "status": "effect-type",
+      "target": "@better-native/location#MotionActivityState"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "MotionActivityType",
+      "status": "effect-type",
+      "target": "@better-native/location#MotionActivityType"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "PermissionDetailsLocationAndroid",
+      "status": "effect-type",
+      "target": "@better-native/location#PermissionDetailsLocationAndroid"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "PermissionDetailsLocationIOS",
+      "status": "effect-type",
+      "target": "@better-native/location#PermissionDetailsLocationIOS"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "PermissionExpiration",
+      "status": "effect-type",
+      "target": "@better-native/location#PermissionExpiration"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "PermissionHookOptions",
+      "status": "effect-type",
+      "target": "@better-native/location#PermissionHookOptions"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "PermissionResponse",
+      "status": "effect-type",
+      "target": "@better-native/location#PermissionResponse"
+    },
+    {
+      "package": "expo-location",
+      "expoType": "PermissionStatus",
+      "status": "effect-type",
+      "target": "@better-native/location#PermissionStatus"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "AndroidAudioContentType",
+      "status": "effect-type",
+      "target": "@better-native/notifications#AndroidAudioContentType"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "AndroidAudioUsage",
+      "status": "effect-type",
+      "target": "@better-native/notifications#AndroidAudioUsage"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "AndroidImportance",
+      "status": "effect-type",
+      "target": "@better-native/notifications#AndroidImportance"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "AndroidNotificationPriority",
+      "status": "effect-type",
+      "target": "@better-native/notifications#AndroidNotificationPriority"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "AndroidNotificationVisibility",
+      "status": "effect-type",
+      "target": "@better-native/notifications#AndroidNotificationVisibility"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "AudioAttributes",
+      "status": "effect-type",
+      "target": "@better-native/notifications#AudioAttributes"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "AudioAttributesInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#AudioAttributesInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "BackgroundNotificationTaskResult",
+      "status": "effect-type",
+      "target": "@better-native/notifications#BackgroundNotificationTaskResult"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "BeaconRegion",
+      "status": "effect-type",
+      "target": "@better-native/notifications#BeaconRegion"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "CalendarNotificationTrigger",
+      "status": "effect-type",
+      "target": "@better-native/notifications#CalendarNotificationTrigger"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "CalendarTriggerInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#CalendarTriggerInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "ChannelAwareTriggerInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#ChannelAwareTriggerInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "CircularRegion",
+      "status": "effect-type",
+      "target": "@better-native/notifications#CircularRegion"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "DailyNotificationTrigger",
+      "status": "effect-type",
+      "target": "@better-native/notifications#DailyNotificationTrigger"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "DailyTriggerInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#DailyTriggerInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "DateTriggerInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#DateTriggerInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "DevicePushToken",
+      "status": "effect-type",
+      "target": "@better-native/notifications#DevicePushToken"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "EventSubscription",
+      "status": "effect-type",
+      "target": "@better-native/notifications#EventSubscription"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "ExplicitlySupportedDevicePushToken",
+      "status": "effect-type",
+      "target": "@better-native/notifications#ExplicitlySupportedDevicePushToken"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "ExpoPushToken",
+      "status": "effect-type",
+      "target": "@better-native/notifications#ExpoPushToken"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "ExpoPushTokenOptions",
+      "status": "effect-type",
+      "target": "@better-native/notifications#ExpoPushTokenOptions"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "FirebaseRemoteMessage",
+      "status": "effect-type",
+      "target": "@better-native/notifications#FirebaseRemoteMessage"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "FirebaseRemoteMessageNotification",
+      "status": "effect-type",
+      "target": "@better-native/notifications#FirebaseRemoteMessageNotification"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "ImplicitlySupportedDevicePushToken",
+      "status": "effect-type",
+      "target": "@better-native/notifications#ImplicitlySupportedDevicePushToken"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "InterruptionLevel",
+      "status": "effect-type",
+      "target": "@better-native/notifications#InterruptionLevel"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "IosAlertStyle",
+      "status": "effect-type",
+      "target": "@better-native/notifications#IosAlertStyle"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "IosAllowsPreviews",
+      "status": "effect-type",
+      "target": "@better-native/notifications#IosAllowsPreviews"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "IosAuthorizationStatus",
+      "status": "effect-type",
+      "target": "@better-native/notifications#IosAuthorizationStatus"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "IosNotificationPermissionsRequest",
+      "status": "effect-type",
+      "target": "@better-native/notifications#IosNotificationPermissionsRequest"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "LocationNotificationTrigger",
+      "status": "effect-type",
+      "target": "@better-native/notifications#LocationNotificationTrigger"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "MaybeNotificationResponse",
+      "status": "effect-type",
+      "target": "@better-native/notifications#MaybeNotificationResponse"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "MonthlyNotificationTrigger",
+      "status": "effect-type",
+      "target": "@better-native/notifications#MonthlyNotificationTrigger"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "MonthlyTriggerInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#MonthlyTriggerInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NativeDevicePushToken",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NativeDevicePushToken"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NativeNotificationPermissionsRequest",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NativeNotificationPermissionsRequest"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "Notification",
+      "status": "effect-type",
+      "target": "@better-native/notifications#Notification"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationAction",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationAction"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationBehavior",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationBehavior"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationCategory",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationCategory"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationCategoryOptions",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationCategoryOptions"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationChannel",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationChannel"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationChannelGroup",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationChannelGroup"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationChannelGroupInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationChannelGroupInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationChannelGroupManager",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationChannelGroupManager"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationChannelInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationChannelInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationChannelManager",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationChannelManager"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationContent",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationContent"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationContentAndroid",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationContentAndroid"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationContentAttachmentIos",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationContentAttachmentIos"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationContentInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationContentInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationContentIos",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationContentIos"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationHandler",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationHandler"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationHandlingError",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationHandlingError"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationPermissionsRequest",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationPermissionsRequest"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationPermissionsStatus",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationPermissionsStatus"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationRequest",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationRequest"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationRequestInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationRequestInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationResponse",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationResponse"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationTaskPayload",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationTaskPayload"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationTrigger",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationTrigger"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "NotificationTriggerInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#NotificationTriggerInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "PermissionExpiration",
+      "status": "effect-type",
+      "target": "@better-native/notifications#PermissionExpiration"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "PermissionResponse",
+      "status": "effect-type",
+      "target": "@better-native/notifications#PermissionResponse"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "PermissionStatus",
+      "status": "effect-type",
+      "target": "@better-native/notifications#PermissionStatus"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "PushNotificationTrigger",
+      "status": "effect-type",
+      "target": "@better-native/notifications#PushNotificationTrigger"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "PushTokenListener",
+      "status": "effect-type",
+      "target": "@better-native/notifications#PushTokenListener"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "Region",
+      "status": "effect-type",
+      "target": "@better-native/notifications#Region"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "RequiredBy",
+      "status": "effect-type",
+      "target": "@better-native/notifications#RequiredBy"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "SchedulableNotificationTriggerInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#SchedulableNotificationTriggerInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "SchedulableTriggerInputTypes",
+      "status": "effect-type",
+      "target": "@better-native/notifications#SchedulableTriggerInputTypes"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "Subscription",
+      "status": "effect-type",
+      "target": "@better-native/notifications#Subscription"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "TimeIntervalNotificationTrigger",
+      "status": "effect-type",
+      "target": "@better-native/notifications#TimeIntervalNotificationTrigger"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "TimeIntervalTriggerInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#TimeIntervalTriggerInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "UnknownNotificationTrigger",
+      "status": "effect-type",
+      "target": "@better-native/notifications#UnknownNotificationTrigger"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "WebDevicePushToken",
+      "status": "effect-type",
+      "target": "@better-native/notifications#WebDevicePushToken"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "WebDevicePushTokenKeys",
+      "status": "effect-type",
+      "target": "@better-native/notifications#WebDevicePushTokenKeys"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "WeeklyNotificationTrigger",
+      "status": "effect-type",
+      "target": "@better-native/notifications#WeeklyNotificationTrigger"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "WeeklyTriggerInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#WeeklyTriggerInput"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "YearlyNotificationTrigger",
+      "status": "effect-type",
+      "target": "@better-native/notifications#YearlyNotificationTrigger"
+    },
+    {
+      "package": "expo-notifications",
+      "expoType": "YearlyTriggerInput",
+      "status": "effect-type",
+      "target": "@better-native/notifications#YearlyTriggerInput"
     }
   ]
 }

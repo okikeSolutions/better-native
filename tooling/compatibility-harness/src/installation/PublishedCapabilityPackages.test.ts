@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process"
 import {
+  cpSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
@@ -29,7 +30,7 @@ interface PublishedManifest {
   readonly version: string
   readonly private: boolean
   readonly license: string
-  readonly sideEffects: boolean
+  readonly sideEffects: boolean | ReadonlyArray<string>
   readonly main: string
   readonly types: string
   readonly files: ReadonlyArray<string>
@@ -58,20 +59,139 @@ interface PackageVersionManifest {
 
 const repositoryRoot = resolve(import.meta.dirname, "../../../../")
 
-const packages = [
-  { directory: "network", name: "@better-native/network", provider: "expo-network" },
-  { directory: "battery", name: "@better-native/battery", provider: "expo-battery" },
+interface PublishedCapability {
+  readonly directory: string
+  readonly name: string
+  readonly provider: string
+  readonly sideEffects: boolean | ReadonlyArray<string>
+  readonly exports: ReadonlyArray<string>
+  readonly requiredBuildFiles: ReadonlyArray<string>
+  readonly pluginEntrypoints: ReadonlyArray<string>
+  readonly typedEntrypoints: ReadonlyArray<string>
+  readonly runtimeEntrypoints: ReadonlyArray<string>
+  readonly taskManagerWrapper: boolean
+  readonly taskManagerProvider: boolean
+  readonly optionalTaskManager: boolean
+}
+
+const standard = (input: {
+  readonly directory: string
+  readonly name: string
+  readonly provider: string
+  readonly plugin?: boolean
+}): PublishedCapability => ({
+  ...input,
+  sideEffects: false,
+  exports: [".", "./expo", ...(input.plugin ? ["./app.plugin"] : []), "./package.json"],
+  requiredBuildFiles: input.plugin ? ["build/Plugin.js", "build/Plugin.d.ts"] : [],
+  pluginEntrypoints: input.plugin ? ["./app.plugin"] : [],
+  typedEntrypoints: [],
+  runtimeEntrypoints: [],
+  taskManagerWrapper: false,
+  taskManagerProvider: false,
+  optionalTaskManager: false,
+})
+
+const packages: ReadonlyArray<PublishedCapability> = [
+  standard({ directory: "network", name: "@better-native/network", provider: "expo-network" }),
+  standard({ directory: "battery", name: "@better-native/battery", provider: "expo-battery" }),
   {
-    directory: "keep-awake",
-    name: "@better-native/keep-awake",
-    provider: "expo-keep-awake",
+    ...standard({
+      directory: "keep-awake",
+      name: "@better-native/keep-awake",
+      provider: "expo-keep-awake",
+    }),
   },
-  {
+  standard({
     directory: "secure-store",
     name: "@better-native/secure-store",
     provider: "expo-secure-store",
+  }),
+  standard({
+    directory: "task-manager",
+    name: "@better-native/task-manager",
+    provider: "expo-task-manager",
+    plugin: true,
+  }),
+  {
+    ...standard({
+      directory: "background-task",
+      name: "@better-native/background-task",
+      provider: "expo-background-task",
+      plugin: true,
+    }),
+    taskManagerWrapper: true,
+    taskManagerProvider: true,
   },
-] as const
+  {
+    ...standard({
+      directory: "location",
+      name: "@better-native/location",
+      provider: "expo-location",
+      plugin: true,
+    }),
+    taskManagerWrapper: true,
+    optionalTaskManager: true,
+  },
+  {
+    ...standard({
+      directory: "notifications",
+      name: "@better-native/notifications",
+      provider: "expo-notifications",
+      plugin: true,
+    }),
+    exports: [".", "./expo", "./app.plugin", "./background", "./package.json"],
+    requiredBuildFiles: [
+      "build/Plugin.js",
+      "build/Plugin.d.ts",
+      "build/Background.js",
+      "build/Background.d.ts",
+    ],
+    typedEntrypoints: ["./background"],
+    taskManagerWrapper: true,
+    optionalTaskManager: true,
+    taskManagerProvider: true,
+    sideEffects: [
+      "./build/index.js",
+      "./build/Module.js",
+      "./build/Notifications.js",
+      "./build/Expo.js",
+    ],
+  },
+  {
+    ...standard({
+      directory: "sqlite",
+      name: "@better-native/sqlite",
+      provider: "expo-sqlite",
+    }),
+    sideEffects: ["./build/LocalStorageInstall.js"],
+    exports: [
+      ".",
+      "./expo",
+      "./client",
+      "./sqlite",
+      "./kv-store",
+      "./localStorage/install",
+      "./app.plugin.js",
+      "./plugin",
+      "./package.json",
+    ],
+    requiredBuildFiles: [
+      "build/SqliteClient.js",
+      "build/SqliteClient.d.ts",
+      "build/SQLite.js",
+      "build/SQLite.d.ts",
+      "build/KVStore.js",
+      "build/KVStore.d.ts",
+      "build/LocalStorageInstall.js",
+      "build/Plugin.js",
+      "build/Plugin.d.ts",
+    ],
+    pluginEntrypoints: ["./app.plugin.js", "./plugin"],
+    typedEntrypoints: ["./client", "./sqlite", "./kv-store"],
+    runtimeEntrypoints: ["./localStorage/install"],
+  },
+]
 
 const run = (
   command: string,
@@ -100,6 +220,14 @@ const linkRootDependency = (fixtureRoot: string, name: string): void => {
   if (!existsSync(destination)) {
     symlinkSync(target, destination, process.platform === "win32" ? "junction" : "dir")
   }
+}
+
+const materializeRootDependency = (fixtureRoot: string, name: string): void => {
+  const target = rootDependencyPath(name)
+  const destination = join(fixtureRoot, "node_modules", ...name.split("/"))
+  assert.isTrue(existsSync(target), `repository dependency ${name} is missing`)
+  mkdirSync(dirname(destination), { recursive: true })
+  if (!existsSync(destination)) cpSync(target, destination, { recursive: true })
 }
 
 const dependencyVersion = (name: string): string =>
@@ -173,7 +301,7 @@ describe("published capability packages", () => {
       assert.strictEqual(manifest.version, "0.0.1-alpha.1")
       assert.isFalse(manifest.private)
       assert.strictEqual(manifest.license, "MIT")
-      assert.isFalse(manifest.sideEffects)
+      assert.deepStrictEqual(manifest.sideEffects, capability.sideEffects)
       assert.strictEqual(manifest.main, "./build/index.js")
       assert.strictEqual(manifest.types, "./build/index.d.ts")
       assert.deepStrictEqual(manifest.files, ["build", "LICENSE", "README.md"])
@@ -181,15 +309,15 @@ describe("published capability packages", () => {
       assert.isUndefined(manifest.dependencies)
       assert.strictEqual(manifest.devDependencies.effect, "4.0.0-beta.102")
       assert.deepStrictEqual(manifest.peerDependencies, {
+        ...(capability.taskManagerWrapper
+          ? { "@better-native/task-manager": "0.0.1-alpha.1" }
+          : {}),
         effect: "4.0.0-beta.102",
         [capability.provider]: ">=57.0.0 <58.0.0",
+        ...(capability.taskManagerProvider ? { "expo-task-manager": ">=57.0.0 <58.0.0" } : {}),
       })
       assert.strictEqual(manifest.publishConfig.access, "public")
-      assert.deepStrictEqual(Object.keys(manifest.exports).sort(), [
-        ".",
-        "./expo",
-        "./package.json",
-      ])
+      assert.deepStrictEqual(Object.keys(manifest.exports).sort(), [...capability.exports].sort())
 
       const packedFiles = new Set(packed.artifact.files.map((file) => file.path))
       for (const required of [
@@ -200,6 +328,7 @@ describe("published capability packages", () => {
         "build/index.d.ts",
         "build/Expo.js",
         "build/Expo.d.ts",
+        ...capability.requiredBuildFiles,
       ]) {
         assert.isTrue(packedFiles.has(required), `${capability.name} is missing ${required}`)
       }
@@ -241,6 +370,23 @@ describe("published capability packages", () => {
           ],
           fixtureRoot,
         )
+        if (capability.taskManagerWrapper) {
+          const companion = artifacts.get("@better-native/task-manager")
+          assert.isDefined(companion)
+          run(
+            "npm",
+            [
+              "install",
+              "--ignore-scripts",
+              "--legacy-peer-deps",
+              "--no-package-lock",
+              "--no-audit",
+              "--no-fund",
+              companion.artifactPath,
+            ],
+            fixtureRoot,
+          )
+        }
 
         // Keep this integration test deterministic and offline: only the capability is
         // installed from its tarball; the Expo SDK and its build tools are the exact
@@ -255,16 +401,26 @@ describe("published capability packages", () => {
           "react-native-web",
           "expo-modules-core",
           "babel-preset-expo",
+          ...(capability.provider === "expo-sqlite" ? ["await-lock"] : []),
+          ...(capability.taskManagerProvider ? ["expo-task-manager"] : []),
         ] as const
         for (const dependency of fixtureDependencies) {
-          linkRootDependency(fixtureRoot, dependency)
+          // Metro resolves SQLite's WASM asset relative to the project root. Materialize that
+          // provider instead of symlinking it outside the isolated fixture so the packed web gate
+          // exercises the same package bytes without violating Metro's asset boundary.
+          if (dependency === "expo-sqlite") materializeRootDependency(fixtureRoot, dependency)
+          else linkRootDependency(fixtureRoot, dependency)
         }
 
         const installedRoot = join(fixtureRoot, "node_modules", ...capability.name.split("/"))
         const installedManifest = readManifest(join(installedRoot, "package.json"))
         assert.deepStrictEqual(installedManifest.peerDependencies, {
+          ...(capability.taskManagerWrapper
+            ? { "@better-native/task-manager": "0.0.1-alpha.1" }
+            : {}),
           effect: "4.0.0-beta.102",
           [capability.provider]: ">=57.0.0 <58.0.0",
+          ...(capability.taskManagerProvider ? { "expo-task-manager": ">=57.0.0 <58.0.0" } : {}),
         })
         const effectPeer = installedManifest.peerDependencies.effect
         const providerPeer = installedManifest.peerDependencies[capability.provider]
@@ -274,6 +430,17 @@ describe("published capability packages", () => {
         assert.isTrue(satisfies(dependencyVersion(capability.provider), providerPeer))
         assert.isUndefined(installedManifest.dependencies)
         assert.isFalse(existsSync(join(installedRoot, "node_modules")))
+        for (const pluginEntrypoint of capability.pluginEntrypoints) {
+          run(
+            process.execPath,
+            [
+              "--input-type=module",
+              "--eval",
+              `const plugin = await import(${JSON.stringify(`${capability.name}${pluginEntrypoint.slice(1)}`)}); if (typeof plugin.default !== "function") throw new Error("missing plugin default export")`,
+            ],
+            fixtureRoot,
+          )
+        }
         assert.deepStrictEqual(
           readdirSync(join(installedRoot, "build")).sort(),
           packed.artifact.files
@@ -301,7 +468,11 @@ describe("published capability packages", () => {
           [
             `import * as Capability from ${JSON.stringify(capability.name)}`,
             `import * as ExpoCompatibility from ${JSON.stringify(`${capability.name}/expo`)}`,
-            "export const packedImports = [Capability, ExpoCompatibility] as const",
+            ...capability.typedEntrypoints.map(
+              (entrypoint, index) =>
+                `import * as Extra${index} from ${JSON.stringify(`${capability.name}${entrypoint.slice(1)}`)}`,
+            ),
+            `export const packedImports = [Capability, ExpoCompatibility${capability.typedEntrypoints.map((_, index) => `, Extra${index}`).join("")}] as const`,
             "",
           ].join("\n"),
         )
@@ -327,7 +498,11 @@ describe("published capability packages", () => {
           [
             `import * as Capability from ${JSON.stringify(capability.name)}`,
             `import * as ExpoCompatibility from ${JSON.stringify(`${capability.name}/expo`)}`,
-            "globalThis.__betterNativePackedFixture = [Capability, ExpoCompatibility]",
+            ...[...capability.typedEntrypoints, ...capability.runtimeEntrypoints].map(
+              (entrypoint, index) =>
+                `import * as Extra${index} from ${JSON.stringify(`${capability.name}${entrypoint.slice(1)}`)}`,
+            ),
+            `globalThis.__betterNativePackedFixture = [Capability, ExpoCompatibility${[...capability.typedEntrypoints, ...capability.runtimeEntrypoints].map((_, index) => `, Extra${index}`).join("")}]`,
             "",
           ].join("\n"),
         )
@@ -342,6 +517,18 @@ describe("published capability packages", () => {
             },
           }),
         )
+        if (capability.provider === "expo-sqlite") {
+          writeFileSync(
+            join(fixtureRoot, "metro.config.cjs"),
+            [
+              'const { getDefaultConfig } = require("expo/metro-config")',
+              "const config = getDefaultConfig(__dirname)",
+              'if (!config.resolver.assetExts.includes("wasm")) config.resolver.assetExts.push("wasm")',
+              "module.exports = config",
+              "",
+            ].join("\n"),
+          )
+        }
         const exportRoot = join(fixtureRoot, "dist")
         run(
           process.execPath,
@@ -379,17 +566,21 @@ describe("published capability packages", () => {
               fixtureRoot,
             ),
           ) as AutolinkingResult
-          const providers = result.modules.filter(
-            (module) => module.packageName === capability.provider,
-          )
-          assert.lengthOf(providers, 1)
-          assert.strictEqual(providers[0]?.packageVersion, dependencyVersion(capability.provider))
-          assert.isAbove(
-            platform === "apple"
-              ? (providers[0]?.pods?.length ?? 0)
-              : (providers[0]?.projects?.length ?? 0),
-            0,
-          )
+          const expectedProviders = [
+            capability.provider,
+            ...(capability.taskManagerProvider ? ["expo-task-manager"] : []),
+          ]
+          for (const provider of expectedProviders) {
+            const providers = result.modules.filter((module) => module.packageName === provider)
+            assert.lengthOf(providers, 1)
+            assert.strictEqual(providers[0]?.packageVersion, dependencyVersion(provider))
+            assert.isAbove(
+              platform === "apple"
+                ? (providers[0]?.pods?.length ?? 0)
+                : (providers[0]?.projects?.length ?? 0),
+              0,
+            )
+          }
           assert.isFalse(result.modules.some((module) => module.packageName === capability.name))
         }
       } finally {

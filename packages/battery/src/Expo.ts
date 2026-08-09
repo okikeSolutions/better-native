@@ -4,20 +4,28 @@
 
 import * as ExpoBattery from "expo-battery"
 
-export const BatteryState = ExpoBattery.BatteryState
-export const addBatteryLevelListener = ExpoBattery.addBatteryLevelListener
-export const addBatteryStateListener = ExpoBattery.addBatteryStateListener
-export const addLowPowerModeListener = ExpoBattery.addLowPowerModeListener
-export const getBatteryLevelAsync = ExpoBattery.getBatteryLevelAsync
-export const getBatteryStateAsync = ExpoBattery.getBatteryStateAsync
-export const getPowerStateAsync = ExpoBattery.getPowerStateAsync
-export const isAvailableAsync = ExpoBattery.isAvailableAsync
-export const isBatteryOptimizationEnabledAsync = ExpoBattery.isBatteryOptimizationEnabledAsync
-export const isLowPowerModeEnabledAsync = ExpoBattery.isLowPowerModeEnabledAsync
-export const useBatteryLevel = ExpoBattery.useBatteryLevel
-export const useBatteryState = ExpoBattery.useBatteryState
-export const useLowPowerMode = ExpoBattery.useLowPowerMode
-export const usePowerState = ExpoBattery.usePowerState
+export const BatteryState: typeof ExpoBattery.BatteryState = ExpoBattery.BatteryState
+export const addBatteryLevelListener: typeof ExpoBattery.addBatteryLevelListener =
+  ExpoBattery.addBatteryLevelListener
+export const addBatteryStateListener: typeof ExpoBattery.addBatteryStateListener =
+  ExpoBattery.addBatteryStateListener
+export const addLowPowerModeListener: typeof ExpoBattery.addLowPowerModeListener =
+  ExpoBattery.addLowPowerModeListener
+export const getBatteryLevelAsync: typeof ExpoBattery.getBatteryLevelAsync =
+  ExpoBattery.getBatteryLevelAsync
+export const getBatteryStateAsync: typeof ExpoBattery.getBatteryStateAsync =
+  ExpoBattery.getBatteryStateAsync
+export const getPowerStateAsync: typeof ExpoBattery.getPowerStateAsync =
+  ExpoBattery.getPowerStateAsync
+export const isAvailableAsync: typeof ExpoBattery.isAvailableAsync = ExpoBattery.isAvailableAsync
+export const isBatteryOptimizationEnabledAsync: typeof ExpoBattery.isBatteryOptimizationEnabledAsync =
+  ExpoBattery.isBatteryOptimizationEnabledAsync
+export const isLowPowerModeEnabledAsync: typeof ExpoBattery.isLowPowerModeEnabledAsync =
+  ExpoBattery.isLowPowerModeEnabledAsync
+export const useBatteryLevel: typeof ExpoBattery.useBatteryLevel = ExpoBattery.useBatteryLevel
+export const useBatteryState: typeof ExpoBattery.useBatteryState = ExpoBattery.useBatteryState
+export const useLowPowerMode: typeof ExpoBattery.useLowPowerMode = ExpoBattery.useLowPowerMode
+export const usePowerState: typeof ExpoBattery.usePowerState = ExpoBattery.usePowerState
 
 export type BatteryLevelEvent = ExpoBattery.BatteryLevelEvent
 export type BatteryState = ExpoBattery.BatteryState

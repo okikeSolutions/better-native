@@ -4,14 +4,20 @@
 
 import * as ExpoKeepAwake from "expo-keep-awake"
 
-export const ExpoKeepAwakeTag = ExpoKeepAwake.ExpoKeepAwakeTag
-export const KeepAwakeEventState = ExpoKeepAwake.KeepAwakeEventState
-export const activateKeepAwake = ExpoKeepAwake.activateKeepAwake
-export const activateKeepAwakeAsync = ExpoKeepAwake.activateKeepAwakeAsync
-export const addListener = ExpoKeepAwake.addListener
-export const deactivateKeepAwake = ExpoKeepAwake.deactivateKeepAwake
-export const isAvailableAsync = ExpoKeepAwake.isAvailableAsync
-export const useKeepAwake = ExpoKeepAwake.useKeepAwake
+export const ExpoKeepAwakeTag: typeof ExpoKeepAwake.ExpoKeepAwakeTag =
+  ExpoKeepAwake.ExpoKeepAwakeTag
+export const KeepAwakeEventState: typeof ExpoKeepAwake.KeepAwakeEventState =
+  ExpoKeepAwake.KeepAwakeEventState
+export const activateKeepAwake: typeof ExpoKeepAwake.activateKeepAwake =
+  ExpoKeepAwake.activateKeepAwake
+export const activateKeepAwakeAsync: typeof ExpoKeepAwake.activateKeepAwakeAsync =
+  ExpoKeepAwake.activateKeepAwakeAsync
+export const addListener: typeof ExpoKeepAwake.addListener = ExpoKeepAwake.addListener
+export const deactivateKeepAwake: typeof ExpoKeepAwake.deactivateKeepAwake =
+  ExpoKeepAwake.deactivateKeepAwake
+export const isAvailableAsync: typeof ExpoKeepAwake.isAvailableAsync =
+  ExpoKeepAwake.isAvailableAsync
+export const useKeepAwake: typeof ExpoKeepAwake.useKeepAwake = ExpoKeepAwake.useKeepAwake
 
 export type KeepAwakeEvent = ExpoKeepAwake.KeepAwakeEvent
 export type KeepAwakeEventState = ExpoKeepAwake.KeepAwakeEventState

@@ -29,6 +29,42 @@
       "entry": ["src/BetterNativeMetroConfig.ts", "test/**/*.test.ts"],
       "project": ["src/**/*.ts", "test/**/*.test.ts"]
     },
+    "packages/sqlite": {
+      "entry": [
+        "src/index.ts",
+        "src/Expo.ts",
+        "src/KVStore.ts",
+        "src/LocalStorageInstall.ts",
+        "src/Plugin.ts",
+        "test/**/*.test.ts"
+      ],
+      "project": ["src/**/*.ts", "test/**/*.test.ts"]
+    },
+    "packages/task-manager": {
+      "entry": ["src/index.ts", "src/Expo.ts", "src/Plugin.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.test.ts"]
+    },
+    "packages/background-task": {
+      "entry": ["src/index.ts", "src/Expo.ts", "src/Plugin.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.test.ts"],
+      "ignoreIssues": {
+        "src/BackgroundTask.ts": ["duplicates"]
+      }
+    },
+    "packages/location": {
+      "entry": ["src/index.ts", "src/Expo.ts", "src/Plugin.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.test.ts"]
+    },
+    "packages/notifications": {
+      "entry": [
+        "src/index.ts",
+        "src/Expo.ts",
+        "src/Plugin.ts",
+        "src/Background.ts",
+        "test/**/*.test.ts"
+      ],
+      "project": ["src/**/*.ts", "test/**/*.test.ts"]
+    },
     "packages/cli": {
       "entry": ["src/bin.ts", "test/**/*.test.ts"],
       "project": ["src/**/*.ts", "test/**/*.test.ts"]

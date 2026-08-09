@@ -42,15 +42,26 @@ const hasModifier = (node: ts.Node, kind: ts.SyntaxKind): boolean =>
   ts.canHaveModifiers(node) &&
   ts.getModifiers(node)?.some((modifier) => modifier.kind === kind) === true
 
-const moduleTarget = (
+export const moduleCandidates = (
   path: Path.Path,
   currentFile: string,
   specifier: string,
-  files: ReadonlySet<string>,
-): string | undefined => {
-  if (!specifier.startsWith(".")) return undefined
+): ReadonlyArray<string> => {
+  if (!specifier.startsWith(".")) return []
   const base = path.normalize(path.join(path.dirname(currentFile), specifier)).replaceAll("\\", "/")
-  for (const candidate of [
+  const declarationBase = base.replace(/\.[cm]?js$/, "")
+  const declarations = /\.d\.[cm]?ts$/.test(currentFile)
+    ? [
+        `${declarationBase}.d.ts`,
+        `${declarationBase}.d.mts`,
+        `${declarationBase}.d.cts`,
+        `${declarationBase}/index.d.ts`,
+        `${declarationBase}/index.d.mts`,
+        `${declarationBase}/index.d.cts`,
+      ]
+    : []
+  return [
+    ...declarations,
     base,
     `${base}.ts`,
     `${base}.tsx`,
@@ -61,13 +72,22 @@ const moduleTarget = (
     `${base}/index.tsx`,
     `${base}/index.js`,
     `${base}/index.d.ts`,
-  ]) {
+  ]
+}
+
+const moduleTarget = (
+  path: Path.Path,
+  currentFile: string,
+  specifier: string,
+  files: ReadonlySet<string>,
+): string | undefined => {
+  for (const candidate of moduleCandidates(path, currentFile, specifier)) {
     if (files.has(candidate)) return candidate
   }
   return undefined
 }
 
-const exportsOf = (
+export const exportsOf = (
   path: Path.Path,
   entryFiles: ReadonlyArray<string>,
   sources: ReadonlyMap<string, string>,
@@ -81,6 +101,58 @@ const exportsOf = (
       kind: mergeKind(current?.kind, kind),
       paths: new Set([...(current?.paths ?? []), file]),
     })
+  }
+  const kindOfExport = (
+    file: string,
+    exportName: string,
+    seen = new Set<string>(),
+  ): ExportKind | undefined => {
+    const key = `${file}#${exportName}`
+    if (seen.has(key)) return undefined
+    seen.add(key)
+    const text = sources.get(file)
+    if (text === undefined) return undefined
+    const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true)
+    for (const statement of source.statements) {
+      if (
+        (ts.isFunctionDeclaration(statement) ||
+          ts.isClassDeclaration(statement) ||
+          ts.isInterfaceDeclaration(statement) ||
+          ts.isTypeAliasDeclaration(statement) ||
+          ts.isEnumDeclaration(statement)) &&
+        statement.name?.text === exportName
+      ) {
+        return declarationKind(statement)
+      }
+      if (ts.isVariableStatement(statement)) {
+        const names = statement.declarationList.declarations.flatMap((declaration) =>
+          bindingNames(declaration.name),
+        )
+        if (names.includes(exportName)) return "value"
+      }
+      if (!ts.isExportDeclaration(statement)) continue
+      const target =
+        statement.moduleSpecifier !== undefined && ts.isStringLiteral(statement.moduleSpecifier)
+          ? moduleTarget(path, file, statement.moduleSpecifier.text, available)
+          : undefined
+      if (statement.exportClause === undefined) {
+        if (target !== undefined) {
+          const kind = kindOfExport(target, exportName, seen)
+          if (kind !== undefined) return kind
+        }
+        continue
+      }
+      if (ts.isNamespaceExport(statement.exportClause)) {
+        if (statement.exportClause.name.text === exportName) return "value"
+        continue
+      }
+      const element = statement.exportClause.elements.find(({ name }) => name.text === exportName)
+      if (element === undefined) continue
+      if (statement.isTypeOnly || element.isTypeOnly) return "type"
+      if (target === undefined) return "value-and-type"
+      return kindOfExport(target, element.propertyName?.text ?? element.name.text, seen)
+    }
+    return undefined
   }
   const visit = (file: string) => {
     if (visited.has(file)) return
@@ -99,11 +171,19 @@ const exportsOf = (
             add(statement.exportClause.name.text, "value", file)
           } else {
             for (const element of statement.exportClause.elements) {
-              add(
-                element.name.text,
-                statement.isTypeOnly || element.isTypeOnly ? "type" : "value-and-type",
-                file,
-              )
+              const target =
+                statement.moduleSpecifier !== undefined &&
+                ts.isStringLiteral(statement.moduleSpecifier)
+                  ? moduleTarget(path, file, statement.moduleSpecifier.text, available)
+                  : undefined
+              let kind: ExportKind = "value-and-type"
+              if (statement.isTypeOnly || element.isTypeOnly) kind = "type"
+              else if (target !== undefined) {
+                kind =
+                  kindOfExport(target, element.propertyName?.text ?? element.name.text) ??
+                  "value-and-type"
+              }
+              add(element.name.text, kind, file)
             }
           }
         } else if (

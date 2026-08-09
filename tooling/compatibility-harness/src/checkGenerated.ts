@@ -4,6 +4,11 @@ const targets = [
   "packages/keep-awake/src/Expo.ts",
   "packages/network/src/Expo.ts",
   "packages/secure-store/src/Expo.ts",
+  "packages/sqlite/src/Expo.ts",
+  "packages/task-manager/src/Expo.ts",
+  "packages/background-task/src/Expo.ts",
+  "packages/location/src/Expo.ts",
+  "packages/notifications/src/Expo.ts",
 ]
 
 const snapshot = async (): Promise<ReadonlyMap<string, string>> => {

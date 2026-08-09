@@ -1,0 +1,97 @@
+{
+  "name": "@better-native/sqlite",
+  "version": "0.0.1-alpha.1",
+  "private": false,
+  "description": "An Expo SQLite driver for Effect SQL.",
+  "keywords": [
+    "database",
+    "effect",
+    "expo",
+    "react-native",
+    "sqlite"
+  ],
+  "homepage": "https://github.com/okikeSolutions/better-native/tree/main/packages/sqlite#readme",
+  "bugs": "https://github.com/okikeSolutions/better-native/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okikeSolutions/better-native.git",
+    "directory": "packages/sqlite"
+  },
+  "files": [
+    "build",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "./build/LocalStorageInstall.js"
+  ],
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "import": "./build/index.js",
+      "default": "./build/index.js"
+    },
+    "./expo": {
+      "types": "./build/Expo.d.ts",
+      "import": "./build/Expo.js",
+      "default": "./build/Expo.js"
+    },
+    "./client": {
+      "types": "./build/SqliteClient.d.ts",
+      "import": "./build/SqliteClient.js",
+      "default": "./build/SqliteClient.js"
+    },
+    "./sqlite": {
+      "types": "./build/SQLite.d.ts",
+      "import": "./build/SQLite.js",
+      "default": "./build/SQLite.js"
+    },
+    "./kv-store": {
+      "types": "./build/KVStore.d.ts",
+      "import": "./build/KVStore.js",
+      "default": "./build/KVStore.js"
+    },
+    "./localStorage/install": {
+      "import": "./build/LocalStorageInstall.js",
+      "default": "./build/LocalStorageInstall.js"
+    },
+    "./app.plugin.js": {
+      "types": "./build/Plugin.d.ts",
+      "import": "./build/Plugin.js",
+      "default": "./build/Plugin.js"
+    },
+    "./plugin": {
+      "types": "./build/Plugin.d.ts",
+      "import": "./build/Plugin.js",
+      "default": "./build/Plugin.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf build && tsc -p tsconfig.build.json",
+    "prepack": "bun run build",
+    "docs:api": "docgen",
+    "test": "vitest run --root ../.. packages/sqlite/test",
+    "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@effect/docgen": "4.0.0-beta.102",
+    "@types/react": "~19.2.0",
+    "effect": "4.0.0-beta.102",
+    "expo": "57.0.9",
+    "expo-sqlite": "57.0.1",
+    "react": "19.2.3"
+  },
+  "peerDependencies": {
+    "effect": "4.0.0-beta.102",
+    "expo-sqlite": ">=57.0.0 <58.0.0"
+  }
+}

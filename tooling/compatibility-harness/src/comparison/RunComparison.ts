@@ -402,7 +402,10 @@ export const compare = (
     }
   }
   issues.push(...candidateTreatmentEvidence.issues)
-  const missingResolutionEvidence = (replacementManifest?.replacements ?? []).filter(
+  const requiredReplacements = (replacementManifest?.replacements ?? []).filter(({ source }) =>
+    expectedSources === undefined ? true : source === packageName(source),
+  )
+  const missingResolutionEvidence = requiredReplacements.filter(
     ({ source }) => !candidateTreatmentEvidence.resolvedSources.has(source),
   )
   if (missingResolutionEvidence.length > 0) {

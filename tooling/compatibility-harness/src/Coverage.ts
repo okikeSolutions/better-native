@@ -50,13 +50,15 @@ type PackageSummary = {
   readonly effectStream: number
   readonly reactHooks: number
   readonly effectAtoms: number
+  /** Expo hooks without a corresponding Effect Atom migration. */
+  readonly unmigratedHooks: number
   readonly intentionalDivergences: number
   readonly missing: number
   readonly status: "complete" | "intentional-divergence" | "missing"
 }
 
 export type CoverageReport = {
-  readonly schemaVersion: 5
+  readonly schemaVersion: 6
   readonly packages: ReadonlyArray<PackageSummary>
   readonly entries: ReadonlyArray<CoverageEntry>
   readonly typeEntries: ReadonlyArray<TypeCoverageEntry>
@@ -123,14 +125,23 @@ const entrypointPath = (expoPackage: string): string =>
 const tsconfigPath = (expoPackage: string): string =>
   `packages/${packageStem(expoPackage)}/tsconfig.json`
 
-const expoPublicExports = (source: string) => ({
-  values: [...source.matchAll(/^export const ([A-Za-z_$][\w$]*)\s*=/gm)]
-    .map((match) => match[1]!)
-    .toSorted(),
-  types: [...source.matchAll(/^export type ([A-Za-z_$][\w$]*)\s*=/gm)]
-    .map((match) => match[1]!)
-    .toSorted(),
-})
+const expoPublicExports = (sourceText: string) => {
+  const source = ts.createSourceFile("Expo.ts", sourceText, ts.ScriptTarget.Latest, true)
+  const values: Array<string> = []
+  const types: Array<string> = []
+  for (const statement of source.statements) {
+    const modifiers = ts.canHaveModifiers(statement) ? ts.getModifiers(statement) : undefined
+    if (!modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)) continue
+    if (ts.isVariableStatement(statement)) {
+      for (const declaration of statement.declarationList.declarations) {
+        if (ts.isIdentifier(declaration.name)) values.push(declaration.name.text)
+      }
+    } else if (ts.isTypeAliasDeclaration(statement)) {
+      types.push(statement.name.text)
+    }
+  }
+  return { values: values.toSorted(), types: types.toSorted() }
+}
 
 const loadExpoExports = Effect.fn("Coverage.loadExpoExports")(function* (expoPackage: string) {
   const repository = yield* ExpoRepository
@@ -150,43 +161,115 @@ const loadExpoExports = Effect.fn("Coverage.loadExpoExports")(function* (expoPac
   return expoPublicExports(source)
 })
 
+type BetterNativeExports = {
+  readonly root: TypeScriptExports
+  readonly expoCompat: TypeScriptExports
+}
+
+type ParsedPackageConfig = {
+  readonly packageName: string
+  readonly entryPoint: string
+  readonly expoCompat: string
+  readonly options: ts.CompilerOptions
+  readonly projectReferences: ReadonlyArray<ts.ProjectReference> | undefined
+}
+
+const normalizedCompilerOptions = (options: ts.CompilerOptions): string => {
+  const { configFilePath: _, ...shared } = options
+  return JSON.stringify(shared)
+}
+
+const normalizedProjectReferences = (
+  references: ReadonlyArray<ts.ProjectReference> | undefined,
+): string => JSON.stringify(references ?? [])
+
+export const validateSharedCompilerConfig = (
+  configs: ReadonlyArray<ParsedPackageConfig>,
+): ParsedPackageConfig => {
+  const first = configs[0]
+  if (first === undefined) {
+    throw new Error("Coverage requires at least one Better Native package")
+  }
+  const expectedOptions = normalizedCompilerOptions(first.options)
+  const expectedReferences = normalizedProjectReferences(first.projectReferences)
+  for (const config of configs.slice(1)) {
+    if (
+      normalizedCompilerOptions(config.options) !== expectedOptions ||
+      normalizedProjectReferences(config.projectReferences) !== expectedReferences
+    ) {
+      throw new Error(
+        `${config.packageName} does not share coverage compiler settings with ${first.packageName}`,
+      )
+    }
+  }
+  return first
+}
+
+export const makeCoverageCompilerHost = (options: ts.CompilerOptions): ts.CompilerHost => {
+  const host = ts.createCompilerHost(options)
+  host.jsDocParsingMode = ts.JSDocParsingMode.ParseNone
+  return host
+}
+
+export const validateCoverageSourceFiles = (fileNames: ReadonlyArray<string>): void => {
+  const javaScriptSource = fileNames.find((fileName) => /\.[cm]?jsx?$/i.test(fileName))
+  if (javaScriptSource !== undefined) {
+    throw new Error(
+      `Coverage cannot disable JSDoc parsing for JavaScript input ${javaScriptSource}`,
+    )
+  }
+}
+
 const loadBetterNativeExports = Effect.fn("Coverage.loadBetterNativeExports")(function* (
-  expoPackage: string,
+  expoPackages: ReadonlyArray<string>,
 ) {
   const repository = yield* ExpoRepository
   const path = yield* Path.Path
-  const entryPoint = path.join(repository.root, entrypointPath(expoPackage))
-  const tsconfig = path.join(repository.root, tsconfigPath(expoPackage))
   return yield* Effect.try({
     try: () => {
-      const configFile = ts.readConfigFile(tsconfig, (fileName) => ts.sys.readFile(fileName))
-      if (configFile.error !== undefined) {
-        throw new Error(ts.flattenDiagnosticMessageText(configFile.error.messageText, "\n"))
-      }
-      const parsed = ts.parseJsonConfigFileContent(
-        configFile.config,
-        ts.sys,
-        path.dirname(tsconfig),
-        undefined,
-        tsconfig,
-      )
-      if (parsed.errors.length > 0) {
-        throw new Error(
-          parsed.errors
-            .map((diagnostic) => ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"))
-            .join("\n"),
+      const configs = expoPackages.map((packageName): ParsedPackageConfig => {
+        const tsconfig = path.join(repository.root, tsconfigPath(packageName))
+        const configFile = ts.readConfigFile(tsconfig, (fileName) => ts.sys.readFile(fileName))
+        if (configFile.error !== undefined) {
+          throw new Error(ts.flattenDiagnosticMessageText(configFile.error.messageText, "\n"))
+        }
+        const parsed = ts.parseJsonConfigFileContent(
+          configFile.config,
+          ts.sys,
+          path.dirname(tsconfig),
+          undefined,
+          tsconfig,
         )
-      }
-      const program = ts.createProgram({
-        rootNames: [...new Set([...parsed.fileNames, entryPoint])],
-        options: parsed.options,
-        ...(parsed.projectReferences === undefined
-          ? {}
-          : { projectReferences: parsed.projectReferences }),
+        if (parsed.errors.length > 0) {
+          throw new Error(
+            parsed.errors
+              .map((diagnostic) => ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"))
+              .join("\n"),
+          )
+        }
+        return {
+          packageName,
+          entryPoint: path.join(repository.root, entrypointPath(packageName)),
+          expoCompat: path.join(repository.root, expoCompatPath(packageName)),
+          options: parsed.options,
+          projectReferences: parsed.projectReferences,
+        }
       })
+      const sharedConfig = validateSharedCompilerConfig(configs)
+      const rootNames = configs.flatMap(({ entryPoint, expoCompat }) => [entryPoint, expoCompat])
+      const host = makeCoverageCompilerHost(sharedConfig.options)
+      const program = ts.createProgram({
+        rootNames,
+        options: sharedConfig.options,
+        host,
+        ...(sharedConfig.projectReferences === undefined
+          ? {}
+          : { projectReferences: sharedConfig.projectReferences }),
+      })
+      validateCoverageSourceFiles(program.getSourceFiles().map(({ fileName }) => fileName))
+      const checker = program.getTypeChecker()
       const exportsAt = (sourcePath: string, moduleName: string): TypeScriptExports => {
         const source = program.getSourceFile(sourcePath)
-        const checker = program.getTypeChecker()
         if (source === undefined) {
           throw new Error(`TypeScript could not load ${moduleName}`)
         }
@@ -228,18 +311,20 @@ const loadBetterNativeExports = Effect.fn("Coverage.loadBetterNativeExports")(fu
           ),
         }
       }
-      return {
-        root: exportsAt(entryPoint, betterNativePackage(expoPackage)),
-        expoCompat: exportsAt(
-          path.join(repository.root, expoCompatPath(expoPackage)),
-          `${betterNativePackage(expoPackage)}/expo`,
-        ),
-      }
+      return new Map(
+        configs.map(({ packageName, entryPoint, expoCompat }) => [
+          packageName,
+          {
+            root: exportsAt(entryPoint, betterNativePackage(packageName)),
+            expoCompat: exportsAt(expoCompat, `${betterNativePackage(packageName)}/expo`),
+          } satisfies BetterNativeExports,
+        ]),
+      )
     },
     catch: (cause) =>
       new HarnessError({
         operation: "extract Better Native API with TypeScript",
-        path: entryPoint,
+        path: "packages/*/src/{index,Expo}.ts",
         cause,
       }),
   })
@@ -446,13 +531,11 @@ export const validateCoverageTypeTarget = Effect.fn("Coverage.validateCoverageTy
 
 const coverageEntries = Effect.fn("Coverage.coverageEntries")(function* (
   expoPackage: string,
+  betterNativeExports: BetterNativeExports,
   mappings: ReadonlyMap<string, CoverageMapping>,
   typeMappings: ReadonlyMap<string, TypeCoverageMapping>,
 ) {
-  const [expoExports, betterNativeExports] = yield* Effect.all([
-    loadExpoExports(expoPackage),
-    loadBetterNativeExports(expoPackage),
-  ])
+  const expoExports = yield* loadExpoExports(expoPackage)
   return {
     entries: yield* Effect.forEach(
       expoExports.values,
@@ -538,6 +621,7 @@ const summarizePackage = (
   const hooks = entries.filter(
     (entry) => entry.status === "expo-compat" && entry.expoExport.startsWith("use"),
   ).length
+  const unmigratedHooks = hooks - effectAtoms
   const missingTypes = typeEntries.filter(({ status }) => status === "missing").length
   const intentionalDivergences =
     count("intentional-divergence") +
@@ -548,7 +632,7 @@ const summarizePackage = (
       !(entry.expoExport.startsWith("add") && entry.expoExport.endsWith("Listener")),
   ).length
   let status: PackageSummary["status"] = "complete"
-  if (missing > 0 || missingTypes > 0) {
+  if (missing > 0 || missingTypes > 0 || unmigratedHooks > 0) {
     status = "missing"
   } else if (intentionalDivergences > 0) {
     status = "intentional-divergence"
@@ -571,6 +655,7 @@ const summarizePackage = (
     effectStream: count("effect-stream"),
     reactHooks: hooks,
     effectAtoms,
+    unmigratedHooks,
     intentionalDivergences,
     missing,
     status,
@@ -628,19 +713,12 @@ const renderTable = (coverage: CoverageReport): string => {
   const summaryRows = coverage.packages.map((summary) => {
     return [
       summary.packageName,
-      String(summary.expoExports),
-      String(summary.deprecatedExpoApis),
-      String(summary.accountedExports),
-      String(summary.expoTypes),
-      String(summary.accountedTypes),
-      String(summary.missingTypes),
-      String(summary.expoApi),
+      `${summary.accountedExports}/${summary.expoExports}`,
+      `${summary.accountedTypes}/${summary.expoTypes}`,
       String(summary.effectApi),
       String(summary.effectStream),
-      String(summary.reactHooks),
-      String(summary.effectAtoms),
-      String(summary.intentionalDivergences),
-      String(summary.missing),
+      `${summary.reactHooks}/${summary.effectAtoms}`,
+      `${summary.missing}/${summary.missingTypes}/${summary.unmigratedHooks}`,
       summary.status,
     ]
   })
@@ -650,19 +728,12 @@ const renderTable = (coverage: CoverageReport): string => {
     renderGrid(
       [
         "Package",
-        "Expo exports",
-        "Deprecated APIs",
-        "Accounted",
-        "Expo types",
-        "Covered types",
-        "Missing types",
-        "Expo API",
+        "Exports",
+        "Types",
         "Effect API",
         "Streams",
-        "React hooks",
-        "Effect atoms",
-        "Divergences",
-        "Missing",
+        "Hooks/Atoms",
+        "Gaps (API/Types/Hooks)",
         "Status",
       ],
       summaryRows,
@@ -772,9 +843,21 @@ export const inspect = Effect.fn("Coverage.inspect")(function* () {
   const typeMappings = new Map(
     typeMappingEntries.map((mapping) => [mappingKey(mapping.package, mapping.expoType), mapping]),
   )
+  const exportsByPackage = yield* loadBetterNativeExports(packages)
   const groups = yield* Effect.forEach(
     packages,
-    (packageName) => coverageEntries(packageName, mappings, typeMappings),
+    (packageName) => {
+      const betterNativeExports = exportsByPackage.get(packageName)
+      return betterNativeExports === undefined
+        ? Effect.fail(
+            new HarnessError({
+              operation: "extract Better Native API with TypeScript",
+              path: entrypointPath(packageName),
+              cause: `missing shared compiler result for ${packageName}`,
+            }),
+          )
+        : coverageEntries(packageName, betterNativeExports, mappings, typeMappings)
+    },
     { concurrency: 2 },
   )
   const entries = groups.flatMap((group) => group.entries)
@@ -789,7 +872,7 @@ export const inspect = Effect.fn("Coverage.inspect")(function* () {
     groups.map((group) => [group.packageName, group.effectAtoms] as const),
   )
   return {
-    schemaVersion: 5,
+    schemaVersion: 6,
     packages: summarize(entries, typeEntries, atomsByPackage),
     entries: entries.toSorted((left, right) =>
       `${left.packageName}#${left.expoExport}`.localeCompare(

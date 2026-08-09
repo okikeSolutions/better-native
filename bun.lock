@@ -26,11 +26,16 @@
       "name": "@better-native/compatibility-suite",
       "version": "0.0.0",
       "dependencies": {
+        "@better-native/background-task": "workspace:*",
         "@better-native/battery": "workspace:*",
         "@better-native/keep-awake": "workspace:*",
+        "@better-native/location": "workspace:*",
         "@better-native/metro": "workspace:*",
         "@better-native/network": "workspace:*",
+        "@better-native/notifications": "workspace:*",
         "@better-native/secure-store": "workspace:*",
+        "@better-native/sqlite": "workspace:*",
+        "@better-native/task-manager": "workspace:*",
         "@expo/html-elements": "57.0.0",
         "@expo/styleguide-base": "^1.0.1",
         "@expo/vector-icons": "^15.0.2",
@@ -47,6 +52,7 @@
         "expo-audio": "57.0.3",
         "expo-auth-session": "57.0.5",
         "expo-background-fetch": "57.0.7",
+        "expo-background-task": "57.0.7",
         "expo-battery": "57.0.1",
         "expo-blob": "57.0.1",
         "expo-blur": "57.0.2",
@@ -139,6 +145,24 @@
         "@astrojs/check": "^0.9.10",
       },
     },
+    "packages/background-task": {
+      "name": "@better-native/background-task",
+      "version": "0.0.1-alpha.1",
+      "devDependencies": {
+        "@better-native/task-manager": "workspace:*",
+        "@effect/docgen": "4.0.0-beta.102",
+        "effect": "4.0.0-beta.102",
+        "expo": "57.0.9",
+        "expo-background-task": "57.0.7",
+        "react": "19.2.3",
+      },
+      "peerDependencies": {
+        "@better-native/task-manager": "0.0.1-alpha.1",
+        "effect": "4.0.0-beta.102",
+        "expo-background-task": ">=57.0.0 <58.0.0",
+        "expo-task-manager": ">=57.0.0 <58.0.0",
+      },
+    },
     "packages/battery": {
       "name": "@better-native/battery",
       "version": "0.0.1-alpha.1",
@@ -179,6 +203,26 @@
         "effect": "4.0.0-beta.102",
         "expo-keep-awake": ">=57.0.0 <58.0.0",
       },
+    },
+    "packages/location": {
+      "name": "@better-native/location",
+      "version": "0.0.1-alpha.1",
+      "devDependencies": {
+        "@better-native/task-manager": "workspace:*",
+        "@effect/docgen": "4.0.0-beta.102",
+        "effect": "4.0.0-beta.102",
+        "expo": "57.0.9",
+        "expo-location": "57.0.7",
+        "react": "19.2.3",
+      },
+      "peerDependencies": {
+        "@better-native/task-manager": "0.0.1-alpha.1",
+        "effect": "4.0.0-beta.102",
+        "expo-location": ">=57.0.0 <58.0.0",
+      },
+      "optionalPeers": [
+        "@better-native/task-manager",
+      ],
     },
     "packages/metro": {
       "name": "@better-native/metro",
@@ -226,6 +270,28 @@
         "expo-network": ">=57.0.0 <58.0.0",
       },
     },
+    "packages/notifications": {
+      "name": "@better-native/notifications",
+      "version": "0.0.1-alpha.1",
+      "devDependencies": {
+        "@better-native/task-manager": "workspace:*",
+        "@effect/docgen": "4.0.0-beta.102",
+        "effect": "4.0.0-beta.102",
+        "expo": "57.0.9",
+        "expo-notifications": "57.0.8",
+        "react": "19.2.3",
+      },
+      "peerDependencies": {
+        "@better-native/task-manager": "0.0.1-alpha.1",
+        "effect": "4.0.0-beta.102",
+        "expo-notifications": ">=57.0.0 <58.0.0",
+        "expo-task-manager": ">=57.0.0 <58.0.0",
+      },
+      "optionalPeers": [
+        "@better-native/task-manager",
+        "expo-task-manager",
+      ],
+    },
     "packages/secure-store": {
       "name": "@better-native/secure-store",
       "version": "0.0.1-alpha.1",
@@ -239,6 +305,37 @@
       "peerDependencies": {
         "effect": "4.0.0-beta.102",
         "expo-secure-store": ">=57.0.0 <58.0.0",
+      },
+    },
+    "packages/sqlite": {
+      "name": "@better-native/sqlite",
+      "version": "0.0.1-alpha.1",
+      "devDependencies": {
+        "@effect/docgen": "4.0.0-beta.102",
+        "@types/react": "~19.2.0",
+        "effect": "4.0.0-beta.102",
+        "expo": "57.0.9",
+        "expo-sqlite": "57.0.1",
+        "react": "19.2.3",
+      },
+      "peerDependencies": {
+        "effect": "4.0.0-beta.102",
+        "expo-sqlite": ">=57.0.0 <58.0.0",
+      },
+    },
+    "packages/task-manager": {
+      "name": "@better-native/task-manager",
+      "version": "0.0.1-alpha.1",
+      "devDependencies": {
+        "@effect/docgen": "4.0.0-beta.102",
+        "effect": "4.0.0-beta.102",
+        "expo": "57.0.9",
+        "expo-task-manager": "57.0.7",
+        "react": "19.2.3",
+      },
+      "peerDependencies": {
+        "effect": "4.0.0-beta.102",
+        "expo-task-manager": ">=57.0.0 <58.0.0",
       },
     },
     "packages/typescript-config": {
@@ -559,6 +656,8 @@
 
     "@bcoe/v8-coverage": ["@bcoe/v8-coverage@1.0.2", "", {}, "sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA=="],
 
+    "@better-native/background-task": ["@better-native/background-task@workspace:packages/background-task"],
+
     "@better-native/battery": ["@better-native/battery@workspace:packages/battery"],
 
     "@better-native/compatibility-harness": ["@better-native/compatibility-harness@workspace:tooling/compatibility-harness"],
@@ -571,13 +670,21 @@
 
     "@better-native/keep-awake": ["@better-native/keep-awake@workspace:packages/keep-awake"],
 
+    "@better-native/location": ["@better-native/location@workspace:packages/location"],
+
     "@better-native/metro": ["@better-native/metro@workspace:packages/metro"],
 
     "@better-native/metro-paired-fixture": ["@better-native/metro-paired-fixture@workspace:packages/metro/test/fixtures/paired"],
 
     "@better-native/network": ["@better-native/network@workspace:packages/network"],
 
+    "@better-native/notifications": ["@better-native/notifications@workspace:packages/notifications"],
+
     "@better-native/secure-store": ["@better-native/secure-store@workspace:packages/secure-store"],
+
+    "@better-native/sqlite": ["@better-native/sqlite@workspace:packages/sqlite"],
+
+    "@better-native/task-manager": ["@better-native/task-manager@workspace:packages/task-manager"],
 
     "@better-native/typescript-config": ["@better-native/typescript-config@workspace:packages/typescript-config"],
 
@@ -1956,6 +2063,8 @@
     "expo-auth-session": ["expo-auth-session@57.0.5", "", { "dependencies": { "expo-application": "~57.0.2", "expo-constants": "~57.0.7", "expo-crypto": "~57.0.1", "expo-linking": "~57.0.4", "expo-web-browser": "~57.0.2", "invariant": "^2.2.4" }, "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-4u/CIMCrQ88QO9AKSaw61Vva+Gmtil254xBjDB2SuAeyN/I9mNxZKkG0xtcm3iDSmJFMuHkYDKNo3RvTn3sz+Q=="],
 
     "expo-background-fetch": ["expo-background-fetch@57.0.7", "", { "dependencies": { "expo-task-manager": "~57.0.7" }, "peerDependencies": { "expo": "*" } }, "sha512-MUH/pnQyeOOzLd422enfSHONYDkd4EbycPxGcsxifIi5p2ct0ph/WcvyKej0Ff34gr833PPxa8SBzBAUeTw85g=="],
+
+    "expo-background-task": ["expo-background-task@57.0.7", "", { "dependencies": { "expo-task-manager": "~57.0.7" }, "peerDependencies": { "expo": "*" } }, "sha512-fFcms4qQ0mw5XYjG+zbbmaER8pyxIhqEVIbOiBUfWofR1kUj4mQfwkMjJzlWGXN7nCg0vRBUpDk1oJCR0mts6g=="],
 
     "expo-battery": ["expo-battery@57.0.1", "", { "peerDependencies": { "expo": "*", "react": "*" } }, "sha512-Q8WE1JedCs7XMFGLzShdtnGKC4ETjoV13DWXgN0lyWgicmIXOYN9+VlKm2g/lYzMObMP/r+psbPdnnOJhljZ/A=="],
 

@@ -1,0 +1,69 @@
+{
+  "name": "@better-native/task-manager",
+  "version": "0.0.1-alpha.1",
+  "private": false,
+  "description": "Effect-native Expo Task Manager integration.",
+  "keywords": [
+    "effect",
+    "expo",
+    "react-native",
+    "task-manager"
+  ],
+  "homepage": "https://github.com/okikeSolutions/better-native/tree/main/packages/task-manager#readme",
+  "bugs": "https://github.com/okikeSolutions/better-native/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okikeSolutions/better-native.git",
+    "directory": "packages/task-manager"
+  },
+  "files": [
+    "build",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "import": "./build/index.js",
+      "default": "./build/index.js"
+    },
+    "./expo": {
+      "types": "./build/Expo.d.ts",
+      "import": "./build/Expo.js",
+      "default": "./build/Expo.js"
+    },
+    "./app.plugin": {
+      "types": "./build/Plugin.d.ts",
+      "import": "./build/Plugin.js",
+      "default": "./build/Plugin.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf build && tsc -p tsconfig.build.json",
+    "prepack": "bun run build",
+    "test": "vitest run --root ../.. packages/task-manager/test",
+    "typecheck": "tsc --noEmit",
+    "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
+    "docs:api": "docgen"
+  },
+  "devDependencies": {
+    "@effect/docgen": "4.0.0-beta.102",
+    "effect": "4.0.0-beta.102",
+    "expo": "57.0.9",
+    "expo-task-manager": "57.0.7",
+    "react": "19.2.3"
+  },
+  "peerDependencies": {
+    "effect": "4.0.0-beta.102",
+    "expo-task-manager": ">=57.0.0 <58.0.0"
+  }
+}

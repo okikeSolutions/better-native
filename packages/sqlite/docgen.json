@@ -1,0 +1,25 @@
+{
+  "$schema": "../../node_modules/@effect/docgen/schema.json",
+  "outDir": "../../.artifacts/docs/api/sqlite",
+  "srcLink": "https://github.com/okikeSolutions/better-native/tree/main/packages/sqlite/src/",
+  "exclude": [
+    "src/Expo.ts",
+    "src/index.ts",
+    "src/SQLite.ts",
+    "src/KVStore.ts",
+    "src/LocalStorageInstall.ts",
+    "src/Plugin.ts"
+  ],
+  "enforceDescriptions": true,
+  "enforceVersion": true,
+  "parseCompilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "Bundler",
+    "module": "ES2022",
+    "target": "ES2022",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true
+  }
+}

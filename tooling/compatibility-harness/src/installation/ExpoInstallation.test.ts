@@ -10,6 +10,56 @@ const base = {
 }
 
 describe("ExpoInstallation", () => {
+  it("detects concrete manifest targets omitted from the tracked pinned inventory", () => {
+    const entrypoints = [
+      {
+        subpath: ".",
+        kind: "runtime",
+        pattern: false,
+        resolution: { source: "manifest", value: "build/index.js" },
+        resolutionBranches: [
+          {
+            conditions: ["main"],
+            fallback: [],
+            target: "build/index.js",
+            platforms: ["ios", "android"],
+          },
+          {
+            conditions: ["types"],
+            fallback: [],
+            target: "build/index.d.ts",
+            platforms: ["ios", "android"],
+          },
+          {
+            conditions: ["browser"],
+            fallback: [],
+            target: null,
+            platforms: ["web"],
+          },
+        ],
+      },
+      {
+        subpath: "./features/*",
+        kind: "runtime",
+        pattern: true,
+        resolution: { source: "exports", value: "./build/*.js" },
+        resolutionBranches: [
+          {
+            conditions: ["default"],
+            fallback: [],
+            target: "./build/*.js",
+            platforms: ["ios", "android"],
+          },
+        ],
+      },
+    ] as unknown as ExpoInstallationModel["packages"][number]["targetEntrypoints"]
+
+    assert.deepEqual(
+      ExpoInstallation.missingManifestTargets(["build/index.js", "package.json"], entrypoints),
+      ["build/index.d.ts"],
+    )
+  })
+
   it("distinguishes declaration, version, lockfile and source failures", () => {
     assert.strictEqual(ExpoInstallation.statusOf(base), "valid")
     assert.strictEqual(

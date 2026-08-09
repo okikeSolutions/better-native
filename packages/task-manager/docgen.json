@@ -1,0 +1,18 @@
+{
+  "$schema": "../../node_modules/@effect/docgen/schema.json",
+  "outDir": "../../.artifacts/docs/api/task-manager",
+  "srcLink": "https://github.com/okikeSolutions/better-native/tree/main/packages/task-manager/src/",
+  "exclude": ["src/Expo.ts", "src/index.ts", "src/Plugin.ts"],
+  "enforceDescriptions": true,
+  "enforceVersion": true,
+  "parseCompilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "Bundler",
+    "module": "ES2022",
+    "target": "ES2022",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true
+  }
+}

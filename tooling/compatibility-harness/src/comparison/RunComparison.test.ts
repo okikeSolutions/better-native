@@ -274,6 +274,25 @@ describe("RunComparison", () => {
     assert.notMatch(observed.issues.join("\n"), /missing owned specifiers/)
   })
 
+  it("limits scoped comparisons to root replacement evidence", () => {
+    const scopedManifest = {
+      ...replacementManifest,
+      replacements: [
+        ...replacementManifest.replacements,
+        { source: "expo-network/package.json", target: "@better-native/network/package.json" },
+      ],
+    }
+    const scoped = compare(
+      [record("upstream", passed)],
+      [record("candidate", passed)],
+      expectations(),
+      [TestSourceId.make("suite#source")],
+      scopedManifest,
+      { resolvedSources: new Set(["expo-network"]), issues: [] },
+    )
+    assert.notMatch(scoped.issues.join("\n"), /missing owned specifiers/)
+  })
+
   it.effect("binds candidate treatment to run, build, fingerprint, target and outcome", () =>
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem

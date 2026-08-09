@@ -37,6 +37,159 @@
       "replacement": "@better-native/secure-store/expo",
       "reason": "Better Native owns the complete SecureStore JavaScript contract through typed Effect APIs and an Expo-compatible entrypoint. Paired upstream/candidate evidence passes the reviewed Effect boundary on iOS and Android, the actual unsupported web behavior, and a genuine iOS Keychain entitlement rejection with zero divergences; Expo remains the native capability provider behind the live layer.",
       "issue": "promote-secure-store-effect-ownership"
+    },
+    {
+      "package": "expo-sqlite",
+      "subpath": ".",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/sqlite/expo",
+      "reason": "Better Native accounts for the complete expo-sqlite root API with Effect-native lifecycle operations, an Effect SQL client, and an exact Expo-compatible entrypoint. Candidate resolution remains fallback until paired web, iOS, and Android device evidence is reviewed.",
+      "issue": "promote-sqlite-effect-ownership"
+    },
+    {
+      "package": "expo-sqlite",
+      "subpath": "./kv-store",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/sqlite/kv-store",
+      "reason": "Better Native preserves the complete Expo SQLite key-value-store subpath while root Effect ownership is awaiting device evidence.",
+      "issue": "promote-sqlite-effect-ownership"
+    },
+    {
+      "package": "expo-sqlite",
+      "subpath": "./localStorage/install",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/sqlite/localStorage/install",
+      "reason": "Better Native preserves Expo SQLite's side-effectful localStorage installer while root Effect ownership is awaiting device evidence.",
+      "issue": "promote-sqlite-effect-ownership"
+    },
+    {
+      "package": "expo-sqlite",
+      "subpath": "./app.plugin.js",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/sqlite/app.plugin.js",
+      "reason": "Better Native preserves Expo SQLite's app.plugin.js entrypoint while root Effect ownership is awaiting device evidence.",
+      "issue": "promote-sqlite-effect-ownership"
+    },
+    {
+      "package": "expo-sqlite",
+      "subpath": "./plugin",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/sqlite/plugin",
+      "reason": "Better Native preserves Expo SQLite's config-plugin entrypoint while root Effect ownership is awaiting device evidence.",
+      "issue": "promote-sqlite-effect-ownership"
+    },
+    {
+      "package": "expo-task-manager",
+      "subpath": ".",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/task-manager/expo",
+      "reason": "Better Native accounts for the Expo Task Manager root API with Effect-native persistent-registry operations and an eager headless-task definition boundary. Candidate resolution remains fallback until paired web, iOS, and Android Release evidence includes physical-device background and cold-launch delivery.",
+      "issue": "promote-task-manager-effect-ownership"
+    },
+    {
+      "package": "expo-task-manager",
+      "subpath": "./app.plugin",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/task-manager/app.plugin",
+      "reason": "Better Native bridges Expo Task Manager's config-plugin entrypoint; its iOS background-fetch configuration remains fallback pending a reviewed CNG/native fingerprint.",
+      "issue": "promote-task-manager-effect-ownership"
+    },
+    {
+      "package": "expo-task-manager",
+      "subpath": "./package.json",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/task-manager/package.json",
+      "reason": "Better Native provides the package manifest entrypoint while Task Manager ownership remains pending platform evidence.",
+      "issue": "promote-task-manager-effect-ownership"
+    },
+    {
+      "package": "expo-background-task",
+      "subpath": ".",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/background-task/expo",
+      "reason": "Better Native accounts for the complete Expo Background Task root API with typed persistent registration outcomes, Task Manager runtime composition, expiration Streams, and an exact Expo-compatible entrypoint. Candidate resolution remains fallback until paired Release evidence includes physical-device scheduled and cold-launch delivery.",
+      "issue": "promote-background-task-effect-ownership"
+    },
+    {
+      "package": "expo-background-task",
+      "subpath": "./app.plugin",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/background-task/app.plugin",
+      "reason": "Better Native preserves the Background Task config plugin while its iOS processing mode and permitted scheduler identifier await reviewed CNG/native fingerprint evidence.",
+      "issue": "promote-background-task-effect-ownership"
+    },
+    {
+      "package": "expo-background-task",
+      "subpath": "./package.json",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/background-task/package.json",
+      "reason": "Better Native provides the package manifest entrypoint while Background Task ownership remains pending platform evidence.",
+      "issue": "promote-background-task-effect-ownership"
+    },
+    {
+      "package": "expo-location",
+      "subpath": ".",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/location/expo",
+      "reason": "Better Native accounts for Expo Location with typed Effects, scoped foreground Streams, permission Atoms, persistent background operations, and an exact Expo-compatible entrypoint. Candidate resolution remains fallback until paired Release evidence and hardware-backed location, motion, geofencing, and cold-start behavior are reviewed.",
+      "issue": "promote-location-effect-ownership"
+    },
+    {
+      "package": "expo-location",
+      "subpath": "./app.plugin",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/location/app.plugin",
+      "reason": "Better Native preserves Expo Location's config plugin while permission strings, background modes, Android permissions, and foreground-service icon generation await reviewed CNG fingerprints.",
+      "issue": "promote-location-effect-ownership"
+    },
+    {
+      "package": "expo-location",
+      "subpath": "./package.json",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/location/package.json",
+      "reason": "Better Native provides the package manifest entrypoint while Location ownership remains pending platform evidence.",
+      "issue": "promote-location-effect-ownership"
+    },
+    {
+      "package": "expo-notifications",
+      "subpath": ".",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/notifications/expo",
+      "reason": "Better Native accounts for Expo Notifications with typed Effects, scoped event Streams, a response Atom, synchronous ManagedRuntime handlers, background-task composition, and an exact side-effectful Expo bridge. Candidate resolution remains fallback until paired Release and physical-device push, response, and killed-app delivery evidence is reviewed.",
+      "issue": "promote-notifications-effect-ownership"
+    },
+    {
+      "package": "expo-notifications",
+      "subpath": "./app.plugin",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/notifications/app.plugin",
+      "reason": "Better Native preserves the Notifications config plugin while Android resources/defaults and iOS entitlement/background-mode output await reviewed CNG fingerprints.",
+      "issue": "promote-notifications-effect-ownership"
+    },
+    {
+      "package": "expo-notifications",
+      "subpath": "./package.json",
+      "export": null,
+      "status": "fallback",
+      "replacement": "@better-native/notifications/package.json",
+      "reason": "Better Native provides the package manifest entrypoint while Notifications ownership remains pending platform evidence.",
+      "issue": "promote-notifications-effect-ownership"
     }
   ]
 }

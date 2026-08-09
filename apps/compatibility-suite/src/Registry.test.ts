@@ -1,4 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
+import { readFileSync } from "node:fs"
 import {
   configureUpstreamSelection,
   interactiveSmokeSourceIds,
@@ -7,30 +8,39 @@ import {
 } from "./Registry.ts"
 
 describe("generated compatibility registry", () => {
-  it("contains the complete corpus without silent omissions", () => {
-    assert.isAtLeast(registry.length, 2_000)
+  it("keeps the complete audit ledger while bundling only app-runnable sources", () => {
+    const complete = JSON.parse(
+      readFileSync(new URL("./generated/RegistryMetadata.json", import.meta.url), "utf8"),
+    ) as { readonly sources: ReadonlyArray<{ readonly sourceId: string }> }
+    assert.isAtLeast(complete.sources.length, 2_000)
+    assert.isBelow(registry.length, complete.sources.length)
     assert.strictEqual(new Set(registry.map(({ sourceId }) => sourceId)).size, registry.length)
     assert.strictEqual(metadata.sources.length, registry.length)
     assert.isTrue(
-      registry.every((source) => source.load !== null || source.reason !== null),
-      "every external source must explain where it executes",
+      registry.every((source) => source.load !== null),
+      "every bundled runtime source must have a platform loader",
     )
   })
 
-  it("retains Expo host tooling and BareExpo Maestro flows in the denominator", () => {
-    assert.isTrue(registry.some(({ path }) => path.startsWith("tools/") && path.includes(".test.")))
-    assert.isTrue(registry.some(({ path }) => path.startsWith("docs/") && path.includes(".test.")))
-    assert.isTrue(registry.some(({ path }) => /^apps\/bare-expo\/e2e\/.*\.ya?ml$/.test(path)))
-    assert.isTrue(
-      registry.some(({ path }) => path === "apps/bare-expo/scripts/lib/e2e-common.test.ts"),
-    )
-    assert.isTrue(
-      registry.some(
-        ({ path }) => path === "apps/test-suite/screens/__tests__/getScreenIdForLinking.test.ts",
+  it("keeps each platform runtime registry within the checked-in bundle budget", () => {
+    const budgets = JSON.parse(
+      readFileSync(
+        new URL("../../../compatibility/release-build-budgets.json", import.meta.url),
+        "utf8",
       ),
-    )
-    assert.isTrue(registry.some(({ path }) => path.startsWith("apps/router-e2e/__e2e__/")))
-    assert.isTrue(registry.some(({ path }) => path.startsWith("packages/expo-updates/e2e/")))
+    ) as { readonly runtimeRegistryMaxBytes: number }
+    for (const platform of ["web", "ios", "android"]) {
+      const bytes = readFileSync(
+        new URL(`./generated/RuntimeRegistryMetadata.${platform}.ts`, import.meta.url),
+      ).byteLength
+      assert.isAtMost(bytes, budgets.runtimeRegistryMaxBytes, platform)
+    }
+  })
+
+  it("does not bundle externally executed host and Maestro sources", () => {
+    assert.isFalse(registry.some(({ path }) => path.startsWith("tools/")))
+    assert.isFalse(registry.some(({ path }) => path.startsWith("docs/")))
+    assert.isFalse(registry.some(({ path }) => /^apps\/bare-expo\/e2e\/.*\.ya?ml$/.test(path)))
   })
 
   it("exposes platform-selected Expo Jasmine modules and every static case ID", () => {
@@ -39,21 +49,25 @@ describe("generated compatibility registry", () => {
     const keepAwake = registry.find(({ path }) => path.endsWith("/tests/KeepAwake.js"))
     const network = registry.find(({ path }) => path.endsWith("/tests/Network.js"))
     const secureStore = registry.find(({ path }) => path.endsWith("/tests/SecureStore.js"))
+    const sqlite = registry.find(({ path }) => path.endsWith("/tests/SQLite.ts"))
     assert.isDefined(basic)
     assert.isDefined(battery)
     assert.isDefined(keepAwake)
     assert.isDefined(network)
     assert.isDefined(secureStore)
+    assert.isDefined(sqlite)
     assert.isFunction(basic.load)
     assert.isFunction(battery.load)
     assert.isFunction(keepAwake.load)
     assert.isFunction(network.load)
     assert.isFunction(secureStore.load)
+    assert.isFunction(sqlite.load)
     assert.isAbove(basic.caseIds.length, 0)
     assert.isAbove(battery.caseIds.length, 0)
     assert.isAbove(keepAwake.caseIds.length, 0)
     assert.isAbove(network.caseIds.length, 0)
     assert.isAbove(secureStore.caseIds.length, 0)
+    assert.isAbove(sqlite.caseIds.length, 0)
     assert.strictEqual(
       new Set(registry.flatMap(({ caseIds }) => caseIds)).size,
       registry.reduce((total, source) => total + source.caseIds.length, 0),
@@ -70,13 +84,26 @@ describe("generated compatibility registry", () => {
       "apps/test-suite/tests/KeepAwake.js",
       "apps/test-suite/tests/Network.js",
       "apps/test-suite/tests/SecureStore.js",
+      "apps/test-suite/tests/SQLite.ts",
     ])
   })
 
-  it("keeps TaskManager and Location marked for eager registration", () => {
+  it("keeps module-scope APIs marked and generated for eager registration", () => {
     const eager = registry.filter(({ registration }) => registration === "eager")
     assert.isTrue(eager.some(({ path }) => /\/tests\/TaskManager\./.test(path)))
     assert.isTrue(eager.some(({ path }) => /\/tests\/Location\./.test(path)))
+    assert.isTrue(eager.some(({ path }) => path.endsWith("/capabilities/Notifications.ts")))
+    for (const platform of ["web", "ios", "android"]) {
+      const generated = readFileSync(
+        new URL(`./generated/EagerRegistrations.${platform}.ts`, import.meta.url),
+        "utf8",
+      )
+      assert.include(generated, 'require("../capabilities/Notifications.ts")')
+      assert.include(
+        generated,
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Notifications.ts",
+      )
+    }
   })
 
   it("fails closed until the pinned applicability adapter initializes", () => {
@@ -180,13 +207,16 @@ describe("generated compatibility registry", () => {
     assert.isTrue(supplemental.selectedByUpstream)
   })
 
-  it("registers reviewed native SecureStore capability sources", () => {
-    const core = registry.find(
+  it("records reviewed native SecureStore capability sources in the full ledger", () => {
+    const complete = JSON.parse(
+      readFileSync(new URL("./generated/RegistryMetadata.json", import.meta.url), "utf8"),
+    ) as typeof metadata
+    const core = complete.sources.find(
       ({ sourceId }) =>
         sourceId ===
         "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts",
     )
-    const nativeFailure = registry.find(
+    const nativeFailure = complete.sources.find(
       ({ sourceId }) =>
         sourceId ===
         "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStoreNativeFailure.ios.ts",
@@ -197,8 +227,5 @@ describe("generated compatibility registry", () => {
     assert.isDefined(nativeFailure)
     assert.deepEqual(nativeFailure.platforms, ["ios"])
     assert.lengthOf(nativeFailure.caseIds, 1)
-    configureUpstreamSelection([])
-    assert.isTrue(core.selectedByUpstream)
-    assert.isTrue(nativeFailure.selectedByUpstream)
   })
 })

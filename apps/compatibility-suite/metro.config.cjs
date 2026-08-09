@@ -1,4 +1,5 @@
 const path = require("node:path")
+const fs = require("node:fs")
 const { withBetterNative } = require("@better-native/metro")
 const generated = require("./src/generated/Replacements.json")
 const trackedSpecifiers = new Set(generated.trackedSpecifiers)
@@ -14,14 +15,36 @@ if (!upstreamNodeModulesPath) throw new Error("BETTER_NATIVE_UPSTREAM_NODE_MODUL
 const pinnedExpoRoot = process.env.BETTER_NATIVE_PINNED_EXPO_ROOT
 if (!pinnedExpoRoot) throw new Error("BETTER_NATIVE_PINNED_EXPO_ROOT is required")
 const expoSourceRoot = process.env.EXPO_SOURCE_ROOT ?? path.resolve(__dirname, "../../../expo")
+const directDependencies = Object.keys(require("./package.json").dependencies ?? {})
+const resolutionEvidencePath = process.env.BETTER_NATIVE_RESOLUTION_EVIDENCE_PATH
+const metroMaxWorkersValue = process.env.BETTER_NATIVE_METRO_MAX_WORKERS
+const metroMaxWorkers =
+  metroMaxWorkersValue === undefined ? undefined : Number(metroMaxWorkersValue)
+if (
+  metroMaxWorkers !== undefined &&
+  (!Number.isSafeInteger(metroMaxWorkers) || metroMaxWorkers <= 0)
+) {
+  throw new Error("BETTER_NATIVE_METRO_MAX_WORKERS must be a positive integer")
+}
 
 const { getDefaultConfig } = require(path.join(pinnedExpoRoot, "packages", "expo", "metro-config"))
 
 const config = getDefaultConfig(__dirname)
+if (metroMaxWorkers !== undefined) config.maxWorkers = metroMaxWorkers
 if (!config.resolver.assetExts.includes("wasm")) config.resolver.assetExts.push("wasm")
 config.watchFolders = [...new Set([...(config.watchFolders ?? []), expoSourceRoot])]
+config.resolver.nodeModulesPaths = [
+  upstreamNodeModulesPath,
+  ...(config.resolver.nodeModulesPaths ?? []),
+]
 config.resolver.extraNodeModules = {
   ...config.resolver.extraNodeModules,
+  ...Object.fromEntries(
+    directDependencies.map((name) => [
+      name,
+      path.join(upstreamNodeModulesPath, ...name.split("/")),
+    ]),
+  ),
   "@better-native/expo-source": expoSourceRoot,
 }
 
@@ -35,7 +58,9 @@ module.exports = withBetterNative(config, {
   trackedSpecifiers: generated.trackedSpecifiers,
   onResolution(event) {
     if (trackedSpecifiers.has(event.specifier)) {
-      console.log(`BETTER_NATIVE_RESOLUTION_V1=${JSON.stringify(event)}`)
+      const line = `BETTER_NATIVE_RESOLUTION_V1=${JSON.stringify(event)}`
+      console.log(line)
+      if (resolutionEvidencePath) fs.appendFileSync(resolutionEvidencePath, `${line}\n`)
     }
   },
 })

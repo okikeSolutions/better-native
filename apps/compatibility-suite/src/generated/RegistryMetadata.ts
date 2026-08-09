@@ -22,7 +22,7 @@ export const metadata: {
   "schemaVersion": 1,
   "expoRevision": "534c99966e34580f56242eb92aac7689b9089cc7",
   "corpusFingerprint": "bb70bfc75a63f4cdbc26aed7bad6cfcc333e3b8eb7e5ae1c858fd36981758c7a",
-  "surfaceFingerprint": "3b191279ec5adc288765780e331338cc0cd308ff69351263b453846649273a57",
+  "surfaceFingerprint": "b2833325524b4ab5a57d5bd664ae5dd8ee408eb9e23ee6add6edb7cdd15004e5",
   "trackedSpecifiers": [
     "@expo/dom-webview",
     "@expo/dom-webview/package.json",
@@ -56135,6 +56135,112 @@ export const metadata: {
       "registration": "lazy",
       "authority": "supplemental",
       "runtimeName": "Battery Effect capability",
+      "reason": null
+    },
+    {
+      "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/SQLite.ts",
+      "path": "src/capabilities/SQLite.ts",
+      "caseIds": [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SQLite.ts#SQLite Effect capability runs tagged reads and parameterized writes through the live client@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SQLite.ts#SQLite Effect capability rolls back an interrupted transaction@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/SQLite.ts#SQLite Effect capability opens and releases the Effect SQLite atom@1"
+      ],
+      "runner": "expo-jasmine",
+      "execution": "native-app",
+      "platforms": [
+        "web",
+        "ios",
+        "android"
+      ],
+      "executability": "runnable",
+      "registration": "lazy",
+      "authority": "supplemental",
+      "runtimeName": "SQLite Effect capability",
+      "reason": null
+    },
+    {
+      "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/TaskManager.ts",
+      "path": "src/capabilities/TaskManager.ts",
+      "caseIds": [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/TaskManager.ts#Task Manager Effect capability defines an Effect task during module initialization@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/TaskManager.ts#Task Manager Effect capability reports the platform's Task Manager availability through the live layer@1"
+      ],
+      "runner": "expo-jasmine",
+      "execution": "native-app",
+      "platforms": [
+        "web",
+        "ios",
+        "android"
+      ],
+      "executability": "runnable",
+      "registration": "eager",
+      "authority": "supplemental",
+      "runtimeName": "Task Manager Effect capability",
+      "reason": null
+    },
+    {
+      "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/BackgroundTask.ts",
+      "path": "src/capabilities/BackgroundTask.ts",
+      "caseIds": [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/BackgroundTask.ts#Background Task Effect capability defines the handler before inspecting native availability@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/BackgroundTask.ts#Background Task Effect capability distinguishes restricted registration and cleans up native schedules@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/BackgroundTask.ts#Background Task Effect capability preserves the production-disabled testing trigger@1"
+      ],
+      "runner": "expo-jasmine",
+      "execution": "native-app",
+      "platforms": [
+        "web",
+        "ios",
+        "android"
+      ],
+      "executability": "runnable",
+      "registration": "eager",
+      "authority": "supplemental",
+      "runtimeName": "Background Task Effect capability",
+      "reason": null
+    },
+    {
+      "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/Location.ts",
+      "path": "src/capabilities/Location.ts",
+      "caseIds": [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Location.ts#Location Effect capability reads provider and service state through the live layer@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Location.ts#Location Effect capability reads all permission states without prompting@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Location.ts#Location Effect capability preserves enum identity and persistent-registration inspection@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Location.ts#Location Effect capability hydrates and releases all permission atoms@1"
+      ],
+      "runner": "expo-jasmine",
+      "execution": "native-app",
+      "platforms": [
+        "web",
+        "ios",
+        "android"
+      ],
+      "executability": "runnable",
+      "registration": "lazy",
+      "authority": "supplemental",
+      "runtimeName": "Location Effect capability",
+      "reason": null
+    },
+    {
+      "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/Notifications.ts",
+      "path": "src/capabilities/Notifications.ts",
+      "caseIds": [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Notifications.ts#Notifications Effect capability matches raw Expo permission and last-response reads@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Notifications.ts#Notifications Effect capability schedules, inspects, and cancels a local notification or returns a typed platform failure@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Notifications.ts#Notifications Effect capability acquires and interrupts every scoped event Stream@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Notifications.ts#Notifications Effect capability defines and persistently registers the background handler before route mount@1"
+      ],
+      "runner": "expo-jasmine",
+      "execution": "native-app",
+      "platforms": [
+        "web",
+        "ios",
+        "android"
+      ],
+      "executability": "runnable",
+      "registration": "eager",
+      "authority": "supplemental",
+      "runtimeName": "Notifications Effect capability",
       "reason": null
     },
     {

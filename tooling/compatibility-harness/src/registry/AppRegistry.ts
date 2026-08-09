@@ -17,6 +17,7 @@ import { ExpoRepository } from "../ExpoRepository.ts"
 import { HarnessError } from "../HarnessError.ts"
 import * as ExpoCompatEntrypoint from "./ExpoCompatEntrypoint.ts"
 import * as RunnerPlans from "./RunnerPlans.ts"
+import { capabilityShellSourceIds } from "../build/CapabilityShell.ts"
 
 const platforms = ["web", "ios", "android"] as const
 type Platform = (typeof platforms)[number]
@@ -79,6 +80,89 @@ const batteryCapabilityCases = [
   ),
   TestCaseId.make(
     `${batteryCapabilitySourceId}#Battery Effect capability hydrates and releases all live battery atoms@1`,
+  ),
+] as const
+
+const sqliteCapabilitySourceId = TestSourceId.make(
+  capabilityShellSourceIds.sqlite,
+)
+const sqliteCapabilityPath = "src/capabilities/SQLite.ts"
+const sqliteCapabilityCases = [
+  TestCaseId.make(
+    `${sqliteCapabilitySourceId}#SQLite Effect capability runs tagged reads and parameterized writes through the live client@1`,
+  ),
+  TestCaseId.make(
+    `${sqliteCapabilitySourceId}#SQLite Effect capability rolls back an interrupted transaction@1`,
+  ),
+  TestCaseId.make(
+    `${sqliteCapabilitySourceId}#SQLite Effect capability opens and releases the Effect SQLite atom@1`,
+  ),
+] as const
+
+const taskManagerCapabilitySourceId = TestSourceId.make(
+  "better-native-capability#apps/compatibility-suite/src/capabilities/TaskManager.ts",
+)
+const taskManagerCapabilityPath = "src/capabilities/TaskManager.ts"
+const taskManagerCapabilityCases = [
+  TestCaseId.make(
+    `${taskManagerCapabilitySourceId}#Task Manager Effect capability defines an Effect task during module initialization@1`,
+  ),
+  TestCaseId.make(
+    `${taskManagerCapabilitySourceId}#Task Manager Effect capability reports the platform's Task Manager availability through the live layer@1`,
+  ),
+] as const
+
+const backgroundTaskCapabilitySourceId = TestSourceId.make(
+  "better-native-capability#apps/compatibility-suite/src/capabilities/BackgroundTask.ts",
+)
+const backgroundTaskCapabilityPath = "src/capabilities/BackgroundTask.ts"
+const backgroundTaskCapabilityCases = [
+  TestCaseId.make(
+    `${backgroundTaskCapabilitySourceId}#Background Task Effect capability defines the handler before inspecting native availability@1`,
+  ),
+  TestCaseId.make(
+    `${backgroundTaskCapabilitySourceId}#Background Task Effect capability distinguishes restricted registration and cleans up native schedules@1`,
+  ),
+  TestCaseId.make(
+    `${backgroundTaskCapabilitySourceId}#Background Task Effect capability preserves the production-disabled testing trigger@1`,
+  ),
+] as const
+
+const locationCapabilitySourceId = TestSourceId.make(
+  capabilityShellSourceIds.location,
+)
+const locationCapabilityPath = "src/capabilities/Location.ts"
+const locationCapabilityCases = [
+  TestCaseId.make(
+    `${locationCapabilitySourceId}#Location Effect capability reads provider and service state through the live layer@1`,
+  ),
+  TestCaseId.make(
+    `${locationCapabilitySourceId}#Location Effect capability reads all permission states without prompting@1`,
+  ),
+  TestCaseId.make(
+    `${locationCapabilitySourceId}#Location Effect capability preserves enum identity and persistent-registration inspection@1`,
+  ),
+  TestCaseId.make(
+    `${locationCapabilitySourceId}#Location Effect capability hydrates and releases all permission atoms@1`,
+  ),
+] as const
+
+const notificationsCapabilitySourceId = TestSourceId.make(
+  capabilityShellSourceIds.notifications,
+)
+const notificationsCapabilityPath = "src/capabilities/Notifications.ts"
+const notificationsCapabilityCases = [
+  TestCaseId.make(
+    `${notificationsCapabilitySourceId}#Notifications Effect capability matches raw Expo permission and last-response reads@1`,
+  ),
+  TestCaseId.make(
+    `${notificationsCapabilitySourceId}#Notifications Effect capability schedules, inspects, and cancels a local notification or returns a typed platform failure@1`,
+  ),
+  TestCaseId.make(
+    `${notificationsCapabilitySourceId}#Notifications Effect capability acquires and interrupts every scoped event Stream@1`,
+  ),
+  TestCaseId.make(
+    `${notificationsCapabilitySourceId}#Notifications Effect capability defines and persistently registers the background handler before route mount@1`,
   ),
 ] as const
 
@@ -188,7 +272,10 @@ export const ReplacementManifest = Schema.Struct({
   expoRevision: Schema.String,
   ownershipFingerprint: Schema.String,
   replacements: Schema.Array(
-    Schema.Struct({ source: Schema.NonEmptyString, target: Schema.NonEmptyString }),
+    Schema.Struct({
+      source: Schema.NonEmptyString,
+      target: Schema.NonEmptyString,
+    }),
   ),
   trackedSpecifiers: Schema.Array(Schema.String),
 })
@@ -407,20 +494,33 @@ export const loadMetadata = Effect.fn("AppRegistry.loadMetadata")(function* () {
   const file = "apps/compatibility-suite/src/generated/RegistryMetadata.json"
   return yield* fs.readFileString(file).pipe(
     Effect.mapError(
-      (cause) => new HarnessError({ operation: "read registry metadata", path: file, cause }),
+      (cause) =>
+        new HarnessError({
+          operation: "read registry metadata",
+          path: file,
+          cause,
+        }),
     ),
     Effect.flatMap((text) =>
       Effect.try({
         try: () => JSON.parse(text) as unknown,
         catch: (cause) =>
-          new HarnessError({ operation: "parse registry metadata", path: file, cause }),
+          new HarnessError({
+            operation: "parse registry metadata",
+            path: file,
+            cause,
+          }),
       }),
     ),
     Effect.flatMap(Schema.decodeUnknownEffect(RegistryMetadata)),
     Effect.mapError((cause) =>
       cause instanceof HarnessError
         ? cause
-        : new HarnessError({ operation: "decode registry metadata", path: file, cause }),
+        : new HarnessError({
+            operation: "decode registry metadata",
+            path: file,
+            cause,
+          }),
     ),
   )
 })
@@ -457,6 +557,12 @@ export const loadRunnerPlanLedger = Effect.fn("AppRegistry.loadRunnerPlanLedger"
 
 const isEager = (source: TestSource): boolean =>
   /\/(?:Location|TaskManager)(?:\.(?:android|ios|native|web))?\.[^.]+$/.test(source.path)
+
+const eagerSupplementalCapabilities = [
+  { id: taskManagerCapabilitySourceId, module: "../capabilities/TaskManager.ts" },
+  { id: backgroundTaskCapabilitySourceId, module: "../capabilities/BackgroundTask.ts" },
+  { id: notificationsCapabilitySourceId, module: "../capabilities/Notifications.ts" },
+] as const
 
 const registration = (source: TestSource, appRunnable: boolean) => {
   if (!appRunnable) return "external" as const
@@ -545,6 +651,21 @@ const loaderSource = (
   entries.push(
     `  [${JSON.stringify(batteryCapabilitySourceId)}, () => require("../capabilities/Battery.ts") as unknown],`,
   )
+  entries.push(
+    `  [${JSON.stringify(sqliteCapabilitySourceId)}, () => require("../capabilities/SQLite.ts") as unknown],`,
+  )
+  entries.push(
+    `  [${JSON.stringify(taskManagerCapabilitySourceId)}, () => require("../capabilities/TaskManager.ts") as unknown],`,
+  )
+  entries.push(
+    `  [${JSON.stringify(backgroundTaskCapabilitySourceId)}, () => require("../capabilities/BackgroundTask.ts") as unknown],`,
+  )
+  entries.push(
+    `  [${JSON.stringify(locationCapabilitySourceId)}, () => require("../capabilities/Location.ts") as unknown],`,
+  )
+  entries.push(
+    `  [${JSON.stringify(notificationsCapabilitySourceId)}, () => require("../capabilities/Notifications.ts") as unknown],`,
+  )
   if (platform === "web") {
     entries.push(
       `  [${JSON.stringify(secureStoreWebCapabilitySourceId)}, () => require("../capabilities/SecureStore.web.ts") as unknown],`,
@@ -580,8 +701,12 @@ const eagerSource = (
   )
   return [
     ...selected.map((source) => `require(${JSON.stringify(expoTestModule(source))})`),
+    ...eagerSupplementalCapabilities.map(({ module }) => `require(${JSON.stringify(module)})`),
     "",
-    `export const eagerSourceIds = ${JSON.stringify(selected.map(({ id }) => id))} as const`,
+    `export const eagerSourceIds = ${JSON.stringify([
+      ...selected.map(({ id }) => id),
+      ...eagerSupplementalCapabilities.map(({ id }) => id),
+    ])} as const`,
     "",
   ].join("\n")
 }
@@ -648,7 +773,10 @@ export const writeGeneratedOutputs = Effect.fn("AppRegistry.writeGeneratedOutput
 export const generate = Effect.fn("AppRegistry.generate")(function* (
   corpus: CorpusSnapshot,
   surface: SurfaceSnapshot,
-  replacements: ReadonlyArray<{ readonly source: string; readonly target: string }>,
+  replacements: ReadonlyArray<{
+    readonly source: string
+    readonly target: string
+  }>,
   ownershipFingerprint: string,
 ) {
   const repository = yield* ExpoRepository
@@ -744,6 +872,71 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
       reason: null,
     },
     {
+      sourceId: sqliteCapabilitySourceId,
+      path: sqliteCapabilityPath,
+      caseIds: sqliteCapabilityCases,
+      runner: "expo-jasmine",
+      execution: "native-app",
+      platforms: ["web", "ios", "android"],
+      executability: "runnable",
+      registration: "lazy",
+      authority: "supplemental",
+      runtimeName: "SQLite Effect capability",
+      reason: null,
+    },
+    {
+      sourceId: taskManagerCapabilitySourceId,
+      path: taskManagerCapabilityPath,
+      caseIds: taskManagerCapabilityCases,
+      runner: "expo-jasmine",
+      execution: "native-app",
+      platforms: ["web", "ios", "android"],
+      executability: "runnable",
+      registration: "eager",
+      authority: "supplemental",
+      runtimeName: "Task Manager Effect capability",
+      reason: null,
+    },
+    {
+      sourceId: backgroundTaskCapabilitySourceId,
+      path: backgroundTaskCapabilityPath,
+      caseIds: backgroundTaskCapabilityCases,
+      runner: "expo-jasmine",
+      execution: "native-app",
+      platforms: ["web", "ios", "android"],
+      executability: "runnable",
+      registration: "eager",
+      authority: "supplemental",
+      runtimeName: "Background Task Effect capability",
+      reason: null,
+    },
+    {
+      sourceId: locationCapabilitySourceId,
+      path: locationCapabilityPath,
+      caseIds: locationCapabilityCases,
+      runner: "expo-jasmine",
+      execution: "native-app",
+      platforms: ["web", "ios", "android"],
+      executability: "runnable",
+      registration: "lazy",
+      authority: "supplemental",
+      runtimeName: "Location Effect capability",
+      reason: null,
+    },
+    {
+      sourceId: notificationsCapabilitySourceId,
+      path: notificationsCapabilityPath,
+      caseIds: notificationsCapabilityCases,
+      runner: "expo-jasmine",
+      execution: "native-app",
+      platforms: ["web", "ios", "android"],
+      executability: "runnable",
+      registration: "eager",
+      authority: "supplemental",
+      runtimeName: "Notifications Effect capability",
+      reason: null,
+    },
+    {
       sourceId: secureStoreWebCapabilitySourceId,
       path: secureStoreWebCapabilityPath,
       caseIds: secureStoreWebCapabilityCases,
@@ -811,6 +1004,36 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
       .map(({ sourceId }) => sourceId),
     sources,
   }
+  const runtimeMetadata = (platform: "web" | "ios" | "android") => {
+    const sourceIds = new Set(
+      selectPlatformSources(
+        corpus.sources.filter((source) => jasmineSources.has(source.id)),
+        platform,
+      ).map(({ id }) => id),
+    )
+    for (const sourceId of [
+      keepAwakeCapabilitySourceId,
+      networkCapabilitySourceId,
+      batteryCapabilitySourceId,
+      sqliteCapabilitySourceId,
+      taskManagerCapabilitySourceId,
+      backgroundTaskCapabilitySourceId,
+      locationCapabilitySourceId,
+      notificationsCapabilitySourceId,
+      platform === "web" ? secureStoreWebCapabilitySourceId : secureStoreCapabilitySourceId,
+      ...(platform === "ios" ? [secureStoreNativeFailureSourceId] : []),
+    ]) {
+      sourceIds.add(sourceId)
+    }
+    return {
+      schemaVersion: 1 as const,
+      expoRevision: metadata.expoRevision,
+      corpusFingerprint: metadata.corpusFingerprint,
+      surfaceFingerprint: metadata.surfaceFingerprint,
+      nativeE2eSourceIds: metadata.nativeE2eSourceIds,
+      sources: metadata.sources.filter(({ sourceId }) => sourceIds.has(sourceId)),
+    }
+  }
   const runnerPlans = RunnerPlans.make(corpus, jasmineSources)
   const runnerPlanIssues = RunnerPlans.issues(corpus, runnerPlans, jasmineSources)
   if (runnerPlanIssues.length > 0) {
@@ -854,6 +1077,44 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
         "",
       ].join("\n"),
     ],
+    ...(["web", "ios", "android"] as const).map(
+      (platform) =>
+        [
+          `RuntimeRegistryMetadata.${platform}.ts`,
+          [
+            "/** Compact platform registry; the complete audit ledger remains RegistryMetadata.json. */",
+            "export const metadata: {",
+            "  readonly schemaVersion: 1",
+            "  readonly expoRevision: string",
+            "  readonly corpusFingerprint: string",
+            "  readonly surfaceFingerprint: string",
+            "  readonly nativeE2eSourceIds: ReadonlyArray<string>",
+            "  readonly sources: ReadonlyArray<{",
+            "    readonly sourceId: string",
+            "    readonly path: string",
+            "    readonly caseIds: ReadonlyArray<string>",
+            "    readonly runner: string",
+            '    readonly execution: "native-app" | "web-app"',
+            "    readonly platforms: ReadonlyArray<string>",
+            "    readonly executability: string",
+            '    readonly registration: "eager" | "lazy" | "external"',
+            '    readonly authority: "upstream-selected" | "supplemental"',
+            "    readonly runtimeName: string | null",
+            "    readonly reason: string | null",
+            "  }>",
+            `} = ${JSON.stringify(runtimeMetadata(platform), null, 2)}`,
+            "",
+          ].join("\n"),
+        ] as const,
+    ),
+    [
+      "RuntimeRegistryMetadata.ts",
+      [
+        "/** Compact app-only registry; the complete audit ledger remains RegistryMetadata.json. */",
+        'export { metadata } from "./RuntimeRegistryMetadata.web"',
+        "",
+      ].join("\n"),
+    ],
     [
       "Replacements.json",
       `${JSON.stringify({ schemaVersion: 1, expoRevision: corpus.expoRevision, ownershipFingerprint, replacements, trackedSpecifiers: metadata.trackedSpecifiers }, null, 2)}\n`,
@@ -866,7 +1127,10 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
           expoRevision: corpus.expoRevision,
           probes: surface.exports
             .filter(({ kind }) => kind === "opaque-module")
-            .map((entry) => ({ specifier: specifierOf(entry), platforms: entry.platforms }))
+            .map((entry) => ({
+              specifier: specifierOf(entry),
+              platforms: entry.platforms,
+            }))
             .filter(
               (entry, index, entries) =>
                 entries.findIndex(({ specifier }) => specifier === entry.specifier) === index,

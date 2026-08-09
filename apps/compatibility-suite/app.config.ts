@@ -11,7 +11,26 @@ const config: ExpoConfig = {
   ios: { bundleIdentifier: "dev.betternative.compatibility" },
   android: { package: "dev.betternative.compatibility" },
   web: { bundler: "metro", output: "static" },
-  plugins: ["expo-router", "expo-secure-store"],
+  plugins: [
+    "expo-router",
+    "expo-secure-store",
+    "expo-background-task",
+    [
+      "expo-notifications",
+      {
+        enableBackgroundRemoteNotifications: true,
+      },
+    ],
+    [
+      "expo-location",
+      {
+        isIosBackgroundLocationEnabled: true,
+        isAndroidBackgroundLocationEnabled: true,
+        isAndroidForegroundServiceEnabled: true,
+        isAndroidMotionActivityEnabled: true,
+      },
+    ],
+  ],
   experiments: { autolinkingModuleResolution: true, typedRoutes: true },
   extra: {
     eas: { projectId: compatibilityProjectId },

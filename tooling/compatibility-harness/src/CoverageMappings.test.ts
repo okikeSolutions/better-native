@@ -1,14 +1,18 @@
 import { assert, describe, it } from "@effect/vitest"
 import * as Effect from "effect/Effect"
 import * as Schema from "effect/Schema"
+import ts from "typescript"
 import {
   CoverageMappings,
+  makeCoverageCompilerHost,
   type TypeScriptExports,
   validateCoverageMappings,
+  validateCoverageSourceFiles,
   validateCoverageTarget,
   validateCoverageTypeTarget,
   validateNoStaleCoverageMappings,
   validateNoStaleTypeCoverageMappings,
+  validateSharedCompilerConfig,
 } from "./Coverage.ts"
 
 const revision = "1".repeat(40)
@@ -21,6 +25,45 @@ const exportsOf = (entries: ReadonlyArray<readonly [string, string]>): TypeScrip
 const noExports = exportsOf([])
 
 describe("coverage mapping validation", () => {
+  it("shares compiler state only across compatible package configurations", () => {
+    const config = (packageName: string, configFilePath: string, strict = true) => ({
+      packageName,
+      entryPoint: `/repo/packages/${packageName}/src/index.ts`,
+      expoCompat: `/repo/packages/${packageName}/src/Expo.ts`,
+      options: { strict, configFilePath },
+      projectReferences: undefined,
+    })
+
+    assert.strictEqual(
+      validateSharedCompilerConfig([
+        config("battery", "/repo/packages/battery/tsconfig.json"),
+        config("network", "/repo/packages/network/tsconfig.json"),
+      ]).packageName,
+      "battery",
+    )
+    assert.throws(
+      () =>
+        validateSharedCompilerConfig([
+          config("battery", "/repo/packages/battery/tsconfig.json"),
+          config("network", "/repo/packages/network/tsconfig.json", false),
+        ]),
+      /network does not share coverage compiler settings with battery/,
+    )
+  })
+
+  it("disables JSDoc parsing in the coverage compiler host", () => {
+    const host = makeCoverageCompilerHost({ strict: true })
+
+    assert.strictEqual(host.jsDocParsingMode, ts.JSDocParsingMode.ParseNone)
+    assert.doesNotThrow(() =>
+      validateCoverageSourceFiles(["/repo/packages/example/src/index.ts", "/types/effect.d.ts"]),
+    )
+    assert.throws(
+      () => validateCoverageSourceFiles(["/repo/packages/example/src/runtime.js"]),
+      /cannot disable JSDoc parsing for JavaScript input.*runtime\.js/,
+    )
+  })
+
   it.effect("rejects a mapping pinned to a different Expo revision", () =>
     Effect.gen(function* () {
       const error = yield* Effect.flip(

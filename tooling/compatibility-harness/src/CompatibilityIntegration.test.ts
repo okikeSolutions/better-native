@@ -44,6 +44,15 @@ describe("compatibility denominator integration", () => {
         const secureStore = ownership.overrides.find(
           (entry) => entry.package === "expo-secure-store" && entry.subpath === ".",
         )
+        const sqlite = ownership.overrides.find(
+          (entry) => entry.package === "expo-sqlite" && entry.subpath === ".",
+        )
+        const taskManager = ownership.overrides.find(
+          (entry) => entry.package === "expo-task-manager" && entry.subpath === ".",
+        )
+        const backgroundTask = ownership.overrides.find(
+          (entry) => entry.package === "expo-background-task" && entry.subpath === ".",
+        )
 
         const output = (yield* TestConsole.logLines).join("\n")
         assert.strictEqual(battery?.status, "effect")
@@ -58,9 +67,31 @@ describe("compatibility denominator integration", () => {
         assert.strictEqual(secureStore?.status, "effect")
         assert.strictEqual(secureStore?.replacement, "@better-native/secure-store/expo")
         assert.match(secureStore?.reason ?? "", /paired upstream\/candidate evidence/i)
+        assert.strictEqual(sqlite?.status, "fallback")
+        assert.strictEqual(sqlite?.replacement, "@better-native/sqlite/expo")
+        assert.match(sqlite?.reason ?? "", /complete expo-sqlite root API/i)
+        assert.strictEqual(taskManager?.status, "fallback")
+        assert.strictEqual(taskManager?.replacement, "@better-native/task-manager/expo")
+        assert.match(taskManager?.reason ?? "", /physical-device background and cold-launch/i)
+        assert.strictEqual(backgroundTask?.status, "fallback")
+        assert.strictEqual(backgroundTask?.replacement, "@better-native/background-task/expo")
+        assert.match(backgroundTask?.reason ?? "", /physical-device scheduled and cold-launch/i)
         assert.include(output, "Validated Expo")
         assert.include(output, "Better Native API coverage")
-        assert.include(output, '"schemaVersion": 5')
+        assert.include(output, "expo-sqlite")
+        assert.include(output, '"packageName": "expo-sqlite"')
+        assert.include(output, '"target": "@better-native/sqlite#openDatabaseAsync"')
+        assert.include(output, '"target": "@better-native/sqlite#addDatabaseChangeListener"')
+        assert.include(output, '"expoType": "SQLiteOpenOptions"')
+        assert.include(output, '"schemaVersion": 6')
+        assert.include(output, '"unmigratedHooks": 0')
+        assert.include(output, '"atomTarget": "@better-native/sqlite#sqliteClientAtom"')
+        assert.include(output, '"packageName": "expo-task-manager"')
+        assert.include(output, '"target": "@better-native/task-manager#isTaskDefined"')
+        assert.include(output, '"expoType": "TaskManagerTaskBody"')
+        assert.include(output, '"packageName": "expo-background-task"')
+        assert.include(output, '"target": "@better-native/background-task#registerTaskAsync"')
+        assert.include(output, '"expoType": "BackgroundTaskOptions"')
         assert.include(output, '"expoTypes": 4')
         assert.include(output, '"accountedTypes": 4')
         assert.include(output, '"expoType": "KeepAwakeOptions"')
