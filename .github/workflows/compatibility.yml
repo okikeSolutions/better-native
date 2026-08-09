@@ -27,6 +27,7 @@ permissions:
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  BETTER_NATIVE_BUILD_PROFILE: performance
   BETTER_NATIVE_FORCE_COLD_BUILD: ${{ github.event_name == 'schedule' && 'true' || 'false' }}
 
 concurrency:
@@ -240,11 +241,12 @@ jobs:
           modes=(upstream)
           [ "$COMPATIBILITY_MODE" = pair ] && modes+=(candidate)
           for mode in "${modes[@]}"; do
-            workspace="ios-${mode}"
+            source_id="$BUILD_ID"
+            [ "$COMPATIBILITY_MODE" = pair ] && source_id="${BUILD_ID}-${mode}"
             destination=".artifacts/products/${BUILD_ID}/${mode}"
             mkdir -p "$destination"
             tar -czf "$destination/BetterNativeCompatibility.app.tar.gz" \
-              -C ".artifacts/workspaces/${workspace}/derived-data/Build/Products/Release-iphonesimulator" \
+              -C ".artifacts/products/${source_id}" \
               BetterNativeCompatibility.app
           done
       - name: Upload iOS products
@@ -287,6 +289,11 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Setup device-test profile
         uses: ./.github/actions/setup-device-test
+      - name: Setup JDK 17 for Maestro
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: temurin
+          java-version: "17"
       - name: Select Xcode
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - name: Setup Maestro
@@ -460,10 +467,11 @@ jobs:
           modes=(upstream)
           [ "$COMPATIBILITY_MODE" = pair ] && modes+=(candidate)
           for mode in "${modes[@]}"; do
-            workspace="android-${mode}"
+            source_id="$BUILD_ID"
+            [ "$COMPATIBILITY_MODE" = pair ] && source_id="${BUILD_ID}-${mode}"
             destination=".artifacts/products/${BUILD_ID}/${mode}"
             mkdir -p "$destination"
-            cp ".artifacts/workspaces/${workspace}/apps/compatibility-suite/android/app/build/outputs/apk/release/app-release.apk" "$destination/app-release.apk"
+            cp ".artifacts/products/${source_id}/app-release.apk" "$destination/app-release.apk"
           done
       - name: Upload Android products
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -497,6 +505,11 @@ jobs:
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: Setup device-test profile
         uses: ./.github/actions/setup-device-test
+      - name: Setup JDK 17 for Maestro
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: temurin
+          java-version: "17"
       - name: Setup Maestro
         uses: ./.github/actions/setup-maestro
         with:

@@ -9,7 +9,11 @@ if (manifestPath === undefined || appDirectory === undefined) {
 }
 
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8"))
-if (manifest.schemaVersion !== 1 || !Array.isArray(manifest.packages)) {
+if (
+  manifest.schemaVersion !== 2 ||
+  !Array.isArray(manifest.packages) ||
+  !Array.isArray(manifest.metroPackages)
+) {
   throw new Error("invalid Expo package resolution manifest")
 }
 
@@ -18,6 +22,7 @@ const pinnedExpoRoot = process.env.BETTER_NATIVE_PINNED_EXPO_ROOT
 if (pinnedExpoRoot === undefined) throw new Error("BETTER_NATIVE_PINNED_EXPO_ROOT is required")
 const canonicalPinnedExpoRoot = realpathSync(pinnedExpoRoot)
 const materializedNodeModules = join(appDirectory, "..", "..", "node_modules")
+const metroNodeModules = join(appDirectory, "..", "..", "metro-node-modules")
 const resolvePackageRoot = (name) => {
   const packageManifest = findPackageJSON(name, appManifestUrl)
   if (packageManifest === undefined) throw new Error(`could not locate package root for ${name}`)
@@ -48,6 +53,33 @@ for (const entry of manifest.packages) {
   }
   process.stdout.write(
     `${JSON.stringify({
+      scope: "native",
+      name: entry.name,
+      owner: entry.owner,
+      source: entry.owner === "pinned-expo" ? relative(canonicalPinnedExpoRoot, expected) : "root",
+    })}\n`,
+  )
+}
+
+for (const entry of manifest.metroPackages) {
+  if (
+    typeof entry?.name !== "string" ||
+    typeof entry?.source !== "string" ||
+    typeof entry?.direct !== "boolean" ||
+    (entry?.owner !== "pinned-expo" && entry?.owner !== "root")
+  ) {
+    throw new Error("invalid Metro package resolution entry")
+  }
+  const expected = realpathSync(entry.source)
+  const materialized = realpathSync(join(metroNodeModules, ...entry.name.split("/")))
+  if (materialized !== expected) {
+    throw new Error(
+      `${entry.name} Metro materialization resolved to ${materialized}; expected ${expected}`,
+    )
+  }
+  process.stdout.write(
+    `${JSON.stringify({
+      scope: "metro",
       name: entry.name,
       owner: entry.owner,
       source: entry.owner === "pinned-expo" ? relative(canonicalPinnedExpoRoot, expected) : "root",

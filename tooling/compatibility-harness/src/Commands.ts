@@ -12,6 +12,8 @@ import { prepareExpo, supervisedBuild, supervisedBuildPair } from "./commands/Bu
 import { supervisedWeb, supervisedWebPair, probeWeb } from "./commands/WebCommands.ts"
 import { supervisedNative, supervisedNativePair } from "./commands/NativeCommands.ts"
 import { supervisedExternal, supervisedRunnerPlans, compareRuns } from "./commands/RunCommands.ts"
+import { artifactsClean, artifactsPrune } from "./commands/ArtifactCommands.ts"
+import { benchmarkReleasePath, profileBuildRecord } from "./commands/PerformanceCommands.ts"
 
 /** Root CLI command exposing every compatibility harness workflow. */
 export const command = Command.make("compatibility-harness").pipe(
@@ -35,5 +37,9 @@ export const command = Command.make("compatibility-harness").pipe(
     supervisedExternal,
     supervisedRunnerPlans,
     compareRuns,
+    benchmarkReleasePath,
+    profileBuildRecord,
+    artifactsPrune,
+    artifactsClean,
   ]),
 )

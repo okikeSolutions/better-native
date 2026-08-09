@@ -369,13 +369,14 @@ export const make: (
       // The pinned Expo worktree is the behavioral oracle. Candidate mode only
       // replaces explicitly migrated specifiers; every other tracked import is
       // resolved from the same pinned installation.
-      const resolutionContext =
-        directive.decision === "unmanaged"
-          ? context
-          : {
-              ...context,
-              nodeModulesPaths: [policy.upstreamNodeModulesPath, ...context.nodeModulesPaths],
-            }
+      // Sources loaded directly from the pinned Expo checkout still resolve their
+      // transitive imports from the isolated workspace. Apply that dependency
+      // root to unmanaged requests too; otherwise eager Expo tests bypass the
+      // app's node_modules ancestry and fail before ownership policy can observe them.
+      const resolutionContext = {
+        ...context,
+        nodeModulesPaths: [policy.upstreamNodeModulesPath, ...context.nodeModulesPaths],
+      }
       let resolution: MetroResolution
       try {
         resolution = next(resolutionContext, directive.requestedSpecifier, platform)

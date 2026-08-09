@@ -63,8 +63,8 @@ runs:
       id: pods-cache
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
-        path: .artifacts/pods-cache/v1
-        key: pods-v1-release-${{ runner.os }}-${{ runner.arch }}-${{ steps.xcode-version.outputs.hash }}-${{ hashFiles('compatibility/upstreams.json', 'bun.lock', 'apps/compatibility-suite/package.json', 'apps/compatibility-suite/app.config.ts', 'apps/compatibility-suite/plugins/**', 'packages/**/ios/**', 'packages/**/native/**') }}
+        path: .artifacts/pods-cache/v2
+        key: pods-v2-release-${{ runner.os }}-${{ runner.arch }}-${{ steps.xcode-version.outputs.hash }}-${{ hashFiles('compatibility/upstreams.json', 'bun.lock', 'apps/compatibility-suite/package.json', 'apps/compatibility-suite/app.config.ts', 'apps/compatibility-suite/plugins/**', 'packages/**/ios/**', 'packages/**/native/**') }}
 
     - name: Record CocoaPods cache evidence
       if: inputs.platform == 'ios'

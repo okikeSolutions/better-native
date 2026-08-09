@@ -215,7 +215,7 @@ var make = Effect.fn("BetterNativeMetroConfig.make")(function* (config) {
       originPackage: originPackage(context2)
     }));
     const next = previous ?? context2.resolveRequest;
-    const resolutionContext = directive.decision === "unmanaged" ? context2 : {
+    const resolutionContext = {
       ...context2,
       nodeModulesPaths: [policy.upstreamNodeModulesPath, ...context2.nodeModulesPaths]
     };

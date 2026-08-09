@@ -135,6 +135,21 @@ export const discoverNativeExpoPackages = (
     catch: (cause) => new NativeResolutionError({ cause }),
   })
 
+/** Extracts React Native community packages reported by native autolinking. */
+export const discoverReactNativePackages = (
+  observations: ReadonlyArray<ProcessObservation>,
+): Effect.Effect<ReadonlyArray<string>, NativeResolutionError> =>
+  Effect.try({
+    try: () => {
+      const decoded = stdoutJson(observations)
+      if (!isRecord(decoded) || !isRecord(decoded.dependencies)) {
+        throw new Error("invalid React Native Autolinking discovery output")
+      }
+      return Object.keys(decoded.dependencies).toSorted()
+    },
+    catch: (cause) => new NativeResolutionError({ cause }),
+  })
+
 const validateReactNativeModules = (
   roots: ReadonlyMap<string, string>,
   observations: ReadonlyArray<ProcessObservation>,

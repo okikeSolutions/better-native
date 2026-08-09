@@ -6,19 +6,35 @@ import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
 import * as Path from "effect/Path"
 import { BuildId, BuildRecord, type BuildRecord as BuildRecordType } from "../Domain.ts"
+import { ArtifactLifecycle } from "../artifacts/ArtifactLifecycle.ts"
 import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import { HarnessConfig } from "../HarnessConfig.ts"
-import { AppWorkspace } from "./AppWorkspace.ts"
+import { AppWorkspace, workspaceName } from "./AppWorkspace.ts"
 import { BuildCommand, type BuildCommandResult } from "./BuildCommand.ts"
 import {
   BuildPipelineError,
+  ensureNativeRebuildAllowed,
   type BuildOutput,
   type BuildRequest,
   type PinnedExpoToolchain,
 } from "./BuildModel.ts"
 import { BuildProducts } from "./BuildProducts.ts"
-import { NativeArtifactCache } from "./NativeArtifactCache.ts"
-import { discoverNativeExpoPackages, validateNativeResolution } from "./NativeResolution.ts"
+import {
+  androidArchitecturesFor,
+  applyBuildProfile,
+  buildProfileEnvironment,
+} from "./BuildProfile.ts"
+import { NativeArtifactCache, nativeArtifactName } from "./NativeArtifactCache.ts"
+import {
+  canonicalNativeFingerprintSources,
+  nativeClosureFingerprintInput,
+} from "./NativeFingerprint.ts"
+import {
+  discoverNativeExpoPackages,
+  discoverReactNativePackages,
+  validateNativeResolution,
+} from "./NativeResolution.ts"
+import { PodsCache } from "./PodsCache.ts"
 
 interface Service {
   readonly execute: (
@@ -42,10 +58,20 @@ const nativeFingerprintPlatform = (platform: BuildRequest["platform"]): Array<"i
     Match.exhaustive,
   )
 
-const nativeToolchainCommand = (platform: "ios" | "android", cwd: string, timeoutMillis: number) =>
+const nativeToolchainCommand = (
+  platform: "ios" | "android",
+  cwd: string,
+  timeoutMillis: number,
+  javaHome17: string | null,
+) =>
   Match.value(platform).pipe(
     Match.when("ios", () => ({ command: "xcodebuild", args: ["-version"], cwd, timeoutMillis })),
-    Match.when("android", () => ({ command: "java", args: ["-version"], cwd, timeoutMillis })),
+    Match.when("android", () => ({
+      command: `${javaHome17}/bin/java`,
+      args: ["-version"],
+      cwd,
+      timeoutMillis,
+    })),
     Match.exhaustive,
   )
 
@@ -86,6 +112,8 @@ export const layer = (
   | FileSystem.FileSystem
   | Path.Path
   | NativeArtifactCache
+  | PodsCache
+  | ArtifactLifecycle
   | HarnessConfig
 > =>
   Layer.effect(
@@ -98,19 +126,65 @@ export const layer = (
       const commands = yield* BuildCommand
       const products = yield* BuildProducts
       const nativeCache = yield* NativeArtifactCache
+      const podsCache = yield* PodsCache
+      const artifactLifecycle = yield* ArtifactLifecycle
       const config = yield* HarnessConfig
-      const execute: Service["execute"] = (request, pinnedUpstream) =>
+      const executeBuild: Service["execute"] = (request, pinnedUpstream) =>
         Effect.gen(function* () {
+          if (request.platform === "android" && config.javaHome17 === null) {
+            return yield* new BuildPipelineError({
+              phase: "prebuild",
+              request,
+              cause:
+                "JDK 17 is required; install it or set BETTER_NATIVE_JAVA_HOME_17 to a verified JDK 17 home",
+            })
+          }
+          if (request.platform === "android" && config.androidSdkRoot === null) {
+            return yield* new BuildPipelineError({
+              phase: "prebuild",
+              request,
+              cause: "Android SDK is required; set ANDROID_SDK_ROOT or ANDROID_HOME",
+            })
+          }
           const prepared = yield* workspace.prepare(request, pinnedUpstream)
           const { appDirectory, workspace: workspaceRoot } = prepared
+          const precompiledModulesPath = path.join(
+            pinnedUpstream.root,
+            "packages",
+            "precompile",
+            ".build",
+          )
+          const precompiledModulesArchive = path.join(
+            precompiledModulesPath,
+            "expo-modules-core",
+            "output",
+            "release",
+            "xcframeworks",
+            "ExpoModulesCore.tar.gz",
+          )
+          const precompiledModulesAvailable = yield* fs.exists(precompiledModulesArchive)
+          const precompiledModulesHash = precompiledModulesAvailable
+            ? yield* products.hash(precompiledModulesArchive)
+            : null
           const commonEnv = {
+            ...buildProfileEnvironment(config.buildProfile),
             BETTER_NATIVE_MODE: request.mode,
             BETTER_NATIVE_BUILD_ID: request.id,
             BETTER_NATIVE_RUN_ID: `build-${request.id}`,
             CI: "1",
-            BETTER_NATIVE_UPSTREAM_NODE_MODULES: path.join(workspaceRoot, "node_modules"),
+            BETTER_NATIVE_UPSTREAM_NODE_MODULES: prepared.metroNodeModules,
             BETTER_NATIVE_PINNED_EXPO_ROOT: pinnedUpstream.root,
             CCACHE_BASEDIR: workspaceRoot,
+            JAVA_HOME: config.javaHome17 ?? undefined,
+            ANDROID_HOME: config.androidSdkRoot ?? undefined,
+            ANDROID_SDK_ROOT: config.androidSdkRoot ?? undefined,
+            PATH:
+              config.javaHome17 === null
+                ? config.executablePath
+                : `${config.javaHome17}${path.sep}bin${process.platform === "win32" ? ";" : ":"}${config.executablePath}`,
+            EXPO_PRECOMPILED_MODULES_PATH: precompiledModulesAvailable
+              ? precompiledModulesPath
+              : undefined,
           }
           const expoCli = path.join(pinnedUpstream.root, "packages", "expo", "bin", "cli")
           const results: Array<BuildCommandResult> = [
@@ -132,6 +206,7 @@ export const layer = (
               timeoutMillis: Math.min(request.timeoutMillis, 30_000),
             }),
           ]
+          let autolinkedNativeModules = 0
           if (request.platform !== "web") {
             const autolinkingCli = path.join(
               pinnedUpstream.root,
@@ -202,6 +277,15 @@ export const layer = (
                 timeoutMillis: Math.min(request.timeoutMillis, 120_000),
               },
             )
+            const reactNativePackageNames = yield* discoverReactNativePackages(
+              reactNativeModules.result.observations,
+            ).pipe(
+              Effect.mapError(
+                (cause) => new BuildPipelineError({ phase: "prebuild", request, cause }),
+              ),
+            )
+            autolinkedNativeModules = new Set([...nativePackageNames, ...reactNativePackageNames])
+              .size
             results.push(discovery, expoModules, reactNativeModules)
             yield* validateNativeResolution({
               workspace: prepared,
@@ -236,26 +320,31 @@ export const layer = (
           if (request.platform === "web") {
             output = path.join(workspaceRoot, "dist")
             results.push(
-              yield* commands.run(request, "build", "process-1.ndjson", {
-                command: "node",
-                args: [
-                  expoCli,
-                  "export",
-                  "--platform",
-                  "web",
-                  "--no-minify",
-                  "--output-dir",
-                  output,
-                  "--clear",
-                ],
-                cwd: appDirectory,
-                env: commonEnv,
-                timeoutMillis: request.timeoutMillis,
-              }),
+              yield* commands.run(
+                request,
+                "build",
+                "metro-export.ndjson",
+                applyBuildProfile(config.buildProfile, "metro", {
+                  command: "node",
+                  args: [
+                    expoCli,
+                    "export",
+                    "--platform",
+                    "web",
+                    "--no-minify",
+                    "--output-dir",
+                    output,
+                    "--clear",
+                  ],
+                  cwd: appDirectory,
+                  env: commonEnv,
+                  timeoutMillis: request.timeoutMillis,
+                }),
+              ),
             )
           } else {
             results.push(
-              yield* commands.run(request, "prebuild", "process-1.ndjson", {
+              yield* commands.run(request, "prebuild", "native-prebuild.ndjson", {
                 command: "node",
                 args: [
                   expoCli,
@@ -275,20 +364,42 @@ export const layer = (
                 createFingerprintAsync(appDirectory, {
                   platforms: nativeFingerprintPlatform(request.platform),
                   silent: true,
+                  // Pinned Expo packages materialize compiler output during a native build. These
+                  // paths are products of the selected toolchain, not inputs to the native closure.
+                  ignorePaths: [
+                    "**/expo/packages/**/android/build/**/*",
+                    "**/expo/packages/**/android/.cxx/**/*",
+                    "**/expo/packages/**/ios/build/**/*",
+                    "**/expo/packages/**/apple/Products/**/*",
+                    "**/expo/packages/**/apple/.DerivedData/**/*",
+                    "**/expo/packages/precompile/.build/**/*",
+                  ],
                 }),
               catch: (cause) => new BuildPipelineError({ phase: "prebuild", request, cause }),
             })
-            nativeFingerprint = fingerprint.hash
+            const canonicalFingerprintSources = canonicalNativeFingerprintSources(
+              fingerprint.sources,
+            )
+            nativeFingerprint = yield* products.digest(
+              nativeClosureFingerprintInput(canonicalFingerprintSources),
+            )
             nativeCacheArtifacts.push(
               yield* commands.persistObservations(request, "native-fingerprint.ndjson", [
                 {
                   sequence: 0,
                   timestampMillis: 0,
                   stream: "stdout",
-                  text: JSON.stringify(fingerprint),
+                  text: JSON.stringify({
+                    expoFingerprintHash: fingerprint.hash,
+                    hash: nativeFingerprint,
+                    excludedSourceCount:
+                      fingerprint.sources.length - canonicalFingerprintSources.length,
+                    sources: canonicalFingerprintSources,
+                  }),
                 },
               ]),
             )
+            yield* nativeCache.validateKeySeed({ request, nativeFingerprint })
             const toolchain = yield* commands.run(
               request,
               "prebuild",
@@ -297,6 +408,7 @@ export const layer = (
                 request.platform,
                 appDirectory,
                 Math.min(request.timeoutMillis, 30_000),
+                config.javaHome17,
               ),
             )
             results.push(toolchain)
@@ -306,6 +418,11 @@ export const layer = (
                   platform: request.platform,
                   architecture: process.arch,
                   expoRevision: request.expoRevision,
+                  androidArchitectures:
+                    request.platform === "android"
+                      ? androidArchitecturesFor(config.buildProfile)
+                      : null,
+                  precompiledModulesHash,
                   output: toolchain.result.observations.map(({ stream, text }) => ({
                     stream,
                     text,
@@ -337,6 +454,7 @@ export const layer = (
               const restored = yield* nativeCache.restore({
                 request,
                 appDirectory,
+                metroNodeModules: prepared.metroNodeModules,
                 output,
                 nativeFingerprint,
                 toolchainFingerprint,
@@ -349,6 +467,7 @@ export const layer = (
                 key: restored.key,
                 detail: restored.reason,
               }
+              yield* ensureNativeRebuildAllowed(request, restored)
               if (restored.hit) {
                 buildDecision = "repack"
                 nativeCacheEvidence = {
@@ -360,23 +479,38 @@ export const layer = (
                 }
               } else {
                 results.push(
-                  yield* commands.run(request, "build", "process-2.ndjson", {
-                    command: path.join(appDirectory, "android", "gradlew"),
-                    args: [
-                      "--build-cache",
-                      "--no-configuration-cache",
-                      ":app:assembleRelease",
-                      "--no-daemon",
-                      "--stacktrace",
-                    ],
-                    cwd: path.join(appDirectory, "android"),
-                    env: commonEnv,
-                    timeoutMillis: request.timeoutMillis,
-                  }),
+                  yield* Effect.scoped(
+                    artifactLifecycle.acquireNativeBuild(`${request.platform}:${request.id}`).pipe(
+                      Effect.mapError(
+                        (cause) => new BuildPipelineError({ phase: "build", request, cause }),
+                      ),
+                      Effect.andThen(
+                        commands.run(
+                          request,
+                          "build",
+                          "gradle-release.ndjson",
+                          applyBuildProfile(config.buildProfile, "gradle", {
+                            command: path.join(appDirectory, "android", "gradlew"),
+                            args: [
+                              "--build-cache",
+                              "--no-configuration-cache",
+                              ":app:assembleRelease",
+                              "--no-daemon",
+                              "--stacktrace",
+                            ],
+                            cwd: path.join(appDirectory, "android"),
+                            env: commonEnv,
+                            timeoutMillis: request.timeoutMillis,
+                          }),
+                        ),
+                      ),
+                    ),
+                  ),
                 )
                 const published = yield* nativeCache.publish({
                   request,
                   appDirectory,
+                  metroNodeModules: prepared.metroNodeModules,
                   output,
                   nativeFingerprint,
                   toolchainFingerprint,
@@ -394,16 +528,27 @@ export const layer = (
               const derived = path.join(workspaceRoot, "derived-data")
               const architecture = process.arch === "arm64" ? "arm64" : "x86_64"
               const destination = config.iosDestination
+              const physicalDevice = !destination.toLowerCase().includes("simulator")
+              const sdk = physicalDevice ? "iphoneos" : "iphonesimulator"
+              if (physicalDevice && config.iosDevelopmentTeam === null) {
+                return yield* new BuildPipelineError({
+                  phase: "build",
+                  request,
+                  cause:
+                    "physical iOS builds require BETTER_NATIVE_IOS_DEVELOPMENT_TEAM for deterministic signing",
+                })
+              }
               output = path.join(
                 derived,
                 "Build",
                 "Products",
-                "Release-iphonesimulator",
+                `Release-${sdk}`,
                 "BetterNativeCompatibility.app",
               )
               const restored = yield* nativeCache.restore({
                 request,
                 appDirectory,
+                metroNodeModules: prepared.metroNodeModules,
                 output,
                 nativeFingerprint,
                 toolchainFingerprint,
@@ -416,6 +561,7 @@ export const layer = (
                 key: restored.key,
                 detail: restored.reason,
               }
+              yield* ensureNativeRebuildAllowed(request, restored)
               if (restored.hit) {
                 buildDecision = "repack"
                 nativeCacheEvidence = {
@@ -426,100 +572,128 @@ export const layer = (
                   validated: true,
                 }
               } else {
-                const podsCacheDirectory = path.join(
-                  root,
-                  ".artifacts",
-                  "pods-cache",
-                  "v1",
-                  `${process.arch}-${toolchainFingerprint}-${nativeFingerprint}`,
+                const iosNativeFingerprint = nativeFingerprint
+                const iosToolchainFingerprint = toolchainFingerprint
+                yield* Effect.scoped(
+                  artifactLifecycle.acquireNativeBuild(`${request.platform}:${request.id}`).pipe(
+                    Effect.mapError(
+                      (cause) => new BuildPipelineError({ phase: "build", request, cause }),
+                    ),
+                    Effect.andThen(
+                      Effect.gen(function* () {
+                        const podsDirectory = path.join(iosDirectory, "Pods")
+                        const podfileLock = path.join(iosDirectory, "Podfile.lock")
+                        const restoredPods = yield* podsCache.restore({
+                          request,
+                          iosDirectory,
+                          workspaceRoot,
+                          architecture,
+                          toolchainFingerprint: iosToolchainFingerprint,
+                        })
+                        podsCacheStatus = {
+                          name: "cocoapods",
+                          status: cacheHitStatus(restoredPods.hit),
+                          key: restoredPods.key,
+                          detail: restoredPods.detail,
+                        }
+                        results.push(
+                          yield* commands.run(
+                            request,
+                            "build",
+                            "cocoapods-install.ndjson",
+                            applyBuildProfile(config.buildProfile, "cocoapods", {
+                              command: "pod",
+                              args: ["install"],
+                              cwd: iosDirectory,
+                              env: commonEnv,
+                              timeoutMillis: request.timeoutMillis,
+                            }),
+                          ),
+                        )
+                        const manifestLock = path.join(podsDirectory, "Manifest.lock")
+                        const [podfileContents, manifestContents] = yield* Effect.all([
+                          fs.readFileString(podfileLock),
+                          fs.readFileString(manifestLock),
+                        ])
+                        if (podfileContents !== manifestContents) {
+                          return yield* new BuildPipelineError({
+                            phase: "build",
+                            request,
+                            cause:
+                              "CocoaPods lock invariant failed: Podfile.lock differs from Pods/Manifest.lock",
+                          })
+                        }
+                        const publishedPods = yield* podsCache.publish({
+                          request,
+                          iosDirectory,
+                          workspaceRoot,
+                          architecture,
+                          toolchainFingerprint: iosToolchainFingerprint,
+                        })
+                        podsCacheStatus = {
+                          name: "cocoapods",
+                          status: restoredPods.hit ? "hit" : "miss",
+                          key: publishedPods.key,
+                          detail: restoredPods.hit ? restoredPods.detail : publishedPods.detail,
+                        }
+                        results.push(
+                          yield* commands.run(
+                            request,
+                            "build",
+                            "xcode-release.ndjson",
+                            applyBuildProfile(config.buildProfile, "xcode", {
+                              command: "xcodebuild",
+                              args: [
+                                "-workspace",
+                                path.join(iosDirectory, "BetterNativeCompatibility.xcworkspace"),
+                                "-scheme",
+                                "BetterNativeCompatibility",
+                                "-configuration",
+                                "Release",
+                                "-sdk",
+                                sdk,
+                                "-destination",
+                                destination,
+                                "-derivedDataPath",
+                                derived,
+                                `ARCHS=${architecture}`,
+                                "ONLY_ACTIVE_ARCH=YES",
+                                ...(physicalDevice
+                                  ? [
+                                      `DEVELOPMENT_TEAM=${config.iosDevelopmentTeam}`,
+                                      "CODE_SIGN_STYLE=Automatic",
+                                      "-allowProvisioningUpdates",
+                                      "-allowProvisioningDeviceRegistration",
+                                    ]
+                                  : []),
+                                "-showBuildTimingSummary",
+                                "build",
+                              ],
+                              cwd: iosDirectory,
+                              env: commonEnv,
+                              timeoutMillis: request.timeoutMillis,
+                            }),
+                          ),
+                        )
+                        const published = yield* nativeCache.publish({
+                          request,
+                          appDirectory,
+                          metroNodeModules: prepared.metroNodeModules,
+                          output,
+                          nativeFingerprint: iosNativeFingerprint,
+                          toolchainFingerprint: iosToolchainFingerprint,
+                        })
+                        nativeCacheEvidence = {
+                          cacheKey: published.key,
+                          source: "full-build",
+                          sourceBuildId: published.sourceBuildId!,
+                          artifactHash: published.artifactHash!,
+                          validated: true,
+                        }
+                      }),
+                    ),
+                  ),
                 )
-                const cachedPods = path.join(podsCacheDirectory, "Pods")
-                const cachedLock = path.join(podsCacheDirectory, "Podfile.lock")
-                const podsDirectory = path.join(iosDirectory, "Pods")
-                const podfileLock = path.join(iosDirectory, "Podfile.lock")
-                if ((yield* fs.exists(cachedPods)) && (yield* fs.exists(cachedLock))) {
-                  yield* fs.copy(cachedPods, podsDirectory)
-                  yield* fs.copyFile(cachedLock, podfileLock)
-                  podsCacheStatus = {
-                    name: "cocoapods",
-                    status: "hit",
-                    key: `${process.arch}-${toolchainFingerprint}-${nativeFingerprint}`,
-                    detail: "restored generated Pods and Podfile.lock",
-                  }
-                } else {
-                  podsCacheStatus = {
-                    name: "cocoapods",
-                    status: "miss",
-                    key: `${process.arch}-${toolchainFingerprint}-${nativeFingerprint}`,
-                    detail: "generated Pods cache entry is missing",
-                  }
-                }
-                results.push(
-                  yield* commands.run(request, "build", "process-2.ndjson", {
-                    command: "pod",
-                    args: ["install"],
-                    cwd: iosDirectory,
-                    env: commonEnv,
-                    timeoutMillis: request.timeoutMillis,
-                  }),
-                )
-                const manifestLock = path.join(podsDirectory, "Manifest.lock")
-                const [podfileContents, manifestContents] = yield* Effect.all([
-                  fs.readFileString(podfileLock),
-                  fs.readFileString(manifestLock),
-                ])
-                if (podfileContents !== manifestContents) {
-                  return yield* new BuildPipelineError({
-                    phase: "build",
-                    request,
-                    cause:
-                      "CocoaPods lock invariant failed: Podfile.lock differs from Pods/Manifest.lock",
-                  })
-                }
-                if (yield* fs.exists(podsCacheDirectory))
-                  yield* fs.remove(podsCacheDirectory, { recursive: true })
-                yield* fs.makeDirectory(podsCacheDirectory, { recursive: true })
-                yield* fs.copy(podsDirectory, cachedPods)
-                yield* fs.copyFile(podfileLock, cachedLock)
-                results.push(
-                  yield* commands.run(request, "build", "process-3.ndjson", {
-                    command: "xcodebuild",
-                    args: [
-                      "-workspace",
-                      path.join(iosDirectory, "BetterNativeCompatibility.xcworkspace"),
-                      "-scheme",
-                      "BetterNativeCompatibility",
-                      "-configuration",
-                      "Release",
-                      "-sdk",
-                      "iphonesimulator",
-                      "-destination",
-                      destination,
-                      "-derivedDataPath",
-                      derived,
-                      `ARCHS=${architecture}`,
-                      "ONLY_ACTIVE_ARCH=YES",
-                      "build",
-                    ],
-                    cwd: iosDirectory,
-                    env: commonEnv,
-                    timeoutMillis: request.timeoutMillis,
-                  }),
-                )
-                const published = yield* nativeCache.publish({
-                  request,
-                  appDirectory,
-                  output,
-                  nativeFingerprint,
-                  toolchainFingerprint,
-                })
-                nativeCacheEvidence = {
-                  cacheKey: published.key,
-                  source: "full-build",
-                  sourceBuildId: published.sourceBuildId!,
-                  artifactHash: published.artifactHash!,
-                  validated: true,
-                }
               }
             }
             if (config.ccacheEnabled) {
@@ -579,6 +753,7 @@ export const layer = (
                   expoRevision: request.expoRevision,
                   candidateRevision: request.candidateRevision,
                   probeSpecifier: request.probeSpecifier ?? null,
+                  capabilitySource: request.capabilitySource ?? null,
                 }),
               ),
             )
@@ -612,6 +787,14 @@ export const layer = (
               key: config.caches.pods.key,
               detail: null,
             })
+            platformCaches.push({
+              name: "expo-precompiled-modules",
+              status: precompiledModulesAvailable ? "hit" : "miss",
+              key: request.expoRevision,
+              detail: precompiledModulesAvailable
+                ? `using pinned XCFrameworks from ${precompiledModulesPath}`
+                : "ExpoModulesCore Release XCFramework is absent; Expo modules compile from source",
+            })
           }
           if (request.platform !== "web") {
             platformCaches.push({
@@ -628,6 +811,7 @@ export const layer = (
             platform: request.platform,
             expoRevision: request.expoRevision,
             candidateRevision: request.candidateRevision,
+            capabilitySource: request.capabilitySource ?? null,
             configurationHash,
             bundleHash,
             nativeBinaryHash: Match.value(request.platform).pipe(
@@ -652,6 +836,32 @@ export const layer = (
                 ...(podsCacheStatus === null ? [] : [podsCacheStatus]),
                 ...platformCaches,
               ],
+              policy: {
+                profile: config.buildProfile,
+                workerCeiling: config.buildProfile === "polite" ? 2 : null,
+                cpuCeiling: config.buildProfile === "polite" ? 2 : null,
+                darwinScheduling: config.buildProfile === "polite" ? "utility-background" : null,
+                maxSimultaneousNativeBuilds: 1,
+                androidAbis:
+                  request.platform === "android" &&
+                  androidArchitecturesFor(config.buildProfile) !== null
+                    ? [androidArchitecturesFor(config.buildProfile)!]
+                    : [],
+              },
+              dependencyCounts: {
+                directRuntimeDependencies: prepared.directRuntimeDependencyCount,
+                nativeRoots: prepared.nativeRootCount,
+                metroClosure: prepared.metroClosureCount,
+                autolinkedNativeModules,
+              },
+              nativeCompilerInvocations:
+                buildDecision !== "full-build"
+                  ? []
+                  : request.platform === "android"
+                    ? ["gradle"]
+                    : request.platform === "ios"
+                      ? ["cocoapods", "xcode"]
+                      : [],
             },
             artifacts,
           }
@@ -662,6 +872,28 @@ export const layer = (
                 (cause) => new BuildPipelineError({ phase: "evidence", request, cause }),
               ),
             )
+          if (request.platform !== "web") {
+            const name = nativeArtifactName(request.platform)
+            if (name === null) {
+              return yield* new BuildPipelineError({
+                phase: "evidence",
+                request,
+                cause: `missing native product name for ${request.platform}`,
+              })
+            }
+            output = yield* artifactLifecycle
+              .publishNativeProduct({
+                workspace: workspaceRoot,
+                source: output,
+                buildId: request.id,
+                name,
+              })
+              .pipe(
+                Effect.mapError(
+                  (cause) => new BuildPipelineError({ phase: "evidence", request, cause }),
+                ),
+              )
+          }
           return {
             record,
             workspace: workspaceRoot,
@@ -678,6 +910,31 @@ export const layer = (
             cause instanceof BuildPipelineError
               ? cause
               : new BuildPipelineError({ phase: "build", request, cause }),
+          ),
+        )
+      const execute: Service["execute"] = (request, pinnedUpstream) =>
+        artifactLifecycle.pruneBeforeBuild.pipe(
+          Effect.mapError(
+            (cause) => new BuildPipelineError({ phase: "workspace", request, cause }),
+          ),
+          Effect.andThen(
+            Effect.scoped(
+              artifactLifecycle
+                .acquireWorkspace(
+                  path.join(root, ".artifacts", "workspaces", workspaceName(request)),
+                )
+                .pipe(Effect.andThen(executeBuild(request, pinnedUpstream))),
+            ),
+          ),
+          Effect.tap(() =>
+            request.platform === "web"
+              ? Effect.void
+              : artifactLifecycle.prune({ dryRun: false }).pipe(Effect.ignore),
+          ),
+          Effect.mapError((cause) =>
+            cause instanceof BuildPipelineError
+              ? cause
+              : new BuildPipelineError({ phase: "workspace", request, cause }),
           ),
         )
       return AppBuildExecutor.of({ execute })

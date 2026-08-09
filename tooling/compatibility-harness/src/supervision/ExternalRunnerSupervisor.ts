@@ -14,7 +14,10 @@ import {
   isSafePathSegment,
   type CaseResult as CaseResultType,
 } from "../Domain.ts"
+import { ArtifactLifecycle } from "../artifacts/ArtifactLifecycle.ts"
 import { EvidenceStore } from "../evidence/EvidenceStore.ts"
+import { HarnessConfig, layer as harnessConfigLayer } from "../HarnessConfig.ts"
+import { applyBuildProfile } from "../build/BuildProfile.ts"
 import * as ExternalRunnerAdapters from "../runners/ExternalRunnerAdapters.ts"
 import { ProcessSupervisor, type ProcessSpec } from "./ProcessSupervisor.ts"
 
@@ -120,15 +123,18 @@ export const layer = (
 ): Layer.Layer<
   ExternalRunnerSupervisor,
   never,
-  ProcessSupervisor | EvidenceStore | FileSystem.FileSystem | Path.Path
+  ProcessSupervisor | EvidenceStore | FileSystem.FileSystem | Path.Path | ArtifactLifecycle
 > =>
   Layer.effect(
     ExternalRunnerSupervisor,
     Effect.gen(function* () {
       const processes = yield* ProcessSupervisor
       const evidence = yield* EvidenceStore
+      const artifactLifecycle = yield* ArtifactLifecycle
       const fs = yield* FileSystem.FileSystem
       const path = yield* Path.Path
+      const config = yield* HarnessConfig
+      const javaHome17 = config.javaHome17
       const requestedRoot = path.resolve(root)
       const canonicalRoot = yield* fs.realPath(root).pipe(Effect.orDie)
       const resolveExisting = (input: string, purpose: string) =>
@@ -282,23 +288,55 @@ export const layer = (
                 (cause) => new ExternalRunnerError({ request, phase: "process", cause }),
               ),
             )
+            const requiresJava17 =
+              request.runner === "maestro" ||
+              request.runner === "gradle-unit" ||
+              request.runner === "gradle-instrumentation"
+            if (requiresJava17 && javaHome17 === null) {
+              return yield* new ExternalRunnerError({
+                request,
+                phase: "process",
+                cause: "runner requires a verified JDK 17",
+              })
+            }
+            const runnerEnvironment = requiresJava17
+              ? {
+                  ...command.env,
+                  JAVA_HOME: javaHome17 as string,
+                  PATH: `${javaHome17 as string}${path.sep}bin${process.platform === "win32" ? ";" : ":"}${config.executablePath}`,
+                }
+              : command.env
             const spec: ProcessSpec = {
               command: command.command,
               args: command.args,
               timeoutMillis: command.timeoutMillis,
               cwd,
-              ...(command.env === undefined ? {} : { env: command.env }),
+              ...(runnerEnvironment === undefined ? {} : { env: runnerEnvironment }),
               ...(command.terminationGraceMillis === undefined
                 ? {}
                 : { terminationGraceMillis: command.terminationGraceMillis }),
             }
-            const result = yield* processes
-              .run(spec)
-              .pipe(
-                Effect.mapError(
-                  (cause) => new ExternalRunnerError({ request, phase: "process", cause }),
-                ),
-              )
+            const nativeCompiler =
+              executable === "xcodebuild" || executable === "gradle" || executable === "gradlew"
+            const profiledSpec = nativeCompiler
+              ? applyBuildProfile(
+                  config.buildProfile,
+                  executable === "xcodebuild" ? "xcode" : "gradle",
+                  spec,
+                )
+              : spec
+            const execution = nativeCompiler
+              ? Effect.scoped(
+                  artifactLifecycle
+                    .acquireNativeBuild(`external:${request.id}:${executable}`)
+                    .pipe(Effect.andThen(processes.run(profiledSpec))),
+                )
+              : processes.run(profiledSpec)
+            const result = yield* execution.pipe(
+              Effect.mapError(
+                (cause) => new ExternalRunnerError({ request, phase: "process", cause }),
+              ),
+            )
             // Test runners commonly exit non-zero when individual cases fail. A
             // report is still authoritative; only a missing report is an
             // infrastructure failure.
@@ -358,4 +396,4 @@ export const layer = (
         )
       return ExternalRunnerSupervisor.of({ run })
     }),
-  )
+  ).pipe(Layer.provide(harnessConfigLayer(root).pipe(Layer.orDie)))

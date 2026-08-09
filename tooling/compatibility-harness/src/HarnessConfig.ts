@@ -6,15 +6,25 @@ import * as Match from "effect/Match"
 import * as Option from "effect/Option"
 import * as Path from "effect/Path"
 import * as Redacted from "effect/Redacted"
+import { execFileSync } from "node:child_process"
+import { existsSync, readFileSync } from "node:fs"
+import type { BuildProfile } from "./build/BuildProfile.ts"
 
 /** Environment variable names owned by the host-side harness configuration. */
 export const environmentKeys = {
   expoSourceRoot: "EXPO_SOURCE_ROOT",
+  ci: "CI",
+  buildProfile: "BETTER_NATIVE_BUILD_PROFILE",
   githubSha: "GITHUB_SHA",
   turboToken: "TURBO_TOKEN",
   turboTeam: "TURBO_TEAM",
   ccacheDirectory: "CCACHE_DIR",
+  javaHome17: "BETTER_NATIVE_JAVA_HOME_17",
+  androidSdkRoot: "ANDROID_SDK_ROOT",
+  androidHome: "ANDROID_HOME",
   iosDestination: "BETTER_NATIVE_IOS_DESTINATION",
+  iosDevelopmentTeam: "BETTER_NATIVE_IOS_DEVELOPMENT_TEAM",
+  iosCodeSignIdentity: "BETTER_NATIVE_IOS_CODE_SIGN_IDENTITY",
   forceColdBuild: "BETTER_NATIVE_FORCE_COLD_BUILD",
   pnpmStoreCacheHit: "BETTER_NATIVE_PNPM_STORE_CACHE_HIT",
   pnpmStoreCacheKey: "BETTER_NATIVE_PNPM_STORE_CACHE_KEY",
@@ -38,8 +48,14 @@ export interface Service {
   readonly turboToken: Option.Option<Redacted.Redacted>
   readonly turboTeam: string | null
   readonly ccacheEnabled: boolean
+  readonly javaHome17: string | null
+  readonly executablePath: string
+  readonly androidSdkRoot: string | null
   readonly iosDestination: string
+  readonly iosDevelopmentTeam: string | null
+  readonly iosCodeSignIdentity: string
   readonly forceColdBuild: boolean
+  readonly buildProfile: BuildProfile
   readonly caches: {
     readonly pnpmStore: CacheEnvironment
     readonly ccache: CacheEnvironment
@@ -77,6 +93,42 @@ const optionalRedacted = (name: string) =>
 
 const nullable = <A>(value: Option.Option<A>): A | null => Option.getOrNull(value)
 
+const isJava17Home = (home: string): boolean => {
+  try {
+    return (
+      existsSync(`${home}/bin/java`) &&
+      /JAVA_VERSION="17[."]/.test(readFileSync(`${home}/release`, "utf8"))
+    )
+  } catch {
+    return false
+  }
+}
+
+/** Resolves a verified JDK 17 independently from the caller's default Java. */
+export const resolveJava17Home = (explicit: string | null): string | null => {
+  const candidates = [explicit]
+  if (process.platform === "darwin") {
+    try {
+      candidates.push(
+        execFileSync("/usr/libexec/java_home", ["-v", "17"], { encoding: "utf8" }).trim(),
+      )
+    } catch {
+      // Fall through to reviewed conventional installation paths.
+    }
+    candidates.push(
+      "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home",
+      "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home",
+      "/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home",
+    )
+  }
+  return (
+    candidates.find(
+      (candidate): candidate is string =>
+        candidate !== undefined && candidate !== null && isJava17Home(candidate),
+    ) ?? null
+  )
+}
+
 const cacheStatus = (value: Option.Option<boolean>): CacheEnvironment["status"] =>
   Option.match(value, {
     onNone: () => "unknown",
@@ -108,12 +160,24 @@ export const layer = (root: string) =>
         expoSourceRoot: Config.string(environmentKeys.expoSourceRoot).pipe(
           Config.withDefault(path.join(root, "..", "expo")),
         ),
+        ci: Config.boolean(environmentKeys.ci).pipe(Config.withDefault(false)),
+        buildProfile: Config.literals(["polite", "performance"], environmentKeys.buildProfile).pipe(
+          Config.option,
+        ),
         githubSha: optionalString(environmentKeys.githubSha),
         turboToken: optionalRedacted(environmentKeys.turboToken),
         turboTeam: optionalString(environmentKeys.turboTeam),
         ccacheDirectory: optionalString(environmentKeys.ccacheDirectory),
+        javaHome17: optionalString(environmentKeys.javaHome17),
+        executablePath: Config.string("PATH").pipe(Config.withDefault("")),
+        androidSdkRoot: optionalString(environmentKeys.androidSdkRoot),
+        androidHome: optionalString(environmentKeys.androidHome),
         iosDestination: Config.string(environmentKeys.iosDestination).pipe(
           Config.withDefault("generic/platform=iOS Simulator"),
+        ),
+        iosDevelopmentTeam: optionalString(environmentKeys.iosDevelopmentTeam),
+        iosCodeSignIdentity: Config.string(environmentKeys.iosCodeSignIdentity).pipe(
+          Config.withDefault("Apple Development"),
         ),
         forceColdBuild: Config.boolean(environmentKeys.forceColdBuild).pipe(
           Config.withDefault(false),
@@ -132,8 +196,16 @@ export const layer = (root: string) =>
         turboToken: values.turboToken,
         turboTeam: nullable(values.turboTeam),
         ccacheEnabled: Option.isSome(values.ccacheDirectory),
+        javaHome17: resolveJava17Home(nullable(values.javaHome17)),
+        executablePath: values.executablePath,
+        androidSdkRoot: nullable(values.androidSdkRoot) ?? nullable(values.androidHome),
         iosDestination: values.iosDestination,
+        iosDevelopmentTeam: nullable(values.iosDevelopmentTeam),
+        iosCodeSignIdentity: values.iosCodeSignIdentity,
         forceColdBuild: values.forceColdBuild,
+        buildProfile: Option.getOrElse(values.buildProfile, () =>
+          values.ci ? "performance" : "polite",
+        ),
         caches: {
           pnpmStore: {
             status: cacheStatus(values.pnpmStoreCacheHit),

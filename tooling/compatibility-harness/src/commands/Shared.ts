@@ -36,6 +36,17 @@ export const buildPlatform = Flag.choice("platform", ["web", "ios", "android"] a
 export const buildIdFlag = Flag.string("build-id").pipe(Flag.withSchema(BuildId))
 /** CLI timeout flag with the harness default execution budget. */
 export const timeoutMillisFlag = Flag.integer("timeout-ms").pipe(Flag.withDefault(1_200_000))
+/** Optional supplemental source selecting a capability-scoped native shell. */
+export const capabilitySourceFlag = Flag.string("source").pipe(
+  Flag.withDescription("Build a reviewed capability-scoped native shell instead of the full suite"),
+  Flag.optional,
+)
+/** Explicit opt-in to native compilation when a reusable shell fails to repack. */
+export const allowNativeRebuildFlag = Flag.boolean("allow-native-rebuild").pipe(
+  Flag.withDescription(
+    "Allow Gradle, CocoaPods, or Xcode compilation when a cached native artifact fails to repack",
+  ),
+)
 /**
  * Candidate revision supplied by the harness configuration, when present.
  *

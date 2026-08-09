@@ -31,6 +31,7 @@ const request: BuildRequest = {
 const input = (root: string): NativeCacheRequest => ({
   request,
   appDirectory: `${root}/app`,
+  metroNodeModules: `${root}/metro-node-modules`,
   output: `${root}/output.apk`,
   nativeFingerprint: "native-inputs",
   toolchainFingerprint: hash("2"),
@@ -133,10 +134,60 @@ describe("NativeArtifactCache", () => {
     assert.notStrictEqual(
       nativeArtifactCacheKey(upstream, "test-architecture"),
       nativeArtifactCacheKey(
+        {
+          ...upstream,
+          request: { ...upstream.request, expoRevision: "9".repeat(40) },
+        },
+        "test-architecture",
+      ),
+    )
+    assert.notStrictEqual(
+      nativeArtifactCacheKey(upstream, "test-architecture"),
+      nativeArtifactCacheKey(
         { ...upstream, nativeFingerprint: "changed-native-inputs" },
         "test-architecture",
       ),
     )
+    const ios = { ...upstream, request: { ...upstream.request, platform: "ios" as const } }
+    assert.notStrictEqual(
+      nativeArtifactCacheKey(ios, "test-architecture", "simulator"),
+      nativeArtifactCacheKey(ios, "test-architecture", "device"),
+    )
+    assert.notStrictEqual(
+      nativeArtifactCacheKey(ios, "test-architecture", "device", "TEAM|Apple Development"),
+      nativeArtifactCacheKey(ios, "test-architecture", "device", "OTHER|Apple Development"),
+    )
+    assert.strictEqual(
+      nativeArtifactCacheMismatch(
+        { ...record, platform: "ios", iosTarget: "device", iosSigningIdentity: "OLD|Identity" },
+        ios,
+        "test-architecture",
+        "device",
+        "NEW|Identity",
+      ),
+      "ios-signing-identity",
+    )
+  })
+
+  it("rejects an unsafe cache identity before cache access", () => {
+    assert.throws(
+      () =>
+        nativeArtifactCacheKey(
+          { ...input("/tmp/unsafe"), nativeFingerprint: "../../unsafe" },
+          "test-architecture",
+        ),
+      /invalid native cache key component/,
+    )
+  })
+
+  it("keeps physical-device cache and lock names below filesystem component limits", () => {
+    const key = nativeArtifactCacheKey(
+      { ...input("/tmp/device"), request: { ...request, platform: "ios" } },
+      "arm64",
+      "device",
+      `${"TEAM".repeat(30)}|${"Identity".repeat(30)}`,
+    )
+    assert.isBelow(`${key}.lock`.length, 256)
   })
 
   it("rejects stale fingerprints and wrong compiler toolchains", () => {
@@ -185,6 +236,7 @@ describe("NativeArtifactCache", () => {
         ),
       )
       assert.isFalse(restored.hit)
+      assert.isFalse(restored.repackFailure)
       assert.match(restored.reason, /hash is invalid/)
     }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
@@ -218,8 +270,11 @@ describe("NativeArtifactCache", () => {
         ),
       )
       assert.match(results.malformed.reason, /metadata is malformed/)
+      assert.isFalse(results.malformed.repackFailure)
       assert.match(results.missing.reason, /entry is missing/)
+      assert.isFalse(results.missing.repackFailure)
       assert.match(results.repackFailure.reason, /repack failed/)
+      assert.isTrue(results.repackFailure.repackFailure)
     }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
@@ -254,8 +309,39 @@ describe("NativeArtifactCache", () => {
         ),
       )
       assert.isTrue(restored.hit)
+      assert.isFalse(restored.repackFailure)
       assert.strictEqual(restored.sourceBuildId, BuildId.make("cache-test"))
       assert.strictEqual(yield* fs.readFileString(candidate.output), "upstream-shell")
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
+  )
+
+  it.effect("does not replace an entry while another process owns its cache lock", () =>
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem
+      const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-cache-lock-" })
+      yield* fs.makeDirectory(`${root}/app`, { recursive: true })
+      yield* fs.writeFileString(`${root}/output.apk`, "shell")
+      const current = input(root)
+      const key = nativeArtifactCacheKey(current)
+      const cacheRoot = `${root}/.artifacts/native-cache/v1`
+      yield* fs.makeDirectory(cacheRoot, { recursive: true })
+      yield* fs.writeFileString(`${cacheRoot}/${key}.lock`, "other-owner")
+
+      const result = yield* Effect.gen(function* () {
+        const cache = yield* NativeArtifactCache
+        return yield* cache.publish(current)
+      }).pipe(
+        provideLayer(
+          layer(root).pipe(
+            Layer.provideMerge(Layer.mergeAll(fakeCommands, buildProductsLayer, harnessConfig)),
+          ),
+        ),
+      )
+
+      assert.isFalse(result.hit)
+      assert.match(result.reason, /busy; publication skipped/)
+      assert.isFalse(yield* fs.exists(`${cacheRoot}/${key}`))
+      assert.strictEqual(yield* fs.readFileString(`${cacheRoot}/${key}.lock`), "other-owner")
     }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 })

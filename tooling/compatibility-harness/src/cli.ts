@@ -18,6 +18,7 @@ import * as NativeSupervisor from "./supervision/NativeSupervisor.ts"
 import * as PlatformDrivers from "./supervision/PlatformDrivers.ts"
 import * as ProcessSupervisor from "./supervision/ProcessSupervisor.ts"
 import * as WebSupervisor from "./supervision/WebSupervisor.ts"
+import * as ArtifactLifecycle from "./artifacts/ArtifactLifecycle.ts"
 
 const root = process.cwd()
 const BaseLayer = NodeServices.layer
@@ -46,10 +47,13 @@ const WebLayer = WebSupervisor.layer.pipe(
   ),
 )
 const DriverLayer = PlatformDrivers.layer.pipe(
-  Layer.provideMerge(Layer.merge(ProcessLayer, BaseLayer)),
+  Layer.provideMerge(Layer.mergeAll(ProcessLayer, BaseLayer, ConfigLayer)),
 )
+const ArtifactLifecycleLayer = ArtifactLifecycle.layer(root).pipe(Layer.provide(BaseLayer))
 const ExternalLayer = ExternalRunnerSupervisor.layer(root).pipe(
-  Layer.provideMerge(Layer.mergeAll(ProcessLayer, EvidenceLayer, BaseLayer)),
+  Layer.provideMerge(
+    Layer.mergeAll(ProcessLayer, EvidenceLayer, BaseLayer, ArtifactLifecycleLayer),
+  ),
 )
 const NativeLayer = NativeSupervisor.layer.pipe(
   Layer.provideMerge(Layer.mergeAll(DriverLayer, EvidenceLayer)),
@@ -65,6 +69,7 @@ const MainLayer = Layer.mergeAll(
   DiscoveryLayer,
   BuildLayer,
   BuildImporterLayer,
+  BuildProductsLayer,
   BuildCommandLayer,
   ExpoToolchainLayer,
   WebLayer,
@@ -72,6 +77,7 @@ const MainLayer = Layer.mergeAll(
   NativeLayer,
   ExternalLayer,
   RepositoryLayer,
+  ArtifactLifecycleLayer,
 )
 
 Effect.scoped(

@@ -280,6 +280,26 @@ share one native shell and produce two independently repacked products. Unequal 
 produce independent native builds. Generated Pods use the same Xcode/toolchain/native-fingerprint
 boundary and are accepted only when `Podfile.lock` equals `Pods/Manifest.lock`.
 
+Local artifact storage has an explicit Effect-owned lifecycle. A workspace lock records the owning
+process for the complete build scope, and pruning never traverses links or removes a workspace or
+cache while any build lock is active. Successful native builds first publish their hashed product
+under `.artifacts/products`, then remove DerivedData and the disposable CNG workspace. The newest
+unlocked failure is retained for 24 hours; older or superseded workspaces are disposable.
+
+The local CocoaPods cache uses a versioned two-stage identity. A normalized hash of the generated
+`Podfile` and `Podfile.properties.json` locates an index, while the cached entry itself is keyed by
+the resulting `Podfile.lock` hash, architecture, and compiler toolchain. Restore validates that lock
+hash, and every completed `pod install` still requires `Podfile.lock` to equal
+`Pods/Manifest.lock`. This prevents run identity or unrelated fingerprint inputs from creating
+duplicate multi-gigabyte Pods trees for the same effective dependency graph.
+
+`bun run artifacts:prune --dry-run` reports every deletion, retention reason, protected path, and
+physical byte count. The non-dry command applies the identical deterministic plan, bounds the
+combined local Pods/native cache to 8 GiB by least-recently-used access time, retains lightweight
+run records, and expires bulky run media after seven days. It runs before a build below the 16 GiB
+free-space floor and after every successful native build. `bun run artifacts:clean --all` is the
+explicit emergency operation and refuses to run while active or linked workspaces are present.
+
 ## Hosted execution
 
 Compatibility execution is hosted by GitHub Actions. Developer machines are not the default native

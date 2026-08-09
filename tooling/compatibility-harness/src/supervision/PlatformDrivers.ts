@@ -5,13 +5,15 @@ import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
 import type { Platform, ProcessObservation, RunId } from "../Domain.ts"
+import { HarnessConfig } from "../HarnessConfig.ts"
 import { ProcessSupervisor, type ProcessResult, type ProcessSpec } from "./ProcessSupervisor.ts"
 
-/** Native simulator or emulator selected for compatibility execution. */
+/** Native simulator, emulator, or physical device selected for compatibility execution. */
 export interface NativeDevice {
   readonly platform: "ios" | "android"
   readonly id: string
   readonly applicationId: string
+  readonly kind?: "simulator" | "emulator" | "physical"
 }
 
 /** Failure raised by device installation, liveness, logging, or result collection. */
@@ -42,12 +44,12 @@ export interface Service {
   ) => Effect.Effect<string | null, PlatformDriverError>
 }
 
-/** Effect context tag for iOS Simulator and Android emulator drivers. */
+/** Effect context tag for simulator, emulator, and physical-device drivers. */
 export class PlatformDrivers extends Context.Service<PlatformDrivers, Service>()(
   "@better-native/compatibility-harness/PlatformDrivers",
 ) {}
 
-type Requirements = ProcessSupervisor | FileSystem.FileSystem
+type Requirements = ProcessSupervisor | FileSystem.FileSystem | HarnessConfig
 
 const command = (
   device: NativeDevice,
@@ -63,6 +65,15 @@ const command = (
     })),
     Match.exhaustive,
   )
+
+const isPhysicalIos = (device: NativeDevice): boolean =>
+  device.platform === "ios" && device.kind === "physical"
+
+const physicalIosCommand = (args: ReadonlyArray<string>, timeoutMillis = 60_000): ProcessSpec => ({
+  command: "xcrun",
+  args: ["devicectl", ...args],
+  timeoutMillis,
+})
 
 const output = (result: ProcessResult) => result.observations.map(({ text }) => text).join("\n")
 
@@ -205,6 +216,14 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
   Effect.gen(function* () {
     const processes = yield* ProcessSupervisor
     const fs = yield* FileSystem.FileSystem
+    const config = yield* HarnessConfig
+    const maestroEnv =
+      config.javaHome17 === null
+        ? undefined
+        : {
+            JAVA_HOME: config.javaHome17,
+            PATH: `${config.javaHome17}/bin:${config.executablePath}`,
+          }
     const invoke = (
       operation: PlatformDriverError["operation"],
       device: NativeDevice,
@@ -240,14 +259,24 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
           ),
         ),
         Match.when("ios", () =>
-          processes.run(command(device, ["spawn", device.id, "launchctl", "list"], 15_000)).pipe(
-            Effect.map(
-              (result) => result.exitCode === 0 && output(result).includes(device.applicationId),
+          processes
+            .run(
+              isPhysicalIos(device)
+                ? physicalIosCommand(["device", "info", "processes", "--device", device.id], 15_000)
+                : command(device, ["spawn", device.id, "launchctl", "list"], 15_000),
+            )
+            .pipe(
+              Effect.map(
+                (result) =>
+                  result.exitCode === 0 &&
+                  output(result).includes(
+                    isPhysicalIos(device) ? "BetterNativeCompatibility" : device.applicationId,
+                  ),
+              ),
+              Effect.mapError(
+                (cause) => new PlatformDriverError({ operation: "liveness", device, cause }),
+              ),
             ),
-            Effect.mapError(
-              (cause) => new PlatformDriverError({ operation: "liveness", device, cause }),
-            ),
-          ),
         ),
         Match.exhaustive,
       )
@@ -268,25 +297,69 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
           ]).pipe(Effect.map(({ observations }) => observations)),
         ),
         Match.when("ios", () =>
-          invoke("logs", device, [
-            "spawn",
-            device.id,
-            "log",
-            "show",
-            "--last",
-            "1m",
-            "--style",
-            "json",
-            "--predicate",
-            iosLogPredicate,
-          ]).pipe(Effect.map(({ observations }) => observations)),
+          isPhysicalIos(device)
+            ? processes
+                .run(
+                  physicalIosCommand(
+                    ["device", "info", "processes", "--device", device.id],
+                    15_000,
+                  ),
+                )
+                .pipe(
+                  Effect.map(({ observations }) => observations),
+                  Effect.mapError(
+                    (cause) => new PlatformDriverError({ operation: "logs", device, cause }),
+                  ),
+                )
+            : invoke("logs", device, [
+                "spawn",
+                device.id,
+                "log",
+                "show",
+                "--last",
+                "1m",
+                "--style",
+                "json",
+                "--predicate",
+                iosLogPredicate,
+              ]).pipe(Effect.map(({ observations }) => observations)),
         ),
         Match.exhaustive,
       )
     }
     const result: Service["result"] = (device, runId) =>
       Effect.gen(function* () {
-        if (device.platform === "ios") {
+        if (isPhysicalIos(device)) {
+          const temporary = yield* fs.makeTempDirectory({ prefix: "better-native-device-result-" })
+          const localResult = `${temporary}/result.json`
+          const remoteResult = `Documents/better-native-result-${Buffer.from(runId).toString("base64url")}.json`
+          return yield* Effect.gen(function* () {
+            const copied = yield* processes.run(
+              physicalIosCommand(
+                [
+                  "device",
+                  "copy",
+                  "from",
+                  "--device",
+                  device.id,
+                  "--domain-type",
+                  "appDataContainer",
+                  "--domain-identifier",
+                  device.applicationId,
+                  "--source",
+                  remoteResult,
+                  "--destination",
+                  localResult,
+                ],
+                30_000,
+              ),
+            )
+            return copied.exitCode === 0 && (yield* fs.exists(localResult))
+              ? yield* fs.readFileString(localResult)
+              : null
+          }).pipe(Effect.ensuring(fs.remove(temporary, { recursive: true }).pipe(Effect.ignore)))
+        }
+        if (device.platform === "ios" && !isPhysicalIos(device)) {
           const container = yield* processes.run(
             command(device, ["get_app_container", device.id, device.applicationId, "data"], 30_000),
           )
@@ -301,38 +374,43 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
             command(device, ["logcat", "-d", "-v", "raw", "ReactNativeJS:V", "*:S"], 30_000),
           ),
           Match.when("ios", () =>
-            command(
-              device,
-              [
-                "spawn",
-                device.id,
-                "log",
-                "show",
-                "--last",
-                "5m",
-                "--style",
-                "compact",
-                "--predicate",
-                `eventMessage CONTAINS "${resultChunkMarker}"`,
-              ],
-              30_000,
-            ),
+            isPhysicalIos(device)
+              ? null
+              : command(
+                  device,
+                  [
+                    "spawn",
+                    device.id,
+                    "log",
+                    "show",
+                    "--last",
+                    "5m",
+                    "--style",
+                    "compact",
+                    "--predicate",
+                    `eventMessage CONTAINS "${resultChunkMarker}"`,
+                  ],
+                  30_000,
+                ),
           ),
           Match.exhaustive,
         )
-        const logResult = yield* processes.run({
-          ...logSpec,
-          retainedOutputBytes: maximumResultLogBytes,
-        })
-        if (logResult.exitCode === 0) {
-          const logged = matchingResult(resultFromLogChunks(output(logResult), runId), runId)
-          if (logged !== null) return logged
+        if (logSpec !== null) {
+          const logResult = yield* processes.run({
+            ...logSpec,
+            retainedOutputBytes: maximumResultLogBytes,
+          })
+          if (logResult.exitCode === 0) {
+            const logged = matchingResult(resultFromLogChunks(output(logResult), runId), runId)
+            if (logged !== null) return logged
+          }
         }
         const hierarchyProcess = yield* processes.run({
           command: "maestro",
           args: ["--device", device.id, "hierarchy"],
           timeoutMillis: 30_000,
           retainedOutputBytes: maximumResultLogBytes,
+          ...(maestroEnv === undefined ? {} : { env: maestroEnv }),
         })
         if (hierarchyProcess.exitCode !== 0) {
           return yield* new PlatformDriverError({
@@ -351,6 +429,41 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
       )
     return PlatformDrivers.of({
       install: (device, binary) => {
+        if (isPhysicalIos(device)) {
+          return Effect.gen(function* () {
+            // Each upstream/candidate cohort starts from the same empty app container.
+            yield* processes.run(
+              physicalIosCommand([
+                "device",
+                "uninstall",
+                "app",
+                "--device",
+                device.id,
+                device.applicationId,
+              ]),
+            )
+            return yield* processes.run(
+              physicalIosCommand(["device", "install", "app", "--device", device.id, binary]),
+            )
+          }).pipe(
+            Effect.flatMap((installResult) =>
+              installResult.exitCode === 0
+                ? Effect.void
+                : Effect.fail(
+                    new PlatformDriverError({
+                      operation: "install",
+                      device,
+                      cause: `command exited ${installResult.exitCode}: ${output(installResult)}`,
+                    }),
+                  ),
+            ),
+            Effect.mapError((cause) =>
+              cause instanceof PlatformDriverError
+                ? cause
+                : new PlatformDriverError({ operation: "install", device, cause }),
+            ),
+          )
+        }
         const args = Match.value(device.platform).pipe(
           Match.when("ios", () => ["install", device.id, binary]),
           Match.when("android", () => ["install", "-r", "-t", binary]),
@@ -359,9 +472,81 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
         return invoke("install", device, args).pipe(Effect.asVoid)
       },
       runMaestroFlow: (device, flowPath, timeoutMillis) => {
+        if (isPhysicalIos(device)) {
+          return Effect.gen(function* () {
+            const flow = yield* fs.readFileString(flowPath)
+            const encodedLink = flow
+              .split("\n")
+              .find((line) => line.startsWith("- openLink: "))
+              ?.slice("- openLink: ".length)
+            const link = yield* Effect.try({
+              try: () => {
+                if (encodedLink === undefined) throw new Error("physical flow has no openLink")
+                const decoded: unknown = JSON.parse(encodedLink)
+                if (typeof decoded !== "string") {
+                  throw new Error("physical flow openLink is not a string")
+                }
+                return decoded
+              },
+              catch: (cause) => new PlatformDriverError({ operation: "maestro", device, cause }),
+            })
+            const launched = yield* processes.run(
+              physicalIosCommand(
+                [
+                  "device",
+                  "process",
+                  "launch",
+                  "--device",
+                  device.id,
+                  "--terminate-existing",
+                  "--payload-url",
+                  link,
+                  device.applicationId,
+                ],
+                timeoutMillis,
+              ),
+            )
+            if (launched.exitCode !== 0) {
+              return yield* new PlatformDriverError({
+                operation: "maestro",
+                device,
+                cause: `CoreDevice launch exited ${launched.exitCode}: ${output(launched)}`,
+              })
+            }
+            return launched.observations
+          }).pipe(
+            Effect.mapError((cause) =>
+              cause instanceof PlatformDriverError
+                ? cause
+                : new PlatformDriverError({ operation: "maestro", device, cause }),
+            ),
+          )
+        }
+        if (config.javaHome17 === null || maestroEnv === undefined) {
+          return Effect.fail(
+            new PlatformDriverError({
+              operation: "maestro",
+              device,
+              cause: "Maestro requires JDK 17; install it or set BETTER_NATIVE_JAVA_HOME_17",
+            }),
+          )
+        }
         const reportPath = `${flowPath}.junit.xml`
         return Effect.scoped(
           Effect.gen(function* () {
+            const javaVersion = yield* processes.run({
+              command: `${config.javaHome17}/bin/java`,
+              args: ["-version"],
+              timeoutMillis: 30_000,
+              env: maestroEnv,
+            })
+            if (javaVersion.exitCode !== 0) {
+              return yield* new PlatformDriverError({
+                operation: "maestro",
+                device,
+                cause: `JDK 17 verification exited ${javaVersion.exitCode}: ${output(javaVersion)}`,
+              })
+            }
             if (yield* fs.exists(reportPath)) yield* fs.remove(reportPath)
             const running = yield* processes.start({
               command: "maestro",
@@ -377,6 +562,7 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
               ],
               timeoutMillis,
               terminationGraceMillis: 5_000,
+              ...(maestroEnv === undefined ? {} : { env: maestroEnv }),
             })
             yield* Effect.addFinalizer(() => running.terminate.pipe(Effect.ignore))
             yield* Effect.gen(function* () {
@@ -402,7 +588,7 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
               }),
             )
             const observations = yield* running.observations
-            if (exitCode === 0) return observations
+            if (exitCode === 0) return [...javaVersion.observations, ...observations]
             const report = (yield* fs.exists(reportPath))
               ? yield* fs.readFileString(reportPath)
               : null
@@ -410,7 +596,7 @@ export const layer: Layer.Layer<PlatformDrivers, never, Requirements> = Layer.ef
               yield* Effect.logWarning(
                 "Maestro wrote a passing JUnit report but did not exit cleanly; accepting the completed flow",
               )
-              return observations
+              return [...javaVersion.observations, ...observations]
             }
             return yield* new PlatformDriverError({
               operation: "maestro",

@@ -20,6 +20,8 @@ export interface ProcessSpec {
   readonly env?: Readonly<Record<string, string | undefined>>
   readonly timeoutMillis: number
   readonly terminationGraceMillis?: number
+  /** Darwin scheduling policy inherited by the process and all descendants. */
+  readonly darwinScheduling?: "utility-background"
   /** Maximum UTF-8 bytes retained in memory after both output streams are drained. */
   readonly retainedOutputBytes?: number
   /** Maximum number of output lines retained in memory. */
@@ -31,6 +33,18 @@ export interface ProcessResult {
   readonly exitCode: number
   readonly observations: ReadonlyArray<ProcessObservation>
 }
+
+/** Resolves the executable actually spawned for a supervised process. */
+export const processInvocation = (
+  spec: ProcessSpec,
+  platform: NodeJS.Platform = process.platform,
+): { readonly command: string; readonly args: ReadonlyArray<string> } =>
+  spec.darwinScheduling === "utility-background" && platform === "darwin"
+    ? {
+        command: "/usr/bin/taskpolicy",
+        args: ["-b", "-c", "utility", spec.command, ...(spec.args ?? [])],
+      }
+    : { command: spec.command, args: spec.args ?? [] }
 
 /** Failure raised when a child process cannot be spawned, drained, or terminated. */
 export class ProcessFailure extends Data.TaggedError("ProcessFailure")<{
@@ -397,10 +411,11 @@ export const layer: Layer.Layer<ProcessSupervisor, never, ChildProcessSpawner.Ch
     Effect.gen(function* () {
       const spawner = yield* ChildProcessSpawner.ChildProcessSpawner
       const backend: ProcessBackend = {
-        spawn: (spec) =>
-          spawner
+        spawn: (spec) => {
+          const invocation = processInvocation(spec)
+          return spawner
             .spawn(
-              ChildProcess.make(spec.command, spec.args ?? [], {
+              ChildProcess.make(invocation.command, invocation.args, {
                 ...(spec.cwd === undefined ? {} : { cwd: spec.cwd }),
                 ...(spec.env === undefined ? {} : { env: { ...spec.env }, extendEnv: true }),
                 stdout: "pipe",
@@ -417,7 +432,8 @@ export const layer: Layer.Layer<ProcessSupervisor, never, ChildProcessSpawner.Ch
                 terminate: (graceMillis) =>
                   handle.kill({ killSignal: "SIGTERM", forceKillAfter: graceMillis }),
               })),
-            ),
+            )
+        },
       }
       return ProcessSupervisor.of(makeService(backend))
     }),

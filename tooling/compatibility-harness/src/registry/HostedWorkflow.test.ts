@@ -108,6 +108,7 @@ describe("hosted compatibility workflow", () => {
       assert.match(workflow, /web-upstream-run-\*/)
       assert.match(workflow, /web-\*-run-\*/)
       assert.strictEqual(workflow.match(/supervise-build-pair/g)?.length, 2)
+      assert.notMatch(workflow, /supervise-build(?:-pair)?[^\n]*--source/)
       assert.strictEqual(workflow.match(/supervise-native-pair/g)?.length, 2)
       assert.match(
         workflow,
@@ -169,20 +170,28 @@ describe("hosted compatibility workflow", () => {
         "@better-native/battery#build",
         "@better-native/keep-awake#build",
         "@better-native/secure-store#build",
+        "@better-native/sqlite#build",
+        "@better-native/task-manager#build",
+        "@better-native/background-task#build",
+        "@better-native/location#build",
+        "@better-native/notifications#build",
         "@better-native/metro#build",
       ])
       assert.match(workflow, /Setup device-test profile/)
       assert.match(workflow, /Setup compare profile/)
       assert.match(workflow, /Prepare compatibility dependencies/)
-      assert.match(workflow, /workspace="ios-\$\{mode\}"/)
-      assert.match(workflow, /workspace="android-\$\{mode\}"/)
+      assert.match(workflow, /source_id="\$BUILD_ID"/)
+      assert.match(workflow, /source_id="\$\{BUILD_ID\}-\$\{mode\}"/)
       assert.match(cacheSetup, /native-v1-/)
-      assert.match(cacheSetup, /pods-v1-release-/)
+      assert.match(cacheSetup, /pods-v2-release-/)
+      assert.match(cacheSetup, /\.artifacts\/pods-cache\/v2/)
       assert.notMatch(cacheSetup, /apps\/compatibility-suite\/\*\*/)
       assert.match(cacheHygiene, /CACHE_BUDGET_BYTES: "8589934592"/)
       assert.match(workflow, /BETTER_NATIVE_FORCE_COLD_BUILD:/)
+      assert.match(workflow, /BETTER_NATIVE_BUILD_PROFILE: performance/)
       assert.match(workflow, /BETTER_NATIVE_IOS_DESTINATION=platform=iOS Simulator,id=/)
       assert.match(appBuildExecutor, /"--build-cache",\s+"--no-configuration-cache"/)
+      assert.match(appBuildExecutor, /androidArchitecturesFor\(config\.buildProfile\)/)
       for (const name of Object.values(environmentKeys)) {
         assert.match(envExample, new RegExp(`^#? ?${name}=`, "m"), `${name} must be documented`)
       }
@@ -190,6 +199,8 @@ describe("hosted compatibility workflow", () => {
       assert.match(workflow, /\$\{BUILD_ID\}-upstream\/record\.json/)
       assert.notMatch(workflow, /COMPATIBILITY_MODE:\+-upstream/)
       assert.match(rootPackage, /"compatibility-harness": "node --experimental-strip-types/)
+      assert.match(rootPackage, /"artifacts:prune":/)
+      assert.match(rootPackage, /"artifacts:clean":/)
       assert.match(harnessPackage, /"@effect\/platform-node": "4\.0\.0-beta\.102"/)
       assert.notMatch(harnessPackage, /@effect\/platform-bun/)
     }).pipe(provideLayer(NodeServices.layer)),

@@ -1,4 +1,5 @@
 import * as Data from "effect/Data"
+import * as Effect from "effect/Effect"
 import * as Schema from "effect/Schema"
 import type { BuildId, BuildRecord, Mode, ProcessObservation } from "../Domain.ts"
 
@@ -11,6 +12,10 @@ export interface BuildRequest {
   readonly candidateRevision: string | null
   readonly timeoutMillis: number
   readonly probeSpecifier?: string
+  /** Optional supplemental source used to build a minimal capability-native shell. */
+  readonly capabilitySource?: string
+  /** Explicitly authorizes a full native compile after a cached artifact fails to repack. */
+  readonly allowNativeRebuild?: boolean
 }
 
 /** Build result, workspace paths, command output, and immutable evidence. */
@@ -49,6 +54,27 @@ export class BuildPipelineError extends Data.TaggedError("BuildPipelineError")<{
   readonly request: BuildRequest
   readonly cause: unknown
 }> {}
+
+/**
+ * Stops a failed native repack from silently escalating into an expensive compile.
+ *
+ * @param request - Build request containing the caller's rebuild authorization.
+ * @param restore - Native-cache result and its structured repack-failure state.
+ * @returns An effect that succeeds unless an unauthorized native rebuild would occur.
+ */
+export const ensureNativeRebuildAllowed = (
+  request: BuildRequest,
+  restore: { readonly repackFailure: boolean; readonly reason: string },
+): Effect.Effect<void, BuildPipelineError> =>
+  restore.repackFailure && request.allowNativeRebuild !== true
+    ? Effect.fail(
+        new BuildPipelineError({
+          phase: "build",
+          request,
+          cause: `${restore.reason}. A full native build was not started. Re-run with --allow-native-rebuild to explicitly authorize Gradle, CocoaPods, or Xcode compilation.`,
+        }),
+      )
+    : Effect.void
 
 /** Failure raised when an imported native product does not match its record. */
 export class BuildImportError extends Data.TaggedError("BuildImportError")<{

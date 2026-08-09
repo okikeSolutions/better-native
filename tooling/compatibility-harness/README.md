@@ -83,11 +83,52 @@ bun run docs:api
 
 # Inspect installed Expo packages and expanded wildcard entrypoints.
 bun run compatibility-harness doctor
+
+# Preview or apply local workspace retention and the shared 8 GiB cache budget.
+bun run artifacts:prune --dry-run
+bun run artifacts:prune
 ```
 
 `generate` also writes inspection artifacts under `.artifacts/compatibility`.
 Those files are diagnostic outputs, while the generated files checked by
 `check:generated` are part of the repository's compatibility app.
+
+Native compiler work is machine-serialized: Gradle, CocoaPods, Xcode, and reviewed external
+XCTest/Gradle runners acquire the same cross-process semaphore. Cache-hit JavaScript repacks do not
+acquire it. A second harness process waits and reports the active build label and PID.
+
+Build workspaces materialize a verified recursive Metro dependency closure separately from the
+selective native-autolinking root. Repacking therefore never relies on undeclared packages found by
+walking out to the repository or pinned Expo checkout. Native cache identities exclude generated
+Expo compiler products and JavaScript-only cohort fields, include the pinned Expo revision and
+signing/toolchain dimensions, and are validated before Java or Xcode starts. Identical upstream and
+candidate native closures consequently reuse one shell and differ only in the repacked bundle.
+
+Local Location, SQLite, and Notifications work should use a capability-scoped shell. Supplying the
+reviewed supplemental `--source` to `supervise-build` or `supervise-build-pair` rewrites the isolated
+app manifest, config plugins, runtime loader, and eager-registration list before autolinking. The
+result therefore compiles only that capability's native dependency closure. Omitting `--source`
+retains the 84-dependency monolithic app for periodic full-suite CI. Scoped build records retain the
+source ID and native execution refuses a different or missing source.
+
+```sh
+bun run compatibility-harness supervise-build-pair \
+  --platform ios \
+  --build-id location-local \
+  --source 'better-native-capability#apps/compatibility-suite/src/capabilities/Location.ts'
+```
+
+Local builds additionally default to the `polite` profile: two Gradle/Metro workers, two Xcode jobs,
+Gradle low priority, and Darwin utility/background scheduling. CI defaults to the uncapped
+`performance` profile. Polite Android builds compile only `arm64-v8a`; the performance profile keeps
+the generated multi-ABI configuration. Set `BETTER_NATIVE_BUILD_PROFILE` explicitly to reproduce
+either policy.
+
+If a matching native artifact is found but JavaScript repacking, iOS signing, or signature
+verification fails, the command stops before starting a native compiler. Inspect the retained repack
+evidence first. Pass `--allow-native-rebuild` to `supervise-build` or `supervise-build-pair` only when
+you deliberately want that failure to fall back to Gradle, CocoaPods, or Xcode. Ordinary cache misses
+still build because no reusable artifact reached the repack stage.
 
 ## Command reference
 
@@ -95,27 +136,31 @@ Root scripts are convenience aliases for harness subcommands. Prefer the root
 scripts for common local workflows and `bun run compatibility-harness <subcommand>` when
 you need flags that are not exposed by an alias.
 
-| Command                                                                     | Purpose                                                                                     | Primary output                                                               |
-| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `bun run compatibility-harness validate` / `bun run compatibility`          | Validate pinned sources, surface lock, ownership policy, expectations, and suite discovery. | Terminal verdict.                                                            |
-| `bun run compatibility-harness generate` / `bun run generate`               | Regenerate compatibility catalog artifacts and compatibility-suite generated files.         | `.artifacts/compatibility/*` and `apps/compatibility-suite/src/generated/*`. |
-| `bun run compatibility-harness matrix` / `bun run matrix`                   | Print the current compatibility denominator.                                                | Terminal summary.                                                            |
-| `bun run compatibility-harness doctor`                                      | Inspect installed Expo packages and expanded wildcard entrypoints.                          | Terminal diagnostics.                                                        |
-| `bun run compatibility-harness coverage` / `bun run coverage`               | Print Better Native API coverage for replaced Expo packages.                                | Terminal table.                                                              |
-| `bun run compatibility-harness coverage --json` / `bun run coverage --json` | Print machine-readable API coverage.                                                        | JSON object on stdout.                                                       |
-| `bun run compatibility-harness security-audit` / `bun run security:audit`   | Audit dependency exceptions against reviewed Expo paths.                                    | Terminal verdict.                                                            |
-| `bun run compatibility-harness update-surface-lock`                         | Deliberately update the pinned Expo surface lock after reviewing surface drift.             | `compatibility/surface-lock.json`.                                           |
-| `bun run compatibility-harness prepare-expo` / `bun run expo:toolchain`     | Prepare and validate the pinned Expo toolchain.                                             | Toolchain evidence under `.artifacts`.                                       |
-| `bun run compatibility-harness supervise-build`                             | Build one isolated upstream or candidate app.                                               | Build record JSON.                                                           |
-| `bun run compatibility-harness supervise-build-pair`                        | Build upstream and candidate apps from one pinned Expo materialization.                     | Paired build records.                                                        |
-| `bun run compatibility-harness supervise-web` / `bun run compatibility:web` | Build and execute an upstream or candidate web compatibility run.                           | Run evidence under `.artifacts/runs`.                                        |
-| `bun run compatibility-harness supervise-web-pair`                          | Execute paired upstream and candidate web runs.                                             | Paired run evidence.                                                         |
-| `bun run compatibility-harness probe-web`                                   | Probe one opaque Expo export resolution.                                                    | Probe JSON.                                                                  |
-| `bun run compatibility-harness supervise-native`                            | Execute one generated source shard against an imported native build.                        | Native run evidence.                                                         |
-| `bun run compatibility-harness supervise-native-pair`                       | Execute paired native shards against imported upstream and candidate builds.                | Paired native run evidence.                                                  |
-| `bun run compatibility-harness supervise-external`                          | Execute one reviewed external-run request.                                                  | Normalized external evidence.                                                |
-| `bun run compatibility-harness supervise-runner-plans`                      | Execute a shard of generated external runner plans.                                         | Runner-plan report JSON.                                                     |
-| `bun run compatibility-harness compare-runs`                                | Compare upstream and candidate evidence and reject regressions or missing coverage.         | Differential verdict JSON.                                                   |
+| Command                                                                                       | Purpose                                                                                                                                   | Primary output                                                               |
+| --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `bun run compatibility-harness validate` / `bun run compatibility`                            | Validate pinned sources, surface lock, ownership policy, expectations, and suite discovery.                                               | Terminal verdict.                                                            |
+| `bun run compatibility-harness generate` / `bun run generate`                                 | Regenerate compatibility catalog artifacts and compatibility-suite generated files.                                                       | `.artifacts/compatibility/*` and `apps/compatibility-suite/src/generated/*`. |
+| `bun run compatibility-harness matrix` / `bun run matrix`                                     | Print the current compatibility denominator.                                                                                              | Terminal summary.                                                            |
+| `bun run compatibility-harness doctor`                                                        | Inspect installed Expo packages and expanded wildcard entrypoints.                                                                        | Terminal diagnostics.                                                        |
+| `bun run compatibility-harness coverage` / `bun run coverage`                                 | Print Better Native API coverage for replaced Expo packages.                                                                              | Terminal table.                                                              |
+| `bun run compatibility-harness coverage --json` / `bun run coverage --json`                   | Print machine-readable API coverage.                                                                                                      | JSON object on stdout.                                                       |
+| `bun run compatibility-harness security-audit` / `bun run security:audit`                     | Audit dependency exceptions against reviewed Expo paths.                                                                                  | Terminal verdict.                                                            |
+| `bun run compatibility-harness update-surface-lock`                                           | Deliberately update the pinned Expo surface lock after reviewing surface drift.                                                           | `compatibility/surface-lock.json`.                                           |
+| `bun run compatibility-harness prepare-expo` / `bun run expo:toolchain`                       | Prepare and validate the pinned Expo toolchain.                                                                                           | Toolchain evidence under `.artifacts`.                                       |
+| `bun run compatibility-harness supervise-build [--source <id>] [--allow-native-rebuild]`      | Build one isolated full-suite or capability-scoped app; native fallback requires explicit authorization.                                  | Build record JSON.                                                           |
+| `bun run compatibility-harness supervise-build-pair [--source <id>] [--allow-native-rebuild]` | Build a full-suite or capability-scoped pair; native fallback requires explicit authorization.                                            | Paired build records.                                                        |
+| `bun run compatibility-harness supervise-web` / `bun run compatibility:web`                   | Build and execute an upstream or candidate web compatibility run.                                                                         | Run evidence under `.artifacts/runs`.                                        |
+| `bun run compatibility-harness supervise-web-pair`                                            | Execute paired upstream and candidate web runs.                                                                                           | Paired run evidence.                                                         |
+| `bun run compatibility-harness probe-web`                                                     | Probe one opaque Expo export resolution.                                                                                                  | Probe JSON.                                                                  |
+| `bun run compatibility-harness supervise-native`                                              | Execute one generated source shard against an imported native build.                                                                      | Native run evidence.                                                         |
+| `bun run compatibility-harness supervise-native-pair`                                         | Execute paired native shards against imported upstream and candidate builds.                                                              | Paired native run evidence.                                                  |
+| `bun run compatibility-harness supervise-external`                                            | Execute one reviewed external-run request.                                                                                                | Normalized external evidence.                                                |
+| `bun run compatibility-harness supervise-runner-plans`                                        | Execute a shard of generated external runner plans.                                                                                       | Runner-plan report JSON.                                                     |
+| `bun run compatibility-harness compare-runs`                                                  | Compare upstream and candidate evidence and reject regressions or missing coverage.                                                       | Differential verdict JSON.                                                   |
+| `bun run compatibility-harness benchmark-release-path`                                        | Benchmark a provenance-bound cache-hit repack and enforce timing, compiler, resource, ABI, cache-reason, cold-phase, and closure budgets. | `.artifacts/benchmarks/<id>/result.json`.                                    |
+| `bun run compatibility-harness profile-build-record`                                          | Summarize phase timing, idle gaps, and cache evidence from an immutable build record.                                                     | JSON profile on stdout.                                                      |
+| `bun run artifacts:prune --dry-run` / `bun run artifacts:prune`                               | Preview or apply safe workspace retention and local cache LRU eviction.                                                                   | JSON plan with protected paths and physical bytes.                           |
+| `bun run artifacts:clean --all`                                                               | Explicitly remove all inactive repository-owned artifacts.                                                                                | Emergency cleanup report; refuses active or linked workspaces.               |
 
 ## Coverage report
 
@@ -131,30 +176,26 @@ entry with the reviewed explicit mapping. It does not infer correspondence from 
 
 Summary columns:
 
-| Column            | Meaning                                                                                               |
-| ----------------- | ----------------------------------------------------------------------------------------------------- |
-| `Package`         | Expo package being replaced.                                                                          |
-| `Expo exports`    | Runtime exports discovered from the generated Expo-compatible entrypoint.                             |
-| `Deprecated APIs` | Expo exports carrying reviewed deprecation metadata while retaining their primary API classification. |
-| `Accounted`       | Expo exports with an explicit Effect-native, Expo-compatible, or intentional-divergence mapping.      |
-| `Expo types`      | Public types discovered from the generated Expo-compatible entrypoint.                                |
-| `Covered types`   | Expo public types with an exact Effect-native, Expo-compatible, or divergence mapping.                |
-| `Missing types`   | Expo public types without an explicit reviewed type mapping.                                          |
-| `Expo API`        | Expo async/value exports, excluding listener exports and React hooks.                                 |
-| `Effect API`      | Async/value exports represented by exact-name Effect-native public APIs.                              |
-| `Streams`         | Listener exports represented as exact-name scoped `Stream` APIs.                                      |
-| `React hooks`     | Expo React hook exports covered by the generated Expo-compatible entrypoint.                          |
-| `Effect atoms`    | Effect Atom exports for React integrations such as `@effect/atom-react`.                              |
-| `Divergences`     | Expo exports with a documented intentional divergence.                                                |
-| `Missing`         | Expo exports without an explicit mapping.                                                             |
-| `Status`          | `complete`, `intentional-divergence`, or `missing`, based on the explicit mappings.                   |
+| Column                   | Meaning                                                                                                                          |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `Package`                | Expo package being replaced.                                                                                                     |
+| `Exports`                | Accounted runtime exports over total Expo runtime exports.                                                                       |
+| `Types`                  | Covered public types over total Expo public types.                                                                               |
+| `Effect API`             | Async/value exports represented by exact-name Effect-native public APIs.                                                         |
+| `Streams`                | Listener exports represented as exact-name scoped `Stream` APIs.                                                                 |
+| `Hooks/Atoms`            | Expo React hooks and corresponding Effect Atom exports.                                                                          |
+| `Gaps (API/Types/Hooks)` | Missing runtime exports, public types, and unmigrated React hooks.                                                               |
+| `Status`                 | `complete`, `intentional-divergence`, or `missing`; a package with a bridged hook but no corresponding Effect Atom is `missing`. |
+
+Deprecated API and intentional-divergence counts remain available in `--json` output, along with
+the separate Expo API, Effect type, and Expo-compatible type classifications.
 
 Machine-readable mode prints runtime mappings in `entries` and public-type mappings in
 `typeEntries`:
 
 ```json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "packages": [
     {
       "packageName": "expo-battery",
@@ -171,6 +212,7 @@ Machine-readable mode prints runtime mappings in `entries` and public-type mappi
       "effectStream": 3,
       "reactHooks": 4,
       "effectAtoms": 4,
+      "unmigratedHooks": 0,
       "intentionalDivergences": 0,
       "missing": 0,
       "status": "complete"

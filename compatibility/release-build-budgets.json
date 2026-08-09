@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 2,
+  "runtimeRegistryMaxBytes": 409600,
+  "warmRepackMaxMillis": {
+    "ios": 60000,
+    "android": 60000
+  },
+  "coldBuildMaxMillis": {
+    "ios": 3600000,
+    "android": 2700000
+  },
+  "coldPhaseMaxMillis": {
+    "ios": {
+      "native-prebuild.ndjson": 600000,
+      "cocoapods-install.ndjson": 900000,
+      "xcode-release.ndjson": 2700000
+    },
+    "android": {
+      "native-prebuild.ndjson": 600000,
+      "gradle-release.ndjson": 2100000
+    }
+  },
+  "localWorkerCeiling": 2,
+  "localCpuCeiling": 2,
+  "maxSimultaneousNativeBuilds": 1,
+  "expectedAndroidAbis": ["arm64-v8a"],
+  "dependencyMaxima": {
+    "directRuntimeDependencies": 15,
+    "nativeRoots": 20,
+    "metroClosure": 720,
+    "autolinkedNativeModules": 25
+  }
+}

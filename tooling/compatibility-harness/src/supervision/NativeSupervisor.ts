@@ -75,11 +75,13 @@ const makePlan = (request: NativeRunRequest, runId: RunId): RunRecordType["plan"
 const makeDevice = (request: NativeRunRequest): RunRecordType["device"] => ({
   id: DeviceId.make(request.device.id),
   platform: request.device.platform,
-  kind: Match.value(request.device.platform).pipe(
-    Match.when("ios", () => "simulator" as const),
-    Match.when("android", () => "emulator" as const),
-    Match.exhaustive,
-  ),
+  kind:
+    request.device.kind ??
+    Match.value(request.device.platform).pipe(
+      Match.when("ios", () => "simulator" as const),
+      Match.when("android", () => "emulator" as const),
+      Match.exhaustive,
+    ),
   name: request.device.id,
   osVersion: null,
   runtimeVersion: null,
@@ -141,19 +143,21 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
         drivers.runMaestroFlow(request.device, flowPath, request.timeoutMillis).pipe(
           Effect.retry(Schedule.recurs(maestroFlowRetries)),
           Effect.catch((cause) =>
-            drivers.isAlive(request.device).pipe(
-              Effect.orElseSucceed(() => true),
-              Effect.flatMap((alive) => {
-                const failure: PlatformDriverError | NativeSupervisorError = alive
-                  ? cause
-                  : new NativeSupervisorError({
-                      phase: "crash",
-                      request,
-                      cause: "application exited while Maestro was running",
-                    })
-                return Effect.fail(failure)
-              }),
-            ),
+            request.device.kind === "physical"
+              ? Effect.fail(cause)
+              : drivers.isAlive(request.device).pipe(
+                  Effect.orElseSucceed(() => true),
+                  Effect.flatMap((alive) => {
+                    const failure: PlatformDriverError | NativeSupervisorError = alive
+                      ? cause
+                      : new NativeSupervisorError({
+                          phase: "crash",
+                          request,
+                          cause: "application exited while Maestro was running",
+                        })
+                    return Effect.fail(failure)
+                  }),
+                ),
           ),
         )
       const persistFailure = (

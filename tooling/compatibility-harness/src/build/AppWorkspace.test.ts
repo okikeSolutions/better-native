@@ -93,6 +93,9 @@ describe("AppWorkspace", () => {
         `${root}/vendor`,
         `${expoRoot}/packages/expo/ios/AppDelegates`,
         `${expoRoot}/packages/expo-modules-core`,
+        `${expoRoot}/node_modules/.pnpm/pnpm-parent/node_modules/pnpm-parent`,
+        `${expoRoot}/node_modules/.pnpm/node_modules/metro-transitive`,
+        `${expoRoot}/packages/expo-modules-core/node_modules`,
       ]) {
         yield* fs.makeDirectory(directory, { recursive: true })
       }
@@ -130,7 +133,27 @@ describe("AppWorkspace", () => {
       )
       yield* fs.writeFileString(
         `${expoRoot}/packages/expo-modules-core/package.json`,
-        JSON.stringify({ name: "expo-modules-core", version: "pinned" }),
+        JSON.stringify({
+          name: "expo-modules-core",
+          version: "pinned",
+          dependencies: { "pnpm-parent": "1.0.0" },
+        }),
+      )
+      yield* fs.writeFileString(
+        `${expoRoot}/node_modules/.pnpm/pnpm-parent/node_modules/pnpm-parent/package.json`,
+        JSON.stringify({
+          name: "pnpm-parent",
+          version: "1.0.0",
+          dependencies: { "metro-transitive": "1.0.0" },
+        }),
+      )
+      yield* fs.writeFileString(
+        `${expoRoot}/node_modules/.pnpm/node_modules/metro-transitive/package.json`,
+        JSON.stringify({ name: "metro-transitive", version: "1.0.0" }),
+      )
+      yield* fs.symlink(
+        `${expoRoot}/node_modules/.pnpm/pnpm-parent/node_modules/pnpm-parent`,
+        `${expoRoot}/packages/expo-modules-core/node_modules/pnpm-parent`,
       )
       yield* fs.writeFileString(
         `${expoRoot}/packages/expo/ios/AppDelegates/ExpoReactNativeFactoryProvider.swift`,
@@ -162,6 +185,9 @@ describe("AppWorkspace", () => {
       const canonicalExpoPackage = yield* fs.realPath(`${expoRoot}/packages/expo`)
       const canonicalExpoModulesCore = yield* fs.realPath(`${expoRoot}/packages/expo-modules-core`)
       const canonicalThirdPartyPackage = yield* fs.realPath(`${root}/node_modules/third-party`)
+      const canonicalMetroTransitive = yield* fs.realPath(
+        `${expoRoot}/node_modules/.pnpm/node_modules/metro-transitive`,
+      )
 
       assert.strictEqual(
         yield* fs.realPath(`${prepared.workspace}/node_modules/expo`),
@@ -198,6 +224,14 @@ describe("AppWorkspace", () => {
         ),
       )
       assert.isFalse(yield* fs.exists(`${prepared.appDirectory}/node_modules`))
+      assert.strictEqual(
+        yield* fs.realPath(`${prepared.metroNodeModules}/metro-transitive`),
+        canonicalMetroTransitive,
+      )
+      assert.strictEqual(
+        yield* fs.realPath(`${prepared.metroNodeModules}/third-party`),
+        canonicalThirdPartyPackage,
+      )
       assert.strictEqual(
         yield* fs.realPath(`${prepared.workspace}/native-node-modules/expo-modules-core`),
         canonicalExpoModulesCore,

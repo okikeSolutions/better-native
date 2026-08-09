@@ -7,6 +7,7 @@ import * as Match from "effect/Match"
 import * as Path from "effect/Path"
 import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import { HarnessConfig } from "../HarnessConfig.ts"
+import { layer as artifactLifecycleLayer } from "../artifacts/ArtifactLifecycle.ts"
 import { AppBuildExecutor, layer as appBuildExecutorLayer } from "./AppBuildExecutor.ts"
 import { AppBuildImporter, layer as appBuildImporterLayer } from "./AppBuildImporter.ts"
 import { layer as appWorkspaceLayer } from "./AppWorkspace.ts"
@@ -23,6 +24,7 @@ import {
 import { layer as buildProductsLayer } from "./BuildProducts.ts"
 import { ExpoToolchain } from "./ExpoToolchain.ts"
 import { layer as nativeArtifactCacheLayer } from "./NativeArtifactCache.ts"
+import { layer as podsCacheLayer } from "./PodsCache.ts"
 
 /** Re-exports build errors and the reviewed plugin package set for pipeline users. */
 export { BuildImportError, BuildPipelineError, pinnedPluginPackages } from "./BuildModel.ts"
@@ -82,13 +84,14 @@ const serviceLayer: Layer.Layer<
           upstream.platform !== candidate.platform ||
           upstream.expoRevision !== candidate.expoRevision ||
           upstream.timeoutMillis !== candidate.timeoutMillis ||
-          upstream.probeSpecifier !== candidate.probeSpecifier
+          upstream.probeSpecifier !== candidate.probeSpecifier ||
+          upstream.capabilitySource !== candidate.capabilitySource
         ) {
           return yield* new BuildPipelineError({
             phase: "workspace",
             request: upstream,
             cause:
-              "paired builds must use the same platform, Expo revision, timeout, and probe specifier",
+              "paired builds must use the same platform, Expo revision, timeout, probe specifier, and capability source",
           })
         }
         const materializationRequest: BuildRequest = {
@@ -124,7 +127,12 @@ export const layer = (
   | Crypto.Crypto
   | HarnessConfig
 > => {
-  const core = Layer.mergeAll(buildProductsLayer, appWorkspaceLayer(root))
+  const core = Layer.mergeAll(
+    buildProductsLayer,
+    appWorkspaceLayer(root),
+    artifactLifecycleLayer(root),
+    podsCacheLayer(root).pipe(Layer.provideMerge(buildProductsLayer)),
+  )
   const shared = Layer.mergeAll(
     core,
     nativeArtifactCacheLayer(root).pipe(Layer.provideMerge(buildProductsLayer)),

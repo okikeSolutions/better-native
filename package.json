@@ -10,9 +10,12 @@
   "type": "module",
   "scripts": {
     "compatibility-harness": "node --experimental-strip-types tooling/compatibility-harness/src/cli.ts",
+    "artifacts:prune": "bun run compatibility-harness artifacts-prune",
+    "artifacts:clean": "bun run compatibility-harness artifacts-clean",
     "build": "turbo run build --concurrency=90%",
     "bundle:web": "turbo run //#compatibility:web --concurrency=90%",
-    "check": "bun run check:generated && bun run typecheck && bun run check:effect && bun run lint && bun run format:check && bun run knip && bun run security:audit && bun run test && bun run landing:check && bun run check:dist && bun run compatibility",
+    "benchmark:release": "bun run compatibility-harness benchmark-release-path",
+    "check": "bun run check:generated && bun run typecheck && bun run check:effect && bun run docs:api && bun run lint && bun run format:check && bun run knip && bun run security:audit && bun run test && bun run landing:check && bun run check:dist && bun run compatibility",
     "check:dist": "turbo run check:dist --filter '@better-native/metro' --concurrency=90%",
     "check:effect": "bun run effect:patch && turbo run check:effect --concurrency=90%",
     "check:generated": "bun run expo:prepare && bun run tooling/compatibility-harness/src/checkGenerated.ts",

@@ -44,6 +44,13 @@ bun run typecheck
 bun run check:effect
 ```
 
+Artifact lifecycle host tests prove that active workspace locks protect both workspaces and shared
+caches, dry-run and applied pruning choose identical deterministic targets, failed-workspace
+retention expires after 24 hours, sparse files are measured by physical allocation, and CocoaPods
+entries deduplicate upstream/candidate workspaces when their effective inputs and lockfile agree.
+These tests do not replace a native build; native verification additionally proves that the product
+is published before its workspace and DerivedData are removed.
+
 Run the coverage gate with:
 
 ```sh
@@ -101,7 +108,8 @@ paths reproducible, but it does not prove an iOS or Android implementation. Test
 observable outcomes—not implementation details or coverage-only branches.
 
 The compatibility app has an `interactive-smoke` selection for Basic, Battery, KeepAwake, Network,
-and SecureStore. It is a developer-facing app-runner check: it proves those five generated Expo test
+SecureStore, and SQLite. Task Manager has a separate eager supplemental capability because its task
+definition must execute before route mounting. These are developer-facing app-runner checks: they prove generated Expo test
 modules are selected and normalized together. It does not modify Expo's curated `native-e2e`
 cohort.
 
@@ -163,3 +171,135 @@ Use the strongest applicable claim:
 Record platform, runtime, build identity, source/case IDs, and artifacts with every native verdict.
 An expected divergence requires a reviewed entry in `compatibility/expectations.json`; an unrecorded
 difference is a failed parity result.
+
+### Physical iOS Release evidence
+
+Physical iOS builds use the same paired build command as simulator evidence, with an explicit
+device destination and signing team. The harness builds one signed `iphoneos` shell, isolates it
+from simulator cache entries, repacks both modes, then re-signs and verifies each repacked app:
+
+```sh
+BETTER_NATIVE_IOS_DESTINATION='id=<physical-udid>' \
+BETTER_NATIVE_IOS_DEVELOPMENT_TEAM='<team-id>' \
+bun run compatibility-harness supervise-build-pair \
+  --platform ios \
+  --build-id <pair-id> \
+  --timeout-ms 3600000
+```
+
+Run a capability pair with `--physical-device` so the evidence record cannot be mistaken for a
+simulator verdict:
+
+```sh
+BETTER_NATIVE_IOS_DEVELOPMENT_TEAM='<team-id>' \
+bun run compatibility-harness supervise-native-pair \
+  --platform ios \
+  --physical-device \
+  --upstream-record .artifacts/builds/<pair-id>-upstream/record.json \
+  --upstream-binary .artifacts/products/<pair-id>-upstream/BetterNativeCompatibility.app \
+  --candidate-record .artifacts/builds/<pair-id>-candidate/record.json \
+  --candidate-binary .artifacts/products/<pair-id>-candidate/BetterNativeCompatibility.app \
+  --source '<source-id>' \
+  --device-id '<physical-udid>' \
+  --run-id '<run-id>'
+```
+
+The phone must be unlocked and in Developer Mode. Capability-only physical iOS runs launch the
+signed app and collect its result through CoreDevice, so a trusted paired local-network connection
+is sufficient. Flows that require Maestro UI interaction still need a directly attached phone while
+Maestro prepares its signed XCTest driver. Android physical runs use the same `--physical-device`
+flag and require an attached `adb devices -l` entry whose model is not an emulator.
+
+## Local Release build performance
+
+The harness reuses one validated native Release artifact and repacks only JavaScript and assets when
+native fingerprints are unchanged. Do not force a clean native build for ordinary capability-source
+or wrapper changes. Every supervised phase now prints start/finish timing; iOS full builds also emit
+Xcode's build timing summary into their evidence.
+
+For local Location, SQLite, or Notifications evidence, pass the exact supplemental source to the
+build command as well as the runner. This selects a reviewed capability shell before CNG and native
+autolinking, so the native compiler sees only the capability, its provider, required runtime
+infrastructure, and reviewed companions. The build record is bound to that source and cannot later
+run another cohort.
+
+```sh
+bun run compatibility-harness supervise-build-pair \
+  --platform android \
+  --build-id notifications-local \
+  --source 'better-native-capability#apps/compatibility-suite/src/capabilities/Notifications.ts'
+```
+
+Omitting `--source` deliberately preserves the monolithic 84-dependency compatibility app. Use
+that full shell for periodic full-suite CI, surface-wide smoke validation, or investigations whose
+native closure crosses capability boundaries—not for ordinary local package iteration.
+
+Workspace preparation keeps native autolinking selective while materializing a separate recursive
+Metro dependency closure. Both the initial export and cached-artifact repack resolve exclusively
+through that closure, including dependencies imported by eager sources in the pinned Expo test app.
+The resolution manifest is verified before CNG.
+
+Native fingerprints exclude compiler-generated Expo outputs such as Android `build`, `.cxx`, Apple
+`Products`/`.DerivedData`, and the precompiled-module `.build` tree. Config-plugin implementation and
+native source files remain inputs. The compatibility-only mode/build ID fields are removed from the
+native config source, so upstream and candidate share one native cache entry when their actual native
+closure matches. Cache keys still bind platform, target/signing identity, host architecture, Expo
+revision, toolchain fingerprint, and native closure. The key seed is validated before invoking Java
+or Xcode; mode, run ID, and candidate revision are deliberately absent.
+
+A failed repack never silently falls back to Gradle, CocoaPods, or Xcode. The supervised build stops
+with the repack/signing/verification error by default. After inspecting that evidence, a caller may
+explicitly authorize the expensive fallback by repeating `supervise-build` or
+`supervise-build-pair` with `--allow-native-rebuild`. Missing, invalid, or incompatible native cache
+entries remain ordinary cache misses because no reusable artifact reached the repack stage.
+
+All harness-owned Gradle, CocoaPods, and Xcode compiler invocations share one machine-wide
+semaphore. Concurrent harness processes queue at that boundary, while cache-hit JavaScript repacks
+remain independent. The semaphore records its process owner in the user's temporary directory,
+releases on interruption, and atomically recovers locks left by dead processes.
+
+Local harness processes use the `polite` build profile by default: Gradle is limited to two workers
+at low priority, Xcode uses `-jobs 2`, Metro uses two workers, and macOS build processes run through
+`taskpolicy` with utility/background scheduling. CI selects the uncapped `performance` profile.
+`BETTER_NATIVE_BUILD_PROFILE=polite|performance` is the explicit override for profiling either path.
+Polite Android builds additionally pass `-PreactNativeArchitectures=arm64-v8a`; multi-ABI artifacts
+belong to the CI/release performance profile rather than local evidence iteration.
+
+For the less frequent iOS native-fingerprint change, populate the pinned Expo checkout's reusable
+XCFramework cache once. The harness detects it, passes the explicit path through CocoaPods, and
+records `expo-precompiled-modules: hit` in the build record:
+
+```sh
+cd ../expo
+pnpm et prebuild -f Release
+```
+
+Without that cache, Expo's precompiled-module integration falls back to compiling every linked Expo
+module from source; this is expected to dominate a cold build. Keep this cache keyed to the pinned
+Expo revision and Xcode toolchain rather than sharing it across revisions.
+
+Profile an existing immutable build record with:
+
+```sh
+bun run compatibility-harness profile-build-record --record .artifacts/builds/<id>/record.json
+```
+
+Benchmark the warm cache-hit path without invoking CocoaPods, Xcode, or Gradle with:
+
+```sh
+bun run benchmark:release \
+  --platform ios \
+  --build-id <unique-id> \
+  --source-app <cached-repacked-app> \
+  --cache-hit-record .artifacts/builds/<warm-id>/record.json \
+  --cold-build-record .artifacts/builds/<cold-id>/record.json
+```
+
+The benchmark writes `.artifacts/benchmarks/<id>/result.json` and enforces the checked-in timing and
+runtime-registry budgets in `compatibility/release-build-budgets.json`. The registry-size assertion is
+also part of the host test suite, so generated app metadata growth fails before a native build. The
+warm record must be a cache-hit `repack` with zero native compiler invocations; the cold record must
+be a `full-build` and retain its cache-fallback reason and phase timings. The same result enforces the
+polite worker/CPU ceiling, the machine-wide native-build concurrency limit, Android ABI set, and
+capability-shell dependency, Metro-closure, and native-autolink counts. Both record paths are
+required so a standalone repack cannot make cache or cold-build claims without provenance.

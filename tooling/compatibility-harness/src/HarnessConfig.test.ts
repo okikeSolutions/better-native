@@ -22,6 +22,9 @@ describe("HarnessConfig", () => {
       assert.strictEqual(config.expoSourceRoot, "/workspace/expo")
       assert.strictEqual(config.githubSha, null)
       assert.strictEqual(config.forceColdBuild, false)
+      assert.strictEqual(config.buildProfile, "polite")
+      assert.match(config.javaHome17 ?? "", /17/)
+      assert.strictEqual(config.androidSdkRoot, null)
       assert.strictEqual(config.iosDestination, "generic/platform=iOS Simulator")
       assert.strictEqual(config.caches.pnpmStore.status, "unknown")
       assert.isTrue(Option.isNone(config.turboToken))
@@ -34,7 +37,10 @@ describe("HarnessConfig", () => {
       assert.strictEqual(config.expoSourceRoot, "/sources/expo")
       assert.strictEqual(config.githubSha, "abc123")
       assert.strictEqual(config.forceColdBuild, true)
+      assert.strictEqual(config.buildProfile, "performance")
       assert.strictEqual(config.ccacheEnabled, true)
+      assert.match(config.javaHome17 ?? "", /17/)
+      assert.strictEqual(config.androidSdkRoot, "/cache/android-sdk")
       assert.strictEqual(config.caches.pnpmStore.status, "hit")
       assert.strictEqual(config.caches.ccache.status, "miss")
       assert.strictEqual(config.caches.gradle.key, "gradle-key")
@@ -49,7 +55,9 @@ describe("HarnessConfig", () => {
           TURBO_TOKEN: "secret",
           TURBO_TEAM: "team",
           CCACHE_DIR: "/cache/ccache",
+          ANDROID_HOME: "/cache/android-sdk",
           BETTER_NATIVE_FORCE_COLD_BUILD: "1",
+          CI: "true",
           BETTER_NATIVE_PNPM_STORE_CACHE_HIT: "true",
           BETTER_NATIVE_CCACHE_CACHE_HIT: "false",
           BETTER_NATIVE_GRADLE_CACHE_KEY: "gradle-key",
@@ -57,6 +65,13 @@ describe("HarnessConfig", () => {
         }),
       ),
     ),
+  )
+
+  it.effect("allows an explicit local build profile to override CI detection", () =>
+    Effect.gen(function* () {
+      const config = yield* HarnessConfig
+      assert.strictEqual(config.buildProfile, "polite")
+    }).pipe(provideLayer(configuredLayer({ CI: "true", BETTER_NATIVE_BUILD_PROFILE: "polite" }))),
   )
 
   it.effect("rejects malformed boolean configuration", () =>

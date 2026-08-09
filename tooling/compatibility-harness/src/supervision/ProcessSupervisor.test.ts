@@ -12,6 +12,7 @@ import { provideLayer } from "../TestLayers.ts"
 import {
   layer,
   layerFromBackend,
+  processInvocation,
   ProcessFailure,
   ProcessSupervisor,
   type ProcessBackend,
@@ -27,6 +28,23 @@ class TestProcessError extends Data.TaggedError("TestProcessError")<{
 const testFailure = (message: string) => new TestProcessError({ message })
 
 describe("ProcessSupervisor", () => {
+  it("applies taskpolicy only to profiled Darwin processes", () => {
+    const profiled = {
+      command: "xcodebuild",
+      args: ["build"],
+      timeoutMillis: 1_000,
+      darwinScheduling: "utility-background" as const,
+    }
+    assert.deepStrictEqual(processInvocation(profiled, "darwin"), {
+      command: "/usr/bin/taskpolicy",
+      args: ["-b", "-c", "utility", "xcodebuild", "build"],
+    })
+    assert.deepStrictEqual(processInvocation(profiled, "linux"), {
+      command: "xcodebuild",
+      args: ["build"],
+    })
+  })
+
   it.effect("streams stdout and stderr before returning the exit code", () =>
     Effect.gen(function* () {
       const supervisor = yield* ProcessSupervisor

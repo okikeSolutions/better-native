@@ -340,7 +340,7 @@ describe("BuildPipeline imported products", () => {
       )
       assert.strictEqual(
         calls[exportIndex]?.env?.BETTER_NATIVE_UPSTREAM_NODE_MODULES,
-        `${root}/.artifacts/workspaces/web-candidate/node_modules`,
+        `${root}/.artifacts/workspaces/web-candidate/metro-node-modules`,
         "Metro must resolve against the selective app materialization",
       )
       assert.isAtLeast(

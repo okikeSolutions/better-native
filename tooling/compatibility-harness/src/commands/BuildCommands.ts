@@ -1,15 +1,18 @@
 import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
+import * as Option from "effect/Option"
 import * as Command from "effect/unstable/cli/Command"
 import { BuildId } from "../Domain.ts"
 import { ExpoRepository } from "../ExpoRepository.ts"
 import { BuildPipeline } from "../build/BuildPipeline.ts"
 import { ExpoToolchain } from "../build/ExpoToolchain.ts"
 import {
+  allowNativeRebuildFlag,
   buildIdFlag,
   buildMode,
   buildPlatform,
   candidateRevision,
+  capabilitySourceFlag,
   configuredCandidateRevision,
   timeoutMillisFlag,
 } from "./Shared.ts"
@@ -52,8 +55,17 @@ export const supervisedBuild = Command.make(
     platform: buildPlatform,
     buildId: buildIdFlag,
     timeoutMillis: timeoutMillisFlag,
+    allowNativeRebuild: allowNativeRebuildFlag,
+    source: capabilitySourceFlag,
   },
-  Effect.fn("Command.superviseBuild")(function* ({ mode, platform, buildId, timeoutMillis }) {
+  Effect.fn("Command.superviseBuild")(function* ({
+    mode,
+    platform,
+    buildId,
+    timeoutMillis,
+    allowNativeRebuild,
+    source,
+  }) {
     const repository = yield* ExpoRepository
     const builds = yield* BuildPipeline
     const revision = yield* candidateRevision(mode)
@@ -64,6 +76,8 @@ export const supervisedBuild = Command.make(
       expoRevision: repository.upstreams.expo.revision,
       candidateRevision: revision,
       timeoutMillis,
+      allowNativeRebuild,
+      ...(Option.isSome(source) ? { capabilitySource: source.value } : {}),
     })
     yield* Console.log(JSON.stringify(output.record, null, 2))
   }),
@@ -82,11 +96,20 @@ export const supervisedBuildPair = Command.make(
     platform: buildPlatform,
     buildId: buildIdFlag,
     timeoutMillis: timeoutMillisFlag,
+    allowNativeRebuild: allowNativeRebuildFlag,
+    source: capabilitySourceFlag,
   },
-  Effect.fn("Command.superviseBuildPair")(function* ({ platform, buildId, timeoutMillis }) {
+  Effect.fn("Command.superviseBuildPair")(function* ({
+    platform,
+    buildId,
+    timeoutMillis,
+    allowNativeRebuild,
+    source,
+  }) {
     const repository = yield* ExpoRepository
     const builds = yield* BuildPipeline
     const revision = yield* configuredCandidateRevision
+    const capabilitySource = Option.getOrUndefined(source)
     const output = yield* builds.buildPair({
       materializationId: BuildId.make(`${buildId}-expo`),
       upstream: {
@@ -96,6 +119,8 @@ export const supervisedBuildPair = Command.make(
         expoRevision: repository.upstreams.expo.revision,
         candidateRevision: null,
         timeoutMillis,
+        allowNativeRebuild,
+        ...(capabilitySource === undefined ? {} : { capabilitySource }),
       },
       candidate: {
         id: BuildId.make(`${buildId}-candidate`),
@@ -104,6 +129,8 @@ export const supervisedBuildPair = Command.make(
         expoRevision: repository.upstreams.expo.revision,
         candidateRevision: revision,
         timeoutMillis,
+        allowNativeRebuild,
+        ...(capabilitySource === undefined ? {} : { capabilitySource }),
       },
     })
     yield* Console.log(

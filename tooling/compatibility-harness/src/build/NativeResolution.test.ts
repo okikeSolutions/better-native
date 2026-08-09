@@ -5,6 +5,7 @@ import type { PreparedAppWorkspace } from "./AppWorkspace.ts"
 import {
   NativeResolutionError,
   discoverNativeExpoPackages,
+  discoverReactNativePackages,
   validateNativeResolution,
 } from "./NativeResolution.ts"
 
@@ -15,6 +16,10 @@ const observation = (value: unknown): ReadonlyArray<ProcessObservation> => [
 const workspace: PreparedAppWorkspace = {
   workspace: "/workspace",
   appDirectory: "/workspace/apps/compatibility-suite",
+  metroNodeModules: "/workspace/metro-node-modules",
+  directRuntimeDependencyCount: 2,
+  nativeRootCount: 2,
+  metroClosureCount: 2,
   packageResolutionManifest: "/workspace/expo-package-resolutions.json",
   expoPackageResolutions: [{ name: "expo", source: "/pinned/packages/expo" }],
   dependencyResolutions: [
@@ -45,6 +50,20 @@ describe("NativeResolution", () => {
       )
 
       assert.deepStrictEqual(packages, ["expo", "expo-modules-core"])
+    }),
+  )
+
+  it.effect("discovers the React Native autolinking closure", () =>
+    Effect.gen(function* () {
+      const packages = yield* discoverReactNativePackages(
+        observation({
+          dependencies: {
+            "react-native-screens": { root: "/root/screens" },
+            "react-native-safe-area-context": { root: "/root/safe-area" },
+          },
+        }),
+      )
+      assert.deepStrictEqual(packages, ["react-native-safe-area-context", "react-native-screens"])
     }),
   )
 

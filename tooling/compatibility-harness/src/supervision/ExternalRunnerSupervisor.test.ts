@@ -5,6 +5,7 @@ import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import { RunId, TestSourceId } from "../Domain.ts"
 import { provideLayer } from "../TestLayers.ts"
+import * as ArtifactLifecycle from "../artifacts/ArtifactLifecycle.ts"
 import * as EvidenceStore from "../evidence/EvidenceStore.ts"
 import { ExternalRunnerSupervisor, layer } from "./ExternalRunnerSupervisor.ts"
 import { ProcessSupervisor } from "./ProcessSupervisor.ts"
@@ -40,9 +41,11 @@ describe("ExternalRunnerSupervisor", () => {
               .pipe(Effect.orDie, Effect.as({ exitCode: 1, observations: [] })),
         }),
       )
-      const dependencies = Layer.mergeAll(processes, EvidenceStore.layer(root)).pipe(
-        Layer.provideMerge(NodeServices.layer),
-      )
+      const dependencies = Layer.mergeAll(
+        processes,
+        EvidenceStore.layer(root),
+        ArtifactLifecycle.layer(root),
+      ).pipe(Layer.provideMerge(NodeServices.layer))
       const program = Effect.gen(function* () {
         const supervisor = yield* ExternalRunnerSupervisor
         const results = yield* supervisor.run({
@@ -80,6 +83,7 @@ describe("ExternalRunnerSupervisor", () => {
           }),
         ),
         EvidenceStore.layer(root),
+        ArtifactLifecycle.layer(root),
       ).pipe(Layer.provideMerge(NodeServices.layer))
       const run = (command: string, cwd: string) =>
         Effect.gen(function* () {
@@ -138,6 +142,7 @@ describe("ExternalRunnerSupervisor", () => {
             }),
           ),
           EvidenceStore.layer(root),
+          ArtifactLifecycle.layer(root),
         ).pipe(Layer.provideMerge(NodeServices.layer))
         const failure = yield* Effect.gen(function* () {
           const supervisor = yield* ExternalRunnerSupervisor
@@ -174,6 +179,7 @@ describe("ExternalRunnerSupervisor", () => {
           }),
         ),
         EvidenceStore.layer(root),
+        ArtifactLifecycle.layer(root),
       ).pipe(Layer.provideMerge(NodeServices.layer))
       const run = (reportPath: string) =>
         Effect.gen(function* () {

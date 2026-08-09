@@ -436,6 +436,25 @@ export const BuildPerformanceEvidence = Schema.Struct({
   architecture: Schema.String,
   phases: Schema.Array(BuildPhaseEvidence),
   caches: Schema.Array(BuildCacheEvidence),
+  policy: Schema.optional(
+    Schema.Struct({
+      profile: Schema.Literals(["polite", "performance"]),
+      workerCeiling: Schema.NullOr(Schema.Int),
+      cpuCeiling: Schema.NullOr(Schema.Int),
+      darwinScheduling: Schema.NullOr(Schema.String),
+      maxSimultaneousNativeBuilds: Schema.Int,
+      androidAbis: Schema.Array(Schema.String),
+    }),
+  ),
+  dependencyCounts: Schema.optional(
+    Schema.Struct({
+      directRuntimeDependencies: Schema.Int,
+      nativeRoots: Schema.Int,
+      metroClosure: Schema.Int,
+      autolinkedNativeModules: Schema.Int,
+    }),
+  ),
+  nativeCompilerInvocations: Schema.optional(Schema.Array(Schema.String)),
 })
 /** Provenance and validation state for a reused native artifact. */
 export const NativeArtifactEvidence = Schema.Struct({
@@ -453,6 +472,8 @@ export const BuildRecord = Schema.Struct({
   platform: Platform,
   expoRevision: Schema.String,
   candidateRevision: Schema.NullOr(Schema.String),
+  /** Supplemental source compiled into a scoped shell; absent/null denotes the full suite. */
+  capabilitySource: Schema.optional(Schema.NullOr(Schema.String)),
   configurationHash: ContentHash,
   bundleHash: ContentHash,
   nativeBinaryHash: Schema.NullOr(ContentHash),

@@ -1,5 +1,6 @@
 import * as Context from "effect/Context"
 import * as Clock from "effect/Clock"
+import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import type { BuildRecord, ProcessObservation } from "../Domain.ts"
@@ -69,6 +70,9 @@ export const layer: Layer.Layer<BuildCommand, never, ProcessSupervisor | Evidenc
       const run: Service["run"] = (request, phase, name, spec) =>
         Effect.gen(function* () {
           const startedAtMillis = yield* Clock.currentTimeMillis
+          yield* Console.log(
+            `[build:${request.id}] starting ${phase}/${name}: ${spec.command} ${(spec.args ?? []).join(" ")}`,
+          )
           const result = yield* processes
             .run(spec)
             .pipe(
@@ -91,6 +95,12 @@ export const layer: Layer.Layer<BuildCommand, never, ProcessSupervisor | Evidenc
             })
           }
           const finishedAtMillis = yield* Clock.currentTimeMillis
+          yield* Console.log(
+            `[build:${request.id}] finished ${phase}/${name} in ${(
+              (finishedAtMillis - startedAtMillis) /
+              1_000
+            ).toFixed(2)}s`,
+          )
           return {
             result,
             artifact,

@@ -124,6 +124,10 @@ describe("withBetterNative", () => {
       "/pinned-expo/node_modules",
       "/fixture/node_modules",
     ])
+    assert.deepEqual(test.nodeModulesPaths[1], [
+      "/pinned-expo/node_modules",
+      "/fixture/node_modules",
+    ])
     assert.deepEqual(test.nodeModulesPaths[2], [
       "/pinned-expo/node_modules",
       "/fixture/node_modules",
