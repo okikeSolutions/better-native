@@ -26,14 +26,13 @@ const Expected = Schema.Struct({
   scenarios: Schema.Array(Schema.Struct({ id: Schema.Literal("position") })),
 })
 
-interface TaskData extends TaskModel.TaskBase<Schema.Schema.Type<typeof TaskDefinition>> {
+type TaskData = TaskModel.TaskBase<Schema.Schema.Type<typeof TaskDefinition>> & {
   readonly taskType: "location"
   readonly scenarios: Schema.Schema.Type<typeof Expected>["scenarios"]
 }
 
 /** Loaded public Location Stream task. */
-export type Task = TaskData &
-  Pick<TaskModel.ReviewedTask<Schema.Schema.Type<typeof TaskDefinition>>, "verify">
+export type Task = TaskModel.ReviewedTask<TaskData>
 
 const Observation = Schema.Struct({
   schemaVersion: Schema.Literal(1),

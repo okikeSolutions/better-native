@@ -40,14 +40,13 @@ const Observation = Schema.Union([
 ])
 
 /** Loaded synthetic foundation task. */
-interface TaskData extends TaskModel.TaskBase<Schema.Schema.Type<typeof TaskDefinition>> {
+type TaskData = TaskModel.TaskBase<Schema.Schema.Type<typeof TaskDefinition>> & {
   readonly taskType: "synthetic-effect"
   readonly expectedValue: string
 }
 
 /** Loaded synthetic foundation task. */
-export type Task = TaskData &
-  Pick<TaskModel.ReviewedTask<Schema.Schema.Type<typeof TaskDefinition>>, "verify">
+export type Task = TaskModel.ReviewedTask<TaskData>
 
 /** Trusted result produced after observing one synthetic candidate. */
 export interface VerificationResult {

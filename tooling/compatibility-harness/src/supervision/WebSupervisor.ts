@@ -39,7 +39,7 @@ export interface WebRunRequest {
   readonly corpus: CorpusSnapshot
 }
 /** Request for one isolated browser module-resolution probe. */
-export interface WebProbeRequest extends Omit<WebRunRequest, "unit"> {
+export type WebProbeRequest = Omit<WebRunRequest, "unit"> & {
   readonly specifier: string
 }
 

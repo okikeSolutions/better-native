@@ -40,14 +40,13 @@ const Expected = Schema.Struct({
   scenarios: Schema.Array(Schema.Struct({ id: ScenarioId })),
 })
 
-interface TaskData extends TaskModel.TaskBase<Schema.Schema.Type<typeof TaskDefinition>> {
+type TaskData = TaskModel.TaskBase<Schema.Schema.Type<typeof TaskDefinition>> & {
   readonly taskType: "keep-awake"
   readonly scenarios: Schema.Schema.Type<typeof Expected>["scenarios"]
 }
 
 /** Loaded public Keep Awake scoped-resource task. */
-export type Task = TaskData &
-  Pick<TaskModel.ReviewedTask<Schema.Schema.Type<typeof TaskDefinition>>, "verify">
+export type Task = TaskModel.ReviewedTask<TaskData>
 
 /** Per-gate result of verifying a Keep Awake lease against controlled native scenarios. */
 export interface VerificationResult {

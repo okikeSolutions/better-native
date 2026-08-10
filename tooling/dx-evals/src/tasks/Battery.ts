@@ -45,14 +45,13 @@ const Expected = Schema.Struct({
 })
 
 /** Loaded public Battery reactive-consumer task. */
-interface TaskData extends TaskModel.TaskBase<Schema.Schema.Type<typeof TaskDefinition>> {
+type TaskData = TaskModel.TaskBase<Schema.Schema.Type<typeof TaskDefinition>> & {
   readonly taskType: "battery"
   readonly scenarios: Schema.Schema.Type<typeof Expected>["scenarios"]
 }
 
 /** Loaded public Battery reactive-consumer task. */
-export type Task = TaskData &
-  Pick<TaskModel.ReviewedTask<Schema.Schema.Type<typeof TaskDefinition>>, "verify">
+export type Task = TaskModel.ReviewedTask<TaskData>
 
 /** Per-gate result of verifying Battery streams against controlled native events. */
 export interface VerificationResult {

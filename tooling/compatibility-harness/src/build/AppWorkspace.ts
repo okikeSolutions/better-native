@@ -26,7 +26,7 @@ export interface ExpoPackageResolution {
 }
 
 /** Resolved path for a declared external dependency. */
-export interface DependencyResolution extends ExpoPackageResolution {
+export type DependencyResolution = ExpoPackageResolution & {
   readonly owner: "pinned-expo" | "root"
 }
 

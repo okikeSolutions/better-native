@@ -341,7 +341,7 @@ export type MotionActivityCallback = ExpoLocation.MotionActivityCallback
  * @category models
  * @since 0.0.0
  */
-export interface LocationStreamOptions extends LocationOptions {
+export type LocationStreamOptions = LocationOptions & {
   readonly bufferSize?: number
 }
 

@@ -228,5 +228,4 @@ export const networkStateAtom = Atom.make(
   Stream.merge(Stream.fromEffect(getNetworkStateAsync), addNetworkStateListener).pipe(
     Stream.provide(live),
   ),
-  { initialValue: {} },
 )

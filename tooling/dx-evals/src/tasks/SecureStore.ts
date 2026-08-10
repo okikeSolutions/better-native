@@ -35,14 +35,13 @@ const Expected = Schema.Struct({
   scenarios: Schema.Array(Schema.Struct({ id: ScenarioId })),
 })
 
-interface TaskData extends TaskModel.TaskBase<Schema.Schema.Type<typeof TaskDefinition>> {
+type TaskData = TaskModel.TaskBase<Schema.Schema.Type<typeof TaskDefinition>> & {
   readonly taskType: "secure-store"
   readonly scenarios: Schema.Schema.Type<typeof Expected>["scenarios"]
 }
 
 /** Loaded public SecureStore temporary-secret task. */
-export type Task = TaskData &
-  Pick<TaskModel.ReviewedTask<Schema.Schema.Type<typeof TaskDefinition>>, "verify">
+export type Task = TaskModel.ReviewedTask<TaskData>
 
 /** Per-gate result of verifying SecureStore consumption against controlled native scenarios. */
 export interface VerificationResult {

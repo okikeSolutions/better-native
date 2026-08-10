@@ -21,7 +21,7 @@ export interface PackageManagerFlags {
   readonly bun: boolean
 }
 
-export interface InstallRequest extends PackageManagerFlags {
+export type InstallRequest = PackageManagerFlags & {
   readonly capabilities: ReadonlyArray<CapabilityName>
   readonly dryRun: boolean
 }

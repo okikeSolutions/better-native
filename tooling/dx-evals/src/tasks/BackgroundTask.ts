@@ -27,14 +27,13 @@ const Expected = Schema.Struct({
   scenarios: Schema.Array(Schema.Struct({ id: ScenarioId })),
 })
 
-interface TaskData extends TaskModel.TaskBase<Schema.Schema.Type<typeof TaskDefinition>> {
+type TaskData = TaskModel.TaskBase<Schema.Schema.Type<typeof TaskDefinition>> & {
   readonly taskType: "background-task"
   readonly scenarios: Schema.Schema.Type<typeof Expected>["scenarios"]
 }
 
 /** Loaded public Background Task composition task. */
-export type Task = TaskData &
-  Pick<TaskModel.ReviewedTask<Schema.Schema.Type<typeof TaskDefinition>>, "verify">
+export type Task = TaskModel.ReviewedTask<TaskData>
 
 /** Per-gate result of verifying persistent Background Task consumption. */
 export interface VerificationResult {

@@ -64,7 +64,7 @@ export interface PackedPackageUnitSpec {
 }
 
 /** Primary public package plus any public companion packages required by its contract. */
-export interface PackedPackageSpec extends PackedPackageUnitSpec {
+export type PackedPackageSpec = PackedPackageUnitSpec & {
   readonly companionPackages?: ReadonlyArray<PackedPackageUnitSpec>
 }
 
@@ -129,7 +129,7 @@ export type TaskVerificationError =
   | import("effect/PlatformError").PlatformError
 
 /** Loaded task carrying its own verifier into generic trial orchestration. */
-export interface ReviewedTask<D extends TaskDefinition = TaskDefinition> extends TaskBase<D> {
+export type ReviewedTask<T extends TaskBase = TaskBase> = T & {
   readonly verify: (
     submission: Submission.Submission,
   ) => Effect.Effect<TrialVerification, TaskVerificationError, TaskRequirements>

@@ -283,7 +283,7 @@ describe("@better-native/network", () => {
       return result.value
     }
 
-    expect(value()).toEqual({})
+    expect(AsyncResult.isSuccess(registry.get(Network.networkStateAtom))).toBe(false)
     await vi.waitFor(() => {
       expect(value()).toEqual(state)
       expect(listener).toBeDefined()

@@ -106,12 +106,7 @@ export function test({ describe, it }: JasmineApi): void {
         const deadline = Date.now() + 3_000
         while (Date.now() < deadline) {
           const result = registry.get(Network.networkStateAtom)
-          if (
-            AsyncResult.isSuccess(result) &&
-            (result.value.type !== undefined || result.value.isConnected !== undefined)
-          ) {
-            return
-          }
+          if (AsyncResult.isSuccess(result)) return
           await delay(25)
         }
         throw new Error("Network atom did not hydrate from the live layer")

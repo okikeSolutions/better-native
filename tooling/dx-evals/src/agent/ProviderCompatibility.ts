@@ -21,7 +21,7 @@ const timeoutMilliseconds = 120_000
 
 const CompatibilityParameters = Schema.fromJsonString(Schema.Struct({ ok: Schema.Literal(true) }))
 
-export interface Compatible {
+export type Compatible = {
   readonly status: "compatible"
   readonly model: string
   readonly configuredProvider: string
@@ -35,7 +35,7 @@ export interface Compatible {
   readonly costUsd: number
 }
 
-export interface Quarantined {
+export type Quarantined = {
   readonly status: "quarantined"
   readonly model: string
   readonly configuredProvider: string
