@@ -16,16 +16,15 @@ const assert: (condition: unknown, message: string) => asserts condition = (cond
   if (!condition) throw new Error(message)
 }
 
-const canonical = (value: unknown): unknown =>
-  Array.isArray(value)
-    ? value.map(canonical)
-    : typeof value === "object" && value !== null
-      ? Object.fromEntries(
-          Object.entries(value)
-            .toSorted(([left], [right]) => left.localeCompare(right))
-            .map(([key, nested]) => [key, canonical(nested)]),
-        )
-      : value
+const canonical = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(canonical)
+  if (typeof value !== "object" || value === null) return value
+  return Object.fromEntries(
+    Object.entries(value)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, nested]) => [key, canonical(nested)]),
+  )
+}
 
 const run = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
   // oxlint-disable-next-line effecttsgo/strict-effect-provide -- compatibility capability entry point

@@ -167,7 +167,7 @@ try {
     )
   }
 
-  publish(writeSeedPackage("effect", "4.0.0-beta.102"), "alpha")
+  publish(writeSeedPackage("effect", "4.0.0-rc.108"), "alpha")
   for (const [, provider] of capabilityMatrix)
     publish(writeSeedPackage(provider, "57.0.1"), "latest")
   for (const [name] of capabilityMatrix) publish(join(repositoryRoot, "packages", name), "alpha")
@@ -227,7 +227,7 @@ try {
       .filter((name) => name !== "expo")
       .sort()
     assert.deepEqual(additions, [`@better-native/${capability}`, "effect", provider].sort())
-    assert.equal(manifest.dependencies.effect, "4.0.0-beta.102")
+    assert.equal(manifest.dependencies.effect, "4.0.0-rc.108")
     assert.equal(manifest.dependencies[`@better-native/${capability}`], releaseVersion)
     assert.equal(manifest.dependencies[provider], "57.0.1")
     assert.equal(manifest.dependencies["better-native"], undefined)

@@ -318,7 +318,7 @@ function LandingPrototype() {
             <dl className="mt-8 grid max-w-2xl border-y border-border font-mono text-[10px] uppercase tracking-[0.11em] sm:grid-cols-3">
               <div className="py-3 sm:pr-4">
                 <dt className="text-muted-foreground">Pinned runtime</dt>
-                <dd className="mt-1 text-foreground">Effect 4 beta</dd>
+                <dd className="mt-1 text-foreground">Effect 4 RC</dd>
               </div>
               <div className="border-t border-border py-3 sm:border-l sm:border-t-0 sm:px-4">
                 <dt className="text-muted-foreground">Target SDK</dt>
@@ -364,7 +364,7 @@ function LandingPrototype() {
             <div className="grid gap-3 font-mono text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">runtime</span>
-                <span>Effect 4.0 beta</span>
+                <span>Effect 4.0 RC</span>
               </div>
               <Separator />
               <div className="flex items-center justify-between">

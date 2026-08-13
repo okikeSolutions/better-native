@@ -18,7 +18,7 @@ Native integration, not a separate statement of Expo's native contract.
 Install the native provider, this package, and its Effect peer in one Expo CLI transaction:
 
 ```sh
-npx expo install expo-battery @better-native/battery@alpha effect@4.0.0-beta.102
+npx expo install expo-battery @better-native/battery@alpha effect@4.0.0-rc.108
 ```
 
 Expo selects the `expo-battery` version compatible with the application's SDK. The Better Native

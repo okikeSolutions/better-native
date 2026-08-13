@@ -27,7 +27,7 @@
     "@react-navigation/native-stack": "^7.14.5",
     "@react-navigation/stack": "^7.8.5",
     "async-retry": "^1.1.4",
-    "effect": "4.0.0-beta.102",
+    "effect": "4.0.0-rc.108",
     "expo": "57.0.9",
     "expo-app-metrics": "57.0.7",
     "expo-application": "57.0.2",

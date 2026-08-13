@@ -135,7 +135,7 @@ export const installerLayer: Layer.Layer<
       const packagePlan = [
         ...selected.map((capability) => capability.provider),
         ...selected.map((capability) => `${capability.wrapper}@${capability.wrapperVersion}`),
-        `effect@${selected[0]?.effectVersion ?? "4.0.0-beta.102"}`,
+        `effect@${selected[0]?.effectVersion ?? "4.0.0-rc.108"}`,
       ]
 
       yield* Console.log(`✓ Expo SDK 57 detected (${project.expoVersion})`)

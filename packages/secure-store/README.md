@@ -11,7 +11,7 @@ surface for incremental migration.
 Install the native provider, this package, and its Effect peer in one Expo CLI transaction:
 
 ```sh
-npx expo install expo-secure-store @better-native/secure-store@alpha effect@4.0.0-beta.102
+npx expo install expo-secure-store @better-native/secure-store@alpha effect@4.0.0-rc.108
 ```
 
 Expo selects the `expo-secure-store` version compatible with the application's SDK. The Better

@@ -58,15 +58,15 @@
   },
   "devDependencies": {
     "@better-native/task-manager": "workspace:*",
-    "@effect/docgen": "4.0.0-beta.102",
-    "effect": "4.0.0-beta.102",
+    "@effect/docgen": "4.0.0-rc.108",
+    "effect": "4.0.0-rc.108",
     "expo": "57.0.9",
     "expo-location": "57.0.7",
     "react": "19.2.3"
   },
   "peerDependencies": {
     "@better-native/task-manager": "0.0.1-alpha.1",
-    "effect": "4.0.0-beta.102",
+    "effect": "4.0.0-rc.108",
     "expo-location": ">=57.0.0 <58.0.0"
   },
   "peerDependenciesMeta": {

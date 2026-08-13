@@ -18,7 +18,7 @@ host tests alone are not native-parity evidence.
 Install the native provider, this package, and its Effect peer in one Expo CLI transaction:
 
 ```sh
-npx expo install expo-network @better-native/network@alpha effect@4.0.0-beta.102
+npx expo install expo-network @better-native/network@alpha effect@4.0.0-rc.108
 ```
 
 Expo selects the `expo-network` version compatible with the application's SDK. The Better Native

@@ -143,22 +143,22 @@ const installationShapes = [
   {
     capability: "keep-awake",
     reason: "simplest provider case",
-    packages: `expo-keep-awake @better-native/keep-awake@${releaseVersion} effect@4.0.0-beta.102`,
+    packages: `expo-keep-awake @better-native/keep-awake@${releaseVersion} effect@4.0.0-rc.108`,
   },
   {
     capability: "network",
     reason: "confirms the exact three-package dependency result",
-    packages: `expo-network @better-native/network@${releaseVersion} effect@4.0.0-beta.102`,
+    packages: `expo-network @better-native/network@${releaseVersion} effect@4.0.0-rc.108`,
   },
   {
     capability: "secure-store",
     reason: "exercises config-plugin and rebuild behavior",
-    packages: `expo-secure-store @better-native/secure-store@${releaseVersion} effect@4.0.0-beta.102`,
+    packages: `expo-secure-store @better-native/secure-store@${releaseVersion} effect@4.0.0-rc.108`,
   },
   {
     capability: "battery",
     reason: "confirms the ordinary event/stream case",
-    packages: `expo-battery @better-native/battery@${releaseVersion} effect@4.0.0-beta.102`,
+    packages: `expo-battery @better-native/battery@${releaseVersion} effect@4.0.0-rc.108`,
   },
 ] as const
 
@@ -188,7 +188,7 @@ describe("packed better-native CLI installation shapes", () => {
       }
       assert.property(manifest.dependencies, `expo-${shape.capability}`)
       assert.property(manifest.dependencies, `@better-native/${shape.capability}`)
-      assert.strictEqual(manifest.dependencies.effect, "4.0.0-beta.102")
+      assert.strictEqual(manifest.dependencies.effect, "4.0.0-rc.108")
       assert.notProperty(manifest.dependencies, "better-native")
       assert.notProperty(manifest.dependencies, "expo-modules-core")
 

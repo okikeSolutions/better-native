@@ -22,15 +22,15 @@ while the OS may invoke the task and dispose it only at a deliberate shutdown bo
 Install the SDK-compatible provider and the exact reviewed wrapper/Effect versions together:
 
 ```sh
-npx expo install expo-task-manager @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-beta.102
+npx expo install expo-task-manager @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-rc.108
 # npm
-npm install expo-task-manager@">=57.0.0 <58.0.0" @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-beta.102
+npm install expo-task-manager@">=57.0.0 <58.0.0" @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-rc.108
 # pnpm
-pnpm add expo-task-manager@">=57.0.0 <58.0.0" @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-beta.102
+pnpm add expo-task-manager@">=57.0.0 <58.0.0" @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-rc.108
 # Yarn
-yarn add expo-task-manager@">=57.0.0 <58.0.0" @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-beta.102
+yarn add expo-task-manager@">=57.0.0 <58.0.0" @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-rc.108
 # Bun
-bun add expo-task-manager@">=57.0.0 <58.0.0" @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-beta.102
+bun add expo-task-manager@">=57.0.0 <58.0.0" @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-rc.108
 ```
 
 Existing Expo source can remain unchanged through

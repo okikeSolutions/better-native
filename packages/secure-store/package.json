@@ -51,14 +51,14 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@effect/docgen": "4.0.0-beta.102",
-    "effect": "4.0.0-beta.102",
+    "@effect/docgen": "4.0.0-rc.108",
+    "effect": "4.0.0-rc.108",
     "expo": "57.0.9",
     "expo-secure-store": "57.0.1",
     "react": "19.2.3"
   },
   "peerDependencies": {
-    "effect": "4.0.0-beta.102",
+    "effect": "4.0.0-rc.108",
     "expo-secure-store": ">=57.0.0 <58.0.0"
   }
 }

@@ -5,16 +5,16 @@ An Expo SQLite driver for Effect SQL, backed by `expo-sqlite`.
 ## Install
 
 ```sh
-npx expo install expo-sqlite @better-native/sqlite@0.0.1-alpha.1 effect@4.0.0-beta.102
+npx expo install expo-sqlite @better-native/sqlite@0.0.1-alpha.1 effect@4.0.0-rc.108
 ```
 
 Manual equivalents are:
 
 ```sh
-npm install expo-sqlite@">=57.0.0 <58.0.0" @better-native/sqlite@0.0.1-alpha.1 effect@4.0.0-beta.102
-pnpm add expo-sqlite@">=57.0.0 <58.0.0" @better-native/sqlite@0.0.1-alpha.1 effect@4.0.0-beta.102
-yarn add expo-sqlite@">=57.0.0 <58.0.0" @better-native/sqlite@0.0.1-alpha.1 effect@4.0.0-beta.102
-bun add expo-sqlite@">=57.0.0 <58.0.0" @better-native/sqlite@0.0.1-alpha.1 effect@4.0.0-beta.102
+npm install expo-sqlite@">=57.0.0 <58.0.0" @better-native/sqlite@0.0.1-alpha.1 effect@4.0.0-rc.108
+pnpm add expo-sqlite@">=57.0.0 <58.0.0" @better-native/sqlite@0.0.1-alpha.1 effect@4.0.0-rc.108
+yarn add expo-sqlite@">=57.0.0 <58.0.0" @better-native/sqlite@0.0.1-alpha.1 effect@4.0.0-rc.108
+bun add expo-sqlite@">=57.0.0 <58.0.0" @better-native/sqlite@0.0.1-alpha.1 effect@4.0.0-rc.108
 ```
 
 `@better-native/sqlite` supports `expo-sqlite >=57.0.0 <58.0.0`. Use the project-local Expo CLI

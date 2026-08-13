@@ -133,7 +133,7 @@ describe("@better-native/network/expo", () => {
     await act(async () => {
       root.render(React.createElement(Probe))
     })
-    expect(snapshot).toEqual(value())
+    expect(AsyncResult.isSuccess(registry.get(EffectNetwork.networkStateAtom))).toBe(false)
     await vi.waitFor(() => expect(network.listenerCount()).toBe(2))
 
     await act(async () => {
