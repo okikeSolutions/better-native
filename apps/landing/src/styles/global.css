@@ -1,246 +1,110 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
-@custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: "Geist Variable", sans-serif;
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
-  --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
-
-:root,
-.dark {
+:root {
   --background: oklch(0.13 0.012 145);
   --foreground: oklch(0.965 0.008 145);
   --card: oklch(0.17 0.014 145);
-  --card-foreground: oklch(0.965 0.008 145);
-  --popover: oklch(0.17 0.014 145);
-  --popover-foreground: oklch(0.965 0.008 145);
   --primary: oklch(0.85 0.19 140);
   --primary-foreground: oklch(0.16 0.02 145);
   --secondary: oklch(0.23 0.014 145);
   --secondary-foreground: oklch(0.94 0.008 145);
   --muted: oklch(0.205 0.013 145);
   --muted-foreground: oklch(0.7 0.015 145);
-  --accent: oklch(0.24 0.014 145);
-  --accent-foreground: oklch(0.96 0.008 145);
   --destructive: oklch(0.7 0.19 25);
   --border: oklch(0.96 0.006 145 / 14%);
-  --input: oklch(0.96 0.006 145 / 14%);
   --ring: oklch(0.85 0.19 140 / 55%);
-  --chart-1: oklch(0.85 0.19 140);
-  --chart-2: oklch(0.69 0.1 145);
-  --chart-3: oklch(0.52 0.05 145);
-  --chart-4: oklch(0.36 0.03 145);
-  --chart-5: oklch(0.23 0.014 145);
   --radius: 0.72rem;
-  --sidebar: oklch(0.17 0.014 145);
-  --sidebar-foreground: oklch(0.965 0.008 145);
-  --sidebar-primary: oklch(0.85 0.19 140);
-  --sidebar-primary-foreground: oklch(0.16 0.02 145);
-  --sidebar-accent: oklch(0.24 0.014 145);
-  --sidebar-accent-foreground: oklch(0.96 0.008 145);
-  --sidebar-border: oklch(0.96 0.006 145 / 14%);
-  --sidebar-ring: oklch(0.85 0.19 140 / 55%);
+  --radius-md: calc(var(--radius) * 0.8);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
-  }
-  body {
-    min-width: 320px;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 html {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Geist Variable", sans-serif;
   scroll-behavior: smooth;
 }
 
-.dot-grid {
-  background-image: radial-gradient(
-    circle at 1px 1px,
-    color-mix(in oklch, var(--foreground) 18%, transparent) 1px,
-    transparent 0
-  );
-  background-size: 24px 24px;
-  mask-image: linear-gradient(to bottom, black 0%, transparent 84%);
+body,
+h1,
+h2,
+h3,
+p,
+dl,
+dd,
+ol {
+  margin: 0;
 }
 
-.runtime-shell {
-  animation: settle 900ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
+body {
+  min-width: 320px;
 }
 
-.runtime-content[data-state="active"] {
-  animation: runtime-swap 380ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.runtime-stage [data-active="true"] {
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+svg {
+  display: block;
+}
+
+[data-accordion-icon="open"] {
+  display: none;
+}
+
+[data-open] [data-accordion-icon="closed"] {
+  display: none;
+}
+
+[data-open] [data-accordion-icon="open"] {
+  display: block;
+}
+
+[data-slot="accordion-content"] {
+  transition: height 220ms ease;
+}
+
+[data-slot="accordion-content"][data-starting-style],
+[data-slot="accordion-content"][data-ending-style] {
+  height: 0;
+}
+
+[data-slot="tabs-trigger"][data-active] {
   color: var(--foreground);
 }
 
-.runtime-stage [data-active="true"]::after {
-  position: absolute;
-  inset: auto 18% 0;
-  height: 2px;
-  background: var(--primary);
+[data-slot="tabs-list"][data-variant="line"] [data-slot="tabs-trigger"][data-active]::after {
+  background: var(--foreground);
+  bottom: -5px;
   content: "";
-  animation: phase-line 500ms ease-out both;
+  height: 2px;
+  left: 0;
+  position: absolute;
+  right: 0;
 }
 
-.iphone-wrap {
-  position: relative;
-  animation: phone-arrive 1s 160ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
-}
-
-.iphone-mockup {
-  filter: drop-shadow(0 20px 20px rgb(0 0 0 / 36%));
-  transform: perspective(950px) rotateY(-7deg) rotateX(2deg);
-  transition:
-    transform 500ms cubic-bezier(0.2, 0.85, 0.25, 1),
-    filter 500ms ease;
-}
-
-.iphone-screen {
-  transition: box-shadow 400ms ease;
-}
-
-.iphone-wrap[data-phase="run"] .iphone-mockup {
-  transform: perspective(950px) rotateY(-2deg) rotateX(0deg) translateY(-4px);
-}
-
-.iphone-wrap[data-phase="result"] .iphone-mockup {
-  filter: drop-shadow(0 20px 20px rgb(0 0 0 / 36%))
-    drop-shadow(0 0 22px color-mix(in oklch, var(--primary) 32%, transparent));
-  transform: perspective(950px) rotateY(3deg) rotateX(-1deg) translateY(-7px);
-}
-
-.device-orb {
-  transition:
-    border-color 400ms ease,
-    box-shadow 400ms ease,
-    transform 400ms ease;
-}
-
-.iphone-wrap[data-phase="run"] .device-orb svg {
-  animation: device-spin 1.2s linear infinite;
-}
-
-.iphone-wrap[data-phase="result"] .device-orb {
-  border-color: var(--primary);
-  box-shadow: 0 0 34px color-mix(in oklch, var(--primary) 24%, transparent);
-  transform: scale(1.06);
-}
-
-.device-meter span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--primary);
-  transition: width 620ms cubic-bezier(0.2, 0.85, 0.25, 1);
-}
-
-.iphone-wrap[data-phase="resolve"] .device-meter span {
-  width: 33%;
-}
-.iphone-wrap[data-phase="run"] .device-meter span {
-  width: 67%;
-}
-.iphone-wrap[data-phase="result"] .device-meter span {
-  width: 100%;
-}
-
-@keyframes settle {
-  from {
-    opacity: 0;
-    transform: translateY(20px) rotate(1.4deg);
+@media (min-width: 768px) {
+  article:not(:last-child) {
+    border-right: 1px solid var(--border);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0) rotate(0);
-  }
-}
 
-@keyframes runtime-swap {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+  article:first-child {
+    padding-left: 0;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
-@keyframes phase-line {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-@keyframes phone-arrive {
-  from {
-    opacity: 0;
-    transform: translateY(22px) rotate(4deg);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) rotate(0deg);
-  }
-}
-
-@keyframes device-spin {
-  to {
-    transform: rotate(360deg);
+  article:last-child {
+    padding-right: 0;
   }
 }
 

@@ -1,68 +1,89 @@
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
-
-import { cn } from "@/lib/utils"
+import * as stylex from "@stylexjs/stylex"
+import type { StyleXStyles } from "@stylexjs/stylex"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 
-function Accordion({ className, ...props }: AccordionPrimitive.Root.Props) {
-  return (
-    <AccordionPrimitive.Root
-      data-slot="accordion"
-      className={cn("flex w-full flex-col", className)}
-      {...props}
-    />
-  )
+const styles = stylex.create({
+  root: { display: "flex", flexDirection: "column", width: "100%" },
+  item: { borderBottomColor: "var(--border)", borderBottomStyle: "solid", borderBottomWidth: 1 },
+  header: { display: "flex" },
+  trigger: {
+    alignItems: "flex-start",
+    backgroundColor: "transparent",
+    borderColor: "transparent",
+    borderRadius: "var(--radius)",
+    borderStyle: "solid",
+    borderWidth: 1,
+    color: "inherit",
+    cursor: "pointer",
+    display: "flex",
+    flex: 1,
+    fontFamily: "inherit",
+    fontSize: 14,
+    fontWeight: 500,
+    justifyContent: "space-between",
+    outline: "none",
+    paddingBlock: 10,
+    paddingInline: 0,
+    position: "relative",
+    textAlign: "left",
+    transition: "border-color 180ms ease, box-shadow 180ms ease",
+    ":hover": { textDecoration: "underline" },
+    ":focus-visible": {
+      borderColor: "var(--ring)",
+      boxShadow: "0 0 0 3px color-mix(in oklch, var(--ring) 50%, transparent)",
+    },
+  },
+  icon: {
+    color: "var(--muted-foreground)",
+    flexShrink: 0,
+    height: 16,
+    marginLeft: "auto",
+    pointerEvents: "none",
+    width: 16,
+  },
+  panel: { fontSize: 14, overflow: "hidden" },
+  content: { paddingBottom: 10, paddingTop: 0 },
+})
+
+function Accordion({
+  xstyle,
+  ...props
+}: AccordionPrimitive.Root.Props & { xstyle?: StyleXStyles }) {
+  return <AccordionPrimitive.Root {...stylex.props(styles.root, xstyle)} {...props} />
 }
 
-function AccordionItem({ className, ...props }: AccordionPrimitive.Item.Props) {
-  return (
-    <AccordionPrimitive.Item
-      data-slot="accordion-item"
-      className={cn("not-last:border-b", className)}
-      {...props}
-    />
-  )
+function AccordionItem({
+  xstyle,
+  ...props
+}: AccordionPrimitive.Item.Props & { xstyle?: StyleXStyles }) {
+  return <AccordionPrimitive.Item {...stylex.props(styles.item, xstyle)} {...props} />
 }
 
-function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.Trigger.Props) {
+function AccordionTrigger({
+  xstyle,
+  children,
+  ...props
+}: AccordionPrimitive.Trigger.Props & { xstyle?: StyleXStyles }) {
   return (
-    <AccordionPrimitive.Header className="flex">
-      <AccordionPrimitive.Trigger
-        data-slot="accordion-trigger"
-        className={cn(
-          "group/accordion-trigger relative flex flex-1 items-start justify-between rounded-lg border border-transparent py-2.5 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground",
-          className,
-        )}
-        {...props}
-      >
+    <AccordionPrimitive.Header {...stylex.props(styles.header)}>
+      <AccordionPrimitive.Trigger {...stylex.props(styles.trigger, xstyle)} {...props}>
         {children}
-        <ChevronDownIcon
-          data-slot="accordion-trigger-icon"
-          className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden"
-        />
-        <ChevronUpIcon
-          data-slot="accordion-trigger-icon"
-          className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline"
-        />
+        <ChevronDownIcon data-accordion-icon="closed" {...stylex.props(styles.icon)} />
+        <ChevronUpIcon data-accordion-icon="open" {...stylex.props(styles.icon)} />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   )
 }
 
-function AccordionContent({ className, children, ...props }: AccordionPrimitive.Panel.Props) {
+function AccordionContent({
+  xstyle,
+  children,
+  ...props
+}: AccordionPrimitive.Panel.Props & { xstyle?: StyleXStyles }) {
   return (
-    <AccordionPrimitive.Panel
-      data-slot="accordion-content"
-      className="overflow-hidden text-sm data-open:animate-accordion-down data-closed:animate-accordion-up"
-      {...props}
-    >
-      <div
-        className={cn(
-          "h-(--accordion-panel-height) pt-0 pb-2.5 data-ending-style:h-0 data-starting-style:h-0 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4",
-          className,
-        )}
-      >
-        {children}
-      </div>
+    <AccordionPrimitive.Panel {...stylex.props(styles.panel)} {...props}>
+      <div {...stylex.props(styles.content, xstyle)}>{children}</div>
     </AccordionPrimitive.Panel>
   )
 }

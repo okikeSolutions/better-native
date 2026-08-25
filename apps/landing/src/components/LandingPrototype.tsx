@@ -1,4 +1,5 @@
 import { useEffect, useState, type ComponentProps } from "react"
+import * as stylex from "@stylexjs/stylex"
 import {
   Accordion,
   AccordionContent,
@@ -17,6 +18,660 @@ import {
   OrbitIcon,
   SparklesIcon,
 } from "lucide-react"
+
+const styles = stylex.create({
+  code: {
+    color: "var(--muted-foreground)",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 11,
+    lineHeight: "24px",
+    "@media (min-width: 640px)": { fontSize: 12 },
+  },
+  primaryText: { color: "var(--primary)" },
+  foregroundText: { color: "var(--foreground)" },
+  mutedText: { color: "var(--muted-foreground)" },
+  marginTop4: { marginTop: 16 },
+  paddingLeft4: { paddingLeft: 16 },
+  resultBox: {
+    alignItems: "center",
+    backgroundColor: "var(--background)",
+    borderColor: "var(--border)",
+    borderRadius: "var(--radius)",
+    borderStyle: "solid",
+    borderWidth: 1,
+    display: "flex",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 12,
+    gap: 12,
+    paddingBlock: 16,
+    paddingInline: 12,
+  },
+  icon16Primary: { color: "var(--primary)", height: 16, width: 16 },
+  icon12Primary: { color: "var(--primary)", height: 12, width: 12 },
+  icon20Primary: { color: "var(--primary)", height: 20, width: 20 },
+  icon20Muted: {
+    color: "var(--muted-foreground)",
+    height: 20,
+    transition: "color 180ms ease",
+    width: 20,
+  },
+  marginLeftAuto: { marginLeft: "auto" },
+  wordmark: {
+    alignItems: "center",
+    display: "flex",
+    fontWeight: 500,
+    gap: 10,
+    letterSpacing: "-0.04em",
+  },
+  wordmarkLogo: {
+    borderRadius: 10.4,
+    display: "grid",
+    height: 36,
+    overflow: "hidden",
+    position: "relative",
+    transition: "transform 300ms ease",
+    width: 36,
+    ":hover": { transform: "rotate(-6deg)" },
+  },
+  wordmarkImage: {
+    height: "100%",
+    mixBlendMode: "screen",
+    objectFit: "cover",
+    transform: "scale(1.7)",
+    width: "100%",
+  },
+  wordmarkText: { fontSize: 15 },
+  runtimeStage: {
+    display: "grid",
+    gap: 32,
+    "@media (min-width: 1024px)": {
+      alignItems: "center",
+      gap: 40,
+      gridTemplateColumns: "minmax(0,1fr) minmax(20rem,22rem)",
+    },
+  },
+  runtimeShell: {
+    backgroundColor: "var(--card)",
+    borderColor: "var(--border)",
+    borderRadius: "calc(var(--radius) * 1.8)",
+    borderStyle: "solid",
+    borderWidth: 1,
+    boxShadow: "0 25px 50px -12px rgb(0 0 0 / 30%)",
+    overflow: "hidden",
+    position: "relative",
+  },
+  runtimeHeader: {
+    alignItems: "center",
+    borderBottomColor: "var(--border)",
+    borderBottomStyle: "solid",
+    borderBottomWidth: 1,
+    display: "flex",
+    justifyContent: "space-between",
+    paddingBlock: 12,
+    paddingInline: 16,
+    "@media (min-width: 640px)": { paddingInline: 20 },
+  },
+  runtimeLabel: {
+    alignItems: "center",
+    color: "var(--muted-foreground)",
+    display: "flex",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 10,
+    gap: 8,
+    letterSpacing: "0.16em",
+    textTransform: "uppercase",
+  },
+  pingWrap: { display: "flex", height: 8, position: "relative", width: 8 },
+  ping: {
+    animationName: stylex.keyframes({ "75%, 100%": { opacity: 0, transform: "scale(2)" } }),
+    animationDuration: "1s",
+    animationIterationCount: "infinite",
+    backgroundColor: "var(--primary)",
+    borderRadius: 999,
+    display: "inline-flex",
+    height: "100%",
+    opacity: 0.6,
+    position: "absolute",
+    width: "100%",
+  },
+  pingDot: {
+    backgroundColor: "var(--primary)",
+    borderRadius: 999,
+    display: "inline-flex",
+    height: 8,
+    position: "relative",
+    width: 8,
+  },
+  tabsNoGap: { gap: 0 },
+  tabsList: { marginInline: 16, marginTop: 16, "@media (min-width: 640px)": { marginInline: 20 } },
+  tabsContent: {
+    margin: 0,
+    paddingBlockEnd: 20,
+    paddingBlockStart: 16,
+    paddingInline: 16,
+    "@media (min-width: 640px)": { paddingInline: 20 },
+  },
+  phaseGrid: {
+    borderTopColor: "var(--border)",
+    borderTopStyle: "solid",
+    borderTopWidth: 1,
+    color: "var(--muted-foreground)",
+    display: "grid",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 10,
+    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+    letterSpacing: "0.12em",
+    textAlign: "center",
+    textTransform: "uppercase",
+  },
+  phaseCell: { paddingBlock: 12, paddingInline: 8, position: "relative" },
+  phaseActive: { color: "var(--foreground)" },
+  phaseDivider: {
+    backgroundColor: "var(--border)",
+    bottom: 0,
+    position: "absolute",
+    right: 0,
+    top: 0,
+    width: 1,
+  },
+  phoneWrap: {
+    marginInline: "auto",
+    width: 176,
+    "@media (min-width: 640px)": { width: 256 },
+    "@media (min-width: 1024px)": { marginInline: 0, width: 352 },
+  },
+  phoneMockup: { aspectRatio: 0.502, position: "relative" },
+  phoneSvg: {
+    bottom: 0,
+    height: "100%",
+    left: 0,
+    position: "absolute",
+    right: 0,
+    top: 0,
+    width: "100%",
+  },
+  phoneScreen: {
+    backgroundColor: "var(--card)",
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    paddingBlockEnd: 16,
+    paddingBlockStart: 32,
+    paddingInline: 16,
+    width: "100%",
+    "@media (min-width: 1024px)": { paddingBlockEnd: 28, paddingBlockStart: 56, paddingInline: 28 },
+  },
+  phoneStatus: {
+    alignItems: "center",
+    color: "var(--muted-foreground)",
+    display: "flex",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 8,
+    justifyContent: "space-between",
+    "@media (min-width: 1024px)": { fontSize: 10 },
+  },
+  phoneTitleWrap: { marginTop: 28, "@media (min-width: 1024px)": { marginTop: 48 } },
+  phoneTitle: {
+    color: "var(--foreground)",
+    fontSize: 10,
+    fontWeight: 500,
+    "@media (min-width: 1024px)": { fontSize: 16 },
+  },
+  phoneKicker: {
+    color: "var(--muted-foreground)",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 8,
+    letterSpacing: "0.12em",
+    marginTop: 4,
+    textTransform: "uppercase",
+    "@media (min-width: 1024px)": { fontSize: 10, marginTop: 8 },
+  },
+  deviceOrb: {
+    alignItems: "center",
+    backgroundColor: "var(--background)",
+    borderColor: "var(--border)",
+    borderRadius: 999,
+    borderStyle: "solid",
+    borderWidth: 1,
+    display: "grid",
+    height: 80,
+    justifyItems: "center",
+    marginInline: "auto",
+    marginTop: 28,
+    width: 80,
+    "@media (min-width: 1024px)": { height: 160, marginTop: 48, width: 160 },
+  },
+  deviceIcon: {
+    color: "var(--primary)",
+    height: 28,
+    width: 28,
+    "@media (min-width: 1024px)": { height: 56, width: 56 },
+  },
+  deviceCopy: { marginTop: 24, "@media (min-width: 1024px)": { marginTop: 40 } },
+  deviceTitle: {
+    color: "var(--foreground)",
+    fontSize: 12,
+    fontWeight: 500,
+    lineHeight: 1.25,
+    "@media (min-width: 1024px)": { fontSize: 20 },
+  },
+  deviceDescription: {
+    color: "var(--muted-foreground)",
+    fontSize: 10,
+    lineHeight: "16px",
+    marginTop: 8,
+    "@media (min-width: 1024px)": { fontSize: 12, lineHeight: "20px", marginTop: 16 },
+  },
+  deviceMeter: {
+    backgroundColor: "var(--muted)",
+    borderRadius: 999,
+    height: 6,
+    marginTop: 20,
+    overflow: "hidden",
+    "@media (min-width: 1024px)": { height: 12, marginTop: 32 },
+  },
+  deviceMeterFill: {
+    backgroundColor: "var(--primary)",
+    borderRadius: "inherit",
+    display: "block",
+    height: "100%",
+    transition: "width 620ms cubic-bezier(0.2, 0.85, 0.25, 1)",
+  },
+  meterResolve: { width: "33%" },
+  meterRun: { width: "67%" },
+  meterResult: { width: "100%" },
+  deviceFooter: {
+    alignItems: "center",
+    color: "var(--muted-foreground)",
+    display: "flex",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 8,
+    justifyContent: "space-between",
+    letterSpacing: "0.1em",
+    marginTop: 12,
+    textTransform: "uppercase",
+    "@media (min-width: 1024px)": { fontSize: 10, marginTop: 20 },
+  },
+  main: { backgroundColor: "var(--background)", color: "var(--foreground)", overflowX: "clip" },
+  hero: { isolation: "isolate", minHeight: "100svh", overflow: "hidden", position: "relative" },
+  dotGrid: {
+    backgroundImage:
+      "radial-gradient(circle at 1px 1px, color-mix(in oklch, var(--foreground) 18%, transparent) 1px, transparent 0)",
+    backgroundSize: "24px 24px",
+    bottom: 0,
+    left: 0,
+    maskImage: "linear-gradient(to bottom, black 0%, transparent 84%)",
+    pointerEvents: "none",
+    position: "absolute",
+    right: 0,
+    top: 0,
+  },
+  dotGridHalf: { opacity: 0.5 },
+  header: {
+    alignItems: "center",
+    display: "flex",
+    height: 80,
+    justifyContent: "space-between",
+    marginInline: "auto",
+    maxWidth: 1280,
+    paddingInline: 20,
+    position: "relative",
+    zIndex: 10,
+    "@media (min-width: 640px)": { paddingInline: 32 },
+  },
+  nav: {
+    alignItems: "center",
+    color: "var(--muted-foreground)",
+    display: "none",
+    fontSize: 14,
+    gap: 24,
+    "@media (min-width: 768px)": { display: "flex" },
+  },
+  navLink: { transition: "color 180ms ease", ":hover": { color: "var(--foreground)" } },
+  heroInner: {
+    marginInline: "auto",
+    maxWidth: 1280,
+    paddingBlockEnd: 48,
+    paddingBlockStart: 48,
+    paddingInline: 20,
+    position: "relative",
+    "@media (min-width: 640px)": { paddingInline: 32 },
+    "@media (min-width: 1024px)": { paddingBlockEnd: 80, paddingBlockStart: 64 },
+  },
+  maxWidth5xl: { maxWidth: 1024 },
+  heroKicker: {
+    color: "var(--muted-foreground)",
+    fontSize: 14,
+    fontWeight: 500,
+    letterSpacing: "-0.02em",
+    marginTop: 32,
+  },
+  heroHeading: {
+    fontSize: 48,
+    fontWeight: 600,
+    letterSpacing: "-0.075em",
+    lineHeight: 0.92,
+    marginTop: 12,
+    maxWidth: 1024,
+    textWrap: "balance",
+    "@media (min-width: 640px)": { fontSize: 60 },
+    "@media (min-width: 1024px)": { fontSize: 72 },
+  },
+  heroBody: {
+    color: "var(--muted-foreground)",
+    fontSize: 16,
+    lineHeight: "28px",
+    marginTop: 28,
+    maxWidth: 576,
+    textWrap: "pretty",
+    "@media (min-width: 640px)": { fontSize: 18 },
+  },
+  actionRow: { alignItems: "center", display: "flex", flexWrap: "wrap", gap: 12, marginTop: 36 },
+  facts: {
+    borderBottomColor: "var(--border)",
+    borderBottomStyle: "solid",
+    borderBottomWidth: 1,
+    borderTopColor: "var(--border)",
+    borderTopStyle: "solid",
+    borderTopWidth: 1,
+    display: "grid",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 10,
+    letterSpacing: "0.11em",
+    marginTop: 32,
+    maxWidth: 672,
+    textTransform: "uppercase",
+    "@media (min-width: 640px)": { gridTemplateColumns: "repeat(3, minmax(0, 1fr))" },
+  },
+  fact: { paddingBlock: 12 },
+  factMiddle: {
+    borderTopColor: "var(--border)",
+    borderTopStyle: "solid",
+    borderTopWidth: 1,
+    paddingBlock: 12,
+    "@media (min-width: 640px)": {
+      borderLeftColor: "var(--border)",
+      borderLeftStyle: "solid",
+      borderLeftWidth: 1,
+      borderTopWidth: 0,
+      paddingInline: 16,
+    },
+  },
+  factLast: {
+    borderTopColor: "var(--border)",
+    borderTopStyle: "solid",
+    borderTopWidth: 1,
+    paddingBlock: 12,
+    "@media (min-width: 640px)": {
+      borderLeftColor: "var(--border)",
+      borderLeftStyle: "solid",
+      borderLeftWidth: 1,
+      borderTopWidth: 0,
+      paddingLeft: 16,
+    },
+  },
+  factValue: { color: "var(--foreground)", marginTop: 4 },
+  factValuePrimary: { color: "var(--primary)", marginTop: 4 },
+  previewWrap: {
+    marginLeft: "auto",
+    marginTop: 48,
+    maxWidth: 1024,
+    position: "relative",
+    width: "100%",
+    "@media (min-width: 1024px)": { marginTop: 64 },
+  },
+  previewCaption: {
+    alignItems: "center",
+    color: "var(--muted-foreground)",
+    display: "flex",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 10,
+    gap: 8,
+    letterSpacing: "0.12em",
+    marginTop: 16,
+    textTransform: "uppercase",
+  },
+  borderedCardSection: {
+    backgroundColor: "var(--card)",
+    borderBottomColor: "var(--border)",
+    borderBottomStyle: "solid",
+    borderBottomWidth: 1,
+    borderTopColor: "var(--border)",
+    borderTopStyle: "solid",
+    borderTopWidth: 1,
+  },
+  foundationGrid: {
+    display: "grid",
+    marginInline: "auto",
+    maxWidth: 1280,
+    "@media (min-width: 1024px)": { gridTemplateColumns: "0.7fr 1.3fr" },
+  },
+  foundationAside: {
+    borderBottomColor: "var(--border)",
+    borderBottomStyle: "solid",
+    borderBottomWidth: 1,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    minHeight: 224,
+    padding: 24,
+    "@media (min-width: 640px)": { padding: 32 },
+    "@media (min-width: 1024px)": {
+      borderBottomWidth: 0,
+      borderRightColor: "var(--border)",
+      borderRightStyle: "solid",
+      borderRightWidth: 1,
+      minHeight: 320,
+      padding: 40,
+    },
+  },
+  sectionLabel: {
+    color: "var(--muted-foreground)",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 10,
+    letterSpacing: "0.16em",
+    textTransform: "uppercase",
+  },
+  asideCopy: {
+    fontSize: 20,
+    fontWeight: 500,
+    letterSpacing: "-0.04em",
+    lineHeight: 1.25,
+    maxWidth: 224,
+  },
+  foundationContent: {
+    display: "grid",
+    gap: 32,
+    padding: 24,
+    "@media (min-width: 640px)": { padding: 32 },
+    "@media (min-width: 1024px)": {
+      alignItems: "end",
+      gridTemplateColumns: "1.1fr 0.9fr",
+      padding: 40,
+    },
+  },
+  sectionHeading: {
+    fontSize: 30,
+    fontWeight: 500,
+    letterSpacing: "-0.055em",
+    lineHeight: 1.25,
+    textWrap: "balance",
+    "@media (min-width: 640px)": { fontSize: 36 },
+  },
+  sectionBody: {
+    color: "var(--muted-foreground)",
+    lineHeight: "28px",
+    marginTop: 20,
+    maxWidth: 576,
+  },
+  foundationStats: {
+    display: "grid",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 12,
+    gap: 12,
+  },
+  stat: { alignItems: "center", display: "flex", justifyContent: "space-between" },
+  standardSection: {
+    marginInline: "auto",
+    maxWidth: 1280,
+    paddingBlock: 80,
+    paddingInline: 20,
+    "@media (min-width: 640px)": { paddingBlock: 112, paddingInline: 32 },
+  },
+  maxWidth2xl: { maxWidth: 672 },
+  operatingHeading: {
+    fontSize: 30,
+    fontWeight: 500,
+    letterSpacing: "-0.055em",
+    marginTop: 20,
+    textWrap: "balance",
+    "@media (min-width: 640px)": { fontSize: 48 },
+  },
+  operatingGrid: {
+    borderBottomColor: "var(--border)",
+    borderBottomStyle: "solid",
+    borderBottomWidth: 1,
+    borderTopColor: "var(--border)",
+    borderTopStyle: "solid",
+    borderTopWidth: 1,
+    display: "grid",
+    marginTop: 56,
+    "@media (min-width: 768px)": { gridTemplateColumns: "repeat(3, minmax(0, 1fr))" },
+  },
+  operatingItem: {
+    borderBottomColor: "var(--border)",
+    borderBottomStyle: "solid",
+    borderBottomWidth: 1,
+    paddingBlock: 32,
+    "@media (min-width: 768px)": { borderBottomWidth: 0, paddingInline: 28 },
+  },
+  operatingNumber: {
+    color: "var(--primary)",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 12,
+  },
+  operatingTitle: {
+    fontSize: 24,
+    fontWeight: 500,
+    letterSpacing: "-0.045em",
+    marginTop: 40,
+    transition: "transform 300ms ease",
+    ":hover": { transform: "translateX(4px)" },
+  },
+  operatingBody: {
+    color: "var(--muted-foreground)",
+    lineHeight: "28px",
+    marginTop: 12,
+    maxWidth: 320,
+  },
+  marginTop8: { marginTop: 32 },
+  roadmapGrid: {
+    display: "grid",
+    gap: 48,
+    marginInline: "auto",
+    maxWidth: 1280,
+    paddingBlock: 80,
+    paddingInline: 20,
+    "@media (min-width: 640px)": { paddingBlock: 112, paddingInline: 32 },
+    "@media (min-width: 1024px)": { gridTemplateColumns: "0.75fr 1.25fr" },
+  },
+  roadmapHeading: {
+    fontSize: 30,
+    fontWeight: 500,
+    letterSpacing: "-0.055em",
+    marginTop: 20,
+    maxWidth: 448,
+    textWrap: "balance",
+    "@media (min-width: 640px)": { fontSize: 36 },
+  },
+  roadmapList: { borderTopColor: "var(--border)", borderTopStyle: "solid", borderTopWidth: 1 },
+  roadmapItem: {
+    borderBottomColor: "var(--border)",
+    borderBottomStyle: "solid",
+    borderBottomWidth: 1,
+    display: "grid",
+    gap: 16,
+    paddingBlock: 28,
+    "@media (min-width: 640px)": { alignItems: "center", gridTemplateColumns: "7rem 1fr auto" },
+  },
+  roadmapTitle: { fontSize: 18, fontWeight: 500, letterSpacing: "-0.035em" },
+  roadmapBody: { color: "var(--muted-foreground)", lineHeight: "24px", marginTop: 4 },
+  roadmapDot: {
+    color: "var(--primary)",
+    display: "none",
+    height: 12,
+    width: 12,
+    "@media (min-width: 640px)": { display: "block" },
+  },
+  questionsGrid: {
+    display: "grid",
+    gap: 48,
+    marginInline: "auto",
+    maxWidth: 1280,
+    paddingBlock: 80,
+    paddingInline: 20,
+    "@media (min-width: 640px)": { paddingBlock: 112, paddingInline: 32 },
+    "@media (min-width: 1024px)": { gridTemplateColumns: "0.8fr 1.2fr" },
+  },
+  cta: {
+    backgroundColor: "var(--primary)",
+    borderTopColor: "var(--border)",
+    borderTopStyle: "solid",
+    borderTopWidth: 1,
+    color: "var(--primary-foreground)",
+    overflow: "hidden",
+    paddingBlock: 80,
+    paddingInline: 20,
+    position: "relative",
+    "@media (min-width: 640px)": { paddingBlock: 112, paddingInline: 32 },
+  },
+  dotGridLight: { opacity: 0.2 },
+  ctaInner: {
+    alignItems: "flex-start",
+    display: "flex",
+    flexDirection: "column",
+    gap: 40,
+    justifyContent: "space-between",
+    marginInline: "auto",
+    maxWidth: 1280,
+    position: "relative",
+    "@media (min-width: 1024px)": { alignItems: "flex-end", flexDirection: "row" },
+  },
+  ctaCopy: { maxWidth: 768 },
+  ctaLabel: {
+    color: "color-mix(in oklch, var(--primary-foreground) 65%, transparent)",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    fontSize: 10,
+    letterSpacing: "0.16em",
+    textTransform: "uppercase",
+  },
+  ctaHeading: {
+    fontSize: 36,
+    fontWeight: 600,
+    letterSpacing: "-0.065em",
+    lineHeight: 0.98,
+    marginTop: 16,
+    textWrap: "balance",
+    "@media (min-width: 640px)": { fontSize: 60 },
+  },
+  footer: {
+    color: "var(--muted-foreground)",
+    display: "flex",
+    flexDirection: "column",
+    fontSize: 12,
+    gap: 16,
+    marginInline: "auto",
+    maxWidth: 1280,
+    paddingBlock: 32,
+    paddingInline: 20,
+    "@media (min-width: 640px)": {
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingInline: 32,
+    },
+  },
+})
 
 const githubUrl = "https://github.com/okikeSolutions/better-native"
 
@@ -42,20 +697,22 @@ const runtimePhases = [
     deviceTitle: "Resolve requirement",
     deviceDescription: "Checking the native module surface.",
     code: (
-      <div className="font-mono text-[11px] leading-6 text-muted-foreground sm:text-xs">
+      <div {...stylex.props(styles.code)}>
         <p>
-          <span className="text-primary">import</span> &#123; Battery &#125;{" "}
-          <span className="text-primary">from</span>{" "}
-          <span className="text-foreground">"@better-native/battery"</span>
+          <span {...stylex.props(styles.primaryText)}>import</span> &#123; Battery &#125;{" "}
+          <span {...stylex.props(styles.primaryText)}>from</span>{" "}
+          <span {...stylex.props(styles.foregroundText)}>"@better-native/battery"</span>
         </p>
         <p>
-          <span className="text-primary">import</span> * as Effect{" "}
-          <span className="text-primary">from</span>{" "}
-          <span className="text-foreground">"effect/Effect"</span>
+          <span {...stylex.props(styles.primaryText)}>import</span> * as Effect{" "}
+          <span {...stylex.props(styles.primaryText)}>from</span>{" "}
+          <span {...stylex.props(styles.foregroundText)}>"effect/Effect"</span>
         </p>
-        <p className="mt-4 text-foreground">const power = Battery.getPowerStateAsync.pipe(</p>
-        <p className="pl-4">Effect.provide(Battery.live),</p>
-        <p className="text-foreground">)</p>
+        <p {...stylex.props(styles.marginTop4, styles.foregroundText)}>
+          const power = Battery.getPowerStateAsync.pipe(
+        </p>
+        <p {...stylex.props(styles.paddingLeft4)}>Effect.provide(Battery.live),</p>
+        <p {...stylex.props(styles.foregroundText)}>)</p>
       </div>
     ),
   },
@@ -67,11 +724,11 @@ const runtimePhases = [
     deviceTitle: "Run native work",
     deviceDescription: "Reading battery state from the device.",
     code: (
-      <div className="font-mono text-[11px] leading-6 text-muted-foreground sm:text-xs">
+      <div {...stylex.props(styles.code)}>
         <p>
-          <span className="text-primary">expo-battery</span> / Effect live layer
+          <span {...stylex.props(styles.primaryText)}>expo-battery</span> / Effect live layer
         </p>
-        <p className="mt-4 text-foreground">request: native module</p>
+        <p {...stylex.props(styles.marginTop4, styles.foregroundText)}>request: native module</p>
         <p>platform: iOS · Android · Web</p>
         <p>contract: normalized</p>
       </div>
@@ -85,10 +742,10 @@ const runtimePhases = [
     deviceTitle: "Typed result",
     deviceDescription: "A known value returned with no unchecked paths.",
     code: (
-      <div className="flex items-center gap-3 rounded-lg border border-border bg-background px-3 py-4 font-mono text-xs">
-        <CheckIcon className="size-4 text-primary" />
-        <span className="text-foreground">Battery: 82%</span>
-        <span className="ml-auto text-muted-foreground">verified</span>
+      <div {...stylex.props(styles.resultBox)}>
+        <CheckIcon {...stylex.props(styles.icon16Primary)} />
+        <span {...stylex.props(styles.foregroundText)}>Battery: 82%</span>
+        <span {...stylex.props(styles.marginLeftAuto, styles.mutedText)}>verified</span>
       </div>
     ),
   },
@@ -101,19 +758,11 @@ const isRuntimePhase = (value: string): value is RuntimePhase =>
 
 function Wordmark() {
   return (
-    <a
-      aria-label="Better Native home"
-      className="group flex items-center gap-2.5 font-medium tracking-[-0.04em]"
-      href="#top"
-    >
-      <span className="relative grid size-9 overflow-hidden rounded-[0.65rem] transition-transform duration-300 group-hover:rotate-[-6deg]">
-        <img
-          alt=""
-          className="size-full scale-[1.7] object-cover mix-blend-screen"
-          src="/better-native-logo.png"
-        />
+    <a aria-label="Better Native home" {...stylex.props(styles.wordmark)} href="#top">
+      <span {...stylex.props(styles.wordmarkLogo)}>
+        <img alt="" {...stylex.props(styles.wordmarkImage)} src="/better-native-logo.png" />
       </span>
-      <span className="text-[15px]">Better Native</span>
+      <span {...stylex.props(styles.wordmarkText)}>Better Native</span>
     </a>
   )
 }
@@ -121,6 +770,11 @@ function Wordmark() {
 function RuntimePreview() {
   const [phase, setPhase] = useState<RuntimePhase>("resolve")
   const activePhase = runtimePhases.find((item) => item.id === phase) ?? runtimePhases[0]
+  const meterStyle = {
+    resolve: styles.meterResolve,
+    run: styles.meterRun,
+    result: styles.meterResult,
+  }[phase]
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -134,16 +788,13 @@ function RuntimePreview() {
   }, [])
 
   return (
-    <div
-      className="runtime-stage grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,22rem)] lg:items-center lg:gap-10"
-      data-phase={phase}
-    >
-      <div className="runtime-shell relative overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-black/30">
-        <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-5">
-          <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
-              <span className="relative inline-flex size-2 rounded-full bg-primary" />
+    <div {...stylex.props(styles.runtimeStage)} data-phase={phase}>
+      <div {...stylex.props(styles.runtimeShell)}>
+        <div {...stylex.props(styles.runtimeHeader)}>
+          <div {...stylex.props(styles.runtimeLabel)}>
+            <span {...stylex.props(styles.pingWrap)}>
+              <span {...stylex.props(styles.ping)} />
+              <span {...stylex.props(styles.pingDot)} />
             </span>
             Compatibility harness
           </div>
@@ -151,13 +802,13 @@ function RuntimePreview() {
         </div>
 
         <Tabs
-          className="gap-0"
+          xstyle={styles.tabsNoGap}
           onValueChange={(value) => {
             if (isRuntimePhase(value)) setPhase(value)
           }}
           value={phase}
         >
-          <TabsList className="mx-4 mt-4 sm:mx-5" variant="line">
+          <TabsList xstyle={styles.tabsList} variant="line">
             {runtimePhases.map((item) => (
               <TabsTrigger key={item.id} value={item.id}>
                 {item.label}
@@ -166,31 +817,31 @@ function RuntimePreview() {
           </TabsList>
 
           {runtimePhases.map((item) => (
-            <TabsContent
-              className="runtime-content m-0 px-4 pb-5 pt-4 sm:px-5"
-              key={item.id}
-              value={item.id}
-            >
+            <TabsContent xstyle={styles.tabsContent} key={item.id} value={item.id}>
               {item.code}
             </TabsContent>
           ))}
         </Tabs>
 
-        <div className="grid grid-cols-3 border-t border-border text-center font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+        <div {...stylex.props(styles.phaseGrid)}>
           {runtimePhases.map((item, index) => (
-            <div className="relative px-2 py-3" data-active={item.id === phase} key={item.id}>
+            <div
+              {...stylex.props(styles.phaseCell, item.id === phase && styles.phaseActive)}
+              data-active={item.id === phase}
+              key={item.id}
+            >
               {index < runtimePhases.length - 1 ? (
-                <span className="absolute inset-y-0 right-0 w-px bg-border" />
+                <span {...stylex.props(styles.phaseDivider)} />
               ) : null}
-              <span className="text-primary">{item.index}</span> {item.label}
+              <span {...stylex.props(styles.primaryText)}>{item.index}</span> {item.label}
             </div>
           ))}
         </div>
       </div>
 
-      <div className="iphone-wrap mx-auto w-44 sm:w-64 lg:mx-0 lg:w-[22rem]" data-phase={phase}>
-        <div className="iphone-mockup relative aspect-[0.502]">
-          <svg className="phone-chassis absolute inset-0 size-full" viewBox="0 0 366 729">
+      <div {...stylex.props(styles.phoneWrap)} data-phase={phase}>
+        <div {...stylex.props(styles.phoneMockup)}>
+          <svg {...stylex.props(styles.phoneSvg)} viewBox="0 0 366 729">
             <defs>
               <clipPath id="better-native-phone-screen">
                 <rect height="684" rx="36" width="316" x="24" y="24" />
@@ -211,38 +862,30 @@ function RuntimePreview() {
               x="24"
               y="24"
             >
-              <div className="iphone-screen flex size-full flex-col bg-card px-4 pb-4 pt-8 lg:px-7 lg:pb-7 lg:pt-14">
-                <div className="flex items-center justify-between font-mono text-[8px] text-muted-foreground lg:text-[10px]">
+              <div {...stylex.props(styles.phoneScreen)}>
+                <div {...stylex.props(styles.phoneStatus)}>
                   <span>9:41</span>
                   <span>5G</span>
                 </div>
-                <div className="mt-7 lg:mt-12">
-                  <p className="text-[10px] font-medium text-foreground lg:text-base">
-                    Effect Mobile
-                  </p>
-                  <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground lg:mt-2 lg:text-[10px]">
-                    native trace
-                  </p>
+                <div {...stylex.props(styles.phoneTitleWrap)}>
+                  <p {...stylex.props(styles.phoneTitle)}>Effect Mobile</p>
+                  <p {...stylex.props(styles.phoneKicker)}>native trace</p>
                 </div>
-                <div className="device-orb mx-auto mt-7 grid size-20 place-items-center rounded-full border border-border bg-background lg:mt-12 lg:size-40">
+                <div {...stylex.props(styles.deviceOrb)}>
                   {phase === "result" ? (
-                    <CheckIcon className="size-7 text-primary lg:size-14" />
+                    <CheckIcon {...stylex.props(styles.deviceIcon)} />
                   ) : (
-                    <OrbitIcon className="size-7 text-primary lg:size-14" />
+                    <OrbitIcon {...stylex.props(styles.deviceIcon)} />
                   )}
                 </div>
-                <div className="mt-6 lg:mt-10">
-                  <p className="text-xs font-medium leading-tight text-foreground lg:text-xl">
-                    {activePhase.deviceTitle}
-                  </p>
-                  <p className="mt-2 text-[10px] leading-4 text-muted-foreground lg:mt-4 lg:text-xs lg:leading-5">
-                    {activePhase.deviceDescription}
-                  </p>
+                <div {...stylex.props(styles.deviceCopy)}>
+                  <p {...stylex.props(styles.deviceTitle)}>{activePhase.deviceTitle}</p>
+                  <p {...stylex.props(styles.deviceDescription)}>{activePhase.deviceDescription}</p>
                 </div>
-                <div className="device-meter mt-5 h-1.5 overflow-hidden rounded-full bg-muted lg:mt-8 lg:h-3">
-                  <span />
+                <div {...stylex.props(styles.deviceMeter)}>
+                  <span {...stylex.props(styles.deviceMeterFill, meterStyle)} />
                 </div>
-                <div className="mt-3 flex items-center justify-between font-mono text-[8px] uppercase tracking-[0.1em] text-muted-foreground lg:mt-5 lg:text-[10px]">
+                <div {...stylex.props(styles.deviceFooter)}>
                   <span>{activePhase.index} / 03</span>
                   <span>{phase === "result" ? "ready" : "working"}</span>
                 </div>
@@ -258,22 +901,22 @@ function RuntimePreview() {
 
 function LandingPrototype() {
   return (
-    <main id="top" className="overflow-x-clip bg-background text-foreground">
-      <section className="landing-hero relative isolate min-h-svh overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 dot-grid opacity-50" />
+    <main id="top" {...stylex.props(styles.main)}>
+      <section {...stylex.props(styles.hero)}>
+        <div {...stylex.props(styles.dotGrid, styles.dotGridHalf)} />
 
-        <header className="relative z-10 mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8">
+        <header {...stylex.props(styles.header)}>
           <Wordmark />
-          <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-            <a className="transition-colors hover:text-foreground" href="#foundation">
+          <nav {...stylex.props(styles.nav)}>
+            <a {...stylex.props(styles.navLink)} href="#foundation">
               Foundation
             </a>
-            <a className="transition-colors hover:text-foreground" href="#roadmap">
+            <a {...stylex.props(styles.navLink)} href="#roadmap">
               Roadmap
             </a>
           </nav>
           <a
-            className={buttonVariants({ size: "sm", variant: "outline" })}
+            {...stylex.props(buttonVariants({ size: "sm", variant: "outline" }))}
             href={githubUrl}
             rel="noreferrer"
             target="_blank"
@@ -283,25 +926,24 @@ function LandingPrototype() {
           </a>
         </header>
 
-        <div className="relative mx-auto max-w-7xl px-5 pb-12 pt-12 sm:px-8 lg:pb-20 lg:pt-16">
-          <div className="max-w-5xl">
+        <div {...stylex.props(styles.heroInner)}>
+          <div {...stylex.props(styles.maxWidth5xl)}>
             <Badge variant="secondary">
               <SparklesIcon data-icon="inline-start" />
               Building in public
             </Badge>
-            <p className="mt-8 text-sm font-medium tracking-[-0.02em] text-muted-foreground">
-              Effect × Expo
-            </p>
-            <h1 className="mt-3 max-w-5xl text-balance text-5xl font-semibold leading-[0.92] tracking-[-0.075em] sm:text-6xl lg:text-7xl">
-              Reliable Expo APIs, <span className="text-primary">by construction.</span>
+            <p {...stylex.props(styles.heroKicker)}>Effect × Expo</p>
+            <h1 {...stylex.props(styles.heroHeading)}>
+              Reliable Expo APIs,{" "}
+              <span {...stylex.props(styles.primaryText)}>by construction.</span>
             </h1>
-            <p className="mt-7 max-w-xl text-pretty text-base leading-7 text-muted-foreground sm:text-lg">
+            <p {...stylex.props(styles.heroBody)}>
               Effect-native APIs for Expo, starting with a compatibility suite that validates the
               native surface before you build on it.
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-3">
+            <div {...stylex.props(styles.actionRow)}>
               <a
-                className={buttonVariants({ size: "lg" })}
+                {...stylex.props(buttonVariants({ size: "lg" }))}
                 href={githubUrl}
                 rel="noreferrer"
                 target="_blank"
@@ -310,87 +952,84 @@ function LandingPrototype() {
                 Follow the project
                 <ArrowUpRightIcon data-icon="inline-end" />
               </a>
-              <a className={buttonVariants({ size: "lg", variant: "outline" })} href="#foundation">
+              <a
+                {...stylex.props(buttonVariants({ size: "lg", variant: "outline" }))}
+                href="#foundation"
+              >
                 Explore the harness
                 <ArrowDownRightIcon data-icon="inline-end" />
               </a>
             </div>
-            <dl className="mt-8 grid max-w-2xl border-y border-border font-mono text-[10px] uppercase tracking-[0.11em] sm:grid-cols-3">
-              <div className="py-3 sm:pr-4">
-                <dt className="text-muted-foreground">Pinned runtime</dt>
-                <dd className="mt-1 text-foreground">Effect 4 RC</dd>
+            <dl {...stylex.props(styles.facts)}>
+              <div {...stylex.props(styles.fact)}>
+                <dt {...stylex.props(styles.mutedText)}>Pinned runtime</dt>
+                <dd {...stylex.props(styles.factValue)}>Effect 4 RC</dd>
               </div>
-              <div className="border-t border-border py-3 sm:border-l sm:border-t-0 sm:px-4">
-                <dt className="text-muted-foreground">Target SDK</dt>
-                <dd className="mt-1 text-foreground">Expo 57</dd>
+              <div {...stylex.props(styles.factMiddle)}>
+                <dt {...stylex.props(styles.mutedText)}>Target SDK</dt>
+                <dd {...stylex.props(styles.factValue)}>Expo 57</dd>
               </div>
-              <div className="border-t border-border py-3 sm:border-l sm:border-t-0 sm:pl-4">
-                <dt className="text-muted-foreground">Current work</dt>
-                <dd className="mt-1 text-primary">Capability prototypes</dd>
+              <div {...stylex.props(styles.factLast)}>
+                <dt {...stylex.props(styles.mutedText)}>Current work</dt>
+                <dd {...stylex.props(styles.factValuePrimary)}>Capability prototypes</dd>
               </div>
             </dl>
           </div>
 
-          <div className="relative ml-auto mt-12 w-full max-w-5xl lg:mt-16">
+          <div {...stylex.props(styles.previewWrap)}>
             <RuntimePreview />
-            <div className="mt-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-              <OrbitIcon className="size-3 text-primary" />
+            <div {...stylex.props(styles.previewCaption)}>
+              <OrbitIcon {...stylex.props(styles.icon12Primary)} />
               The same execution model, from device to service.
             </div>
           </div>
         </div>
       </section>
 
-      <section id="foundation" className="border-y border-border bg-card">
-        <div className="mx-auto grid max-w-7xl lg:grid-cols-[0.7fr_1.3fr]">
-          <div className="flex min-h-56 flex-col justify-between border-b border-border p-6 sm:p-8 lg:min-h-80 lg:border-b-0 lg:border-r lg:p-10">
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-              01 / Foundation
-            </span>
-            <p className="max-w-56 text-xl font-medium leading-tight tracking-[-0.04em]">
-              Compatibility is a feature, not a footnote.
-            </p>
+      <section id="foundation" {...stylex.props(styles.borderedCardSection)}>
+        <div {...stylex.props(styles.foundationGrid)}>
+          <div {...stylex.props(styles.foundationAside)}>
+            <span {...stylex.props(styles.sectionLabel)}>01 / Foundation</span>
+            <p {...stylex.props(styles.asideCopy)}>Compatibility is a feature, not a footnote.</p>
           </div>
-          <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:p-10">
+          <div {...stylex.props(styles.foundationContent)}>
             <div>
-              <h2 className="max-w-xl text-balance text-3xl font-medium leading-tight tracking-[-0.055em] sm:text-4xl">
+              <h2 {...stylex.props(styles.sectionHeading)}>
                 A disciplined bridge between Effect and the Expo ecosystem.
               </h2>
-              <p className="mt-5 max-w-xl leading-7 text-muted-foreground">
+              <p {...stylex.props(styles.sectionBody)}>
                 The harness tests each capability package against a concrete surface derived from
                 pinned upstream revisions.
               </p>
             </div>
-            <div className="grid gap-3 font-mono text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">runtime</span>
+            <div {...stylex.props(styles.foundationStats)}>
+              <div {...stylex.props(styles.stat)}>
+                <span {...stylex.props(styles.mutedText)}>runtime</span>
                 <span>Effect 4.0 RC</span>
               </div>
               <Separator />
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">platform</span>
+              <div {...stylex.props(styles.stat)}>
+                <span {...stylex.props(styles.mutedText)}>platform</span>
                 <span>Expo 57</span>
               </div>
               <Separator />
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">status</span>
-                <span className="text-primary">four native prototypes</span>
+              <div {...stylex.props(styles.stat)}>
+                <span {...stylex.props(styles.mutedText)}>status</span>
+                <span {...stylex.props(styles.primaryText)}>four native prototypes</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28">
-        <div className="max-w-2xl">
-          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-            The operating model
-          </span>
-          <h2 className="mt-5 text-balance text-3xl font-medium tracking-[-0.055em] sm:text-5xl">
+      <section {...stylex.props(styles.standardSection)}>
+        <div {...stylex.props(styles.maxWidth2xl)}>
+          <span {...stylex.props(styles.sectionLabel)}>The operating model</span>
+          <h2 {...stylex.props(styles.operatingHeading)}>
             One predictable path from native work to application code.
           </h2>
         </div>
-        <div className="mt-14 grid border-y border-border md:grid-cols-3">
+        <div {...stylex.props(styles.operatingGrid)}>
           {[
             [
               "01",
@@ -404,36 +1043,29 @@ function LandingPrototype() {
               "Expose Effect-native capabilities with typed errors and requirements.",
             ],
           ].map(([number, title, body], index) => (
-            <article
-              className="group border-b border-border py-8 last:border-b-0 md:border-b-0 md:px-7 md:first:pl-0 md:last:pr-0 md:not(:last-child):border-r"
-              key={title}
-            >
-              <span className="font-mono text-xs text-primary">{number}</span>
-              <h3 className="mt-10 text-2xl font-medium tracking-[-0.045em] transition-transform duration-300 group-hover:translate-x-1">
-                {title}
-              </h3>
-              <p className="mt-3 max-w-xs leading-7 text-muted-foreground">{body}</p>
+            <article {...stylex.props(styles.operatingItem)} key={title}>
+              <span {...stylex.props(styles.operatingNumber)}>{number}</span>
+              <h3 {...stylex.props(styles.operatingTitle)}>{title}</h3>
+              <p {...stylex.props(styles.operatingBody)}>{body}</p>
               {index < 2 ? (
-                <ArrowDownRightIcon className="mt-8 size-5 text-muted-foreground transition-colors group-hover:text-primary" />
+                <ArrowDownRightIcon {...stylex.props(styles.marginTop8, styles.icon20Muted)} />
               ) : (
-                <CheckIcon className="mt-8 size-5 text-primary" />
+                <CheckIcon {...stylex.props(styles.marginTop8, styles.icon20Primary)} />
               )}
             </article>
           ))}
         </div>
       </section>
 
-      <section id="roadmap" className="border-y border-border bg-card">
-        <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[0.75fr_1.25fr]">
+      <section id="roadmap" {...stylex.props(styles.borderedCardSection)}>
+        <div {...stylex.props(styles.roadmapGrid)}>
           <div>
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-              02 / Roadmap
-            </span>
-            <h2 className="mt-5 max-w-md text-balance text-3xl font-medium tracking-[-0.055em] sm:text-4xl">
+            <span {...stylex.props(styles.sectionLabel)}>02 / Roadmap</span>
+            <h2 {...stylex.props(styles.roadmapHeading)}>
               Build the base once. Let every capability inherit it.
             </h2>
           </div>
-          <ol className="border-t border-border">
+          <ol {...stylex.props(styles.roadmapList)}>
             {[
               [
                 "Now",
@@ -451,28 +1083,23 @@ function LandingPrototype() {
                 "A stable surface for application teams to evaluate in production.",
               ],
             ].map(([status, title, body]) => (
-              <li
-                className="grid gap-4 border-b border-border py-7 sm:grid-cols-[7rem_1fr_auto] sm:items-center"
-                key={title}
-              >
+              <li {...stylex.props(styles.roadmapItem)} key={title}>
                 <Badge variant={status === "Now" ? "default" : "outline"}>{status}</Badge>
                 <div>
-                  <h3 className="text-lg font-medium tracking-[-0.035em]">{title}</h3>
-                  <p className="mt-1 leading-6 text-muted-foreground">{body}</p>
+                  <h3 {...stylex.props(styles.roadmapTitle)}>{title}</h3>
+                  <p {...stylex.props(styles.roadmapBody)}>{body}</p>
                 </div>
-                <CircleIcon className="hidden size-3 text-primary sm:block" fill="currentColor" />
+                <CircleIcon {...stylex.props(styles.roadmapDot)} fill="currentColor" />
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[0.8fr_1.2fr]">
+      <section {...stylex.props(styles.questionsGrid)}>
         <div>
-          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-            Questions, before code
-          </span>
-          <h2 className="mt-5 text-balance text-3xl font-medium tracking-[-0.055em] sm:text-4xl">
+          <span {...stylex.props(styles.sectionLabel)}>Questions, before code</span>
+          <h2 {...stylex.props(styles.roadmapHeading)}>
             A small surface, with deliberate decisions.
           </h2>
         </div>
@@ -501,19 +1128,15 @@ function LandingPrototype() {
         </Accordion>
       </section>
 
-      <section className="relative overflow-hidden border-t border-border bg-primary px-5 py-20 text-primary-foreground sm:px-8 sm:py-28">
-        <div className="absolute inset-0 opacity-20 dot-grid" />
-        <div className="relative mx-auto flex max-w-7xl flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
-          <div className="max-w-3xl">
-            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary-foreground/65">
-              better-native / 0.0.0
-            </p>
-            <h2 className="mt-4 text-balance text-4xl font-semibold leading-[0.98] tracking-[-0.065em] sm:text-6xl">
-              The reliable path to native.
-            </h2>
+      <section {...stylex.props(styles.cta)}>
+        <div {...stylex.props(styles.dotGrid, styles.dotGridLight)} />
+        <div {...stylex.props(styles.ctaInner)}>
+          <div {...stylex.props(styles.ctaCopy)}>
+            <p {...stylex.props(styles.ctaLabel)}>better-native / 0.0.0</p>
+            <h2 {...stylex.props(styles.ctaHeading)}>The reliable path to native.</h2>
           </div>
           <a
-            className={buttonVariants({ size: "lg", variant: "secondary" })}
+            {...stylex.props(buttonVariants({ size: "lg", variant: "secondary" }))}
             href={githubUrl}
             rel="noreferrer"
             target="_blank"
@@ -524,7 +1147,7 @@ function LandingPrototype() {
         </div>
       </section>
 
-      <footer className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8">
+      <footer {...stylex.props(styles.footer)}>
         <Wordmark />
         <p>Open source · MIT licensed</p>
       </footer>
