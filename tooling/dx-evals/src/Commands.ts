@@ -154,6 +154,7 @@ export const report = Command.make(
   {
     latest: Flag.boolean("latest").pipe(
       Flag.withDescription("Serve only the latest retained report (the default)"),
+      Flag.withDefault(false),
     ),
     campaign: Flag.string("campaign").pipe(
       Flag.optional,
@@ -161,6 +162,7 @@ export const report = Command.make(
     ),
     all: Flag.boolean("all").pipe(
       Flag.withDescription("Serve every retained report, including historical campaigns"),
+      Flag.withDefault(false),
     ),
   },
   Effect.fn("DxEvals.Command.report")(function* ({ all, campaign, latest }) {
@@ -189,6 +191,7 @@ export const probeProvider = Command.make(
     ),
     confirmPaid: Flag.boolean("confirm-paid").pipe(
       Flag.withDescription("Confirm the single bounded provider request"),
+      Flag.withDefault(false),
     ),
   },
   Effect.fn("DxEvals.Command.probeProvider")(function* ({ confirmPaid, profile: profileId }) {
@@ -219,6 +222,7 @@ export const run = Command.make(
     profile: campaignProfileFlag,
     confirmPaid: Flag.boolean("confirm-paid").pipe(
       Flag.withDescription("Confirm that the reviewed maximum cost may be spent"),
+      Flag.withDefault(false),
     ),
   },
   Effect.fn("DxEvals.Command.run")(function* ({ campaign, confirmPaid, profile, task }) {

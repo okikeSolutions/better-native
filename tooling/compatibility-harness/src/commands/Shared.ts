@@ -46,6 +46,7 @@ export const allowNativeRebuildFlag = Flag.boolean("allow-native-rebuild").pipe(
   Flag.withDescription(
     "Allow Gradle, CocoaPods, or Xcode compilation when a cached native artifact fails to repack",
   ),
+  Flag.withDefault(false),
 )
 /**
  * Candidate revision supplied by the harness configuration, when present.

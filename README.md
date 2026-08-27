@@ -20,6 +20,7 @@ bun run expo:prepare
 bun run generate
 bun run compatibility
 bun run matrix
+bun run migration-status
 bun run check
 ```
 

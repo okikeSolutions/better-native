@@ -45,6 +45,12 @@ The implementation may be incomplete. The compatibility denominator may not be i
 
 Only `effect` counts as migrated.
 
+`compatibility/capabilities.json` declares the common and package-specific work required for each
+migration. `bun run migration-status` derives package, documentation, mapping, installation,
+compatibility-app, generated-resolution, and DX-eval status from repository files. The strict form
+fails when any declared integration is absent. Ownership remains authoritative for promotion, so a
+complete checklist with `fallback` ownership is implemented but not migrated.
+
 ## Repository boundaries
 
 ```text
@@ -55,6 +61,7 @@ tooling/dx-evals               Private Effect-native developer-experience eval h
 tooling/expo-catalog           Private declaration-only fallback for external packages
 evals/tasks                    Versioned public DX task fixtures and runtime-withheld controls
 packages/typescript-config     Private shared TypeScript presets
+compatibility/capabilities.json Reviewed per-capability migration requirements
 compatibility/ownership.json   Reviewed per-export ownership overrides
 compatibility/api-mappings.json Reviewed Expo-to-Effect semantic API mappings
 compatibility/surface-lock.json Reviewed lock for the complete discovered export denominator

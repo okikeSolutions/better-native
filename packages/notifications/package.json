@@ -68,15 +68,15 @@
   },
   "devDependencies": {
     "@better-native/task-manager": "workspace:*",
-    "@effect/docgen": "4.0.0-rc.108",
-    "effect": "4.0.0-rc.108",
+    "@effect/docgen": "4.0.0-rc.112",
+    "effect": "4.0.0-rc.112",
     "expo": "57.0.9",
     "expo-notifications": "57.0.8",
     "react": "19.2.3"
   },
   "peerDependencies": {
     "@better-native/task-manager": "0.0.1-alpha.1",
-    "effect": "4.0.0-rc.108",
+    "effect": "4.0.0-rc.112",
     "expo-notifications": ">=57.0.0 <58.0.0",
     "expo-task-manager": ">=57.0.0 <58.0.0"
   },

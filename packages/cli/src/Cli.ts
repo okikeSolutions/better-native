@@ -7,10 +7,22 @@ import * as Application from "./Application.ts"
 import { capabilityNames, releaseVersion } from "./Model.ts"
 
 const packageManagerFlags = {
-  npm: Flag.boolean("npm").pipe(Flag.withDescription("Use the npm lockfile and installer")),
-  pnpm: Flag.boolean("pnpm").pipe(Flag.withDescription("Use the pnpm lockfile and installer")),
-  yarn: Flag.boolean("yarn").pipe(Flag.withDescription("Use the Yarn lockfile and installer")),
-  bun: Flag.boolean("bun").pipe(Flag.withDescription("Use the Bun lockfile and installer")),
+  npm: Flag.boolean("npm").pipe(
+    Flag.withDescription("Use the npm lockfile and installer"),
+    Flag.withDefault(false),
+  ),
+  pnpm: Flag.boolean("pnpm").pipe(
+    Flag.withDescription("Use the pnpm lockfile and installer"),
+    Flag.withDefault(false),
+  ),
+  yarn: Flag.boolean("yarn").pipe(
+    Flag.withDescription("Use the Yarn lockfile and installer"),
+    Flag.withDefault(false),
+  ),
+  bun: Flag.boolean("bun").pipe(
+    Flag.withDescription("Use the Bun lockfile and installer"),
+    Flag.withDefault(false),
+  ),
 }
 
 export const install = CliCommand.make(
@@ -22,6 +34,7 @@ export const install = CliCommand.make(
     ),
     dryRun: Flag.boolean("dry-run").pipe(
       Flag.withDescription("Print the exact installation plan without changing the project"),
+      Flag.withDefault(false),
     ),
     ...packageManagerFlags,
   },

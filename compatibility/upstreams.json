@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "effect": {
     "repository": "https://github.com/Effect-TS/effect.git",
-    "revision": "de2a9a69099993087e57c64df58537c765ac0224",
+    "revision": "2600f62f4532026928454dcea8d1c48557b3f942",
     "path": "vendor/effect"
   },
   "expo": {

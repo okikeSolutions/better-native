@@ -22,13 +22,13 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@effect/platform-node": "4.0.0-rc.108",
+    "@effect/platform-node": "4.0.0-rc.112",
     "@expo/metro-config": "57.0.7",
-    "effect": "4.0.0-rc.108"
+    "effect": "4.0.0-rc.112"
   },
   "peerDependencies": {
     "@expo/metro-config": ">=57.0.0 <58.0.0",
-    "effect": "4.0.0-rc.108",
+    "effect": "4.0.0-rc.112",
     "expo": ">=57.0.0 <58.0.0"
   }
 }

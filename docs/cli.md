@@ -138,7 +138,7 @@ The CLI:
 6. inspects the existing `expo-network` installation and native-autolinking result;
 7. gives the project-local Expo CLI one package list containing the provider and exact third-party
    specifications, for example `expo-network @better-native/network@0.0.1-alpha.1
-effect@4.0.0-rc.108`;
+effect@4.0.0-rc.112`;
 8. lets Expo select the provider version from its SDK version sources and pass the exact Better
    Native and Effect specifications through to the detected package manager;
 9. validates the resulting direct dependencies, config-plugin edits, native selection, JavaScript
@@ -162,7 +162,7 @@ Example result:
 ✓ Expo SDK 57 detected
 ✓ expo-network 57.0.1 retained
 + @better-native/network 0.0.1-alpha.1
-+ effect 4.0.0-rc.108
++ effect 4.0.0-rc.112
 ✓ @better-native/network resolves
 ℹ Provider already present in the current binary; no native rebuild required
 ```
@@ -219,7 +219,7 @@ The CLI is the recommended coordinator, not the only supported installation path
 perform the same steps explicitly:
 
 ```sh
-npx expo install expo-network @better-native/network@0.0.1-alpha.1 effect@4.0.0-rc.108
+npx expo install expo-network @better-native/network@0.0.1-alpha.1 effect@4.0.0-rc.112
 ```
 
 This is the npm spelling; the published guide also shows the equivalent Yarn, pnpm, and Bun commands.

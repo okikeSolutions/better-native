@@ -89,6 +89,16 @@ const cacheHitStatus = (hit: boolean) =>
     Match.exhaustive,
   )
 
+const nativeCompilerInvocations = (
+  buildDecision: "bundle" | "full-build" | "repack",
+  platform: BuildRequest["platform"],
+): Array<"gradle" | "cocoapods" | "xcode"> => {
+  if (buildDecision !== "full-build") return []
+  if (platform === "android") return ["gradle"]
+  if (platform === "ios") return ["cocoapods", "xcode"]
+  return []
+}
+
 /** Effect context tag for executing isolated compatibility app builds. */
 export class AppBuildExecutor extends Context.Service<AppBuildExecutor, Service>()(
   "@better-native/compatibility-harness/AppBuildExecutor",
@@ -854,14 +864,7 @@ export const layer = (
                 metroClosure: prepared.metroClosureCount,
                 autolinkedNativeModules,
               },
-              nativeCompilerInvocations:
-                buildDecision !== "full-build"
-                  ? []
-                  : request.platform === "android"
-                    ? ["gradle"]
-                    : request.platform === "ios"
-                      ? ["cocoapods", "xcode"]
-                      : [],
+              nativeCompilerInvocations: nativeCompilerInvocations(buildDecision, request.platform),
             },
             artifacts,
           }

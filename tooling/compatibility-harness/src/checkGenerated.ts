@@ -1,14 +1,13 @@
+interface CapabilityLedger {
+  readonly capabilities: ReadonlyArray<{ readonly id: string }>
+}
+
+const capabilityLedger = (await Bun.file(
+  "compatibility/capabilities.json",
+).json()) as CapabilityLedger
 const targets = [
   "apps/compatibility-suite/src/generated",
-  "packages/battery/src/Expo.ts",
-  "packages/keep-awake/src/Expo.ts",
-  "packages/network/src/Expo.ts",
-  "packages/secure-store/src/Expo.ts",
-  "packages/sqlite/src/Expo.ts",
-  "packages/task-manager/src/Expo.ts",
-  "packages/background-task/src/Expo.ts",
-  "packages/location/src/Expo.ts",
-  "packages/notifications/src/Expo.ts",
+  ...capabilityLedger.capabilities.map(({ id }) => `packages/${id}/src/Expo.ts`),
 ]
 
 const snapshot = async (): Promise<ReadonlyMap<string, string>> => {

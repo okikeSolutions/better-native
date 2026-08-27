@@ -83,9 +83,7 @@ const batteryCapabilityCases = [
   ),
 ] as const
 
-const sqliteCapabilitySourceId = TestSourceId.make(
-  capabilityShellSourceIds.sqlite,
-)
+const sqliteCapabilitySourceId = TestSourceId.make(capabilityShellSourceIds.sqlite)
 const sqliteCapabilityPath = "src/capabilities/SQLite.ts"
 const sqliteCapabilityCases = [
   TestCaseId.make(
@@ -128,9 +126,7 @@ const backgroundTaskCapabilityCases = [
   ),
 ] as const
 
-const locationCapabilitySourceId = TestSourceId.make(
-  capabilityShellSourceIds.location,
-)
+const locationCapabilitySourceId = TestSourceId.make(capabilityShellSourceIds.location)
 const locationCapabilityPath = "src/capabilities/Location.ts"
 const locationCapabilityCases = [
   TestCaseId.make(
@@ -147,9 +143,7 @@ const locationCapabilityCases = [
   ),
 ] as const
 
-const notificationsCapabilitySourceId = TestSourceId.make(
-  capabilityShellSourceIds.notifications,
-)
+const notificationsCapabilitySourceId = TestSourceId.make(capabilityShellSourceIds.notifications)
 const notificationsCapabilityPath = "src/capabilities/Notifications.ts"
 const notificationsCapabilityCases = [
   TestCaseId.make(

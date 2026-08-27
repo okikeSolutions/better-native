@@ -9,6 +9,10 @@
     ".": {
       "project": ["*.ts"]
     },
+    "apps/landing": {
+      "ignoreDependencies": ["@fontsource-variable/geist"],
+      "ignoreUnresolved": ["/@id/virtual:stylex:runtime"]
+    },
     "apps/compatibility-suite": {
       "entry": [
         "app/**/*.{ts,tsx}",

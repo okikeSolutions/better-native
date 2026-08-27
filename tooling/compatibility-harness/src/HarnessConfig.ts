@@ -106,27 +106,22 @@ const isJava17Home = (home: string): boolean => {
 
 /** Resolves a verified JDK 17 independently from the caller's default Java. */
 export const resolveJava17Home = (explicit: string | null): string | null => {
-  const candidates = [explicit]
-  if (process.platform === "darwin") {
-    try {
-      candidates.push(
-        execFileSync("/usr/libexec/java_home", ["-v", "17"], { encoding: "utf8" }).trim(),
-      )
-    } catch {
-      // Fall through to reviewed conventional installation paths.
-    }
-    candidates.push(
-      "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home",
-      "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home",
-      "/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home",
-    )
+  if (explicit !== null && isJava17Home(explicit)) return explicit
+  if (process.platform !== "darwin") return null
+  const conventional = [
+    "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home",
+    "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home",
+    "/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home",
+  ].find(isJava17Home)
+  if (conventional !== undefined) return conventional
+  try {
+    const discovered = execFileSync("/usr/libexec/java_home", ["-v", "17"], {
+      encoding: "utf8",
+    }).trim()
+    return isJava17Home(discovered) ? discovered : null
+  } catch {
+    return null
   }
-  return (
-    candidates.find(
-      (candidate): candidate is string =>
-        candidate !== undefined && candidate !== null && isJava17Home(candidate),
-    ) ?? null
-  )
 }
 
 const cacheStatus = (value: Option.Option<boolean>): CacheEnvironment["status"] =>

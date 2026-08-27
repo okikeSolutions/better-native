@@ -25,6 +25,11 @@ interface PackResult {
   readonly files: ReadonlyArray<PackedFile>
 }
 
+const decodePackResults = (output: string): ReadonlyArray<PackResult> => {
+  const parsed = JSON.parse(output) as ReadonlyArray<PackResult> | Record<string, PackResult>
+  return Array.isArray(parsed) ? parsed : Object.values(parsed)
+}
+
 interface PublishedManifest {
   readonly name: string
   readonly version: string
@@ -253,9 +258,9 @@ const pack = (
   const packageRoot = join(repositoryRoot, "packages", capability.directory)
   const packRoot = join(temporaryRoot, "pack")
   mkdirSync(packRoot, { recursive: true })
-  const results = JSON.parse(
+  const results = decodePackResults(
     run("npm", ["pack", "--json", "--ignore-scripts", "--pack-destination", packRoot], packageRoot),
-  ) as ReadonlyArray<PackResult>
+  )
   assert.lengthOf(results, 1)
   const artifact = results[0]
   assert.isDefined(artifact)
@@ -307,12 +312,12 @@ describe("published capability packages", () => {
       assert.deepStrictEqual(manifest.files, ["build", "LICENSE", "README.md"])
       assert.strictEqual(manifest.scripts.prepack, "bun run build")
       assert.isUndefined(manifest.dependencies)
-      assert.strictEqual(manifest.devDependencies.effect, "4.0.0-rc.108")
+      assert.strictEqual(manifest.devDependencies.effect, "4.0.0-rc.112")
       assert.deepStrictEqual(manifest.peerDependencies, {
         ...(capability.taskManagerWrapper
           ? { "@better-native/task-manager": "0.0.1-alpha.1" }
           : {}),
-        effect: "4.0.0-rc.108",
+        effect: "4.0.0-rc.112",
         [capability.provider]: ">=57.0.0 <58.0.0",
         ...(capability.taskManagerProvider ? { "expo-task-manager": ">=57.0.0 <58.0.0" } : {}),
       })
@@ -418,7 +423,7 @@ describe("published capability packages", () => {
           ...(capability.taskManagerWrapper
             ? { "@better-native/task-manager": "0.0.1-alpha.1" }
             : {}),
-          effect: "4.0.0-rc.108",
+          effect: "4.0.0-rc.112",
           [capability.provider]: ">=57.0.0 <58.0.0",
           ...(capability.taskManagerProvider ? { "expo-task-manager": ">=57.0.0 <58.0.0" } : {}),
         })

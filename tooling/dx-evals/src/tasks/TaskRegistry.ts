@@ -26,6 +26,20 @@ export type Task =
   | Sqlite.Task
   | TaskManager.Task
 
+/** Stable IDs in the closed reviewed task registry. */
+export const registeredTaskIds = [
+  "synthetic-effect",
+  "network",
+  "battery",
+  "background-task",
+  "keep-awake",
+  "location",
+  "notifications",
+  "secure-store",
+  "sqlite",
+  "task-manager",
+].toSorted()
+
 /** Loads one task from the closed reviewed task registry. */
 export const loadTask = (taskId: Domain.TaskId) =>
   Match.value<string>(taskId).pipe(

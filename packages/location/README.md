@@ -4,18 +4,18 @@ Effect-native location, geocoding, permissions, foreground observation, and pers
 tracking for Expo SDK 57.
 
 ```sh
-npx expo install expo-location @better-native/location@0.0.1-alpha.1 effect@4.0.0-rc.108
+npx expo install expo-location @better-native/location@0.0.1-alpha.1 effect@4.0.0-rc.112
 ```
 
 The reviewed provider range is Expo Location 57 (`>=57.0.0 <58.0.0`) with Effect
-`4.0.0-rc.108`. For a split manual install, first run `npx expo install expo-location`, then use
+`4.0.0-rc.112`. For a split manual install, first run `npx expo install expo-location`, then use
 one package-manager command:
 
 ```sh
-npm install @better-native/location@0.0.1-alpha.1 effect@4.0.0-rc.108
-pnpm add @better-native/location@0.0.1-alpha.1 effect@4.0.0-rc.108
-yarn add @better-native/location@0.0.1-alpha.1 effect@4.0.0-rc.108
-bun add @better-native/location@0.0.1-alpha.1 effect@4.0.0-rc.108
+npm install @better-native/location@0.0.1-alpha.1 effect@4.0.0-rc.112
+pnpm add @better-native/location@0.0.1-alpha.1 effect@4.0.0-rc.112
+yarn add @better-native/location@0.0.1-alpha.1 effect@4.0.0-rc.112
+bun add @better-native/location@0.0.1-alpha.1 effect@4.0.0-rc.112
 ```
 
 Provide `Location.live` for one-shot operations and consume foreground observations as scoped

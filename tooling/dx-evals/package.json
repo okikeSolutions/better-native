@@ -10,13 +10,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/ai-openrouter": "4.0.0-rc.108",
-    "@effect/platform-node": "4.0.0-rc.108",
-    "effect": "4.0.0-rc.108",
+    "@effect/ai-openrouter": "4.0.0-rc.112",
+    "@effect/platform-node": "4.0.0-rc.112",
+    "effect": "4.0.0-rc.112",
     "vitest-evals": "0.15.0"
   },
   "devDependencies": {
-    "@effect/vitest": "4.0.0-rc.108",
+    "@effect/vitest": "4.0.0-rc.112",
     "@types/node": "^26.1.2",
     "@vitest-evals/report-ui": "0.15.0",
     "typescript": "~6.0.3",

@@ -18,6 +18,11 @@ interface PackResult {
   readonly files: ReadonlyArray<{ readonly path: string }>
 }
 
+const decodePackResults = (output: string): ReadonlyArray<PackResult> => {
+  const parsed = JSON.parse(output) as ReadonlyArray<PackResult> | Record<string, PackResult>
+  return Array.isArray(parsed) ? parsed : Object.values(parsed)
+}
+
 interface Fixture {
   readonly root: string
   readonly binary: string
@@ -77,9 +82,9 @@ beforeAll(() => {
   const packRoot = join(temporaryRoot, "pack")
   mkdirSync(packRoot, { recursive: true })
   run("bun", ["run", "build"], packageRoot)
-  const packed = JSON.parse(
+  const packed = decodePackResults(
     run("npm", ["pack", "--json", "--ignore-scripts", "--pack-destination", packRoot], packageRoot),
-  ) as ReadonlyArray<PackResult>
+  )
   assert.lengthOf(packed, 1)
   const artifact = packed[0]
   assert.isDefined(artifact)
@@ -143,22 +148,22 @@ const installationShapes = [
   {
     capability: "keep-awake",
     reason: "simplest provider case",
-    packages: `expo-keep-awake @better-native/keep-awake@${releaseVersion} effect@4.0.0-rc.108`,
+    packages: `expo-keep-awake @better-native/keep-awake@${releaseVersion} effect@4.0.0-rc.112`,
   },
   {
     capability: "network",
     reason: "confirms the exact three-package dependency result",
-    packages: `expo-network @better-native/network@${releaseVersion} effect@4.0.0-rc.108`,
+    packages: `expo-network @better-native/network@${releaseVersion} effect@4.0.0-rc.112`,
   },
   {
     capability: "secure-store",
     reason: "exercises config-plugin and rebuild behavior",
-    packages: `expo-secure-store @better-native/secure-store@${releaseVersion} effect@4.0.0-rc.108`,
+    packages: `expo-secure-store @better-native/secure-store@${releaseVersion} effect@4.0.0-rc.112`,
   },
   {
     capability: "battery",
     reason: "confirms the ordinary event/stream case",
-    packages: `expo-battery @better-native/battery@${releaseVersion} effect@4.0.0-rc.108`,
+    packages: `expo-battery @better-native/battery@${releaseVersion} effect@4.0.0-rc.112`,
   },
 ] as const
 
@@ -188,7 +193,7 @@ describe("packed better-native CLI installation shapes", () => {
       }
       assert.property(manifest.dependencies, `expo-${shape.capability}`)
       assert.property(manifest.dependencies, `@better-native/${shape.capability}`)
-      assert.strictEqual(manifest.dependencies.effect, "4.0.0-rc.108")
+      assert.strictEqual(manifest.dependencies.effect, "4.0.0-rc.112")
       assert.notProperty(manifest.dependencies, "better-native")
       assert.notProperty(manifest.dependencies, "expo-modules-core")
 
