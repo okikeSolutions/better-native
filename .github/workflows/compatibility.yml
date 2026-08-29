@@ -100,7 +100,7 @@ jobs:
         run: bun run compatibility:prepare
       - name: Run upstream web baseline
         run: >-
-          bun run better-native supervise-web
+          bun run compatibility-harness supervise-web
           --mode upstream
           --build-id ci-${{ github.run_id }}-${{ github.run_attempt }}-web-upstream
           --timeout-ms 1500000
@@ -138,7 +138,7 @@ jobs:
         run: bun run compatibility:prepare
       - name: Run paired web compatibility
         run: >-
-          bun run better-native supervise-web-pair
+          bun run compatibility-harness supervise-web-pair
           --build-id ci-${{ github.run_id }}-${{ github.run_attempt }}-web
           --timeout-ms 1500000
           --port 8091
@@ -171,7 +171,7 @@ jobs:
           path: .artifacts
       - name: Compare paired web evidence
         run: >-
-          bun run better-native compare-runs
+          bun run compatibility-harness compare-runs
           --upstream .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-upstream-run
           --candidate .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-candidate-run
 
@@ -227,9 +227,9 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$COMPATIBILITY_MODE" = pair ]; then
-            bun run better-native supervise-build-pair --platform ios --build-id "$BUILD_ID" --timeout-ms 3600000
+            bun run compatibility-harness supervise-build-pair --platform ios --build-id "$BUILD_ID" --timeout-ms 3600000
           else
-            bun run better-native supervise-build --mode upstream --platform ios --build-id "$BUILD_ID" --timeout-ms 3600000
+            bun run compatibility-harness supervise-build --mode upstream --platform ios --build-id "$BUILD_ID" --timeout-ms 3600000
           fi
       - name: Package iOS build products
         env:
@@ -360,9 +360,9 @@ jobs:
           fi
           upstream_binary=".artifacts/imports/${BUILD_ID}/upstream/BetterNativeCompatibility.app"
           if [ "$COMPATIBILITY_MODE" = pair ]; then
-            bun run better-native supervise-native-pair --platform ios --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/imports/${BUILD_ID}/candidate/BetterNativeCompatibility.app" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID" --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000
+            bun run compatibility-harness supervise-native-pair --platform ios --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/imports/${BUILD_ID}/candidate/BetterNativeCompatibility.app" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID" --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000
           else
-            bun run better-native supervise-native --platform ios --record "$upstream_record" --binary "$upstream_binary" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID-upstream" --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000
+            bun run compatibility-harness supervise-native --platform ios --record "$upstream_record" --binary "$upstream_binary" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID-upstream" --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000
           fi
       - name: Upload iOS run evidence
         if: always()
@@ -405,7 +405,7 @@ jobs:
           done < <(find .artifacts/runs -type f -name record.json -print0)
       - name: Compare paired iOS evidence
         run: >-
-          bun run better-native compare-runs
+          bun run compatibility-harness compare-runs
           --upstream .artifacts/compare/upstream
           --candidate .artifacts/compare/candidate
 
@@ -453,9 +453,9 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$COMPATIBILITY_MODE" = pair ]; then
-            bun run better-native supervise-build-pair --platform android --build-id "$BUILD_ID" --timeout-ms 2700000
+            bun run compatibility-harness supervise-build-pair --platform android --build-id "$BUILD_ID" --timeout-ms 2700000
           else
-            bun run better-native supervise-build --mode upstream --platform android --build-id "$BUILD_ID" --timeout-ms 2700000
+            bun run compatibility-harness supervise-build --mode upstream --platform android --build-id "$BUILD_ID" --timeout-ms 2700000
           fi
       - name: Package Android build products
         env:
@@ -537,9 +537,9 @@ jobs:
             fi
             upstream_binary=".artifacts/products/${BUILD_ID}/upstream/app-release.apk"
             if [ "$COMPATIBILITY_MODE" = pair ]; then
-              bun run better-native supervise-native-pair --platform android --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/products/${BUILD_ID}/candidate/app-release.apk" --device-id emulator-5554 --run-id "$BUILD_ID" --timeout-ms 1200000
+              bun run compatibility-harness supervise-native-pair --platform android --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/products/${BUILD_ID}/candidate/app-release.apk" --device-id emulator-5554 --run-id "$BUILD_ID" --timeout-ms 1200000
             else
-              bun run better-native supervise-native --platform android --record "$upstream_record" --binary "$upstream_binary" --device-id emulator-5554 --run-id "$BUILD_ID-upstream" --timeout-ms 1200000
+              bun run compatibility-harness supervise-native --platform android --record "$upstream_record" --binary "$upstream_binary" --device-id emulator-5554 --run-id "$BUILD_ID-upstream" --timeout-ms 1200000
             fi
       - name: Upload Android run evidence
         if: always()
@@ -570,6 +570,6 @@ jobs:
           path: .artifacts/runs
       - name: Compare paired Android evidence
         run: >-
-          bun run better-native compare-runs
+          bun run compatibility-harness compare-runs
           --upstream .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-android-upstream
           --candidate .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-android-candidate
