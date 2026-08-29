@@ -222,6 +222,10 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
           entry.target === `${capability.candidatePackage}/expo`,
       )
       const evalRoot = resolve(`evals/tasks/${capability.id}`)
+      const taskModuleName = capability.id
+        .split("-")
+        .map((segment) => `${segment.slice(0, 1).toUpperCase()}${segment.slice(1)}`)
+        .join("")
       const requiredEvalFiles = capability.requirements.dxEval
         ? [
             `${evalRoot}/instruction.md`,
@@ -229,9 +233,7 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
             `${evalRoot}/reference.patch`,
             `${evalRoot}/broken.patch`,
             `${evalRoot}/grader/expected.json`,
-            resolve(
-              `tooling/dx-evals/src/tasks/${capability.compatibilitySource.replace(/\.ts$/, "")}.ts`,
-            ),
+            resolve(`tooling/dx-evals/src/tasks/${taskModuleName}.ts`),
             resolve(`tooling/dx-evals/evals/${capability.id}.eval.ts`),
             resolve(`tooling/dx-evals/runner/observe-${capability.id}.ts`),
             resolve(`tooling/dx-evals/runner/worker-${capability.id}.ts`),
@@ -253,7 +255,6 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
         (taskInput.id === capability.id &&
           taskInput.taskType === capability.id &&
           taskInput.publicPackages?.includes(capability.candidatePackage) === true)
-      const taskModuleName = capability.compatibilitySource.replace(/\.ts$/, "")
       const expectedCoverageScope = `packages/${capability.id}/src/**/*.ts`
       const packageScriptsPresent =
         packageValue.scripts?.["test:unit"] !== undefined &&

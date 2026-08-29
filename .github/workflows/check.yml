@@ -74,6 +74,10 @@ jobs:
       - name: Setup DX eval prerequisites
         uses: ./.github/actions/setup-dx-evals
 
+      - name: Materialize pinned Expo for catalog integration
+        if: matrix.suite == 'harness'
+        run: bun run expo:prepare
+
       - name: Run integration suite
         env:
           BETTER_NATIVE_INTEGRATION_SUITE: ${{ matrix.suite }}
