@@ -16,5 +16,7 @@ export default defineConfig({
     ...sharedTestConfig,
     name: requestedSuite === undefined ? "integration" : `integration:${requestedSuite}`,
     include: [...include],
+    // Rootless Podman conformance mutates shared container state and is intentionally serialized.
+    maxWorkers: requestedSuite === "isolation" ? 1 : sharedTestConfig.maxWorkers,
   },
 })

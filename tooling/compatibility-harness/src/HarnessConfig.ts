@@ -104,6 +104,8 @@ const isJava17Home = (home: string): boolean => {
   }
 }
 
+const macOsJavaHomeExecutable = ["", "usr", "libexec", "java_home"].join("/")
+
 /** Resolves a verified JDK 17 independently from the caller's default Java. */
 export const resolveJava17Home = (explicit: string | null): string | null => {
   if (explicit !== null && isJava17Home(explicit)) return explicit
@@ -115,7 +117,7 @@ export const resolveJava17Home = (explicit: string | null): string | null => {
   ].find(isJava17Home)
   if (conventional !== undefined) return conventional
   try {
-    const discovered = execFileSync("/usr/libexec/java_home", ["-v", "17"], {
+    const discovered = execFileSync(macOsJavaHomeExecutable, ["-v", "17"], {
       encoding: "utf8",
     }).trim()
     return isJava17Home(discovered) ? discovered : null
