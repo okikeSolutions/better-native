@@ -7,6 +7,15 @@ import { HarnessError } from "../HarnessError.ts"
 
 const Platform = Schema.Literals(["web", "ios", "android"])
 
+const IntegrationSuite = Schema.Literals(["published", "eval-controls", "compile-contracts"])
+
+const Verification = Schema.Struct({
+  unitProject: Schema.NonEmptyString,
+  coverageScope: Schema.NonEmptyString,
+  integrationSuites: Schema.Array(IntegrationSuite),
+  parityPlatforms: Schema.Array(Platform),
+})
+
 const Requirements = Schema.Struct({
   platforms: Schema.Array(Platform),
   dxEval: Schema.Boolean,
@@ -24,6 +33,7 @@ export const Capability = Schema.Struct({
   compatibilitySource: Schema.NonEmptyString,
   expoSubpaths: Schema.NonEmptyArray(Schema.NonEmptyString),
   requirements: Requirements,
+  verification: Verification,
 })
 export type Capability = Schema.Schema.Type<typeof Capability>
 
@@ -109,6 +119,7 @@ interface ReplacementsInput {
 interface PackageInput {
   readonly name?: string
   readonly exports?: Readonly<Record<string, unknown>>
+  readonly scripts?: Readonly<Record<string, string>>
 }
 
 interface TaskInput {
@@ -173,6 +184,9 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
   )
   const taskRegistry = resolve("tooling/dx-evals/src/tasks/TaskRegistry.ts")
   const cliModel = resolve("packages/cli/src/Model.ts")
+  const checkWorkflow = resolve(".github/workflows/check.yml")
+  const integrationConfig = resolve("vitest.shared.ts")
+  const turboConfig = resolve("turbo.json")
 
   return yield* Effect.forEach(ledger.capabilities, (capability) =>
     Effect.gen(function* () {
@@ -240,6 +254,42 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
           taskInput.taskType === capability.id &&
           taskInput.publicPackages?.includes(capability.candidatePackage) === true)
       const taskModuleName = capability.compatibilitySource.replace(/\.ts$/, "")
+      const expectedCoverageScope = `packages/${capability.id}/src/**/*.ts`
+      const packageScriptsPresent =
+        packageValue.scripts?.["test:unit"] !== undefined &&
+        packageValue.scripts["test:coverage"] !== undefined
+      const integrationSuiteRoutes = yield* Effect.all(
+        capability.verification.integrationSuites.map((suite) => {
+          switch (suite) {
+            case "published":
+              return contains(integrationConfig, "PublishedCapabilityPackages.test.ts")
+            case "eval-controls":
+              return Effect.all([
+                contains(checkWorkflow, "[.capabilities[].id]"),
+                contains(checkWorkflow, "fromJSON(needs.plan.outputs.capabilities)"),
+                contains(checkWorkflow, "bun run evals validate --task"),
+                contains(turboConfig, `${capability.candidatePackage}#build`),
+              ]).pipe(
+                Effect.map(
+                  ([derived, matrix, command, build]) => derived && matrix && command && build,
+                ),
+              )
+            case "compile-contracts":
+              return exists(
+                resolve(
+                  `tooling/dx-evals/src/agent/compile-contracts/${taskModuleName}CompileContract.test.ts`,
+                ),
+              )
+          }
+        }),
+      )
+      const integrationSuitesRouted = integrationSuiteRoutes.every(Boolean)
+      const parityPlatformsMatch =
+        capability.verification.parityPlatforms.length ===
+          capability.requirements.platforms.length &&
+        capability.requirements.platforms.every((platform) =>
+          capability.verification.parityPlatforms.includes(platform),
+        )
       const registryMentionsTask = capability.requirements.dxEval
         ? yield* contains(taskRegistry, `Match.when("${capability.id}"`)
         : true
@@ -260,6 +310,23 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
           "host tests",
           yield* exists(path.join(packageRoot, "test")),
           `packages/${capability.id}/test`,
+        ),
+        check(
+          "unit and coverage tasks",
+          capability.verification.unitProject === capability.candidatePackage &&
+            capability.verification.coverageScope === expectedCoverageScope &&
+            packageScriptsPresent,
+          capability.verification.coverageScope,
+        ),
+        check(
+          "CI integration routing",
+          integrationSuitesRouted,
+          capability.verification.integrationSuites.join(", "),
+        ),
+        check(
+          "parity routing",
+          parityPlatformsMatch,
+          capability.verification.parityPlatforms.join(", "),
         ),
         check(
           "compatibility source",

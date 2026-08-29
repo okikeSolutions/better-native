@@ -59,6 +59,20 @@ describe("native closure fingerprint", () => {
     assert.deepStrictEqual(upstream, candidate)
   })
 
+  it("ignores generated products nested inside ExpoModulesJSI's package-level directory source", () => {
+    const source = (hash: string) => ({
+      type: "dir",
+      filePath: "../../expo/packages/expo-modules-jsi/apple",
+      hash,
+      reasons: ["expoAutolinkingIos"],
+    })
+
+    assert.deepStrictEqual(
+      nativeClosureFingerprintInput([source("before-compiler-output")]),
+      nativeClosureFingerprintInput([source("after-compiler-output")]),
+    )
+  })
+
   it("retains native configuration differences", () => {
     const left = nativeClosureFingerprintInput([
       { type: "contents", id: "expoConfig", contents: '{"ios":{"bundleIdentifier":"a"}}' },

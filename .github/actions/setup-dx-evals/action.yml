@@ -8,8 +8,7 @@ runs:
       shell: bash
       run: >-
         bunx turbo run build
-        --filter=@better-native/network
-        --filter=@better-native/battery
+        --filter='./packages/*'
         --concurrency=90%
 
     - name: Install rootless Podman

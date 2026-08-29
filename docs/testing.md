@@ -10,14 +10,24 @@ better-native uses layered tests. No single layer proves compatibility by itself
 
 ## Host tests and coverage
 
-Run all host tests with:
+Run the fast, in-process host suite with:
 
 ```sh
 bun run test
 ```
 
-The host suite excludes Vitest Evals task controls. Run the secretless reference, no-op, and broken
-controls through their dedicated configuration with:
+Tests that launch package managers, packed CLIs, Podman, Metro, or worker trials belong to a named
+integration suite and do not run in the local fast path:
+
+```sh
+bun run test:integration
+BETTER_NATIVE_INTEGRATION_SUITE=compile-contracts bun run test:integration
+```
+
+CI runs all named integration suites as separate matrix jobs and derives the per-capability eval
+matrix directly from `compatibility/capabilities.json`. The host unit suite also excludes Vitest
+Evals task controls. Run the secretless reference, no-op, and broken controls through their
+dedicated configuration with:
 
 ```sh
 bun run evals validate
@@ -51,17 +61,28 @@ entries deduplicate upstream/candidate workspaces when their effective inputs an
 These tests do not replace a native build; native verification additionally proves that the product
 is published before its workspace and DerivedData are removed.
 
-Run the coverage gate with:
+Run the local fast coverage gate with:
 
 ```sh
 bun run test:coverage
 ```
 
-V8 coverage is intentionally scoped in `vitest.config.ts` to product runtime code and both tooling
-controllers. Generated code and tests are excluded from the denominator. Every directory matching
+This executes only `vitest.unit.config.ts` test files through `vitest.coverage.config.ts`; enabling
+coverage never adds integration or eval files. V8 coverage is scoped to product runtime code and
+the in-process portions of both tooling controllers. External-process entrypoints are declared in
+`vitest.shared.ts` and have integration evidence instead of false zeroes in the parent Vitest
+session. Generated code and tests are excluded from the denominator. Every directory matching
 `packages/*/src` is discovered when Vitest starts and receives its own threshold group. A new
 package therefore enters root coverage automatically and cannot hide behind aggregate coverage
-from existing packages. The application and tooling controllers have independent groups as well:
+from existing packages. Each package also owns `test:unit` and `test:coverage` Turbo tasks, so
+focused and affected verification can enforce the same policy:
+
+```sh
+bun run verify:capability clipboard
+bun run check:unit:affected
+```
+
+The application and tooling controllers have independent groups:
 
 | Scope                                              | Statements | Branches | Functions | Lines |
 | -------------------------------------------------- | ---------: | -------: | --------: | ----: |
@@ -70,10 +91,12 @@ from existing packages. The application and tooling controllers have independent
 | DX-evals controller                                |        80% |      70% |       78% |   80% |
 | DX compile-diagnostic sanitizer                    |       100% |      77% |      100% |  100% |
 
-The tooling thresholds are regression floors backed by deterministic eval controls and the
-read-only compatibility-denominator integration. They should rise as command, reporting, and
-provider-boundary tests are added. The aggregate percentage printed by Vitest is informational—the
-glob thresholds above are the gates.
+The tooling thresholds are regression floors backed by in-process unit tests. Process adapters,
+commands, eval execution, and platform drivers are explicitly excluded and proved by named CI
+integration suites. Location retains a reviewed 94% function floor for defensive stream-empty
+callbacks that Expo subscriptions cannot trigger on the host, and Metro retains an 89% branch floor
+for defensive package-name states; all other product floors use the table above. The aggregate
+percentage printed by Vitest is informational—the glob thresholds above are the gates.
 
 The root suite uses Vitest's isolated `threads` pool. Threads avoid fork startup overhead while
 isolation remains enabled because tests exercise process environment, module mocks, managed-runtime
@@ -82,9 +105,12 @@ those contracts remain independent.
 
 Code executed in Podman, Node workers, browser processes, simulators, or other child processes is
 not attributed to the parent Vitest V8 session. Such entrypoints are not mixed into the controller
-denominator as false zeroes. Their behavior is instead required through protocol, isolation,
-supervision, lifecycle, and paired-execution conformance tests. Pure runner utilities executed in
-the Vitest process, currently the DX compile-diagnostic sanitizer, remain in the coverage gate.
+denominator as false zeroes. Their behavior is required through the `published`, `harness`,
+`compile-contracts`, `isolation`, `trials`, and `task-workspace` CI suites plus paired-execution
+conformance tests. Pure runner utilities executed in the Vitest process, currently the DX
+compile-diagnostic sanitizer, remain in the coverage gate. The capability ledger records package
+coverage, integration suites, and parity platforms, and strict migration validation rejects missing
+routing.
 
 These are regression guards, not a substitute for behavior review. Product files under
 `packages/*/src` and controller files under the configured tooling roots are included automatically.
@@ -136,6 +162,12 @@ cohort. Network exercises live state and IPv4 reads, airplane-mode values or typ
 unavailability, Stream acquisition and release, and Atom hydration. Battery exercises every live
 read, the combined power state, all three native Stream lifecycles, and all four Atom lifecycles.
 Paired Release comparisons for both sources pass on web, iOS, and Android with zero divergences.
+The reviewed Clipboard capability is separately selectable on web, iOS, and Android. It exercises
+text reads and writes, HTML format options, Android sensitive-content options, platform URL and
+image operations, scoped event acquisition, and Atom lifecycle. Paired Release comparisons pass all
+four cases on all three platforms with zero divergences. Expo remains the native provider, and web
+clipboard permission denial remains an upstream platform behavior rather than a Better Native
+failure.
 The reviewed SecureStore web capability is separately selectable on web and exercises Expo's actual
 unavailable result plus typed `SecureStoreFailure` mapping for unsupported asynchronous and
 synchronous storage operations. It does not claim iOS or Android behavior.
@@ -230,7 +262,7 @@ bun run compatibility-harness supervise-build-pair \
   --source 'better-native-capability#apps/compatibility-suite/src/capabilities/Notifications.ts'
 ```
 
-Omitting `--source` deliberately preserves the monolithic 84-dependency compatibility app. Use
+Omitting `--source` deliberately preserves the monolithic 85-dependency compatibility app. Use
 that full shell for periodic full-suite CI, surface-wide smoke validation, or investigations whose
 native closure crosses capability boundaries—not for ordinary local package iteration.
 

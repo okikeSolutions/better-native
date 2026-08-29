@@ -74,7 +74,7 @@ Every DX trial must record the exact instruction, declarations, generated refere
 handwritten guides exposed to the participant or agent. Changing that bundle changes the evaluated
 condition and requires a new baseline.
 
-The current deterministic Network, Battery, KeepAwake, SecureStore, SQLite, Task Manager,
+The current deterministic Network, Battery, Clipboard, KeepAwake, SecureStore, SQLite, Task Manager,
 Background Task, Location, and Notifications tasks expose their
 instructions and built public declarations while withholding package source, reference patches,
 native doubles, and graders. A versioned generated-reference and handwritten-guide bundle has not
@@ -100,6 +100,7 @@ Do not duplicate Expo's upstream API prose. Link to the applicable upstream docu
 Current package guides:
 
 - [Battery](../packages/battery/README.md)
+- [Clipboard](../packages/clipboard/README.md)
 - [Network](../packages/network/README.md)
 - [KeepAwake](../packages/keep-awake/README.md)
 - [SecureStore](../packages/secure-store/README.md)

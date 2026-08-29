@@ -1,10 +1,24 @@
 import * as Data from "effect/Data"
 
-export const capabilityNames = ["keep-awake", "network", "secure-store", "battery"] as const
-export const releaseVersion = "0.0.1-alpha.1"
+export const capabilityNames = [
+  "keep-awake",
+  "network",
+  "secure-store",
+  "battery",
+  "clipboard",
+] as const
+export const releaseVersion = "0.0.1-alpha.2"
 
 export type CapabilityName = (typeof capabilityNames)[number]
 export type PackageManagerName = "npm" | "pnpm" | "yarn" | "bun"
+
+export const capabilityVersions: Readonly<Record<CapabilityName, string>> = {
+  "keep-awake": "0.0.1-alpha.1",
+  network: "0.0.1-alpha.1",
+  "secure-store": "0.0.1-alpha.1",
+  battery: "0.0.1-alpha.1",
+  clipboard: "0.0.1-alpha.1",
+}
 
 export interface Capability {
   readonly name: CapabilityName
@@ -22,7 +36,7 @@ export const capabilities: Readonly<Record<CapabilityName, Capability>> = {
     name: "network",
     provider: "expo-network",
     wrapper: "@better-native/network",
-    wrapperVersion: releaseVersion,
+    wrapperVersion: capabilityVersions.network,
     effectVersion: "4.0.0-rc.112",
     importName: "Network",
     status: "effect",
@@ -31,16 +45,25 @@ export const capabilities: Readonly<Record<CapabilityName, Capability>> = {
     name: "battery",
     provider: "expo-battery",
     wrapper: "@better-native/battery",
-    wrapperVersion: releaseVersion,
+    wrapperVersion: capabilityVersions.battery,
     effectVersion: "4.0.0-rc.112",
     importName: "Battery",
+    status: "effect",
+  },
+  clipboard: {
+    name: "clipboard",
+    provider: "expo-clipboard",
+    wrapper: "@better-native/clipboard",
+    wrapperVersion: capabilityVersions.clipboard,
+    effectVersion: "4.0.0-rc.112",
+    importName: "Clipboard",
     status: "effect",
   },
   "keep-awake": {
     name: "keep-awake",
     provider: "expo-keep-awake",
     wrapper: "@better-native/keep-awake",
-    wrapperVersion: releaseVersion,
+    wrapperVersion: capabilityVersions["keep-awake"],
     effectVersion: "4.0.0-rc.112",
     importName: "KeepAwake",
     status: "effect",
@@ -49,7 +72,7 @@ export const capabilities: Readonly<Record<CapabilityName, Capability>> = {
     name: "secure-store",
     provider: "expo-secure-store",
     wrapper: "@better-native/secure-store",
-    wrapperVersion: releaseVersion,
+    wrapperVersion: capabilityVersions["secure-store"],
     effectVersion: "4.0.0-rc.112",
     importName: "SecureStore",
     status: "effect",

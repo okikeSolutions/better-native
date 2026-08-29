@@ -29,6 +29,26 @@
         "config": []
       }
     },
+    "packages/battery": {
+      "entry": ["src/index.ts", "src/Expo.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.test.ts"]
+    },
+    "packages/clipboard": {
+      "entry": ["src/index.ts", "src/Expo.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.test.ts"]
+    },
+    "packages/keep-awake": {
+      "entry": ["src/index.ts", "src/Expo.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.test.ts"]
+    },
+    "packages/network": {
+      "entry": ["src/index.ts", "src/Expo.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.test.ts"]
+    },
+    "packages/secure-store": {
+      "entry": ["src/index.ts", "src/Expo.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.test.ts"]
+    },
     "packages/metro": {
       "entry": ["src/BetterNativeMetroConfig.ts", "test/**/*.test.ts"],
       "project": ["src/**/*.ts", "test/**/*.test.ts"]

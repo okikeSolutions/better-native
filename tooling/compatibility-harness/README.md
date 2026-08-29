@@ -108,7 +108,7 @@ Local Location, SQLite, and Notifications work should use a capability-scoped sh
 reviewed supplemental `--source` to `supervise-build` or `supervise-build-pair` rewrites the isolated
 app manifest, config plugins, runtime loader, and eager-registration list before autolinking. The
 result therefore compiles only that capability's native dependency closure. Omitting `--source`
-retains the 84-dependency monolithic app for periodic full-suite CI. Scoped build records retain the
+retains the 85-dependency monolithic app for periodic full-suite CI. Scoped build records retain the
 source ID and native execution refuses a different or missing source.
 
 ```sh

@@ -48,7 +48,9 @@
     "prepack": "bun run build",
     "docs:api": "docgen",
     "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run --config ../../vitest.unit.config.ts packages/secure-store/",
+    "test:coverage": "BETTER_NATIVE_COVERAGE_PACKAGE=secure-store vitest run --config ../../vitest.coverage.config.ts --coverage packages/secure-store/"
   },
   "devDependencies": {
     "@effect/docgen": "4.0.0-rc.112",

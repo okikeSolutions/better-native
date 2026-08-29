@@ -7,18 +7,25 @@ import { join, resolve } from "node:path"
 
 const repositoryRoot = resolve(import.meta.dirname, "../../..")
 const temporaryRoot = mkdtempSync(join(tmpdir(), "better-native-registry-"))
-const releaseVersion = (
-  JSON.parse(readFileSync(join(repositoryRoot, "packages/cli/package.json"), "utf8")) as {
-    version: string
-  }
-).version
+const packageVersion = (directory: string): string =>
+  (
+    JSON.parse(
+      readFileSync(join(repositoryRoot, "packages", directory, "package.json"), "utf8"),
+    ) as { version: string }
+  ).version
+
+const cliVersion = packageVersion("cli")
 
 const capabilityMatrix = [
   ["keep-awake", "expo-keep-awake"],
   ["network", "expo-network"],
   ["secure-store", "expo-secure-store"],
   ["battery", "expo-battery"],
+  ["clipboard", "expo-clipboard"],
 ] as const
+
+const capabilityVersion = (capability: (typeof capabilityMatrix)[number][0]): string =>
+  packageVersion(capability)
 
 const run = (
   command: string,
@@ -208,7 +215,7 @@ try {
       [
         "exec",
         "--yes",
-        `--package=better-native@${releaseVersion}`,
+        `--package=better-native@${cliVersion}`,
         "--",
         "better-native",
         "install",
@@ -217,7 +224,9 @@ try {
       root,
       registryEnvironment,
     )
-    assert.ok(output.includes(`@better-native/${capability} ${releaseVersion} resolves`))
+    assert.ok(
+      output.includes(`@better-native/${capability} ${capabilityVersion(capability)} resolves`),
+    )
 
     const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as {
       dependencies: Record<string, string>
@@ -228,7 +237,10 @@ try {
       .sort()
     assert.deepEqual(additions, [`@better-native/${capability}`, "effect", provider].sort())
     assert.equal(manifest.dependencies.effect, "4.0.0-rc.112")
-    assert.equal(manifest.dependencies[`@better-native/${capability}`], releaseVersion)
+    assert.equal(
+      manifest.dependencies[`@better-native/${capability}`],
+      capabilityVersion(capability),
+    )
     assert.equal(manifest.dependencies[provider], "57.0.1")
     assert.equal(manifest.dependencies["better-native"], undefined)
     assert.equal(manifest.devDependencies?.["better-native"], undefined)
@@ -244,14 +256,7 @@ try {
 
     run(
       "npm",
-      [
-        "exec",
-        "--yes",
-        `--package=better-native@${releaseVersion}`,
-        "--",
-        "better-native",
-        "doctor",
-      ],
+      ["exec", "--yes", `--package=better-native@${cliVersion}`, "--", "better-native", "doctor"],
       root,
       registryEnvironment,
     )

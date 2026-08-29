@@ -21,6 +21,11 @@ export const isGeneratedExpoNativeOutput = (filePath: string): boolean => {
   )
 }
 
+const isGeneratedOutputContainer = (source: FingerprintSource): boolean =>
+  source.type === "dir" &&
+  typeof source.filePath === "string" &&
+  /\/packages\/expo-modules-jsi\/apple\/?$/.test(normalizedPath(source.filePath))
+
 const stableValue = (value: unknown): unknown => {
   if (Array.isArray(value)) return value.map(stableValue)
   if (typeof value !== "object" || value === null) return value
@@ -59,6 +64,10 @@ export const canonicalNativeFingerprintSources = (
         typeof source.filePath !== "string" || !isGeneratedExpoNativeOutput(source.filePath),
     )
     .map((source) => {
+      if (isGeneratedOutputContainer(source)) {
+        const { hash: _generatedOutputHash, ...stableSource } = source
+        return stableSource
+      }
       if (
         source.type !== "contents" ||
         source.id !== "expoConfig" ||

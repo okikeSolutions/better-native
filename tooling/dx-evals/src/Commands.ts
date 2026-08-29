@@ -93,6 +93,22 @@ const taskFlag = Flag.choice("task", [
   Flag.withDefault("all"),
   Flag.withDescription("Run all campaign tasks or one diagnostic subset"),
 )
+const validationTaskFlag = Flag.choice("task", [
+  "all",
+  "background-task",
+  "battery",
+  "clipboard",
+  "keep-awake",
+  "location",
+  "network",
+  "notifications",
+  "secure-store",
+  "sqlite",
+  "task-manager",
+] as const).pipe(
+  Flag.withDefault("all"),
+  Flag.withDescription("Validate every deterministic task or one capability"),
+)
 const campaignProfileFlag = Flag.choice("profile", Campaigns.profileSelections).pipe(
   Flag.withDefault("all"),
   Flag.withDescription("Run every reviewed profile or one explicit profile"),
@@ -131,16 +147,20 @@ export const plan = Command.make(
 ).pipe(Command.withDescription("Print a reviewed eval campaign without making paid requests"))
 
 /** Runs secretless deterministic controls through Vitest Evals. */
-export const validate = Command.make("validate", {}, () =>
-  runProcess("validate deterministic evals", [
-    "x",
-    "turbo",
-    "run",
-    "evals:validate",
-    "--filter",
-    "@better-native/dx-evals",
-    "--concurrency=90%",
-  ]),
+export const validate = Command.make("validate", { task: validationTaskFlag }, ({ task }) =>
+  runProcess(
+    "validate deterministic evals",
+    [
+      "x",
+      "turbo",
+      "run",
+      "evals:validate",
+      "--filter",
+      "@better-native/dx-evals",
+      "--concurrency=90%",
+    ],
+    task === "all" ? undefined : { BETTER_NATIVE_EVAL_TASK: task },
+  ),
 ).pipe(Command.withDescription("Run deterministic reference, no-op, and broken controls"))
 
 /** Validates deterministic JSON metadata and the ephemeral local report UI. */

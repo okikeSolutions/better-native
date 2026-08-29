@@ -10,6 +10,7 @@ on:
         options:
           - network
           - battery
+          - clipboard
           - keep-awake
           - secure-store
           - cli

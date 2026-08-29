@@ -129,6 +129,16 @@ const successfulResolution = (event: ResolutionEventType): boolean =>
 const packageName = (specifier: string): string =>
   specifier.startsWith("@") ? specifier.split("/").slice(0, 2).join("/") : specifier.split("/")[0]!
 
+const capabilityTargets = (sourceIds: ReadonlyArray<TestSourceId>): ReadonlySet<string> =>
+  new Set(
+    sourceIds.flatMap((sourceId) => {
+      const name = sourceId.match(/\/capabilities\/([^/]+)\.ts$/)?.[1]
+      if (name === undefined) return []
+      const capabilityPackageName = name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase()
+      return [`@better-native/${capabilityPackageName}/expo`]
+    }),
+  )
+
 /**
  * Verifies candidate resolution observations against the generated manifest.
  *
@@ -402,8 +412,11 @@ export const compare = (
     }
   }
   issues.push(...candidateTreatmentEvidence.issues)
-  const requiredReplacements = (replacementManifest?.replacements ?? []).filter(({ source }) =>
-    expectedSources === undefined ? true : source === packageName(source),
+  const scopedTargets =
+    expectedSources === undefined ? undefined : capabilityTargets(expectedSources)
+  const requiredReplacements = (replacementManifest?.replacements ?? []).filter(
+    ({ source, target }) =>
+      source === packageName(source) && (scopedTargets === undefined || scopedTargets.has(target)),
   )
   const missingResolutionEvidence = requiredReplacements.filter(
     ({ source }) => !candidateTreatmentEvidence.resolvedSources.has(source),

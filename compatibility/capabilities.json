@@ -15,6 +15,34 @@
         "configPlugin": false,
         "backgroundExecution": false,
         "physicalDevice": true
+      },
+      "verification": {
+        "unitProject": "@better-native/battery",
+        "coverageScope": "packages/battery/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
+        "parityPlatforms": ["web", "ios", "android"]
+      }
+    },
+    {
+      "id": "clipboard",
+      "expoPackage": "expo-clipboard",
+      "candidatePackage": "@better-native/clipboard",
+      "compatibilitySource": "Clipboard.ts",
+      "expoSubpaths": ["."],
+      "requirements": {
+        "platforms": ["web", "ios", "android"],
+        "dxEval": true,
+        "events": true,
+        "hooks": false,
+        "configPlugin": false,
+        "backgroundExecution": false,
+        "physicalDevice": false
+      },
+      "verification": {
+        "unitProject": "@better-native/clipboard",
+        "coverageScope": "packages/clipboard/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
+        "parityPlatforms": ["web", "ios", "android"]
       }
     },
     {
@@ -31,6 +59,12 @@
         "configPlugin": false,
         "backgroundExecution": false,
         "physicalDevice": false
+      },
+      "verification": {
+        "unitProject": "@better-native/network",
+        "coverageScope": "packages/network/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
+        "parityPlatforms": ["web", "ios", "android"]
       }
     },
     {
@@ -47,6 +81,12 @@
         "configPlugin": false,
         "backgroundExecution": false,
         "physicalDevice": false
+      },
+      "verification": {
+        "unitProject": "@better-native/keep-awake",
+        "coverageScope": "packages/keep-awake/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
+        "parityPlatforms": ["web", "ios", "android"]
       }
     },
     {
@@ -63,6 +103,12 @@
         "configPlugin": false,
         "backgroundExecution": false,
         "physicalDevice": true
+      },
+      "verification": {
+        "unitProject": "@better-native/secure-store",
+        "coverageScope": "packages/secure-store/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
+        "parityPlatforms": ["web", "ios", "android"]
       }
     },
     {
@@ -79,6 +125,12 @@
         "configPlugin": true,
         "backgroundExecution": false,
         "physicalDevice": false
+      },
+      "verification": {
+        "unitProject": "@better-native/sqlite",
+        "coverageScope": "packages/sqlite/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls"],
+        "parityPlatforms": ["web", "ios", "android"]
       }
     },
     {
@@ -95,6 +147,12 @@
         "configPlugin": true,
         "backgroundExecution": true,
         "physicalDevice": true
+      },
+      "verification": {
+        "unitProject": "@better-native/task-manager",
+        "coverageScope": "packages/task-manager/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls"],
+        "parityPlatforms": ["web", "ios", "android"]
       }
     },
     {
@@ -111,6 +169,12 @@
         "configPlugin": true,
         "backgroundExecution": true,
         "physicalDevice": true
+      },
+      "verification": {
+        "unitProject": "@better-native/background-task",
+        "coverageScope": "packages/background-task/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls"],
+        "parityPlatforms": ["web", "ios", "android"]
       }
     },
     {
@@ -127,6 +191,12 @@
         "configPlugin": true,
         "backgroundExecution": true,
         "physicalDevice": true
+      },
+      "verification": {
+        "unitProject": "@better-native/location",
+        "coverageScope": "packages/location/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls"],
+        "parityPlatforms": ["web", "ios", "android"]
       }
     },
     {
@@ -143,6 +213,12 @@
         "configPlugin": true,
         "backgroundExecution": true,
         "physicalDevice": true
+      },
+      "verification": {
+        "unitProject": "@better-native/notifications",
+        "coverageScope": "packages/notifications/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls"],
+        "parityPlatforms": ["web", "ios", "android"]
       }
     }
   ]

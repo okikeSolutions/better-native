@@ -100,6 +100,11 @@ const standard = (input: {
 const packages: ReadonlyArray<PublishedCapability> = [
   standard({ directory: "network", name: "@better-native/network", provider: "expo-network" }),
   standard({ directory: "battery", name: "@better-native/battery", provider: "expo-battery" }),
+  standard({
+    directory: "clipboard",
+    name: "@better-native/clipboard",
+    provider: "expo-clipboard",
+  }),
   {
     ...standard({
       directory: "keep-awake",

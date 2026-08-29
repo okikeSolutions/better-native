@@ -25,6 +25,31 @@ const externalTypeOverrides: Readonly<Record<string, Readonly<Record<string, Typ
 
 const valueTypeOverrides = new Set(["expo-location#EventEmitter"])
 
+// The pinned Expo revision can contain declaration changes that have not reached the registry
+// artifact carrying the same package version. These reviewed references keep generated package
+// declarations tied to pinned source without requiring consumers to patch their Expo installation.
+const localTypeReferenceOverrides: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+  "expo-clipboard": {
+    SetImageAndroidOptions: 'import("./Clipboard.js").SetImageAndroidOptions',
+    SetImageOptions: 'import("./Clipboard.js").SetImageOptions',
+    SetStringAndroidOptions: 'import("./Clipboard.js").SetStringAndroidOptions',
+    SetStringOptions: 'import("./Clipboard.js").SetStringOptions',
+  },
+}
+
+const localValueTypeOverrides: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+  "expo-clipboard": {
+    setImageAsync: `(
+  base64Image: string,
+  options?: import("./Clipboard.js").SetImageOptions,
+) => Promise<void>`,
+    setStringAsync: `(
+  text: string,
+  options?: import("./Clipboard.js").SetStringOptions,
+) => Promise<boolean>`,
+  },
+}
+
 const mergeExportKind = (left: ExportKind | undefined, right: ExportKind): ExportKind =>
   Match.value(left).pipe(
     Match.when(undefined, () => right),
@@ -264,6 +289,10 @@ const source = Effect.fn("ExpoCompatEntrypoint.source")(function* (expoPackage: 
     .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
     .join("")
   const renderValue = (name: string) => {
+    const override = localValueTypeOverrides[expoPackage]?.[name]
+    if (override !== undefined) {
+      return `export const ${name}: ${override} = ${namespace}.${name}`
+    }
     const line = `export const ${name}: typeof ${namespace}.${name} = ${namespace}.${name}`
     return line.length > 100
       ? `export const ${name}: typeof ${namespace}.${name} =\n  ${namespace}.${name}`
@@ -287,9 +316,11 @@ const source = Effect.fn("ExpoCompatEntrypoint.source")(function* (expoPackage: 
     ),
     ...types.map((name) => {
       const parameters = typeParameters.get(name) ?? externalTypeOverrides[expoPackage]?.[name]
-      const reference = valueTypeOverrides.has(`${expoPackage}#${name}`)
-        ? `typeof ${namespace}.${name}`
-        : `${namespace}.${name}${parameters?.application ?? ""}`
+      const reference =
+        localTypeReferenceOverrides[expoPackage]?.[name] ??
+        (valueTypeOverrides.has(`${expoPackage}#${name}`)
+          ? `typeof ${namespace}.${name}`
+          : `${namespace}.${name}${parameters?.application ?? ""}`)
       const line = `export type ${name}${parameters?.declaration ?? ""} = ${reference}`
       return line.length > 100
         ? `export type ${name}${parameters?.declaration ?? ""} =\n  ${reference}`

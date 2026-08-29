@@ -64,7 +64,9 @@
     "test": "vitest run --root ../.. packages/notifications/test",
     "typecheck": "tsc --noEmit",
     "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
-    "docs:api": "docgen"
+    "docs:api": "docgen",
+    "test:unit": "vitest run --config ../../vitest.unit.config.ts packages/notifications/",
+    "test:coverage": "BETTER_NATIVE_COVERAGE_PACKAGE=notifications vitest run --config ../../vitest.coverage.config.ts --coverage packages/notifications/"
   },
   "devDependencies": {
     "@better-native/task-manager": "workspace:*",

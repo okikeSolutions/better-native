@@ -32,6 +32,7 @@ export interface IsolationRequest {
     | "observe-effect.ts"
     | "observe-network.ts"
     | "observe-battery.ts"
+    | "observe-clipboard.ts"
     | "observe-keep-awake.ts"
     | "observe-secure-store.ts"
     | "observe-sqlite.ts"

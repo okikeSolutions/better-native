@@ -3,6 +3,8 @@ import type { NativeBatchRequest, NativeRunRequest } from "./NativeSupervisor.ts
 
 const yamlString = (value: string): string => JSON.stringify(value)
 
+const acceptDeepLinkPrompt = ["- tapOn:", '    text: "Open"', "    optional: true"] as const
+
 const selectionAssertion = (identity: string): ReadonlyArray<string> => [
   "- extendedWaitUntil:",
   "    visible:",
@@ -31,6 +33,7 @@ export const make = (request: NativeRunRequest): string => {
     "---",
     "- clearState",
     `- openLink: ${yamlString(link)}`,
+    ...acceptDeepLinkPrompt,
     ...selectionAssertion(request.unit.sourceId),
     "- extendedWaitUntil:",
     "    visible:",
@@ -67,6 +70,7 @@ export const makeBatch = (request: NativeBatchRequest): string => {
     "---",
     "- clearState",
     `- openLink: ${yamlString(link)}`,
+    ...acceptDeepLinkPrompt,
     ...selectionAssertion("native-e2e"),
     "- extendedWaitUntil:",
     "    visible:",

@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs"
 import { join, resolve } from "node:path"
 
 import { assert, describe, it } from "@effect/vitest"
-import { capabilities, capabilityNames, releaseVersion } from "../src/Model.ts"
+import { capabilities, capabilityNames, capabilityVersions, releaseVersion } from "../src/Model.ts"
 
 interface Ownership {
   readonly overrides: ReadonlyArray<{
@@ -33,7 +33,7 @@ describe("CLI capability registry", () => {
       ) as { version: string; private: boolean; peerDependencies: Record<string, string> }
       assert.isFalse(manifest.private)
       assert.strictEqual(manifest.version, capability.wrapperVersion)
-      assert.strictEqual(manifest.version, releaseVersion)
+      assert.strictEqual(manifest.version, capabilityVersions[name])
       assert.strictEqual(manifest.peerDependencies.effect, capability.effectVersion)
       assert.property(manifest.peerDependencies, capability.provider)
     }

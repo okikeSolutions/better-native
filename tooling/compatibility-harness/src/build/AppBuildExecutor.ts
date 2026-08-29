@@ -369,6 +369,9 @@ export const layer = (
                 timeoutMillis: request.timeoutMillis,
               }),
             )
+            const pinnedExpoRelative = path
+              .relative(appDirectory, pinnedUpstream.root)
+              .replaceAll("\\", "/")
             const fingerprint = yield* Effect.tryPromise({
               try: () =>
                 createFingerprintAsync(appDirectory, {
@@ -383,6 +386,12 @@ export const layer = (
                     "**/expo/packages/**/apple/Products/**/*",
                     "**/expo/packages/**/apple/.DerivedData/**/*",
                     "**/expo/packages/precompile/.build/**/*",
+                    `${pinnedExpoRelative}/packages/**/android/build/**/*`,
+                    `${pinnedExpoRelative}/packages/**/android/.cxx/**/*`,
+                    `${pinnedExpoRelative}/packages/**/ios/build/**/*`,
+                    `${pinnedExpoRelative}/packages/**/apple/Products/**/*`,
+                    `${pinnedExpoRelative}/packages/**/apple/.DerivedData/**/*`,
+                    `${pinnedExpoRelative}/packages/precompile/.build/**/*`,
                   ],
                 }),
               catch: (cause) => new BuildPipelineError({ phase: "prebuild", request, cause }),
@@ -599,6 +608,7 @@ export const layer = (
                           workspaceRoot,
                           architecture,
                           toolchainFingerprint: iosToolchainFingerprint,
+                          nativeFingerprint: iosNativeFingerprint,
                         })
                         podsCacheStatus = {
                           name: "cocoapods",
@@ -639,6 +649,7 @@ export const layer = (
                           workspaceRoot,
                           architecture,
                           toolchainFingerprint: iosToolchainFingerprint,
+                          nativeFingerprint: iosNativeFingerprint,
                         })
                         podsCacheStatus = {
                           name: "cocoapods",

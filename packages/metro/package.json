@@ -19,7 +19,9 @@
     "build:cjs": "bun build src/BetterNativeMetroConfig.ts --target=node --format=cjs --external expo --external effect --outfile=dist/BetterNativeMetroConfig.cjs",
     "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
     "check:dist": "node --experimental-strip-types scripts/checkDist.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run --config ../../vitest.unit.config.ts packages/metro/",
+    "test:coverage": "BETTER_NATIVE_COVERAGE_PACKAGE=metro vitest run --config ../../vitest.coverage.config.ts --coverage packages/metro/"
   },
   "devDependencies": {
     "@effect/platform-node": "4.0.0-rc.112",

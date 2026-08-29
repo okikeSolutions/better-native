@@ -11,6 +11,7 @@
   "dependencies": {
     "@better-native/background-task": "workspace:*",
     "@better-native/battery": "workspace:*",
+    "@better-native/clipboard": "workspace:*",
     "@better-native/keep-awake": "workspace:*",
     "@better-native/location": "workspace:*",
     "@better-native/metro": "workspace:*",

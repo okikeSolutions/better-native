@@ -47,6 +47,7 @@ describe("PodsCache", () => {
           workspaceRoot: upstreamRoot,
           architecture: "arm64",
           toolchainFingerprint: ContentHash.make("2".repeat(64)),
+          nativeFingerprint: ContentHash.make("3".repeat(64)),
         })
         yield* fs.remove(`${candidateIos}/Pods`, { recursive: true })
         yield* fs.remove(`${candidateIos}/Podfile.lock`)
@@ -56,11 +57,21 @@ describe("PodsCache", () => {
           workspaceRoot: candidateRoot,
           architecture: "arm64",
           toolchainFingerprint: ContentHash.make("2".repeat(64)),
+          nativeFingerprint: ContentHash.make("3".repeat(64)),
         })
         assert.isTrue(restored.hit)
         assert.strictEqual(restored.key, published.key)
+        const changedNativeClosure = yield* cache.restore({
+          request: request("candidate-changed", "candidate"),
+          iosDirectory: candidateIos,
+          workspaceRoot: candidateRoot,
+          architecture: "arm64",
+          toolchainFingerprint: ContentHash.make("2".repeat(64)),
+          nativeFingerprint: ContentHash.make("4".repeat(64)),
+        })
+        assert.isFalse(changedNativeClosure.hit)
       }).pipe(provideLayer(cacheLayer(root)))
-      assert.lengthOf(yield* fs.readDirectory(`${root}/.artifacts/pods-cache/v2/entries`), 1)
+      assert.lengthOf(yield* fs.readDirectory(`${root}/.artifacts/pods-cache/v3/entries`), 1)
       assert.strictEqual(
         yield* fs.readFileString(`${candidateIos}/Podfile.lock`),
         "PODS:\n  - Expo (1.0)\n",
@@ -80,7 +91,7 @@ describe("PodsCache", () => {
       yield* fs.writeFileString(`${ios}/Podfile.lock`, "PODS:\n  - Expo (1.0)\n")
       const cacheParent = `${root}/.artifacts/pods-cache`
       yield* fs.makeDirectory(cacheParent, { recursive: true })
-      yield* fs.writeFileString(`${cacheParent}/v2.lock`, "other-owner")
+      yield* fs.writeFileString(`${cacheParent}/v3.lock`, "other-owner")
 
       const result = yield* Effect.gen(function* () {
         const cache = yield* PodsCache
@@ -90,14 +101,15 @@ describe("PodsCache", () => {
           workspaceRoot: workspace,
           architecture: "arm64",
           toolchainFingerprint: ContentHash.make("2".repeat(64)),
+          nativeFingerprint: ContentHash.make("3".repeat(64)),
         })
       }).pipe(provideLayer(cacheLayer(root)))
 
       assert.isFalse(result.hit)
       assert.strictEqual(result.key, "busy")
       assert.match(result.detail, /publication skipped/)
-      assert.isFalse(yield* fs.exists(`${cacheParent}/v2`))
-      assert.strictEqual(yield* fs.readFileString(`${cacheParent}/v2.lock`), "other-owner")
+      assert.isFalse(yield* fs.exists(`${cacheParent}/v3`))
+      assert.strictEqual(yield* fs.readFileString(`${cacheParent}/v3.lock`), "other-owner")
     }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 })

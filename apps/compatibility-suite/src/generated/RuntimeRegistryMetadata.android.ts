@@ -3161,6 +3161,28 @@ export const metadata: {
       "reason": null
     },
     {
+      "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/Clipboard.ts",
+      "path": "src/capabilities/Clipboard.ts",
+      "caseIds": [
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Clipboard.ts#Clipboard Effect capability round trips native text through the live layer and Expo provider@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Clipboard.ts#Clipboard Effect capability forwards native string formats and Android sensitivity@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Clipboard.ts#Clipboard Effect capability round trips platform URL and image content where supported@1",
+        "better-native-capability#apps/compatibility-suite/src/capabilities/Clipboard.ts#Clipboard Effect capability acquires and releases the native change stream and event atom@1"
+      ],
+      "runner": "expo-jasmine",
+      "execution": "native-app",
+      "platforms": [
+        "web",
+        "ios",
+        "android"
+      ],
+      "executability": "runnable",
+      "registration": "lazy",
+      "authority": "supplemental",
+      "runtimeName": "Clipboard Effect capability",
+      "reason": null
+    },
+    {
       "sourceId": "better-native-capability#apps/compatibility-suite/src/capabilities/SQLite.ts",
       "path": "src/capabilities/SQLite.ts",
       "caseIds": [

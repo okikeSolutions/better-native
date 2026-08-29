@@ -168,6 +168,7 @@ describe("hosted compatibility workflow", () => {
         "//#expo:toolchain",
         "@better-native/network#build",
         "@better-native/battery#build",
+        "@better-native/clipboard#build",
         "@better-native/keep-awake#build",
         "@better-native/secure-store#build",
         "@better-native/sqlite#build",

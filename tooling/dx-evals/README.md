@@ -14,15 +14,16 @@ JSON-safe outcomes and transcript events.
 
 ## Current status
 
-The foundation, synthetic proof, Network, Battery, KeepAwake, SecureStore, SQLite, Task Manager,
-Background Task, Location, and Notifications baselines are implemented and pass secretless validation. The
+The foundation, synthetic proof, Network, Battery, Clipboard, KeepAwake, SecureStore, SQLite, Task
+Manager, Background Task, Location, and Notifications baselines are implemented and pass secretless
+validation. The
 reviewed `checkpoint-5-smoke` campaign selects one Network trial with the cheapest compatible
 profile before the larger `checkpoint-5-diagnostic` campaign runs five pinned profiles on Network,
 Battery, KeepAwake, SecureStore, and SQLite. Earlier diagnostic evidence is
 preserved unchanged under `evals/baselines/`; it is not an accepted performance baseline. Human
 blind pilots, calibrated thresholds, and model success-rate claims remain pending.
 
-The synthetic foundation and nine deterministic package tasks provide:
+The synthetic foundation and ten deterministic package tasks provide:
 
 - versioned trial, gate, transcript, usage, and evidence schemas with Effect-branded identities,
   validated paths, and cryptographic values;

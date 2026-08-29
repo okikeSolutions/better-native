@@ -1,6 +1,6 @@
 {
   "name": "better-native",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "private": false,
   "description": "Install and diagnose Better Native capabilities in Expo applications.",
   "keywords": [
@@ -33,7 +33,9 @@
     "build": "rm -rf dist && bun build src/bin.ts --target=node --format=esm --outfile=dist/bin.js",
     "prepack": "bun run build",
     "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run --config ../../vitest.unit.config.ts packages/cli/",
+    "test:coverage": "BETTER_NATIVE_COVERAGE_PACKAGE=cli vitest run --config ../../vitest.coverage.config.ts --coverage packages/cli/"
   },
   "devDependencies": {
     "@effect/platform-node": "4.0.0-rc.112",

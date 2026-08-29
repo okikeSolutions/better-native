@@ -2,6 +2,7 @@ import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import type * as Domain from "../Domain.ts"
 import * as Battery from "./Battery.ts"
+import * as Clipboard from "./Clipboard.ts"
 import * as BackgroundTask from "./BackgroundTask.ts"
 import * as KeepAwake from "./KeepAwake.ts"
 import * as Location from "./Location.ts"
@@ -18,6 +19,7 @@ export type Task =
   | Synthetic.Task
   | Network.Task
   | Battery.Task
+  | Clipboard.Task
   | BackgroundTask.Task
   | KeepAwake.Task
   | Location.Task
@@ -31,6 +33,7 @@ export const registeredTaskIds = [
   "synthetic-effect",
   "network",
   "battery",
+  "clipboard",
   "background-task",
   "keep-awake",
   "location",
@@ -46,6 +49,7 @@ export const loadTask = (taskId: Domain.TaskId) =>
     Match.when("synthetic-effect", () => Synthetic.load),
     Match.when("network", () => Network.load),
     Match.when("battery", () => Battery.load),
+    Match.when("clipboard", () => Clipboard.load),
     Match.when("background-task", () => BackgroundTask.load),
     Match.when("keep-awake", () => KeepAwake.load),
     Match.when("location", () => Location.load),

@@ -12,6 +12,15 @@
       "issue": "promote-battery-effect-ownership"
     },
     {
+      "package": "expo-clipboard",
+      "subpath": ".",
+      "export": null,
+      "status": "effect",
+      "replacement": "@better-native/clipboard/expo",
+      "reason": "Better Native owns the complete Clipboard JavaScript contract through typed Effect reads and writes, a scoped event Stream, an Atom, and an Expo-compatible entrypoint. Paired upstream/candidate Release evidence passes all four reviewed cases on web, iOS, and Android with zero divergences; Expo remains the native capability provider behind Clipboard.live.",
+      "issue": "promote-clipboard-effect-ownership"
+    },
+    {
       "package": "expo-network",
       "subpath": ".",
       "export": null,

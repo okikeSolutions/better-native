@@ -28,6 +28,24 @@
       "dependsOn": ["build"],
       "outputs": []
     },
+    "test:unit": {
+      "inputs": [
+        "src/**",
+        "test/**",
+        "package.json",
+        "$TURBO_ROOT$/vitest.{shared,unit.config}.ts"
+      ],
+      "outputs": []
+    },
+    "test:coverage": {
+      "inputs": [
+        "src/**",
+        "test/**",
+        "package.json",
+        "$TURBO_ROOT$/vitest.{shared,coverage.config}.ts"
+      ],
+      "outputs": ["coverage/**"]
+    },
     "docs:api": {
       "outputs": ["../../.artifacts/docs/api/**"]
     },
@@ -38,6 +56,7 @@
         "check:effect",
         "@better-native/network#build",
         "@better-native/battery#build",
+        "@better-native/clipboard#build",
         "@better-native/keep-awake#build",
         "@better-native/secure-store#build",
         "@better-native/sqlite#build",
@@ -46,7 +65,7 @@
         "@better-native/location#build",
         "@better-native/notifications#build"
       ],
-      "passThroughEnv": ["BETTER_NATIVE_EVAL_RUN_ID"],
+      "passThroughEnv": ["BETTER_NATIVE_EVAL_RUN_ID", "BETTER_NATIVE_EVAL_TASK"],
       "outputs": []
     },
     "evals:live": {
@@ -56,6 +75,7 @@
         "check:effect",
         "@better-native/network#build",
         "@better-native/battery#build",
+        "@better-native/clipboard#build",
         "@better-native/keep-awake#build",
         "@better-native/secure-store#build",
         "@better-native/sqlite#build",
@@ -81,6 +101,7 @@
         "//#expo:toolchain",
         "@better-native/network#build",
         "@better-native/battery#build",
+        "@better-native/clipboard#build",
         "@better-native/keep-awake#build",
         "@better-native/secure-store#build",
         "@better-native/sqlite#build",

@@ -15,6 +15,7 @@ import {
   processInvocation,
   ProcessFailure,
   ProcessSupervisor,
+  taskpolicyCommand,
   type ProcessBackend,
 } from "./ProcessSupervisor.ts"
 
@@ -36,7 +37,7 @@ describe("ProcessSupervisor", () => {
       darwinScheduling: "utility-background" as const,
     }
     assert.deepStrictEqual(processInvocation(profiled, "darwin"), {
-      command: "/usr/bin/taskpolicy",
+      command: taskpolicyCommand,
       args: ["-b", "-c", "utility", "xcodebuild", "build"],
     })
     assert.deepStrictEqual(processInvocation(profiled, "linux"), {

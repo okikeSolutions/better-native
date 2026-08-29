@@ -10,12 +10,12 @@ import {
 describe("CapabilityShell", () => {
   const appDependencies: Readonly<Record<string, string>> = manifest.dependencies
 
-  it("keeps the 84-dependency app as the unscoped full-suite default", () => {
-    assert.strictEqual(Object.keys(manifest.dependencies).length, 84)
+  it("keeps the 85-dependency app as the unscoped full-suite default", () => {
+    assert.strictEqual(Object.keys(manifest.dependencies).length, 85)
     assert.isNull(capabilityShell(undefined))
   })
 
-  it("declares small reviewed native closures for Location, SQLite, and Notifications", () => {
+  it("declares small reviewed native closures for Clipboard, Location, SQLite, and Notifications", () => {
     for (const sourceId of Object.values(capabilityShellSourceIds)) {
       const shell = capabilityShell(sourceId)
       assert.isNotNull(shell)
@@ -26,7 +26,7 @@ describe("CapabilityShell", () => {
         [],
       )
     }
-    assert.strictEqual(capabilityShells.size, 3)
+    assert.strictEqual(capabilityShells.size, 4)
   })
 
   it("trims the copied application manifest while leaving the monolith unchanged", () => {
@@ -36,14 +36,21 @@ describe("CapabilityShell", () => {
       Object.keys(scoped.dependencies as object).toSorted(),
       [...shell.dependencies].toSorted(),
     )
-    assert.strictEqual(Object.keys(manifest.dependencies).length, 84)
+    assert.strictEqual(Object.keys(manifest.dependencies).length, 85)
   })
 
   it("includes only capability-specific providers and required companions", () => {
+    const clipboard = capabilityShell(capabilityShellSourceIds.clipboard)!
     const location = capabilityShell(capabilityShellSourceIds.location)!
     const sqlite = capabilityShell(capabilityShellSourceIds.sqlite)!
     const notifications = capabilityShell(capabilityShellSourceIds.notifications)!
 
+    assert.isTrue(
+      ["@better-native/clipboard", "expo-clipboard"].every((name) =>
+        clipboard.dependencies.includes(name),
+      ),
+    )
+    assert.notInclude(clipboard.dependencies, "expo-location")
     assert.isTrue(
       ["@better-native/location", "expo-location"].every((name) =>
         location.dependencies.includes(name),
