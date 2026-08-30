@@ -13,15 +13,55 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
+
 jobs:
-  check:
+  plan:
+    name: Verification plan
+    runs-on: ubuntu-24.04
+    outputs:
+      capabilities: ${{ steps.matrix.outputs.capabilities }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Derive the capability matrix from the migration ledger
+        id: matrix
+        run: echo "capabilities=$(jq -c '[.capabilities[].id]' compatibility/capabilities.json)" >> "$GITHUB_OUTPUT"
+
+  fast:
     name: Repository checks
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+
+      - name: Setup build profile
+        uses: ./.github/actions/setup-build
+
+      - name: Run the local fast contract
+        run: bun run check:fast
+
+  integration:
+    name: Integration (${{ matrix.suite }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        suite:
+          - published
+          - harness
+          - compile-contracts
+          - isolation
+          - trials
+          - task-workspace
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -34,8 +74,62 @@ jobs:
       - name: Setup DX eval prerequisites
         uses: ./.github/actions/setup-dx-evals
 
-      - name: Check
-        run: bun run check
+      - name: Materialize pinned Expo for catalog integration
+        if: matrix.suite == 'harness'
+        run: bun run expo:prepare
 
-      - name: Validate deterministic DX evals
-        run: bun run evals validate
+      - name: Run integration suite
+        env:
+          BETTER_NATIVE_INTEGRATION_SUITE: ${{ matrix.suite }}
+        run: bun run test:integration
+
+  eval-controls:
+    name: DX controls (${{ matrix.capability }})
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        capability: ${{ fromJSON(needs.plan.outputs.capabilities) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+
+      - name: Setup static profile
+        uses: ./.github/actions/setup-static
+
+      - name: Setup DX eval prerequisites
+        uses: ./.github/actions/setup-dx-evals
+
+      - name: Validate deterministic controls
+        run: bun run evals validate --task ${{ matrix.capability }}
+
+      - name: Upload eval evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dx-controls-${{ matrix.capability }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/evals
+          if-no-files-found: warn
+          retention-days: 7
+
+  required:
+    name: Verification required
+    if: always()
+    needs: [plan, fast, integration, eval-controls]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require every selected verification lane
+        env:
+          PLAN_RESULT: ${{ needs.plan.result }}
+          FAST_RESULT: ${{ needs.fast.result }}
+          INTEGRATION_RESULT: ${{ needs.integration.result }}
+          EVAL_RESULT: ${{ needs.eval-controls.result }}
+        run: |
+          test "$PLAN_RESULT" = success
+          test "$FAST_RESULT" = success
+          test "$INTEGRATION_RESULT" = success
+          test "$EVAL_RESULT" = success

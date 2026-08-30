@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "expoRevision": "534c99966e34580f56242eb92aac7689b9089cc7",
-  "ownershipFingerprint": "532c726928eb4565c3de09ecd099b0c86ebbcd885d48f48510cc9362d9e580b4",
+  "ownershipFingerprint": "d7e7c889d6691e7372d7cdb990d03e6e5d739eaec028befd36d3ecd6bb4cac73",
   "replacements": [
     {
       "source": "expo-background-task",
@@ -18,6 +18,10 @@
     {
       "source": "expo-battery",
       "target": "@better-native/battery/expo"
+    },
+    {
+      "source": "expo-clipboard",
+      "target": "@better-native/clipboard/expo"
     },
     {
       "source": "expo-keep-awake",

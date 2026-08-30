@@ -9,17 +9,17 @@ Let Expo choose the SDK-compatible Notifications provider while installing the e
 and Effect versions:
 
 ```sh
-npx expo install expo-notifications @better-native/notifications@0.0.1-alpha.1 effect@4.0.0-rc.108
+npx expo install expo-notifications @better-native/notifications@0.0.1-alpha.1 effect@4.0.0-rc.112
 ```
 
 For a split manual install, first run `npx expo install expo-notifications`, then choose one package
 manager command:
 
 ```sh
-npm install @better-native/notifications@0.0.1-alpha.1 effect@4.0.0-rc.108
-pnpm add @better-native/notifications@0.0.1-alpha.1 effect@4.0.0-rc.108
-yarn add @better-native/notifications@0.0.1-alpha.1 effect@4.0.0-rc.108
-bun add @better-native/notifications@0.0.1-alpha.1 effect@4.0.0-rc.108
+npm install @better-native/notifications@0.0.1-alpha.1 effect@4.0.0-rc.112
+pnpm add @better-native/notifications@0.0.1-alpha.1 effect@4.0.0-rc.112
+yarn add @better-native/notifications@0.0.1-alpha.1 effect@4.0.0-rc.112
+bun add @better-native/notifications@0.0.1-alpha.1 effect@4.0.0-rc.112
 ```
 
 Background delivery additionally requires Task Manager. Install its Expo provider, then choose one
@@ -33,7 +33,7 @@ yarn add @better-native/task-manager@0.0.1-alpha.1
 bun add @better-native/task-manager@0.0.1-alpha.1
 ```
 
-This release supports `expo-notifications >=57.0.0 <58.0.0` and Effect `4.0.0-rc.108`.
+This release supports `expo-notifications >=57.0.0 <58.0.0` and Effect `4.0.0-rc.112`.
 
 ## Effect API
 

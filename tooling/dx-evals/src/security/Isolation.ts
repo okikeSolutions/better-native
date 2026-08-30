@@ -32,6 +32,7 @@ export interface IsolationRequest {
     | "observe-effect.ts"
     | "observe-network.ts"
     | "observe-battery.ts"
+    | "observe-clipboard.ts"
     | "observe-keep-awake.ts"
     | "observe-secure-store.ts"
     | "observe-sqlite.ts"
@@ -238,50 +239,44 @@ export const layer: Layer.Layer<
                 }),
               ),
             ).pipe(Stream.run(handle.stdin))
-            const exitCode = yield* Fiber.join(exitCodeFiber).pipe(
-              Effect.timeoutOrElse({
-                duration: Duration.millis(config.sandboxTimeoutMilliseconds),
-                orElse: () =>
-                  Effect.logWarning("Sandbox timed out; forcing cleanup").pipe(
-                    Effect.annotateLogs({
-                      containerName,
-                      timeoutMilliseconds: config.sandboxTimeoutMilliseconds,
-                    }),
-                    Effect.andThen(
-                      spawner
-                        .string(
-                          ChildProcess.make(
-                            config.podmanExecutable,
-                            ["rm", "--force", "--ignore", "--time", "0", containerName],
-                            {
-                              stdout: "pipe",
-                              stderr: "pipe",
-                              killSignal: "SIGKILL",
-                            },
-                          ),
-                        )
-                        .pipe(
-                          Effect.timeoutOrElse({
-                            duration: "5 seconds",
-                            orElse: () =>
-                              Effect.fail(
-                                new IsolationFailure({
-                                  reason: "timeout-cleanup-failed",
-                                }),
-                              ),
-                          }),
-                          Effect.mapError(
-                            () =>
-                              new IsolationFailure({
-                                reason: "timeout-cleanup-failed",
-                              }),
-                          ),
-                          Effect.andThen(Effect.fail(new IsolationFailure({ reason: "timeout" }))),
-                        ),
-                    ),
-                  ),
-              }),
+            const exitOrTimeout = yield* Effect.raceFirst(
+              Fiber.join(exitCodeFiber).pipe(
+                Effect.map((exitCode) => ({ _tag: "Exit" as const, exitCode })),
+              ),
+              Effect.sleep(Duration.millis(config.sandboxTimeoutMilliseconds)).pipe(
+                Effect.as({ _tag: "Timeout" as const }),
+              ),
             )
+            if (exitOrTimeout._tag === "Timeout") {
+              yield* Effect.logWarning("Sandbox timed out; forcing cleanup").pipe(
+                Effect.annotateLogs({
+                  containerName,
+                  timeoutMilliseconds: config.sandboxTimeoutMilliseconds,
+                }),
+              )
+              yield* spawner
+                .string(
+                  ChildProcess.make(
+                    config.podmanExecutable,
+                    ["rm", "--force", "--ignore", "--time", "0", containerName],
+                    {
+                      stdout: "pipe",
+                      stderr: "pipe",
+                      killSignal: "SIGKILL",
+                    },
+                  ),
+                )
+                .pipe(
+                  Effect.timeoutOrElse({
+                    duration: "5 seconds",
+                    orElse: () =>
+                      Effect.fail(new IsolationFailure({ reason: "timeout-cleanup-failed" })),
+                  }),
+                  Effect.mapError(() => new IsolationFailure({ reason: "timeout-cleanup-failed" })),
+                )
+              return yield* new IsolationFailure({ reason: "timeout" })
+            }
+            const exitCode = exitOrTimeout.exitCode
             const [stdout, stderr] = yield* Effect.all([
               Fiber.join(stdoutFiber),
               Fiber.join(stderrFiber),

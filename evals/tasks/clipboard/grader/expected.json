@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    {
+      "id": "two-events",
+      "take": 2,
+      "expectedValues": [["plain-text"], ["image"]],
+      "expectedFailureMethod": null
+    },
+    {
+      "id": "early-stop",
+      "take": 1,
+      "expectedValues": [["plain-text"]],
+      "expectedFailureMethod": null
+    },
+    {
+      "id": "listener-failure",
+      "take": 1,
+      "expectedValues": [],
+      "expectedFailureMethod": "addClipboardListener"
+    }
+  ]
+}

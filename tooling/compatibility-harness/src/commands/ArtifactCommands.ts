@@ -7,7 +7,7 @@ import { ArtifactLifecycle, ArtifactLifecycleError } from "../artifacts/Artifact
 /** Reports or applies local artifact retention and the shared 8 GiB cache budget. */
 export const artifactsPrune = Command.make(
   "artifacts-prune",
-  { dryRun: Flag.boolean("dry-run") },
+  { dryRun: Flag.boolean("dry-run").pipe(Flag.withDefault(false)) },
   Effect.fn("Command.artifactsPrune")(function* ({ dryRun }) {
     const lifecycle = yield* ArtifactLifecycle
     const report = yield* lifecycle.prune({ dryRun })
@@ -18,7 +18,7 @@ export const artifactsPrune = Command.make(
 /** Explicit emergency removal of all repository-owned artifacts. */
 export const artifactsClean = Command.make(
   "artifacts-clean",
-  { all: Flag.boolean("all") },
+  { all: Flag.boolean("all").pipe(Flag.withDefault(false)) },
   Effect.fn("Command.artifactsClean")(function* ({ all }) {
     if (!all) {
       return yield* new ArtifactLifecycleError({

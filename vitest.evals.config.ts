@@ -2,6 +2,7 @@ import { defineConfig } from "vitest/config"
 import { makeDefaultCampaignId } from "./tooling/dx-evals/src/campaign/RunIdentity.ts"
 
 const requestedRunId = process.env.BETTER_NATIVE_EVAL_RUN_ID
+const requestedTask = process.env.BETTER_NATIVE_EVAL_TASK
 const liveEnabled = process.env.BETTER_NATIVE_EVAL_LIVE === "1"
 const runId = requestedRunId ?? makeDefaultCampaignId(Date.now(), crypto.randomUUID())
 process.env.BETTER_NATIVE_EVAL_RUN_ID = runId
@@ -13,7 +14,11 @@ if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(runId)) {
 export default defineConfig({
   root: import.meta.dirname,
   test: {
-    include: ["tooling/dx-evals/evals/**/*.eval.ts"],
+    include: [
+      requestedTask === undefined
+        ? "tooling/dx-evals/evals/**/*.eval.ts"
+        : `tooling/dx-evals/evals/${requestedTask}.eval.ts`,
+    ],
     testTimeout: liveEnabled ? 330_000 : 30_000,
     hookTimeout: liveEnabled ? 330_000 : 30_000,
     // Paid campaigns remain strictly serialized. Secretless controls may use

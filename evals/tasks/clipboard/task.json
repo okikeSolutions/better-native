@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "taskType": "clipboard",
+  "id": "clipboard",
+  "version": "1",
+  "allowedSubmissionPaths": ["src/ObserveClipboard.ts"],
+  "entrypoint": "src/ObserveClipboard.ts",
+  "exportName": "clipboardContentTypes",
+  "publicPackages": ["@better-native/clipboard"]
+}

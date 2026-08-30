@@ -1,0 +1,225 @@
+{
+  "schemaVersion": 1,
+  "capabilities": [
+    {
+      "id": "battery",
+      "expoPackage": "expo-battery",
+      "candidatePackage": "@better-native/battery",
+      "compatibilitySource": "Battery.ts",
+      "expoSubpaths": ["."],
+      "requirements": {
+        "platforms": ["web", "ios", "android"],
+        "dxEval": true,
+        "events": true,
+        "hooks": true,
+        "configPlugin": false,
+        "backgroundExecution": false,
+        "physicalDevice": true
+      },
+      "verification": {
+        "unitProject": "@better-native/battery",
+        "coverageScope": "packages/battery/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
+        "parityPlatforms": ["web", "ios", "android"]
+      }
+    },
+    {
+      "id": "clipboard",
+      "expoPackage": "expo-clipboard",
+      "candidatePackage": "@better-native/clipboard",
+      "compatibilitySource": "Clipboard.ts",
+      "expoSubpaths": ["."],
+      "requirements": {
+        "platforms": ["web", "ios", "android"],
+        "dxEval": true,
+        "events": true,
+        "hooks": false,
+        "configPlugin": false,
+        "backgroundExecution": false,
+        "physicalDevice": false
+      },
+      "verification": {
+        "unitProject": "@better-native/clipboard",
+        "coverageScope": "packages/clipboard/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
+        "parityPlatforms": ["web", "ios", "android"]
+      }
+    },
+    {
+      "id": "network",
+      "expoPackage": "expo-network",
+      "candidatePackage": "@better-native/network",
+      "compatibilitySource": "Network.ts",
+      "expoSubpaths": ["."],
+      "requirements": {
+        "platforms": ["web", "ios", "android"],
+        "dxEval": true,
+        "events": true,
+        "hooks": false,
+        "configPlugin": false,
+        "backgroundExecution": false,
+        "physicalDevice": false
+      },
+      "verification": {
+        "unitProject": "@better-native/network",
+        "coverageScope": "packages/network/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
+        "parityPlatforms": ["web", "ios", "android"]
+      }
+    },
+    {
+      "id": "keep-awake",
+      "expoPackage": "expo-keep-awake",
+      "candidatePackage": "@better-native/keep-awake",
+      "compatibilitySource": "KeepAwake.ts",
+      "expoSubpaths": ["."],
+      "requirements": {
+        "platforms": ["web", "ios", "android"],
+        "dxEval": true,
+        "events": true,
+        "hooks": true,
+        "configPlugin": false,
+        "backgroundExecution": false,
+        "physicalDevice": false
+      },
+      "verification": {
+        "unitProject": "@better-native/keep-awake",
+        "coverageScope": "packages/keep-awake/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
+        "parityPlatforms": ["web", "ios", "android"]
+      }
+    },
+    {
+      "id": "secure-store",
+      "expoPackage": "expo-secure-store",
+      "candidatePackage": "@better-native/secure-store",
+      "compatibilitySource": "SecureStore.ts",
+      "expoSubpaths": ["."],
+      "requirements": {
+        "platforms": ["web", "ios", "android"],
+        "dxEval": true,
+        "events": false,
+        "hooks": false,
+        "configPlugin": false,
+        "backgroundExecution": false,
+        "physicalDevice": true
+      },
+      "verification": {
+        "unitProject": "@better-native/secure-store",
+        "coverageScope": "packages/secure-store/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
+        "parityPlatforms": ["web", "ios", "android"]
+      }
+    },
+    {
+      "id": "sqlite",
+      "expoPackage": "expo-sqlite",
+      "candidatePackage": "@better-native/sqlite",
+      "compatibilitySource": "SQLite.ts",
+      "expoSubpaths": [".", "./kv-store", "./localStorage/install", "./app.plugin.js", "./plugin"],
+      "requirements": {
+        "platforms": ["web", "ios", "android"],
+        "dxEval": true,
+        "events": true,
+        "hooks": true,
+        "configPlugin": true,
+        "backgroundExecution": false,
+        "physicalDevice": false
+      },
+      "verification": {
+        "unitProject": "@better-native/sqlite",
+        "coverageScope": "packages/sqlite/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls"],
+        "parityPlatforms": ["web", "ios", "android"]
+      }
+    },
+    {
+      "id": "task-manager",
+      "expoPackage": "expo-task-manager",
+      "candidatePackage": "@better-native/task-manager",
+      "compatibilitySource": "TaskManager.ts",
+      "expoSubpaths": [".", "./app.plugin", "./package.json"],
+      "requirements": {
+        "platforms": ["web", "ios", "android"],
+        "dxEval": true,
+        "events": false,
+        "hooks": false,
+        "configPlugin": true,
+        "backgroundExecution": true,
+        "physicalDevice": true
+      },
+      "verification": {
+        "unitProject": "@better-native/task-manager",
+        "coverageScope": "packages/task-manager/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls"],
+        "parityPlatforms": ["web", "ios", "android"]
+      }
+    },
+    {
+      "id": "background-task",
+      "expoPackage": "expo-background-task",
+      "candidatePackage": "@better-native/background-task",
+      "compatibilitySource": "BackgroundTask.ts",
+      "expoSubpaths": [".", "./app.plugin", "./package.json"],
+      "requirements": {
+        "platforms": ["web", "ios", "android"],
+        "dxEval": true,
+        "events": true,
+        "hooks": false,
+        "configPlugin": true,
+        "backgroundExecution": true,
+        "physicalDevice": true
+      },
+      "verification": {
+        "unitProject": "@better-native/background-task",
+        "coverageScope": "packages/background-task/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls"],
+        "parityPlatforms": ["web", "ios", "android"]
+      }
+    },
+    {
+      "id": "location",
+      "expoPackage": "expo-location",
+      "candidatePackage": "@better-native/location",
+      "compatibilitySource": "Location.ts",
+      "expoSubpaths": [".", "./app.plugin", "./package.json"],
+      "requirements": {
+        "platforms": ["web", "ios", "android"],
+        "dxEval": true,
+        "events": true,
+        "hooks": true,
+        "configPlugin": true,
+        "backgroundExecution": true,
+        "physicalDevice": true
+      },
+      "verification": {
+        "unitProject": "@better-native/location",
+        "coverageScope": "packages/location/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls"],
+        "parityPlatforms": ["web", "ios", "android"]
+      }
+    },
+    {
+      "id": "notifications",
+      "expoPackage": "expo-notifications",
+      "candidatePackage": "@better-native/notifications",
+      "compatibilitySource": "Notifications.ts",
+      "expoSubpaths": [".", "./app.plugin", "./package.json"],
+      "requirements": {
+        "platforms": ["web", "ios", "android"],
+        "dxEval": true,
+        "events": true,
+        "hooks": true,
+        "configPlugin": true,
+        "backgroundExecution": true,
+        "physicalDevice": true
+      },
+      "verification": {
+        "unitProject": "@better-native/notifications",
+        "coverageScope": "packages/notifications/src/**/*.ts",
+        "integrationSuites": ["published", "eval-controls"],
+        "parityPlatforms": ["web", "ios", "android"]
+      }
+    }
+  ]
+}

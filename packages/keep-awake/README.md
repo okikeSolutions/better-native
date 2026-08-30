@@ -18,7 +18,7 @@ API mapping coverage alone is not evidence of native behavioral parity.
 Install the native provider, this package, and its Effect peer in one Expo CLI transaction:
 
 ```sh
-npx expo install expo-keep-awake @better-native/keep-awake@alpha effect@4.0.0-rc.108
+npx expo install expo-keep-awake @better-native/keep-awake@alpha effect@4.0.0-rc.112
 ```
 
 Expo selects the `expo-keep-awake` version compatible with the application's SDK. The Better Native

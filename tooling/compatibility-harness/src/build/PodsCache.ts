@@ -16,6 +16,7 @@ interface PodsCacheRequest {
   readonly workspaceRoot: string
   readonly architecture: string
   readonly toolchainFingerprint: string
+  readonly nativeFingerprint: string
 }
 
 export interface PodsCacheResult {
@@ -25,9 +26,10 @@ export interface PodsCacheResult {
 }
 
 interface PodsCacheRecord {
-  readonly schemaVersion: 2
+  readonly schemaVersion: 3
   readonly architecture: string
   readonly toolchainFingerprint: string
+  readonly nativeFingerprint: string
   readonly inputsHash: string
   readonly lockHash: string
 }
@@ -59,7 +61,7 @@ export const layer = (
       const fs = yield* FileSystem.FileSystem
       const path = yield* Path.Path
       const products = yield* BuildProducts
-      const cacheRoot = path.join(root, ".artifacts", "pods-cache", "v2")
+      const cacheRoot = path.join(root, ".artifacts", "pods-cache", "v3")
       const entriesRoot = path.join(cacheRoot, "entries")
       const indexesRoot = path.join(cacheRoot, "indexes")
       const cacheLock = `${cacheRoot}.lock`
@@ -98,7 +100,9 @@ export const layer = (
               ])
             }
           }
-          return yield* digestText(JSON.stringify(fragments))
+          return yield* digestText(
+            JSON.stringify({ fragments, nativeFingerprint: input.nativeFingerprint }),
+          )
         })
       const indexKey = (input: PodsCacheRequest, hash: string) =>
         `${input.architecture}-${input.toolchainFingerprint}-${hash}`
@@ -110,9 +114,10 @@ export const layer = (
           const value = JSON.parse(text) as unknown
           if (
             !isRecord(value) ||
-            value.schemaVersion !== 2 ||
+            value.schemaVersion !== 3 ||
             typeof value.architecture !== "string" ||
             typeof value.toolchainFingerprint !== "string" ||
+            typeof value.nativeFingerprint !== "string" ||
             typeof value.inputsHash !== "string" ||
             typeof value.lockHash !== "string"
           )
@@ -139,7 +144,8 @@ export const layer = (
             index === null ||
             index.inputsHash !== hash ||
             index.architecture !== input.architecture ||
-            index.toolchainFingerprint !== input.toolchainFingerprint
+            index.toolchainFingerprint !== input.toolchainFingerprint ||
+            index.nativeFingerprint !== input.nativeFingerprint
           ) {
             return { hit: false, key, detail: "effective CocoaPods input index is malformed" }
           }
@@ -180,9 +186,10 @@ export const layer = (
           if (!isSafePathSegment(key) || !isSafePathSegment(entryKey))
             return yield* new PodsCacheIdentityError({ cause: "invalid CocoaPods cache identity" })
           const record: PodsCacheRecord = {
-            schemaVersion: 2,
+            schemaVersion: 3,
             architecture: input.architecture,
             toolchainFingerprint: input.toolchainFingerprint,
+            nativeFingerprint: input.nativeFingerprint,
             inputsHash: hash,
             lockHash: resultingLockHash,
           }

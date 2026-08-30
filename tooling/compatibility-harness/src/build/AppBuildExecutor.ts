@@ -89,6 +89,16 @@ const cacheHitStatus = (hit: boolean) =>
     Match.exhaustive,
   )
 
+const nativeCompilerInvocations = (
+  buildDecision: "bundle" | "full-build" | "repack",
+  platform: BuildRequest["platform"],
+): Array<"gradle" | "cocoapods" | "xcode"> => {
+  if (buildDecision !== "full-build") return []
+  if (platform === "android") return ["gradle"]
+  if (platform === "ios") return ["cocoapods", "xcode"]
+  return []
+}
+
 /** Effect context tag for executing isolated compatibility app builds. */
 export class AppBuildExecutor extends Context.Service<AppBuildExecutor, Service>()(
   "@better-native/compatibility-harness/AppBuildExecutor",
@@ -359,6 +369,9 @@ export const layer = (
                 timeoutMillis: request.timeoutMillis,
               }),
             )
+            const pinnedExpoRelative = path
+              .relative(appDirectory, pinnedUpstream.root)
+              .replaceAll("\\", "/")
             const fingerprint = yield* Effect.tryPromise({
               try: () =>
                 createFingerprintAsync(appDirectory, {
@@ -373,6 +386,12 @@ export const layer = (
                     "**/expo/packages/**/apple/Products/**/*",
                     "**/expo/packages/**/apple/.DerivedData/**/*",
                     "**/expo/packages/precompile/.build/**/*",
+                    `${pinnedExpoRelative}/packages/**/android/build/**/*`,
+                    `${pinnedExpoRelative}/packages/**/android/.cxx/**/*`,
+                    `${pinnedExpoRelative}/packages/**/ios/build/**/*`,
+                    `${pinnedExpoRelative}/packages/**/apple/Products/**/*`,
+                    `${pinnedExpoRelative}/packages/**/apple/.DerivedData/**/*`,
+                    `${pinnedExpoRelative}/packages/precompile/.build/**/*`,
                   ],
                 }),
               catch: (cause) => new BuildPipelineError({ phase: "prebuild", request, cause }),
@@ -589,6 +608,7 @@ export const layer = (
                           workspaceRoot,
                           architecture,
                           toolchainFingerprint: iosToolchainFingerprint,
+                          nativeFingerprint: iosNativeFingerprint,
                         })
                         podsCacheStatus = {
                           name: "cocoapods",
@@ -629,6 +649,7 @@ export const layer = (
                           workspaceRoot,
                           architecture,
                           toolchainFingerprint: iosToolchainFingerprint,
+                          nativeFingerprint: iosNativeFingerprint,
                         })
                         podsCacheStatus = {
                           name: "cocoapods",
@@ -854,14 +875,7 @@ export const layer = (
                 metroClosure: prepared.metroClosureCount,
                 autolinkedNativeModules,
               },
-              nativeCompilerInvocations:
-                buildDecision !== "full-build"
-                  ? []
-                  : request.platform === "android"
-                    ? ["gradle"]
-                    : request.platform === "ios"
-                      ? ["cocoapods", "xcode"]
-                      : [],
+              nativeCompilerInvocations: nativeCompilerInvocations(buildDecision, request.platform),
             },
             artifacts,
           }

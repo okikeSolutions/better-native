@@ -1,0 +1,66 @@
+{
+  "name": "@better-native/clipboard",
+  "version": "0.0.1-alpha.1",
+  "private": false,
+  "description": "Effect-native clipboard reads, writes, and change events for Expo applications.",
+  "keywords": [
+    "clipboard",
+    "effect",
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://github.com/okikeSolutions/better-native/tree/main/packages/clipboard#readme",
+  "bugs": "https://github.com/okikeSolutions/better-native/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okikeSolutions/better-native.git",
+    "directory": "packages/clipboard"
+  },
+  "files": [
+    "build",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "import": "./build/index.js",
+      "default": "./build/index.js"
+    },
+    "./expo": {
+      "types": "./build/Expo.d.ts",
+      "import": "./build/Expo.js",
+      "default": "./build/Expo.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf build && tsc -p tsconfig.build.json",
+    "prepack": "bun run build",
+    "docs:api": "docgen",
+    "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run --config ../../vitest.unit.config.ts packages/clipboard/",
+    "test:coverage": "BETTER_NATIVE_COVERAGE_PACKAGE=clipboard vitest run --config ../../vitest.coverage.config.ts --coverage packages/clipboard/"
+  },
+  "devDependencies": {
+    "@effect/docgen": "4.0.0-rc.112",
+    "effect": "4.0.0-rc.112",
+    "expo": "57.0.9",
+    "expo-clipboard": "57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.2"
+  },
+  "peerDependencies": {
+    "effect": "4.0.0-rc.112",
+    "expo-clipboard": ">=57.0.0 <58.0.0"
+  }
+}

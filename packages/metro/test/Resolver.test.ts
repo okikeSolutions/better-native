@@ -21,6 +21,7 @@ const harness = (options?: {
   readonly failure?: Error
   readonly previousResolver?: boolean
   readonly replacements?: ReadonlyArray<{ readonly source: string; readonly target: string }>
+  readonly inferTrackedSpecifiers?: boolean
   readonly environment?: unknown
   readonly isEsmImport?: boolean
   readonly conditionNames?: ReadonlyArray<string>
@@ -74,7 +75,9 @@ const harness = (options?: {
     replacements: options?.replacements ?? [
       { source: "expo-network", target: "@better-native/network/expo" },
     ],
-    trackedSpecifiers: ["expo-network", "expo-constants"],
+    ...(options?.inferTrackedSpecifiers === true
+      ? {}
+      : { trackedSpecifiers: ["expo-network", "expo-constants"] }),
     onResolution: (event) => events.push(event),
   })
   const resolve = configured.resolver.resolveRequest
@@ -83,6 +86,13 @@ const harness = (options?: {
 }
 
 describe("withBetterNative", () => {
+  it("infers tracked specifiers from replacements", () => {
+    const test = harness({ inferTrackedSpecifiers: true })
+    test.resolve(test.context, "expo-network", "ios")
+
+    assert.strictEqual(test.events[0]?.replacement, "@better-native/network/expo")
+  })
+
   it("keeps upstream specifiers unchanged in upstream mode", () => {
     const test = harness({ mode: "upstream" })
     test.resolve(test.context, "expo-network", "ios")
@@ -307,6 +317,24 @@ describe("withBetterNative", () => {
         mode: "candidate",
         upstreamNodeModulesPath: "/pinned-expo/node_modules",
         replacements: [{ source: "../expo-network", target: "@better-native/network/expo" }],
+      }),
+    )
+    assert.throws(() =>
+      withBetterNative(config, {
+        buildId: "empty-target-build",
+        runId: "empty-target-run",
+        mode: "candidate",
+        upstreamNodeModulesPath: "/pinned-expo/node_modules",
+        replacements: [{ source: "expo-network", target: "" }],
+      }),
+    )
+    assert.throws(() =>
+      withBetterNative(config, {
+        buildId: "invalid-target-build",
+        runId: "invalid-target-run",
+        mode: "candidate",
+        upstreamNodeModulesPath: "/pinned-expo/node_modules",
+        replacements: [{ source: "expo-network", target: "bad\\target" }],
       }),
     )
     assert.throws(() =>

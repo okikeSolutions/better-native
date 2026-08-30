@@ -73,6 +73,7 @@ export const readEvaluatorBundle = (
     | "effect"
     | "network"
     | "battery"
+    | "clipboard"
     | "keep-awake"
     | "secure-store"
     | "sqlite"
@@ -90,6 +91,7 @@ export const readEvaluatorBundle = (
       Match.whenOr(
         "network",
         "battery",
+        "clipboard",
         "keep-awake",
         "secure-store",
         "sqlite",

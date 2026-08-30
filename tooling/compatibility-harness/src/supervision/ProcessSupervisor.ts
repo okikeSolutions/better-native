@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs"
 import * as Clock from "effect/Clock"
 import * as Context from "effect/Context"
 import * as Data from "effect/Data"
@@ -34,6 +35,10 @@ export interface ProcessResult {
   readonly observations: ReadonlyArray<ProcessObservation>
 }
 
+export const taskpolicyCommand = existsSync("/usr/sbin/taskpolicy")
+  ? "/usr/sbin/taskpolicy"
+  : "/usr/bin/taskpolicy"
+
 /** Resolves the executable actually spawned for a supervised process. */
 export const processInvocation = (
   spec: ProcessSpec,
@@ -41,7 +46,7 @@ export const processInvocation = (
 ): { readonly command: string; readonly args: ReadonlyArray<string> } =>
   spec.darwinScheduling === "utility-background" && platform === "darwin"
     ? {
-        command: "/usr/bin/taskpolicy",
+        command: taskpolicyCommand,
         args: ["-b", "-c", "utility", spec.command, ...(spec.args ?? [])],
       }
     : { command: spec.command, args: spec.args ?? [] }

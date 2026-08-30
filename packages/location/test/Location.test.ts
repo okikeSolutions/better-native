@@ -204,20 +204,31 @@ describe("@better-native/location", () => {
     },
   )
 
-  it("turns watcher callback errors into typed stream failures", async () => {
-    const remove = vi.fn()
-    mocks.watchPositionAsync.mockImplementationOnce(
-      async (_options: unknown, _emit: unknown, fail: (reason: string) => void) => {
+  it.each([
+    ["position", mocks.watchPositionAsync, () => Location.watchPositionAsync({})],
+    ["heading", mocks.watchHeadingAsync, () => Location.watchHeadingAsync()],
+    ["motion", mocks.watchMotionActivityAsync, () => Location.watchMotionActivityAsync()],
+  ] as const)(
+    "turns %s watcher callback errors into typed stream failures",
+    async (_, subscribe, stream) => {
+      const remove = vi.fn()
+      subscribe.mockImplementationOnce(async (...args: ReadonlyArray<unknown>) => {
+        const fail = args.at(-1) as (reason: string) => void
         fail("permission denied")
         return { remove }
-      },
-    )
-    const exit = await Effect.runPromiseExit(
-      Location.watchPositionAsync({}).pipe(Stream.runDrain, Effect.provide(Location.live)),
-    )
-    expect(exit._tag).toBe("Failure")
-    expect(remove).toHaveBeenCalledTimes(1)
-  })
+      })
+      const current = stream() as Stream.Stream<
+        unknown,
+        LocationFailure | LocationUnavailable,
+        LocationService
+      >
+      const exit = await Effect.runPromiseExit(
+        current.pipe(Stream.runDrain, Effect.provide(Location.live)),
+      )
+      expect(exit._tag).toBe("Failure")
+      expect(remove).toHaveBeenCalledTimes(1)
+    },
+  )
 
   it("releases an interrupted heading one-shot watcher", async () => {
     const remove = vi.fn()

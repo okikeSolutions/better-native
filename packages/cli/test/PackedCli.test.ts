@@ -11,11 +11,16 @@ import {
 } from "node:fs"
 import { tmpdir } from "node:os"
 import { join, resolve } from "node:path"
-import { releaseVersion } from "../src/Model.ts"
+import { capabilities, releaseVersion } from "../src/Model.ts"
 
 interface PackResult {
   readonly filename: string
   readonly files: ReadonlyArray<{ readonly path: string }>
+}
+
+const decodePackResults = (output: string): ReadonlyArray<PackResult> => {
+  const parsed = JSON.parse(output) as ReadonlyArray<PackResult> | Record<string, PackResult>
+  return Array.isArray(parsed) ? parsed : Object.values(parsed)
 }
 
 interface Fixture {
@@ -77,9 +82,9 @@ beforeAll(() => {
   const packRoot = join(temporaryRoot, "pack")
   mkdirSync(packRoot, { recursive: true })
   run("bun", ["run", "build"], packageRoot)
-  const packed = JSON.parse(
+  const packed = decodePackResults(
     run("npm", ["pack", "--json", "--ignore-scripts", "--pack-destination", packRoot], packageRoot),
-  ) as ReadonlyArray<PackResult>
+  )
   assert.lengthOf(packed, 1)
   const artifact = packed[0]
   assert.isDefined(artifact)
@@ -143,22 +148,27 @@ const installationShapes = [
   {
     capability: "keep-awake",
     reason: "simplest provider case",
-    packages: `expo-keep-awake @better-native/keep-awake@${releaseVersion} effect@4.0.0-rc.108`,
+    packages: `expo-keep-awake @better-native/keep-awake@${capabilities["keep-awake"].wrapperVersion} effect@4.0.0-rc.112`,
   },
   {
     capability: "network",
     reason: "confirms the exact three-package dependency result",
-    packages: `expo-network @better-native/network@${releaseVersion} effect@4.0.0-rc.108`,
+    packages: `expo-network @better-native/network@${capabilities.network.wrapperVersion} effect@4.0.0-rc.112`,
   },
   {
     capability: "secure-store",
     reason: "exercises config-plugin and rebuild behavior",
-    packages: `expo-secure-store @better-native/secure-store@${releaseVersion} effect@4.0.0-rc.108`,
+    packages: `expo-secure-store @better-native/secure-store@${capabilities["secure-store"].wrapperVersion} effect@4.0.0-rc.112`,
   },
   {
     capability: "battery",
     reason: "confirms the ordinary event/stream case",
-    packages: `expo-battery @better-native/battery@${releaseVersion} effect@4.0.0-rc.108`,
+    packages: `expo-battery @better-native/battery@${capabilities.battery.wrapperVersion} effect@4.0.0-rc.112`,
+  },
+  {
+    capability: "clipboard",
+    reason: "confirms the read, write, and event-stream case",
+    packages: `expo-clipboard @better-native/clipboard@${capabilities.clipboard.wrapperVersion} effect@4.0.0-rc.112`,
   },
 ] as const
 
@@ -182,13 +192,14 @@ describe("packed better-native CLI installation shapes", () => {
         [fixture.binary, "install", shape.capability],
         fixture.root,
       )
-      assert.include(installed, `@better-native/${shape.capability} ${releaseVersion} resolves`)
+      const wrapperVersion = capabilities[shape.capability].wrapperVersion
+      assert.include(installed, `@better-native/${shape.capability} ${wrapperVersion} resolves`)
       const manifest = JSON.parse(readFileSync(fixture.manifestPath, "utf8")) as {
         dependencies: Record<string, string>
       }
       assert.property(manifest.dependencies, `expo-${shape.capability}`)
       assert.property(manifest.dependencies, `@better-native/${shape.capability}`)
-      assert.strictEqual(manifest.dependencies.effect, "4.0.0-rc.108")
+      assert.strictEqual(manifest.dependencies.effect, "4.0.0-rc.112")
       assert.notProperty(manifest.dependencies, "better-native")
       assert.notProperty(manifest.dependencies, "expo-modules-core")
 
@@ -203,7 +214,7 @@ describe("packed better-native CLI installation shapes", () => {
 
       const packageAfterInstall = readFileSync(fixture.manifestPath, "utf8")
       const diagnosis = run(process.execPath, [fixture.binary, "doctor"], fixture.root)
-      assert.include(diagnosis, `@better-native/${shape.capability} ${releaseVersion}`)
+      assert.include(diagnosis, `@better-native/${shape.capability} ${wrapperVersion}`)
       assert.strictEqual(readFileSync(fixture.manifestPath, "utf8"), packageAfterInstall)
       assert.strictEqual(readFileSync(fixture.appConfigPath, "utf8"), appConfigAfterInstall)
     }, 60_000)
@@ -213,6 +224,8 @@ describe("packed better-native CLI installation shapes", () => {
 describe("packed better-native CLI architecture", () => {
   it("exposes only install and doctor", () => {
     const fixture = makeFixture("command-surface")
+    const version = run(process.execPath, [fixture.binary, "--version"], fixture.root)
+    assert.include(version, releaseVersion)
     const help = run(process.execPath, [fixture.binary, "--help"], fixture.root)
     assert.include(help, "install")
     assert.include(help, "doctor")

@@ -1,5 +1,6 @@
 /** Reviewed source IDs supported by capability-scoped native shells. */
 export const capabilityShellSourceIds = {
+  clipboard: "better-native-capability#apps/compatibility-suite/src/capabilities/Clipboard.ts",
   location: "better-native-capability#apps/compatibility-suite/src/capabilities/Location.ts",
   notifications:
     "better-native-capability#apps/compatibility-suite/src/capabilities/Notifications.ts",
@@ -20,6 +21,7 @@ const baseDependencies = [
   "expo",
   "expo-constants",
   "expo-file-system",
+  "expo-observe",
   "expo-router",
   "jasmine-core",
   "react",
@@ -30,6 +32,16 @@ const baseDependencies = [
 
 /** Native-shell catalog kept deliberately small and reviewed per capability. */
 export const capabilityShells: ReadonlyMap<string, CapabilityShell> = new Map([
+  [
+    capabilityShellSourceIds.clipboard,
+    {
+      sourceId: capabilityShellSourceIds.clipboard,
+      module: "../capabilities/Clipboard.ts",
+      eager: false,
+      dependencies: [...baseDependencies, "@better-native/clipboard", "expo-clipboard"],
+      plugins: ["expo-router"],
+    },
+  ],
   [
     capabilityShellSourceIds.location,
     {

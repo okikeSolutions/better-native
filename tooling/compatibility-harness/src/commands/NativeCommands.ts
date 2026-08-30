@@ -21,7 +21,7 @@ import {
 const recordPathFlag = Flag.string("record")
 const binaryPathFlag = Flag.string("binary")
 const nativeSourceFlag = Flag.string("source").pipe(Flag.optional)
-const physicalDeviceFlag = Flag.boolean("physical-device")
+const physicalDeviceFlag = Flag.boolean("physical-device").pipe(Flag.withDefault(false))
 
 /** Prevents a capability-scoped binary from running a source it did not compile. */
 export const validateCapabilityShell = (

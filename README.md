@@ -20,8 +20,14 @@ bun run expo:prepare
 bun run generate
 bun run compatibility
 bun run matrix
-bun run check
+bun run migration-status
+bun run check                    # local static, unit, and coverage fast path
+bun run verify:capability clipboard
 ```
+
+Process, container, deterministic eval, and native parity suites run in CI. Maintainers can invoke
+`bun run test:integration` or `bun run evals validate --task clipboard` when reproducing those jobs
+locally.
 
 The architecture and compatibility contract live in [docs/architecture.md](./docs/architecture.md).
 The documentation target lives in [docs/documentation.md](./docs/documentation.md).
@@ -31,6 +37,7 @@ The human and agent developer-experience evaluation contract lives in
 Package guides:
 
 - [Battery](./packages/battery/README.md)
+- [Clipboard](./packages/clipboard/README.md)
 - [Network](./packages/network/README.md)
 - [KeepAwake](./packages/keep-awake/README.md)
 - [SecureStore](./packages/secure-store/README.md)
@@ -43,9 +50,10 @@ Package guides:
 
 ## DX eval status
 
-The custom Vitest Evals harness, synthetic proof, and deterministic Network, Battery, KeepAwake,
-SecureStore, SQLite, Task Manager, Background Task, Location, and Notifications baselines are implemented. Network covers
-one-shot Effect adoption; Battery adds scoped Stream consumption and listener cleanup; KeepAwake
+The custom Vitest Evals harness, synthetic proof, and deterministic Network, Battery, Clipboard,
+KeepAwake, SecureStore, SQLite, Task Manager, Background Task, Location, and Notifications baselines
+are implemented. Network covers one-shot Effect adoption; Battery and Clipboard add scoped Stream
+consumption and listener cleanup; KeepAwake
 adds an interruption-safe scoped lease; SecureStore adds option forwarding, bracketed cleanup, and
 typed native failures; and the background tasks cover eager headless definition, persistent
 registration, and restricted-platform outcomes; Location covers scoped position Streams and native

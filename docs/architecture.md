@@ -45,6 +45,13 @@ The implementation may be incomplete. The compatibility denominator may not be i
 
 Only `effect` counts as migrated.
 
+`compatibility/capabilities.json` declares the common and package-specific work required for each
+migration. Each record also owns its unit project, coverage scope, named CI integration suites, and
+parity platforms. `bun run migration-status` derives package, documentation, mapping, installation,
+compatibility-app, generated-resolution, verification-routing, and DX-eval status from repository
+files. The strict form fails when any declared integration is absent. Ownership remains authoritative
+for promotion, so a complete checklist with `fallback` ownership is implemented but not migrated.
+
 ## Repository boundaries
 
 ```text
@@ -55,6 +62,7 @@ tooling/dx-evals               Private Effect-native developer-experience eval h
 tooling/expo-catalog           Private declaration-only fallback for external packages
 evals/tasks                    Versioned public DX task fixtures and runtime-withheld controls
 packages/typescript-config     Private shared TypeScript presets
+compatibility/capabilities.json Reviewed per-capability migration requirements
 compatibility/ownership.json   Reviewed per-export ownership overrides
 compatibility/api-mappings.json Reviewed Expo-to-Effect semantic API mappings
 compatibility/surface-lock.json Reviewed lock for the complete discovered export denominator
@@ -67,8 +75,9 @@ vendor/effect                  Pinned Effect source
 
 The compatibility and DX harnesses support different claims. Compatibility measures behavior
 against pinned Expo source. DX evals measure task completion through the declared public
-better-native boundary; their current synthetic, Network, Battery, KeepAwake, and SecureStore
-instruments are implemented. Paid Network and Battery pilot evidence is recorded, while paid
+better-native boundary; their current synthetic, Network, Battery, Clipboard, KeepAwake,
+SecureStore, SQLite, Task Manager, Background Task, Location, and Notifications instruments are
+implemented. Paid Network and Battery pilot evidence is recorded, while paid
 KeepAwake and SecureStore execution, human blind pilots, and calibrated regression thresholds
 remain pending. See
 [the evaluation contract](./evals.md) for the current checkpoint status and evidence limits.
@@ -287,8 +296,8 @@ under `.artifacts/products`, then remove DerivedData and the disposable CNG work
 unlocked failure is retained for 24 hours; older or superseded workspaces are disposable.
 
 The local CocoaPods cache uses a versioned two-stage identity. A normalized hash of the generated
-`Podfile` and `Podfile.properties.json` locates an index, while the cached entry itself is keyed by
-the resulting `Podfile.lock` hash, architecture, and compiler toolchain. Restore validates that lock
+`Podfile`, `Podfile.properties.json`, and native fingerprint locates an index, while the cached entry
+itself is keyed by the resulting `Podfile.lock` hash, architecture, and compiler toolchain. Restore validates that lock
 hash, and every completed `pod install` still requires `Podfile.lock` to equal
 `Pods/Manifest.lock`. This prevents run identity or unrelated fingerprint inputs from creating
 duplicate multi-gigabyte Pods trees for the same effective dependency graph.

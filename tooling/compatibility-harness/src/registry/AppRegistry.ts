@@ -83,9 +83,24 @@ const batteryCapabilityCases = [
   ),
 ] as const
 
-const sqliteCapabilitySourceId = TestSourceId.make(
-  capabilityShellSourceIds.sqlite,
-)
+const clipboardCapabilitySourceId = TestSourceId.make(capabilityShellSourceIds.clipboard)
+const clipboardCapabilityPath = "src/capabilities/Clipboard.ts"
+const clipboardCapabilityCases = [
+  TestCaseId.make(
+    `${clipboardCapabilitySourceId}#Clipboard Effect capability round trips native text through the live layer and Expo provider@1`,
+  ),
+  TestCaseId.make(
+    `${clipboardCapabilitySourceId}#Clipboard Effect capability forwards native string formats and Android sensitivity@1`,
+  ),
+  TestCaseId.make(
+    `${clipboardCapabilitySourceId}#Clipboard Effect capability round trips platform URL and image content where supported@1`,
+  ),
+  TestCaseId.make(
+    `${clipboardCapabilitySourceId}#Clipboard Effect capability acquires and releases the native change stream and event atom@1`,
+  ),
+] as const
+
+const sqliteCapabilitySourceId = TestSourceId.make(capabilityShellSourceIds.sqlite)
 const sqliteCapabilityPath = "src/capabilities/SQLite.ts"
 const sqliteCapabilityCases = [
   TestCaseId.make(
@@ -128,9 +143,7 @@ const backgroundTaskCapabilityCases = [
   ),
 ] as const
 
-const locationCapabilitySourceId = TestSourceId.make(
-  capabilityShellSourceIds.location,
-)
+const locationCapabilitySourceId = TestSourceId.make(capabilityShellSourceIds.location)
 const locationCapabilityPath = "src/capabilities/Location.ts"
 const locationCapabilityCases = [
   TestCaseId.make(
@@ -147,9 +160,7 @@ const locationCapabilityCases = [
   ),
 ] as const
 
-const notificationsCapabilitySourceId = TestSourceId.make(
-  capabilityShellSourceIds.notifications,
-)
+const notificationsCapabilitySourceId = TestSourceId.make(capabilityShellSourceIds.notifications)
 const notificationsCapabilityPath = "src/capabilities/Notifications.ts"
 const notificationsCapabilityCases = [
   TestCaseId.make(
@@ -652,6 +663,9 @@ const loaderSource = (
     `  [${JSON.stringify(batteryCapabilitySourceId)}, () => require("../capabilities/Battery.ts") as unknown],`,
   )
   entries.push(
+    `  [${JSON.stringify(clipboardCapabilitySourceId)}, () => require("../capabilities/Clipboard.ts") as unknown],`,
+  )
+  entries.push(
     `  [${JSON.stringify(sqliteCapabilitySourceId)}, () => require("../capabilities/SQLite.ts") as unknown],`,
   )
   entries.push(
@@ -872,6 +886,19 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
       reason: null,
     },
     {
+      sourceId: clipboardCapabilitySourceId,
+      path: clipboardCapabilityPath,
+      caseIds: clipboardCapabilityCases,
+      runner: "expo-jasmine",
+      execution: "native-app",
+      platforms: ["web", "ios", "android"],
+      executability: "runnable",
+      registration: "lazy",
+      authority: "supplemental",
+      runtimeName: "Clipboard Effect capability",
+      reason: null,
+    },
+    {
       sourceId: sqliteCapabilitySourceId,
       path: sqliteCapabilityPath,
       caseIds: sqliteCapabilityCases,
@@ -1015,6 +1042,7 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
       keepAwakeCapabilitySourceId,
       networkCapabilitySourceId,
       batteryCapabilitySourceId,
+      clipboardCapabilitySourceId,
       sqliteCapabilitySourceId,
       taskManagerCapabilitySourceId,
       backgroundTaskCapabilitySourceId,

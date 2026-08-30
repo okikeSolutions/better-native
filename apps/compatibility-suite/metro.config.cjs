@@ -14,7 +14,7 @@ if (!runId) throw new Error("BETTER_NATIVE_RUN_ID is required")
 if (!upstreamNodeModulesPath) throw new Error("BETTER_NATIVE_UPSTREAM_NODE_MODULES is required")
 const pinnedExpoRoot = process.env.BETTER_NATIVE_PINNED_EXPO_ROOT
 if (!pinnedExpoRoot) throw new Error("BETTER_NATIVE_PINNED_EXPO_ROOT is required")
-const expoSourceRoot = process.env.EXPO_SOURCE_ROOT ?? path.resolve(__dirname, "../../../expo")
+const expoSourceRoot = process.env.EXPO_SOURCE_ROOT ?? pinnedExpoRoot
 const directDependencies = Object.keys(require("./package.json").dependencies ?? {})
 const resolutionEvidencePath = process.env.BETTER_NATIVE_RESOLUTION_EVIDENCE_PATH
 const metroMaxWorkersValue = process.env.BETTER_NATIVE_METRO_MAX_WORKERS

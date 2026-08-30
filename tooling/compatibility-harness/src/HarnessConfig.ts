@@ -20,6 +20,7 @@ export const environmentKeys = {
   turboTeam: "TURBO_TEAM",
   ccacheDirectory: "CCACHE_DIR",
   javaHome17: "BETTER_NATIVE_JAVA_HOME_17",
+  javaHome: "JAVA_HOME",
   androidSdkRoot: "ANDROID_SDK_ROOT",
   androidHome: "ANDROID_HOME",
   iosDestination: "BETTER_NATIVE_IOS_DESTINATION",
@@ -104,29 +105,26 @@ const isJava17Home = (home: string): boolean => {
   }
 }
 
+const macOsJavaHomeExecutable = ["", "usr", "libexec", "java_home"].join("/")
+
 /** Resolves a verified JDK 17 independently from the caller's default Java. */
 export const resolveJava17Home = (explicit: string | null): string | null => {
-  const candidates = [explicit]
-  if (process.platform === "darwin") {
-    try {
-      candidates.push(
-        execFileSync("/usr/libexec/java_home", ["-v", "17"], { encoding: "utf8" }).trim(),
-      )
-    } catch {
-      // Fall through to reviewed conventional installation paths.
-    }
-    candidates.push(
-      "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home",
-      "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home",
-      "/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home",
-    )
+  if (explicit !== null && isJava17Home(explicit)) return explicit
+  if (process.platform !== "darwin") return null
+  const conventional = [
+    "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home",
+    "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home",
+    "/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home",
+  ].find(isJava17Home)
+  if (conventional !== undefined) return conventional
+  try {
+    const discovered = execFileSync(macOsJavaHomeExecutable, ["-v", "17"], {
+      encoding: "utf8",
+    }).trim()
+    return isJava17Home(discovered) ? discovered : null
+  } catch {
+    return null
   }
-  return (
-    candidates.find(
-      (candidate): candidate is string =>
-        candidate !== undefined && candidate !== null && isJava17Home(candidate),
-    ) ?? null
-  )
 }
 
 const cacheStatus = (value: Option.Option<boolean>): CacheEnvironment["status"] =>
@@ -169,6 +167,7 @@ export const layer = (root: string) =>
         turboTeam: optionalString(environmentKeys.turboTeam),
         ccacheDirectory: optionalString(environmentKeys.ccacheDirectory),
         javaHome17: optionalString(environmentKeys.javaHome17),
+        javaHome: optionalString(environmentKeys.javaHome),
         executablePath: Config.string("PATH").pipe(Config.withDefault("")),
         androidSdkRoot: optionalString(environmentKeys.androidSdkRoot),
         androidHome: optionalString(environmentKeys.androidHome),
@@ -196,7 +195,7 @@ export const layer = (root: string) =>
         turboToken: values.turboToken,
         turboTeam: nullable(values.turboTeam),
         ccacheEnabled: Option.isSome(values.ccacheDirectory),
-        javaHome17: resolveJava17Home(nullable(values.javaHome17)),
+        javaHome17: resolveJava17Home(nullable(values.javaHome17) ?? nullable(values.javaHome)),
         executablePath: values.executablePath,
         androidSdkRoot: nullable(values.androidSdkRoot) ?? nullable(values.androidHome),
         iosDestination: values.iosDestination,

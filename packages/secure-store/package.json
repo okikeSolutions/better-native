@@ -48,17 +48,19 @@
     "prepack": "bun run build",
     "docs:api": "docgen",
     "check:effect": "effect-language-service diagnostics --project tsconfig.json --strict",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run --config ../../vitest.unit.config.ts packages/secure-store/",
+    "test:coverage": "BETTER_NATIVE_COVERAGE_PACKAGE=secure-store vitest run --config ../../vitest.coverage.config.ts --coverage packages/secure-store/"
   },
   "devDependencies": {
-    "@effect/docgen": "4.0.0-rc.108",
-    "effect": "4.0.0-rc.108",
+    "@effect/docgen": "4.0.0-rc.112",
+    "effect": "4.0.0-rc.112",
     "expo": "57.0.9",
     "expo-secure-store": "57.0.1",
     "react": "19.2.3"
   },
   "peerDependencies": {
-    "effect": "4.0.0-rc.108",
+    "effect": "4.0.0-rc.112",
     "expo-secure-store": ">=57.0.0 <58.0.0"
   }
 }

@@ -42,6 +42,7 @@ export const doctor = Command.make("doctor", {}, Compatibility.doctor).pipe(
  */
 export const coverageJson = Flag.boolean("json").pipe(
   Flag.withDescription("Print machine-readable coverage JSON"),
+  Flag.withDefault(false),
 )
 
 /**

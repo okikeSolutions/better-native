@@ -168,6 +168,7 @@ describe("hosted compatibility workflow", () => {
         "//#expo:toolchain",
         "@better-native/network#build",
         "@better-native/battery#build",
+        "@better-native/clipboard#build",
         "@better-native/keep-awake#build",
         "@better-native/secure-store#build",
         "@better-native/sqlite#build",
@@ -201,7 +202,16 @@ describe("hosted compatibility workflow", () => {
       assert.match(rootPackage, /"compatibility-harness": "node --experimental-strip-types/)
       assert.match(rootPackage, /"artifacts:prune":/)
       assert.match(rootPackage, /"artifacts:clean":/)
-      assert.match(harnessPackage, /"@effect\/platform-node": "4\.0\.0-rc\.108"/)
+      const rootManifest = JSON.parse(rootPackage) as {
+        readonly devDependencies: { readonly effect: string }
+      }
+      const harnessManifest = JSON.parse(harnessPackage) as {
+        readonly dependencies: { readonly "@effect/platform-node": string }
+      }
+      assert.strictEqual(
+        harnessManifest.dependencies["@effect/platform-node"],
+        rootManifest.devDependencies.effect,
+      )
       assert.notMatch(harnessPackage, /@effect\/platform-bun/)
     }).pipe(provideLayer(NodeServices.layer)),
   )

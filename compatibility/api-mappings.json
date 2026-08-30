@@ -90,7 +90,96 @@
       "target": "@better-native/battery/expo#usePowerState",
       "atomTarget": "@better-native/battery#powerStateAtom"
     },
-
+    {
+      "package": "expo-clipboard",
+      "expoExport": "ContentType",
+      "status": "effect-api",
+      "target": "@better-native/clipboard#ContentType"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "getImageAsync",
+      "status": "effect-api",
+      "target": "@better-native/clipboard#getImageAsync"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "getStringAsync",
+      "status": "effect-api",
+      "target": "@better-native/clipboard#getStringAsync"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "getUrlAsync",
+      "status": "effect-api",
+      "target": "@better-native/clipboard#getUrlAsync"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "hasImageAsync",
+      "status": "effect-api",
+      "target": "@better-native/clipboard#hasImageAsync"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "hasStringAsync",
+      "status": "effect-api",
+      "target": "@better-native/clipboard#hasStringAsync"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "hasUrlAsync",
+      "status": "effect-api",
+      "target": "@better-native/clipboard#hasUrlAsync"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "setImageAsync",
+      "status": "effect-api",
+      "target": "@better-native/clipboard#setImageAsync"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "setStringAsync",
+      "status": "effect-api",
+      "target": "@better-native/clipboard#setStringAsync"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "setUrlAsync",
+      "status": "effect-api",
+      "target": "@better-native/clipboard#setUrlAsync"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "StringFormat",
+      "status": "effect-api",
+      "target": "@better-native/clipboard#StringFormat"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "addClipboardListener",
+      "status": "effect-stream",
+      "target": "@better-native/clipboard#addClipboardListener"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "ClipboardPasteButton",
+      "status": "expo-compat",
+      "target": "@better-native/clipboard/expo#ClipboardPasteButton"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "isPasteButtonAvailable",
+      "status": "expo-compat",
+      "target": "@better-native/clipboard/expo#isPasteButtonAvailable"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoExport": "removeClipboardListener",
+      "status": "expo-compat",
+      "target": "@better-native/clipboard/expo#removeClipboardListener"
+    },
     {
       "package": "expo-keep-awake",
       "expoExport": "addListener",
@@ -142,7 +231,6 @@
       "target": "@better-native/keep-awake/expo#useKeepAwake",
       "atomTarget": "@better-native/keep-awake#keepAwakeAtom"
     },
-
     {
       "package": "expo-network",
       "expoExport": "addNetworkStateListener",
@@ -180,7 +268,6 @@
       "target": "@better-native/network/expo#useNetworkState",
       "atomTarget": "@better-native/network#networkStateAtom"
     },
-
     {
       "package": "expo-secure-store",
       "expoExport": "AFTER_FIRST_UNLOCK",
@@ -1097,6 +1184,114 @@
       "expoType": "Subscription",
       "status": "effect-type",
       "target": "@better-native/battery#Subscription"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "ClipboardEvent",
+      "status": "effect-type",
+      "target": "@better-native/clipboard#ClipboardEvent"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "ClipboardImage",
+      "status": "effect-type",
+      "target": "@better-native/clipboard#ClipboardImage"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "GetImageOptions",
+      "status": "effect-type",
+      "target": "@better-native/clipboard#GetImageOptions"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "GetStringOptions",
+      "status": "effect-type",
+      "target": "@better-native/clipboard#GetStringOptions"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "SetImageAndroidOptions",
+      "status": "effect-type",
+      "target": "@better-native/clipboard#SetImageAndroidOptions"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "SetImageOptions",
+      "status": "effect-type",
+      "target": "@better-native/clipboard#SetImageOptions"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "SetStringAndroidOptions",
+      "status": "effect-type",
+      "target": "@better-native/clipboard#SetStringAndroidOptions"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "SetStringOptions",
+      "status": "effect-type",
+      "target": "@better-native/clipboard#SetStringOptions"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "Subscription",
+      "status": "effect-type",
+      "target": "@better-native/clipboard#Subscription"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "AcceptedContentType",
+      "status": "expo-compat-type",
+      "target": "@better-native/clipboard/expo#AcceptedContentType"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "ClipboardPasteButtonProps",
+      "status": "expo-compat-type",
+      "target": "@better-native/clipboard/expo#ClipboardPasteButtonProps"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "CornerStyleType",
+      "status": "expo-compat-type",
+      "target": "@better-native/clipboard/expo#CornerStyleType"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "DisplayModeType",
+      "status": "expo-compat-type",
+      "target": "@better-native/clipboard/expo#DisplayModeType"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "ImagePasteEvent",
+      "status": "expo-compat-type",
+      "target": "@better-native/clipboard/expo#ImagePasteEvent"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "PasteEventPayload",
+      "status": "expo-compat-type",
+      "target": "@better-native/clipboard/expo#PasteEventPayload"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "TextPasteEvent",
+      "status": "expo-compat-type",
+      "target": "@better-native/clipboard/expo#TextPasteEvent"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "ContentType",
+      "status": "effect-type",
+      "target": "@better-native/clipboard#ContentType"
+    },
+    {
+      "package": "expo-clipboard",
+      "expoType": "StringFormat",
+      "status": "effect-type",
+      "target": "@better-native/clipboard#StringFormat"
     },
     {
       "package": "expo-keep-awake",
