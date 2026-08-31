@@ -28,7 +28,9 @@ describe("verification lanes", () => {
     const turbo = JSON.parse(await readFile("turbo.json", "utf8")) as {
       readonly tasks: Readonly<Record<string, { readonly dependsOn?: ReadonlyArray<string> }>>
     }
-    assert.includeMembers(turbo.tasks.typecheck?.dependsOn ?? [], ["^typecheck", "^build"])
+    const dependencies = turbo.tasks.typecheck?.dependsOn ?? []
+    assert.ok(dependencies.includes("^typecheck"))
+    assert.ok(dependencies.includes("^build"))
   })
 
   it("keeps product runtime coverage exclusions narrow", () => {
