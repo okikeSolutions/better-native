@@ -13,7 +13,7 @@
       "outputs": ["build/**", "dist/**"]
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"],
+      "dependsOn": ["^typecheck", "^build"],
       "outputs": []
     },
     "@better-native/compatibility-suite#typecheck": {

@@ -24,6 +24,13 @@ describe("verification lanes", () => {
     assert.ok(Object.values(integrationSuites).every((files) => files.length > 0))
   })
 
+  it("builds workspace dependencies before resolving their declaration exports", async () => {
+    const turbo = JSON.parse(await readFile("turbo.json", "utf8")) as {
+      readonly tasks: Readonly<Record<string, { readonly dependsOn?: ReadonlyArray<string> }>>
+    }
+    assert.includeMembers(turbo.tasks.typecheck?.dependsOn ?? [], ["^typecheck", "^build"])
+  })
+
   it("keeps product runtime coverage exclusions narrow", () => {
     const productExclusions = externalProcessCoverageExcludes.filter((pattern) =>
       pattern.startsWith("packages/"),
