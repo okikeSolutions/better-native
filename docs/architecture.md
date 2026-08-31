@@ -426,8 +426,8 @@ while bundling reviewed project assets; it is not shipped by a publishable Bette
 package or exposed to remote image input in repository automation. The exception must be removed
 when Metro changes the dependency or a patched compatible release exists.
 
-Root-level Bun overrides resolve other vulnerable Sentry, XML, routing, image-processing, UUID, and
-React Server Component transitive packages to patched versions. `bun audit` may report only the
+Root-level Bun overrides resolve other vulnerable Sentry, XML, URL-decoding, routing,
+image-processing, UUID, and React Server Component transitive packages to patched versions. `bun audit` may report only the
 exact reviewed exception; `bun run security:audit` rejects unreviewed findings and stale exceptions.
 Every override remains subject to generated surface-lock, type, test, and compatibility validation
 so that a security update cannot silently change the pinned Expo contract.

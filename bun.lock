@@ -176,7 +176,7 @@
     },
     "packages/cli": {
       "name": "better-native",
-      "version": "0.0.1-alpha.1",
+      "version": "0.0.1-alpha.2",
       "bin": {
         "better-native": "dist/bin.js",
       },
@@ -438,6 +438,7 @@
   "overrides": {
     "@sentry/browser": "7.119.1",
     "@xmldom/xmldom": "0.8.13",
+    "decode-uri-component": "0.5.0",
     "fast-xml-parser": "5.7.0",
     "nanoid": "3.3.18",
     "path-to-regexp": "6.3.0",
@@ -1877,7 +1878,7 @@
 
     "decimal.js": ["decimal.js@10.6.0", "", {}, "sha512-YpgQiITW3JXGntzdUmyUR1V812Hn8T1YVXhCu+wO3OpS4eU9l4YdD3qjyiKdV6mvV29zapkMeD390UVEf2lkUg=="],
 
-    "decode-uri-component": ["decode-uri-component@0.2.2", "", {}, "sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ=="],
+    "decode-uri-component": ["decode-uri-component@0.5.0", "", {}, "sha512-1BiQVoK8C9gUbQU6NzAtO/tkz2qOFpEObMWpcFvhx4fYnj4Oc5yzaJN/LD36ihkVUdXyh5ZekzX+yM+ty/SrPg=="],
 
     "deepmerge": ["deepmerge@4.3.1", "", {}, "sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A=="],
 
