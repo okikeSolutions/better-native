@@ -22,6 +22,7 @@ const capabilityMatrix = [
   ["secure-store", "expo-secure-store"],
   ["battery", "expo-battery"],
   ["clipboard", "expo-clipboard"],
+  ["sqlite", "expo-sqlite"],
 ] as const
 
 const capabilityVersion = (capability: (typeof capabilityMatrix)[number][0]): string =>
@@ -139,6 +140,7 @@ try {
   )
   const registryEnvironment = {
     ...process.env,
+    npm_config_cache: join(temporaryRoot, "npm-cache"),
     npm_config_registry: registry,
     npm_config_userconfig: npmConfigPath,
   }

@@ -118,6 +118,9 @@ Effect includes `@effect/sql-sqlite-react-native`, but that package is specifica
 Expo's native module, autolinking, configuration, web implementation, change events, extensions,
 and libSQL integration.
 
-The complete public Expo surface is implemented and accounted for by the compatibility harness.
-Compatibility ownership is intentionally not yet promoted: paired web, iOS, and Android device
-evidence is still required before replacing Expo imports automatically.
+The complete public Expo surface is implemented and owned by the compatibility harness. Paired
+Release comparisons pass the reviewed Effect SQL round trip, transaction rollback, native change
+event, Atom lifecycle, and direct Expo-provider agreement cases on web, iOS Simulator, and Android
+API 36 with zero
+divergences. Paired CNG also produces matching upstream and candidate native fingerprints on iOS
+and Android.

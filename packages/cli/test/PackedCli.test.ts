@@ -170,6 +170,11 @@ const installationShapes = [
     reason: "confirms the read, write, and event-stream case",
     packages: `expo-clipboard @better-native/clipboard@${capabilities.clipboard.wrapperVersion} effect@4.0.0-rc.112`,
   },
+  {
+    capability: "sqlite",
+    reason: "confirms the database provider and Effect SQL client case",
+    packages: `expo-sqlite @better-native/sqlite@${capabilities.sqlite.wrapperVersion} effect@4.0.0-rc.112`,
+  },
 ] as const
 
 describe("packed better-native CLI installation shapes", () => {

@@ -168,6 +168,10 @@ image operations, scoped event acquisition, and Atom lifecycle. Paired Release c
 four cases on all three platforms with zero divergences. Expo remains the native provider, and web
 clipboard permission denial remains an upstream platform behavior rather than a Better Native
 failure.
+The reviewed SQLite capability is separately selectable on web, iOS, and Android. It exercises an
+Effect SQL write/read round trip, transaction rollback, Atom acquisition and release, native database-change delivery, and direct Expo-provider agreement. Paired Release comparisons
+pass all four cases on web, iOS Simulator, and Android API 36 with zero divergences. Paired CNG produces matching upstream and candidate native
+fingerprints on iOS and Android, and Expo remains the native database provider.
 The reviewed SecureStore web capability is separately selectable on web and exercises Expo's actual
 unavailable result plus typed `SecureStoreFailure` mapping for unsupported asynchronous and
 synchronous storage operations. It does not claim iOS or Android behavior.

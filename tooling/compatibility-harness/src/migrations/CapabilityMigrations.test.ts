@@ -17,8 +17,8 @@ describe("capability migration ledger", () => {
         ),
         [],
       )
-      assert.strictEqual(statuses.filter(({ ownership }) => ownership === "effect").length, 5)
-      assert.strictEqual(statuses.filter(({ ownership }) => ownership === "fallback").length, 5)
+      assert.strictEqual(statuses.filter(({ ownership }) => ownership === "effect").length, 6)
+      assert.strictEqual(statuses.filter(({ ownership }) => ownership === "fallback").length, 4)
     }).pipe(provideLayer(NodeServices.layer)),
   )
 })

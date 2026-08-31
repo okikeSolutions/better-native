@@ -51,45 +51,45 @@
       "package": "expo-sqlite",
       "subpath": ".",
       "export": null,
-      "status": "fallback",
+      "status": "effect",
       "replacement": "@better-native/sqlite/expo",
-      "reason": "Better Native accounts for the complete expo-sqlite root API with Effect-native lifecycle operations, an Effect SQL client, and an exact Expo-compatible entrypoint. Candidate resolution remains fallback until paired web, iOS, and Android device evidence is reviewed.",
+      "reason": "Better Native owns the complete Expo SQLite root JavaScript contract through Effect-native lifecycle operations, an Effect SQL client, scoped database resources, Atoms, and an exact Expo-compatible entrypoint. Paired upstream/candidate Release evidence passes all four reviewed capability cases on web, iOS Simulator, and Android API 36 with zero divergences, including native database-change delivery; Expo remains the native database provider.",
       "issue": "promote-sqlite-effect-ownership"
     },
     {
       "package": "expo-sqlite",
       "subpath": "./kv-store",
       "export": null,
-      "status": "fallback",
+      "status": "effect",
       "replacement": "@better-native/sqlite/kv-store",
-      "reason": "Better Native preserves the complete Expo SQLite key-value-store subpath while root Effect ownership is awaiting device evidence.",
+      "reason": "Better Native owns Expo SQLite's key-value-store subpath by preserving its complete default export through the reviewed candidate package.",
       "issue": "promote-sqlite-effect-ownership"
     },
     {
       "package": "expo-sqlite",
       "subpath": "./localStorage/install",
       "export": null,
-      "status": "fallback",
+      "status": "effect",
       "replacement": "@better-native/sqlite/localStorage/install",
-      "reason": "Better Native preserves Expo SQLite's side-effectful localStorage installer while root Effect ownership is awaiting device evidence.",
+      "reason": "Better Native owns Expo SQLite's side-effectful localStorage installer through an exact reviewed subpath with its initialization side effect retained.",
       "issue": "promote-sqlite-effect-ownership"
     },
     {
       "package": "expo-sqlite",
       "subpath": "./app.plugin.js",
       "export": null,
-      "status": "fallback",
+      "status": "effect",
       "replacement": "@better-native/sqlite/app.plugin.js",
-      "reason": "Better Native preserves Expo SQLite's app.plugin.js entrypoint while root Effect ownership is awaiting device evidence.",
+      "reason": "Better Native owns Expo SQLite's app.plugin.js entrypoint through the exact upstream plugin export. Paired CNG produced matching upstream and candidate native fingerprints on iOS and Android.",
       "issue": "promote-sqlite-effect-ownership"
     },
     {
       "package": "expo-sqlite",
       "subpath": "./plugin",
       "export": null,
-      "status": "fallback",
+      "status": "effect",
       "replacement": "@better-native/sqlite/plugin",
-      "reason": "Better Native preserves Expo SQLite's config-plugin entrypoint while root Effect ownership is awaiting device evidence.",
+      "reason": "Better Native owns Expo SQLite's config-plugin entrypoint through the exact upstream plugin export. Paired CNG produced matching upstream and candidate native fingerprints on iOS and Android.",
       "issue": "promote-sqlite-effect-ownership"
     },
     {
