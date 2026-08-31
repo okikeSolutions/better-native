@@ -15,7 +15,8 @@ The CLI must run inside an existing Expo project with a project-local `expo` dep
 the selected Expo provider, exact `@better-native/<capability>` package, and exact Effect version in
 one project-local Expo CLI transaction.
 
-Supported capabilities are `network`, `battery`, `keep-awake`, and `secure-store`.
+Supported capabilities are `network`, `battery`, `clipboard`, `keep-awake`, `secure-store`, and
+`sqlite`.
 
 Use `better-native install <capability...> --dry-run` to inspect the exact package plan without
 changing the project. If multiple lockfiles exist, choose one package manager explicitly with

@@ -6,6 +6,7 @@ export const capabilityNames = [
   "secure-store",
   "battery",
   "clipboard",
+  "sqlite",
 ] as const
 export const releaseVersion = "0.0.1-alpha.2"
 
@@ -18,6 +19,7 @@ export const capabilityVersions: Readonly<Record<CapabilityName, string>> = {
   "secure-store": "0.0.1-alpha.1",
   battery: "0.0.1-alpha.1",
   clipboard: "0.0.1-alpha.1",
+  sqlite: "0.0.1-alpha.1",
 }
 
 export interface Capability {
@@ -57,6 +59,15 @@ export const capabilities: Readonly<Record<CapabilityName, Capability>> = {
     wrapperVersion: capabilityVersions.clipboard,
     effectVersion: "4.0.0-rc.112",
     importName: "Clipboard",
+    status: "effect",
+  },
+  sqlite: {
+    name: "sqlite",
+    provider: "expo-sqlite",
+    wrapper: "@better-native/sqlite",
+    wrapperVersion: capabilityVersions.sqlite,
+    effectVersion: "4.0.0-rc.112",
+    importName: "SQLite",
     status: "effect",
   },
   "keep-awake": {

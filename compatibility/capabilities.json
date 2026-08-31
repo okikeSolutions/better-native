@@ -129,7 +129,7 @@
       "verification": {
         "unitProject": "@better-native/sqlite",
         "coverageScope": "packages/sqlite/src/**/*.ts",
-        "integrationSuites": ["published", "eval-controls"],
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
         "parityPlatforms": ["web", "ios", "android"]
       }
     },

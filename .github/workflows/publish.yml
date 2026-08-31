@@ -11,6 +11,7 @@ on:
           - network
           - battery
           - clipboard
+          - sqlite
           - keep-awake
           - secure-store
           - cli

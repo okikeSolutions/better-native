@@ -37,6 +37,7 @@ The unscoped package is the CLI only:
 | `@better-native/clipboard`    | Effect-native Clipboard API          | Yes, when Clipboard is selected                          |
 | `@better-native/keep-awake`   | Effect-native Keep Awake API         | Yes, when Keep Awake is selected                         |
 | `@better-native/secure-store` | Effect-native Secure Store API       | Yes, when Secure Store is selected                       |
+| `@better-native/sqlite`       | Effect-native SQLite and Effect SQL  | Yes, when SQLite is selected                             |
 
 Applications import the scoped capability packages directly:
 
@@ -46,6 +47,7 @@ import { Battery } from "@better-native/battery"
 import { Clipboard } from "@better-native/clipboard"
 import { KeepAwake } from "@better-native/keep-awake"
 import { SecureStore } from "@better-native/secure-store"
+import { SQLite } from "@better-native/sqlite"
 ```
 
 Expo-compatible boundaries remain subpaths of those packages:
@@ -74,6 +76,7 @@ Each Better Native capability has an Expo native capability provider:
 | `@better-native/clipboard`    | `expo-clipboard`    |
 | `@better-native/keep-awake`   | `expo-keep-awake`   |
 | `@better-native/secure-store` | `expo-secure-store` |
+| `@better-native/sqlite`       | `expo-sqlite`       |
 
 The command surface must not imply equal implementation maturity. At the time of this proposal,
 reviewed ownership is:
@@ -85,6 +88,7 @@ reviewed ownership is:
 | `battery`      | `effect`         | Supported prototype candidate |
 | `clipboard`    | `effect`         | Supported prototype candidate |
 | `secure-store` | `effect`         | Supported prototype candidate |
+| `sqlite`       | `effect`         | Supported prototype candidate |
 
 This table is generated from reviewed compatibility truth for the published artifact. Help,
 installation plans, and `doctor` output expose the same status and evidence boundary. A capability
@@ -252,12 +256,13 @@ better-native install secure-store
 better-native install network
 better-native install battery
 better-native install clipboard
+better-native install sqlite
 better-native doctor
 ```
 
 Only capabilities allowed by the generated release registry are installable without an experimental
-acknowledgement. The initial registry exposes Network, Battery, Clipboard, Keep Awake, and Secure
-Store as supported prototype candidates.
+acknowledgement. The initial registry exposes Network, Battery, Clipboard, Keep Awake, Secure Store,
+and SQLite as supported prototype candidates.
 
 The running CLI always writes exact compatibility-selected
 `@better-native/<capability>@x.y.z` versions into its mutation plan. It never installs an unqualified
@@ -492,7 +497,7 @@ usage failures.
 ## Package and release requirements
 
 Capability packages currently use `0.0.1-alpha.1`. The published CLI began at that version and the
-Clipboard-aware CLI is `0.0.1-alpha.2`. Package versions are independent: the CLI registry records
+Clipboard-and-SQLite-aware CLI is `0.0.1-alpha.2`. Package versions are independent: the CLI registry records
 each wrapper's exact version instead of assuming it matches the CLI. Private applications, fixtures,
 Metro prototypes, and repository tooling keep their internal versions because they are not part of
 the npm release. API `@since` annotations describe introduction history and are not rewritten when
@@ -539,16 +544,16 @@ unscoped CLI package. That npm organization name is not the GitHub trusted-publi
 published package has its own npm Trusted Publisher configuration identifying this repository and
 workflow exactly:
 
-| Setting                     | Required value                                                                                                                                                 |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| npm package                 | `@better-native/network`, `@better-native/battery`, `@better-native/clipboard`, `@better-native/keep-awake`, `@better-native/secure-store`, or `better-native` |
-| npm organization            | `better-native`                                                                                                                                                |
-| Publisher                   | GitHub Actions                                                                                                                                                 |
-| GitHub organization or user | `okikeSolutions`                                                                                                                                               |
-| GitHub repository           | `better-native`                                                                                                                                                |
-| Workflow filename           | `publish.yml`                                                                                                                                                  |
-| GitHub environment          | `npm`                                                                                                                                                          |
-| Allowed action              | `npm publish`                                                                                                                                                  |
+| Setting                     | Required value                                                                                                                                                                          |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| npm package                 | `@better-native/network`, `@better-native/battery`, `@better-native/clipboard`, `@better-native/keep-awake`, `@better-native/secure-store`, `@better-native/sqlite`, or `better-native` |
+| npm organization            | `better-native`                                                                                                                                                                         |
+| Publisher                   | GitHub Actions                                                                                                                                                                          |
+| GitHub organization or user | `okikeSolutions`                                                                                                                                                                        |
+| GitHub repository           | `better-native`                                                                                                                                                                         |
+| Workflow filename           | `publish.yml`                                                                                                                                                                           |
+| GitHub environment          | `npm`                                                                                                                                                                                   |
+| Allowed action              | `npm publish`                                                                                                                                                                           |
 
 The workflow filename is case-sensitive and npm expects only the filename, not
 `.github/workflows/publish.yml`. Every public package's `repository.url` resolves to
@@ -574,8 +579,8 @@ workflow has the following contract:
 - run the complete repository checks, build the selected package, inspect and install packed
   tarballs in isolated fixtures, and upload exactly one verified artifact;
 - block both artifact creation and publishing on `bun run test:local-registry`, which publishes the
-  CLI and all five capability packages to an isolated Verdaccio registry and exercises Keep Awake,
-  Network, Secure Store, Battery, and Clipboard in that order;
+  CLI and all six capability packages to an isolated Verdaccio registry and exercises Keep Awake,
+  Network, Secure Store, Battery, Clipboard, and SQLite in that order;
 - assert that each fixture gains only its selected Expo provider, scoped Better Native package, and
   `effect`, while the transient unscoped CLI remains absent from dependencies and dev dependencies;
 - execute `npm publish <verified-tarball> --access public --tag alpha` directly in `publish.yml`; and
@@ -603,12 +608,12 @@ values above, then use the protected workflow for later releases. It must never 
 an empty placeholder package or quietly retain the bootstrap credential as the normal publishing
 path.
 
-### Clipboard bootstrap and CLI follow-up
+### Clipboard and SQLite bootstrap with CLI follow-up
 
 Network, Battery, Keep Awake, Secure Store, and the initial CLI already exist on npm at
-`0.0.1-alpha.1`. Clipboard is the remaining first publication, so npm cannot use its trusted
-publisher until the package exists. After this change is merged to `main`, a maintainer with publish
-permission and two-factor authentication bootstraps only Clipboard:
+`0.0.1-alpha.1`. Clipboard and SQLite require first publication before npm can configure their
+trusted publishers. After this change is merged to `main`, a maintainer with publish permission and
+two-factor authentication bootstraps only those two packages:
 
 ```sh
 npm login
@@ -617,17 +622,21 @@ npm org ls better-native
 bun install --frozen-lockfile
 bun run check
 bun run test:local-registry
-mkdir .npm-release
+mkdir -p .npm-release
 npm pack ./packages/clipboard --pack-destination .npm-release
+npm pack ./packages/sqlite --pack-destination .npm-release
 npm publish .npm-release/better-native-clipboard-0.0.1-alpha.1.tgz --access public --tag alpha
+npm publish .npm-release/better-native-sqlite-0.0.1-alpha.1.tgz --access public --tag alpha
 npm dist-tag rm @better-native/clipboard latest
+npm dist-tag rm @better-native/sqlite latest
 ```
 
-Configure Clipboard's trusted publisher immediately after bootstrap. Then dispatch `publish.yml`
-for `cli` to publish `better-native@0.0.1-alpha.2`; that CLI selects
-`@better-native/clipboard@0.0.1-alpha.1` and preserves the existing exact versions of the other
-capabilities. Existing capability packages are not republished. npm versions are immutable, so the
-workflow must never attempt to republish any existing `0.0.1-alpha.1` artifact.
+Configure both packages' trusted publishers immediately after bootstrap. Then dispatch
+`publish.yml` for `cli` to publish `better-native@0.0.1-alpha.2`; that CLI selects
+`@better-native/clipboard@0.0.1-alpha.1` and `@better-native/sqlite@0.0.1-alpha.1` while preserving
+the existing exact versions of the other capabilities. Existing capability packages are not
+republished. npm versions are immutable, so the workflow must never attempt to republish any
+existing `0.0.1-alpha.1` artifact.
 
 For a public GitHub repository publishing a public npm package, trusted publishing generates npm
 provenance automatically; the workflow does not need `--provenance`. After the first verified OIDC
