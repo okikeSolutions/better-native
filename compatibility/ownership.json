@@ -98,7 +98,7 @@
       "export": null,
       "status": "fallback",
       "replacement": "@better-native/task-manager/expo",
-      "reason": "Better Native accounts for the Expo Task Manager root API with Effect-native persistent-registry operations and an eager headless-task definition boundary. Candidate resolution remains fallback until paired web, iOS, and Android Release evidence includes physical-device background and cold-launch delivery.",
+      "reason": "Better Native accounts for the Expo Task Manager root API with Effect-native persistent-registry operations and an eager headless-task definition boundary. Paired Release evidence passes module-scope definition, availability agreement, and persistent registration inspection/removal on web, iOS Simulator, and Android API 36 with zero divergences. Candidate resolution remains fallback until a physical device proves background and cold-launch handler delivery.",
       "issue": "promote-task-manager-effect-ownership"
     },
     {
@@ -107,7 +107,7 @@
       "export": null,
       "status": "fallback",
       "replacement": "@better-native/task-manager/app.plugin",
-      "reason": "Better Native bridges Expo Task Manager's config-plugin entrypoint; its iOS background-fetch configuration remains fallback pending a reviewed CNG/native fingerprint.",
+      "reason": "Better Native bridges Expo Task Manager's config-plugin entrypoint. Paired CNG produces matching upstream and candidate native fingerprints on iOS and Android; this subpath remains fallback with the root until physical background-delivery evidence is reviewed.",
       "issue": "promote-task-manager-effect-ownership"
     },
     {

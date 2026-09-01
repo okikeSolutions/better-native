@@ -15,7 +15,7 @@ describe("CapabilityShell", () => {
     assert.isNull(capabilityShell(undefined))
   })
 
-  it("declares small reviewed native closures for Clipboard, Location, SQLite, and Notifications", () => {
+  it("declares small reviewed native closures for selected capabilities", () => {
     for (const sourceId of Object.values(capabilityShellSourceIds)) {
       const shell = capabilityShell(sourceId)
       assert.isNotNull(shell)
@@ -26,7 +26,7 @@ describe("CapabilityShell", () => {
         [],
       )
     }
-    assert.strictEqual(capabilityShells.size, 4)
+    assert.strictEqual(capabilityShells.size, 5)
   })
 
   it("trims the copied application manifest while leaving the monolith unchanged", () => {
@@ -43,6 +43,7 @@ describe("CapabilityShell", () => {
     const clipboard = capabilityShell(capabilityShellSourceIds.clipboard)!
     const location = capabilityShell(capabilityShellSourceIds.location)!
     const sqlite = capabilityShell(capabilityShellSourceIds.sqlite)!
+    const taskManager = capabilityShell(capabilityShellSourceIds.taskManager)!
     const notifications = capabilityShell(capabilityShellSourceIds.notifications)!
 
     assert.isTrue(
@@ -61,6 +62,12 @@ describe("CapabilityShell", () => {
       ["@better-native/sqlite", "expo-sqlite"].every((name) => sqlite.dependencies.includes(name)),
     )
     assert.notInclude(sqlite.dependencies, "expo-location")
+    assert.isTrue(
+      ["@better-native/task-manager", "expo-background-fetch", "expo-task-manager"].every((name) =>
+        taskManager.dependencies.includes(name),
+      ),
+    )
+    assert.isTrue(taskManager.eager)
     assert.isTrue(
       [
         "@better-native/notifications",

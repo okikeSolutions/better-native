@@ -151,7 +151,7 @@
       "verification": {
         "unitProject": "@better-native/task-manager",
         "coverageScope": "packages/task-manager/src/**/*.ts",
-        "integrationSuites": ["published", "eval-controls"],
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
         "parityPlatforms": ["web", "ios", "android"]
       }
     },

@@ -5,6 +5,7 @@ export const capabilityShellSourceIds = {
   notifications:
     "better-native-capability#apps/compatibility-suite/src/capabilities/Notifications.ts",
   sqlite: "better-native-capability#apps/compatibility-suite/src/capabilities/SQLite.ts",
+  taskManager: "better-native-capability#apps/compatibility-suite/src/capabilities/TaskManager.ts",
 } as const
 
 export interface CapabilityShell {
@@ -71,6 +72,21 @@ export const capabilityShells: ReadonlyMap<string, CapabilityShell> = new Map([
       eager: false,
       dependencies: [...baseDependencies, "@better-native/sqlite", "expo-sqlite"],
       plugins: ["expo-router"],
+    },
+  ],
+  [
+    capabilityShellSourceIds.taskManager,
+    {
+      sourceId: capabilityShellSourceIds.taskManager,
+      module: "../capabilities/TaskManager.ts",
+      eager: true,
+      dependencies: [
+        ...baseDependencies,
+        "@better-native/task-manager",
+        "expo-background-fetch",
+        "expo-task-manager",
+      ],
+      plugins: ["expo-router", "expo-task-manager"],
     },
   ],
   [

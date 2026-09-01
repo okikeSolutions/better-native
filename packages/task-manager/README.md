@@ -50,3 +50,9 @@ For CNG, configure the preserved plugin and regenerate the native projects:
 Bare iOS projects must provide the equivalent `fetch` background mode and rebuild. See the
 [Expo Task Manager guide](https://docs.expo.dev/versions/latest/sdk/task-manager/) for platform and
 development-build restrictions.
+
+Paired Release comparisons pass module-scope definition, availability agreement, and persistent
+registration inspection and removal on web, iOS Simulator, and Android API 36 with zero
+divergences. Paired CNG produces matching native fingerprints. Compatibility ownership remains
+`fallback` until a physical device proves background and cold-launch handler delivery; simulator
+registration evidence must not be read as scheduled execution evidence.

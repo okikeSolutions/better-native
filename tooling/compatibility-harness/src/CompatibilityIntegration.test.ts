@@ -72,7 +72,10 @@ describe("compatibility denominator integration", () => {
         assert.match(sqlite?.reason ?? "", /paired upstream\/candidate Release evidence/i)
         assert.strictEqual(taskManager?.status, "fallback")
         assert.strictEqual(taskManager?.replacement, "@better-native/task-manager/expo")
-        assert.match(taskManager?.reason ?? "", /physical-device background and cold-launch/i)
+        assert.match(
+          taskManager?.reason ?? "",
+          /physical device proves background and cold-launch/i,
+        )
         assert.strictEqual(backgroundTask?.status, "fallback")
         assert.strictEqual(backgroundTask?.replacement, "@better-native/background-task/expo")
         assert.match(backgroundTask?.reason ?? "", /physical-device scheduled and cold-launch/i)
