@@ -1,5 +1,7 @@
 /** Reviewed source IDs supported by capability-scoped native shells. */
 export const capabilityShellSourceIds = {
+  backgroundTask:
+    "better-native-capability#apps/compatibility-suite/src/capabilities/BackgroundTask.ts",
   clipboard: "better-native-capability#apps/compatibility-suite/src/capabilities/Clipboard.ts",
   location: "better-native-capability#apps/compatibility-suite/src/capabilities/Location.ts",
   notifications:
@@ -32,6 +34,22 @@ const baseDependencies = [
 
 /** Native-shell catalog kept deliberately small and reviewed per capability. */
 export const capabilityShells: ReadonlyMap<string, CapabilityShell> = new Map([
+  [
+    capabilityShellSourceIds.backgroundTask,
+    {
+      sourceId: capabilityShellSourceIds.backgroundTask,
+      module: "../capabilities/BackgroundTask.ts",
+      eager: true,
+      dependencies: [
+        ...baseDependencies,
+        "@better-native/background-task",
+        "@better-native/task-manager",
+        "expo-background-task",
+        "expo-task-manager",
+      ],
+      plugins: ["expo-router", "expo-background-task"],
+    },
+  ],
   [
     capabilityShellSourceIds.clipboard,
     {

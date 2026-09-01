@@ -172,6 +172,12 @@ The reviewed SQLite capability is separately selectable on web, iOS, and Android
 Effect SQL write/read round trip, transaction rollback, Atom acquisition and release, native database-change delivery, and direct Expo-provider agreement. Paired Release comparisons
 pass all four cases on web, iOS Simulator, and Android API 36 with zero divergences. Paired CNG produces matching upstream and candidate native
 fingerprints on iOS and Android, and Expo remains the native database provider.
+The Background Task readiness capability is eagerly imported before route mounting and separately
+selectable on web, iOS, and Android. Paired Release comparisons pass Effect/Expo status agreement,
+persistent registration and cleanup through Task Manager, and the production-disabled testing
+trigger on web, iOS Simulator, and Android API 36 with zero divergences. Paired CNG produces
+matching native fingerprints. This is not promotion evidence: Background Task remains `fallback`
+until a physical device proves scheduled and cold-launch handler delivery.
 The reviewed SecureStore web capability is separately selectable on web and exercises Expo's actual
 unavailable result plus typed `SecureStoreFailure` mapping for unsupported asynchronous and
 synchronous storage operations. It does not claim iOS or Android behavior.
@@ -253,7 +259,7 @@ native fingerprints are unchanged. Do not force a clean native build for ordinar
 or wrapper changes. Every supervised phase now prints start/finish timing; iOS full builds also emit
 Xcode's build timing summary into their evidence.
 
-For local Location, SQLite, or Notifications evidence, pass the exact supplemental source to the
+For local Background Task, Location, SQLite, or Notifications evidence, pass the exact supplemental source to the
 build command as well as the runner. This selects a reviewed capability shell before CNG and native
 autolinking, so the native compiler sees only the capability, its provider, required runtime
 infrastructure, and reviewed companions. The build record is bound to that source and cannot later

@@ -4,6 +4,7 @@ import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as ManagedRuntime from "effect/ManagedRuntime"
 import * as ExpoBackgroundTask from "expo-background-task"
+import * as ExpoTaskManager from "expo-task-manager"
 
 export const name = "Background Task Effect capability"
 
@@ -38,16 +39,25 @@ export function test({ describe, it }: JasmineApi): void {
       const defined = await run(TaskManager.isTaskDefined(taskName))
       assert(defined, "Background task was not defined during bundle initialization")
       const status = await run(BackgroundTask.getStatusAsync)
+      const expoStatus = await ExpoBackgroundTask.getStatusAsync()
       assert(
         status === BackgroundTask.BackgroundTaskStatus.Available ||
           status === BackgroundTask.BackgroundTaskStatus.Restricted,
         "Background task returned an unknown availability status",
       )
+      assert(status === expoStatus, "Effect and Expo background task status differed")
     })
 
     it("distinguishes restricted registration and cleans up native schedules", async () => {
       const outcome = await run(BackgroundTask.register(definition, { minimumInterval: 15 }))
-      if (outcome === "restricted") return
+      if (outcome === "restricted") {
+        assert(
+          (await ExpoBackgroundTask.getStatusAsync()) ===
+            ExpoBackgroundTask.BackgroundTaskStatus.Restricted,
+          "Effect restricted registration disagreed with Expo status",
+        )
+        return
+      }
 
       assert(
         outcome === "registered" || outcome === "alreadyRegistered",
@@ -57,16 +67,26 @@ export function test({ describe, it }: JasmineApi): void {
         await run(TaskManager.isTaskRegisteredAsync(taskName)),
         "Background task was not persisted through Task Manager",
       )
+      assert(
+        await ExpoTaskManager.isTaskRegisteredAsync(taskName),
+        "Expo did not observe the Effect background registration",
+      )
+      const options = await ExpoTaskManager.getTaskOptionsAsync<{
+        readonly minimumInterval: number
+      }>(taskName)
+      assert(options.minimumInterval === 15, "Expo observed different registration options")
       await run(BackgroundTask.unregisterTaskAsync(taskName))
       assert(
-        !(await run(TaskManager.isTaskRegisteredAsync(taskName))),
+        !(await ExpoTaskManager.isTaskRegisteredAsync(taskName)),
         "Background task registration was not removed",
       )
     })
 
     it("preserves the production-disabled testing trigger", async () => {
       const triggered = await run(BackgroundTask.triggerTaskWorkerForTestingAsync)
+      const expoTriggered = await ExpoBackgroundTask.triggerTaskWorkerForTestingAsync()
       assert(typeof triggered === "boolean", "Background task testing trigger was not boolean")
+      assert(triggered === expoTriggered, "Effect and Expo testing trigger behavior differed")
       if (!__DEV__) assert(!triggered, "Production background task trigger must return false")
     })
   })

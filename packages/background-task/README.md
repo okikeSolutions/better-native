@@ -64,3 +64,9 @@ See the [Expo Background Task guide](https://docs.expo.dev/versions/latest/sdk/b
 for CNG, bare-project, and physical-device requirements.
 
 Existing Expo imports can migrate incrementally through `@better-native/background-task/expo`.
+
+Paired Release comparisons pass status agreement, persistent registration and cleanup through Task
+Manager, and production trigger behavior on web, iOS Simulator, and Android API 36 with zero
+divergences. Paired CNG produces matching native fingerprints. Compatibility ownership remains
+`fallback` until a physical device proves scheduled and cold-launch handler delivery; simulator
+registration evidence must not be read as scheduled execution evidence.

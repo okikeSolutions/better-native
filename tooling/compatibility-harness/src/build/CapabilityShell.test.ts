@@ -26,7 +26,7 @@ describe("CapabilityShell", () => {
         [],
       )
     }
-    assert.strictEqual(capabilityShells.size, 4)
+    assert.strictEqual(capabilityShells.size, 5)
   })
 
   it("trims the copied application manifest while leaving the monolith unchanged", () => {
@@ -40,11 +40,21 @@ describe("CapabilityShell", () => {
   })
 
   it("includes only capability-specific providers and required companions", () => {
+    const backgroundTask = capabilityShell(capabilityShellSourceIds.backgroundTask)!
     const clipboard = capabilityShell(capabilityShellSourceIds.clipboard)!
     const location = capabilityShell(capabilityShellSourceIds.location)!
     const sqlite = capabilityShell(capabilityShellSourceIds.sqlite)!
     const notifications = capabilityShell(capabilityShellSourceIds.notifications)!
 
+    assert.isTrue(
+      [
+        "@better-native/background-task",
+        "@better-native/task-manager",
+        "expo-background-task",
+        "expo-task-manager",
+      ].every((name) => backgroundTask.dependencies.includes(name)),
+    )
+    assert.isTrue(backgroundTask.eager)
     assert.isTrue(
       ["@better-native/clipboard", "expo-clipboard"].every((name) =>
         clipboard.dependencies.includes(name),

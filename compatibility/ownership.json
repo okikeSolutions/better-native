@@ -125,7 +125,7 @@
       "export": null,
       "status": "fallback",
       "replacement": "@better-native/background-task/expo",
-      "reason": "Better Native accounts for the complete Expo Background Task root API with typed persistent registration outcomes, Task Manager runtime composition, expiration Streams, and an exact Expo-compatible entrypoint. Candidate resolution remains fallback until paired Release evidence includes physical-device scheduled and cold-launch delivery.",
+      "reason": "Better Native accounts for the complete Expo Background Task root API with typed persistent registration outcomes, Task Manager runtime composition, expiration Streams, and an exact Expo-compatible entrypoint. Paired Release evidence passes status agreement, persistent registration cleanup, and production trigger behavior on web, iOS Simulator, and Android API 36 with zero divergences. Candidate resolution remains fallback until a physical device proves scheduled and cold-launch handler delivery.",
       "issue": "promote-background-task-effect-ownership"
     },
     {
@@ -134,7 +134,7 @@
       "export": null,
       "status": "fallback",
       "replacement": "@better-native/background-task/app.plugin",
-      "reason": "Better Native preserves the Background Task config plugin while its iOS processing mode and permitted scheduler identifier await reviewed CNG/native fingerprint evidence.",
+      "reason": "Better Native preserves the Background Task config plugin. Paired CNG produces matching upstream and candidate native fingerprints on iOS and Android; this subpath remains fallback with the root until physical scheduled-delivery evidence is reviewed.",
       "issue": "promote-background-task-effect-ownership"
     },
     {

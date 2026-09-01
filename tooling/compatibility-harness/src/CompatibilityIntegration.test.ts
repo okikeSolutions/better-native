@@ -75,7 +75,10 @@ describe("compatibility denominator integration", () => {
         assert.match(taskManager?.reason ?? "", /physical-device background and cold-launch/i)
         assert.strictEqual(backgroundTask?.status, "fallback")
         assert.strictEqual(backgroundTask?.replacement, "@better-native/background-task/expo")
-        assert.match(backgroundTask?.reason ?? "", /physical-device scheduled and cold-launch/i)
+        assert.match(
+          backgroundTask?.reason ?? "",
+          /physical device proves scheduled and cold-launch/i,
+        )
         assert.include(output, "Validated Expo")
         assert.include(output, "Better Native API coverage")
         assert.include(output, "expo-sqlite")

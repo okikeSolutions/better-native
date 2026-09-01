@@ -173,7 +173,7 @@
       "verification": {
         "unitProject": "@better-native/background-task",
         "coverageScope": "packages/background-task/src/**/*.ts",
-        "integrationSuites": ["published", "eval-controls"],
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
         "parityPlatforms": ["web", "ios", "android"]
       }
     },
