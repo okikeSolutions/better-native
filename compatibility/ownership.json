@@ -179,7 +179,7 @@
       "export": null,
       "status": "fallback",
       "replacement": "@better-native/notifications/expo",
-      "reason": "Better Native accounts for Expo Notifications with typed Effects, scoped event Streams, a response Atom, synchronous ManagedRuntime handlers, background-task composition, and an exact side-effectful Expo bridge. Candidate resolution remains fallback until paired Release and physical-device push, response, and killed-app delivery evidence is reviewed.",
+      "reason": "Better Native accounts for Expo Notifications with typed Effects, scoped event Streams, a response Atom, synchronous ManagedRuntime handlers, background-task composition, and an exact side-effectful Expo bridge. Paired Release evidence passes permission and response reads, local scheduling, all scoped listener lifecycles, response Atom hydration, and persistent background registration on web, iOS Simulator, and Android API 36 with zero divergences. Candidate resolution remains fallback until a physical device proves push-token, remote delivery/response, and killed-app background handling.",
       "issue": "promote-notifications-effect-ownership"
     },
     {
@@ -188,7 +188,7 @@
       "export": null,
       "status": "fallback",
       "replacement": "@better-native/notifications/app.plugin",
-      "reason": "Better Native preserves the Notifications config plugin while Android resources/defaults and iOS entitlement/background-mode output await reviewed CNG fingerprints.",
+      "reason": "Better Native preserves the Notifications config plugin. Paired CNG produces matching upstream and candidate native fingerprints on iOS and Android; this subpath remains fallback with the root until physical push and background-delivery evidence is reviewed.",
       "issue": "promote-notifications-effect-ownership"
     },
     {

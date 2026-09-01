@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "expoRevision": "534c99966e34580f56242eb92aac7689b9089cc7",
-  "ownershipFingerprint": "79def3d46f31c22eccd458537d05965d3ff8baeaf0864d86dc0db93aac6498ab",
+  "ownershipFingerprint": "9c05c1e1142db817dc6e2a534b20dea70fb63e2af64159326e9a22e70fa8e529",
   "replacements": [
     {
       "source": "expo-background-task",

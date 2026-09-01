@@ -605,7 +605,7 @@ const listenerStream = <A>(
  * @category streams
  * @since 0.0.0
  */
-export const addNotificationReceivedListener = listenerStream(
+export const addNotificationReceivedListener = listenerStream<ExpoNotifications.Notification>(
   "addNotificationReceivedListener",
   (m, emit) => m.addNotificationReceivedListener(emit),
 )
@@ -615,7 +615,7 @@ export const addNotificationReceivedListener = listenerStream(
  * @category streams
  * @since 0.0.0
  */
-export const addNotificationsDroppedListener = listenerStream(
+export const addNotificationsDroppedListener = listenerStream<void>(
   "addNotificationsDroppedListener",
   (m, emit) => m.addNotificationsDroppedListener(() => emit(undefined)),
 )
@@ -625,17 +625,18 @@ export const addNotificationsDroppedListener = listenerStream(
  * @category streams
  * @since 0.0.0
  */
-export const addNotificationResponseReceivedListener = listenerStream(
-  "addNotificationResponseReceivedListener",
-  (m, emit) => m.addNotificationResponseReceivedListener(emit),
-)
+export const addNotificationResponseReceivedListener =
+  listenerStream<ExpoNotifications.NotificationResponse>(
+    "addNotificationResponseReceivedListener",
+    (m, emit) => m.addNotificationResponseReceivedListener(emit),
+  )
 /**
  * Scoped Stream emitted when the last notification response is cleared.
  *
  * @category streams
  * @since 0.0.0
  */
-export const addNotificationResponseClearedListener = listenerStream(
+export const addNotificationResponseClearedListener = listenerStream<void>(
   "addNotificationResponseClearedListener",
   (m, emit) => m.addNotificationResponseClearedListener(() => emit(undefined)),
 )
@@ -645,8 +646,9 @@ export const addNotificationResponseClearedListener = listenerStream(
  * @category streams
  * @since 0.0.0
  */
-export const addPushTokenListener = listenerStream("addPushTokenListener", (m, emit) =>
-  m.addPushTokenListener(emit),
+export const addPushTokenListener = listenerStream<ExpoNotifications.DevicePushToken>(
+  "addPushTokenListener",
+  (m, emit) => m.addPushTokenListener(emit),
 )
 
 /**

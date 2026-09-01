@@ -217,7 +217,7 @@
       "verification": {
         "unitProject": "@better-native/notifications",
         "coverageScope": "packages/notifications/src/**/*.ts",
-        "integrationSuites": ["published", "eval-controls"],
+        "integrationSuites": ["published", "eval-controls", "compile-contracts"],
         "parityPlatforms": ["web", "ios", "android"]
       }
     }

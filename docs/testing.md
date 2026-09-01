@@ -172,6 +172,13 @@ The reviewed SQLite capability is separately selectable on web, iOS, and Android
 Effect SQL write/read round trip, transaction rollback, Atom acquisition and release, native database-change delivery, and direct Expo-provider agreement. Paired Release comparisons
 pass all four cases on web, iOS Simulator, and Android API 36 with zero divergences. Paired CNG produces matching upstream and candidate native
 fingerprints on iOS and Android, and Expo remains the native database provider.
+The Notifications readiness capability is eagerly imported before route mounting and separately
+selectable on web, iOS, and Android. Paired Release comparisons pass permission and last-response
+reads, local scheduling, five scoped listener lifecycles, response Atom hydration, and persistent
+background registration on web, iOS Simulator, and Android API 36 with zero divergences. Paired CNG
+produces matching native fingerprints. This is not promotion evidence: Notifications remains
+`fallback` until a physical device proves push-token, remote delivery and response, and killed-app
+background handling.
 The reviewed SecureStore web capability is separately selectable on web and exercises Expo's actual
 unavailable result plus typed `SecureStoreFailure` mapping for unsupported asynchronous and
 synchronous storage operations. It does not claim iOS or Android behavior.

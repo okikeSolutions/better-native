@@ -8,7 +8,11 @@ import * as Fiber from "effect/Fiber"
 import * as Layer from "effect/Layer"
 import * as ManagedRuntime from "effect/ManagedRuntime"
 import * as Stream from "effect/Stream"
+import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
+import * as AtomRegistry from "effect/unstable/reactivity/AtomRegistry"
 import * as ExpoNotifications from "expo-notifications"
+import * as ExpoTaskManager from "expo-task-manager"
+import { Platform } from "react-native"
 
 export const name = "Notifications Effect capability"
 
@@ -135,7 +139,9 @@ export function test({ describe, it }: JasmineApi): void {
     })
 
     it("acquires and interrupts every scoped event Stream", async () => {
-      const streams = [
+      const streams: ReadonlyArray<
+        Stream.Stream<unknown, Notifications.NotificationsError, Notifications.Notifications>
+      > = [
         Notifications.addNotificationReceivedListener,
         Notifications.addNotificationResponseReceivedListener,
         Notifications.addNotificationResponseClearedListener,
@@ -156,16 +162,38 @@ export function test({ describe, it }: JasmineApi): void {
       }
     })
 
+    it("hydrates and releases the last-response Atom", async () => {
+      const registry = AtomRegistry.make()
+      const release = registry.mount(Notifications.lastNotificationResponseAtom)
+      try {
+        for (let attempt = 0; attempt < 50; attempt += 1) {
+          if (!AsyncResult.isInitial(registry.get(Notifications.lastNotificationResponseAtom))) {
+            return
+          }
+          await Effect.runPromise(Effect.sleep("20 millis"))
+        }
+        throw new Error("last-response Atom did not leave its initial state")
+      } finally {
+        release()
+      }
+    })
+
     it("defines and persistently registers the background handler before route mount", async () => {
       assert(backgroundDefinition.name === taskName, "background definition token drifted")
-      const outcome = await run(
-        Effect.exit(
-          NotificationBackground.registerBackgroundTask(backgroundDefinition).pipe(
-            Effect.ensuring(Notifications.unregisterTaskAsync(taskName).pipe(Effect.ignore)),
-          ),
-        ),
-      )
-      assertTypedFailure(outcome, "background registration")
+      try {
+        const outcome = await run(
+          Effect.exit(NotificationBackground.registerBackgroundTask(backgroundDefinition)),
+        )
+        assertTypedFailure(outcome, "background registration")
+        if (outcome._tag === "Success" && Platform.OS !== "web") {
+          assert(
+            await ExpoTaskManager.isTaskRegisteredAsync(taskName),
+            "Expo did not observe the Effect background registration",
+          )
+        }
+      } finally {
+        await run(Notifications.unregisterTaskAsync(taskName).pipe(Effect.ignore))
+      }
     })
   })
 }

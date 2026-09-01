@@ -53,6 +53,9 @@ describe("compatibility denominator integration", () => {
         const backgroundTask = ownership.overrides.find(
           (entry) => entry.package === "expo-background-task" && entry.subpath === ".",
         )
+        const notifications = ownership.overrides.find(
+          (entry) => entry.package === "expo-notifications" && entry.subpath === ".",
+        )
 
         const output = (yield* TestConsole.logLines).join("\n")
         assert.strictEqual(battery?.status, "effect")
@@ -76,6 +79,9 @@ describe("compatibility denominator integration", () => {
         assert.strictEqual(backgroundTask?.status, "fallback")
         assert.strictEqual(backgroundTask?.replacement, "@better-native/background-task/expo")
         assert.match(backgroundTask?.reason ?? "", /physical-device scheduled and cold-launch/i)
+        assert.strictEqual(notifications?.status, "fallback")
+        assert.strictEqual(notifications?.replacement, "@better-native/notifications/expo")
+        assert.match(notifications?.reason ?? "", /physical device proves push-token/i)
         assert.include(output, "Validated Expo")
         assert.include(output, "Better Native API coverage")
         assert.include(output, "expo-sqlite")

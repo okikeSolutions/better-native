@@ -151,5 +151,9 @@ depends on the browser and several native-only operations fail through `Notifica
 See the [Expo Notifications guide](https://docs.expo.dev/versions/latest/sdk/notifications/) for
 provider credentials and platform restrictions.
 
-Package ownership remains `fallback` until paired Release and physical-device evidence has been
-reviewed. The exact Expo bridge remains available during incremental migration.
+Paired Release comparisons pass permission and last-response reads, local scheduling, all scoped
+listener lifecycles, response Atom hydration, and persistent background registration on web, iOS
+Simulator, and Android API 36 with zero divergences. Paired CNG produces matching native
+fingerprints. Package ownership remains `fallback` until a physical device proves push-token,
+remote delivery and response, and killed-app background handling. The exact Expo bridge remains
+available during incremental migration.
