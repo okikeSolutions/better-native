@@ -303,11 +303,12 @@ hash, and every completed `pod install` still requires `Podfile.lock` to equal
 duplicate multi-gigabyte Pods trees for the same effective dependency graph.
 
 `bun run artifacts:prune --dry-run` reports every deletion, retention reason, protected path, and
-physical byte count. The non-dry command applies the identical deterministic plan, bounds the
-combined local Pods/native cache to 8 GiB by least-recently-used access time, retains lightweight
-run records, and expires bulky run media after seven days. It runs before a build below the 16 GiB
-free-space floor and after every successful native build. `bun run artifacts:clean --all` is the
-explicit emergency operation and refuses to run while active or linked workspaces are present.
+physical byte count. The non-dry command applies the identical deterministic plan, removes cache
+schemas that the current harness no longer reads, and bounds the combined current Pods/native cache
+to 3 GiB by least-recently-used access time. It retains lightweight run records and expires bulky
+run media after seven days. Pruning runs before a build below the 16 GiB free-space floor and after
+every successful native build. `bun run artifacts:clean --all` is the explicit emergency operation
+and refuses to run while active or linked workspaces are present.
 
 ## Hosted execution
 

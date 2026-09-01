@@ -10,6 +10,10 @@ import { fileURLToPath } from "node:url"
 import { randomUUID } from "node:crypto"
 import { createHash } from "node:crypto"
 import {
+  nativeArtifactCacheDirectory,
+  nativeArtifactCacheSchemaVersion,
+} from "../artifacts/CacheLayout.ts"
+import {
   BuildId,
   ContentHash,
   isSafePathSegment,
@@ -24,7 +28,7 @@ import { BuildProducts } from "./BuildProducts.ts"
 
 /** Versioned metadata binding a cached native artifact to its build inputs. */
 export const NativeArtifactCacheRecord = Schema.Struct({
-  schemaVersion: Schema.Literal(1),
+  schemaVersion: Schema.Literal(nativeArtifactCacheSchemaVersion),
   platform: Schema.Literals(["ios", "android"]),
   architecture: Schema.String,
   expoRevision: Schema.String,
@@ -259,7 +263,7 @@ export const layer = (
       const commands = yield* BuildCommand
       const products = yield* BuildProducts
       const config = yield* HarnessConfig
-      const cacheRoot = path.join(root, ".artifacts", "native-cache", "v1")
+      const cacheRoot = path.join(root, ".artifacts", "native-cache", nativeArtifactCacheDirectory)
       const iosTarget = config.iosDestination.toLowerCase().includes("simulator")
         ? "simulator"
         : "device"
@@ -496,7 +500,7 @@ export const layer = (
           const temporaryArtifact = path.join(temporary, path.basename(location.artifact))
           yield* fs.copy(input.output, temporaryArtifact)
           const encoded = yield* Schema.encodeEffect(NativeArtifactCacheRecord)({
-            schemaVersion: 1,
+            schemaVersion: nativeArtifactCacheSchemaVersion,
             platform: location.platform,
             architecture: process.arch,
             expoRevision: input.request.expoRevision,
