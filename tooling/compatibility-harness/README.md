@@ -84,7 +84,7 @@ bun run docs:api
 # Inspect installed Expo packages and expanded wildcard entrypoints.
 bun run compatibility-harness doctor
 
-# Preview or apply local workspace retention and the shared 8 GiB cache budget.
+# Preview or apply local workspace retention and the shared 3 GiB cache budget.
 bun run artifacts:prune --dry-run
 bun run artifacts:prune
 ```

@@ -6,6 +6,7 @@ import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
 import * as Path from "effect/Path"
+import { podsCacheDirectory, podsCacheSchemaVersion } from "../artifacts/CacheLayout.ts"
 import { isSafePathSegment } from "../Domain.ts"
 import { BuildPipelineError, type BuildRequest } from "./BuildModel.ts"
 import { BuildProducts } from "./BuildProducts.ts"
@@ -26,7 +27,7 @@ export interface PodsCacheResult {
 }
 
 interface PodsCacheRecord {
-  readonly schemaVersion: 3
+  readonly schemaVersion: typeof podsCacheSchemaVersion
   readonly architecture: string
   readonly toolchainFingerprint: string
   readonly nativeFingerprint: string
@@ -61,7 +62,7 @@ export const layer = (
       const fs = yield* FileSystem.FileSystem
       const path = yield* Path.Path
       const products = yield* BuildProducts
-      const cacheRoot = path.join(root, ".artifacts", "pods-cache", "v3")
+      const cacheRoot = path.join(root, ".artifacts", "pods-cache", podsCacheDirectory)
       const entriesRoot = path.join(cacheRoot, "entries")
       const indexesRoot = path.join(cacheRoot, "indexes")
       const cacheLock = `${cacheRoot}.lock`
@@ -114,7 +115,7 @@ export const layer = (
           const value = JSON.parse(text) as unknown
           if (
             !isRecord(value) ||
-            value.schemaVersion !== 3 ||
+            value.schemaVersion !== podsCacheSchemaVersion ||
             typeof value.architecture !== "string" ||
             typeof value.toolchainFingerprint !== "string" ||
             typeof value.nativeFingerprint !== "string" ||
@@ -186,7 +187,7 @@ export const layer = (
           if (!isSafePathSegment(key) || !isSafePathSegment(entryKey))
             return yield* new PodsCacheIdentityError({ cause: "invalid CocoaPods cache identity" })
           const record: PodsCacheRecord = {
-            schemaVersion: 3,
+            schemaVersion: podsCacheSchemaVersion,
             architecture: input.architecture,
             toolchainFingerprint: input.toolchainFingerprint,
             nativeFingerprint: input.nativeFingerprint,

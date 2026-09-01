@@ -56,8 +56,9 @@ bun run check:effect
 
 Artifact lifecycle host tests prove that active workspace locks protect both workspaces and shared
 caches, dry-run and applied pruning choose identical deterministic targets, failed-workspace
-retention expires after 24 hours, sparse files are measured by physical allocation, and CocoaPods
-entries deduplicate upstream/candidate workspaces when their effective inputs and lockfile agree.
+retention expires after 24 hours, and sparse files are measured by physical allocation. The current
+CocoaPods schema must count toward the shared budget, obsolete schemas are deleted, and equal
+effective inputs and lockfiles deduplicate upstream/candidate workspaces.
 These tests do not replace a native build; native verification additionally proves that the product
 is published before its workspace and DerivedData are removed.
 

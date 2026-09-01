@@ -12,11 +12,12 @@ import { randomUUID } from "node:crypto"
 import { statfs } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { isSafePathSegment } from "../Domain.ts"
+import { nativeArtifactCacheDirectory, podsCacheDirectory } from "./CacheLayout.ts"
 
 const gibibyte = 1024 ** 3
 
 /** Local persistent-cache ceiling shared by CocoaPods and native binaries. */
-export const defaultCacheBudgetBytes = 8 * gibibyte
+export const defaultCacheBudgetBytes = 3 * gibibyte
 /** Free-space floor that triggers pruning before a new build starts. */
 export const defaultLowDiskBytes = 16 * gibibyte
 /** Failed workspace retention window. */
@@ -359,12 +360,26 @@ export const layer = (
       }
 
       const cacheRoots = [
-        { kind: "pods-cache" as const, root: path.join(artifactsRoot, "pods-cache", "v1") },
+        {
+          kind: "pods-cache" as const,
+          root: path.join(artifactsRoot, "pods-cache", "v1"),
+          legacy: true,
+        },
         {
           kind: "pods-cache" as const,
           root: path.join(artifactsRoot, "pods-cache", "v2", "entries"),
+          legacy: true,
         },
-        { kind: "native-cache" as const, root: path.join(artifactsRoot, "native-cache", "v1") },
+        {
+          kind: "pods-cache" as const,
+          root: path.join(artifactsRoot, "pods-cache", podsCacheDirectory, "entries"),
+          legacy: false,
+        },
+        {
+          kind: "native-cache" as const,
+          root: path.join(artifactsRoot, "native-cache", nativeArtifactCacheDirectory),
+          legacy: false,
+        },
       ]
 
       const prune: Service["prune"] = (options) =>
@@ -535,6 +550,7 @@ export const layer = (
             reason: string
             sizeBytes: number
             lastUsedMillis: number
+            legacy: boolean
           }> = []
           for (const cache of cacheRoots) {
             if (!(yield* fs.exists(cache.root))) continue
@@ -566,10 +582,13 @@ export const layer = (
               cacheEntries.push({
                 path: target,
                 kind: cache.kind,
-                decision: "keep",
-                reason: "within persistent cache budget",
+                decision: cache.legacy ? "delete" : "keep",
+                reason: cache.legacy
+                  ? "obsolete cache schema is no longer read"
+                  : "within persistent cache budget",
                 sizeBytes: yield* physicalSize(target),
                 lastUsedMillis: modificationMillis(info),
+                legacy: cache.legacy,
               })
             }
           }
@@ -577,23 +596,28 @@ export const layer = (
           let cacheBytesAfter = cacheBytesBefore
           if (activeWorkspaces.size > 0) {
             entries.push(
-              ...cacheEntries.map((entry) => ({
+              ...cacheEntries.map(({ legacy: _legacy, ...entry }) => ({
                 ...entry,
                 decision: "protect" as const,
                 reason: "cache protected while a build is active",
               })),
             )
           } else {
-            for (const entry of cacheEntries.toSorted(
-              (left, right) =>
-                left.lastUsedMillis - right.lastUsedMillis || left.path.localeCompare(right.path),
-            )) {
+            cacheBytesAfter -= cacheEntries
+              .filter(({ legacy }) => legacy)
+              .reduce((sum, entry) => sum + entry.sizeBytes, 0)
+            for (const entry of cacheEntries
+              .filter(({ legacy }) => !legacy)
+              .toSorted(
+                (left, right) =>
+                  left.lastUsedMillis - right.lastUsedMillis || left.path.localeCompare(right.path),
+              )) {
               if (cacheBytesAfter <= budget) break
               entry.decision = "delete"
               entry.reason = "least-recently-used entry exceeds the persistent cache budget"
               cacheBytesAfter -= entry.sizeBytes
             }
-            entries.push(...cacheEntries)
+            entries.push(...cacheEntries.map(({ legacy: _legacy, ...entry }) => entry))
           }
 
           const runsRoot = path.join(artifactsRoot, "runs")
