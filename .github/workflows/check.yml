@@ -1,10 +1,14 @@
 name: Check
 
 on:
-  push:
-    branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      eval-task:
+        description: Deterministic DX task to run, or all
+        required: false
+        default: all
+        type: string
 
 permissions:
   contents: read
@@ -19,23 +23,10 @@ env:
   TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
 
 jobs:
-  plan:
-    name: Verification plan
-    runs-on: ubuntu-24.04
-    outputs:
-      capabilities: ${{ steps.matrix.outputs.capabilities }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Derive the capability matrix from the migration ledger
-        id: matrix
-        run: echo "capabilities=$(jq -c '[.capabilities[].id]' compatibility/capabilities.json)" >> "$GITHUB_OUTPUT"
-
   fast:
     name: Repository checks
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -48,50 +39,17 @@ jobs:
       - name: Run the local fast contract
         run: bun run check:fast
 
-  integration:
-    name: Integration (${{ matrix.suite }})
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        suite:
-          - published
-          - harness
-          - compile-contracts
-          - isolation
-          - trials
-          - task-workspace
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
-
-      - name: Setup build profile
-        uses: ./.github/actions/setup-build
-
-      - name: Setup DX eval prerequisites
-        uses: ./.github/actions/setup-dx-evals
-
-      - name: Materialize pinned Expo for catalog integration
-        if: matrix.suite == 'harness'
-        run: bun run expo:prepare
-
-      - name: Run integration suite
+      - name: Run pinned-Expo integration tests
         env:
-          BETTER_NATIVE_INTEGRATION_SUITE: ${{ matrix.suite }}
+          BETTER_NATIVE_INTEGRATION_SUITE: harness
         run: bun run test:integration
 
-  eval-controls:
-    name: DX controls (${{ matrix.capability }})
-    needs: plan
+  process-boundaries:
+    name: Process-boundary checks
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        capability: ${{ fromJSON(needs.plan.outputs.capabilities) }}
+    timeout-minutes: 60
+    env:
+      EVAL_TASK: ${{ inputs.eval-task || 'all' }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -101,35 +59,46 @@ jobs:
       - name: Setup static profile
         uses: ./.github/actions/setup-static
 
-      - name: Setup DX eval prerequisites
+      - name: Setup DX eval prerequisites once
         uses: ./.github/actions/setup-dx-evals
 
+      - name: Run process-boundary integration suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          for suite in published compile-contracts isolation trials task-workspace; do
+            BETTER_NATIVE_INTEGRATION_SUITE="$suite" bun run test:integration
+          done
+
       - name: Validate deterministic controls
-        run: bun run evals validate --task ${{ matrix.capability }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$EVAL_TASK" = all ]; then
+            bun run evals validate
+          else
+            bun run evals validate --task "$EVAL_TASK"
+          fi
 
       - name: Upload eval evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: dx-controls-${{ matrix.capability }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: dx-controls-${{ github.run_id }}-${{ github.run_attempt }}
           path: .artifacts/evals
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 3
 
   required:
     name: Verification required
     if: always()
-    needs: [plan, fast, integration, eval-controls]
+    needs: [fast, process-boundaries]
     runs-on: ubuntu-24.04
     steps:
-      - name: Require every selected verification lane
+      - name: Require every verification lane
         env:
-          PLAN_RESULT: ${{ needs.plan.result }}
           FAST_RESULT: ${{ needs.fast.result }}
-          INTEGRATION_RESULT: ${{ needs.integration.result }}
-          EVAL_RESULT: ${{ needs.eval-controls.result }}
+          PROCESS_RESULT: ${{ needs.process-boundaries.result }}
         run: |
-          test "$PLAN_RESULT" = success
           test "$FAST_RESULT" = success
-          test "$INTEGRATION_RESULT" = success
-          test "$EVAL_RESULT" = success
+          test "$PROCESS_RESULT" = success

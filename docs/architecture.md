@@ -303,25 +303,28 @@ hash, and every completed `pod install` still requires `Podfile.lock` to equal
 duplicate multi-gigabyte Pods trees for the same effective dependency graph.
 
 `bun run artifacts:prune --dry-run` reports every deletion, retention reason, protected path, and
-physical byte count. The non-dry command applies the identical deterministic plan, bounds the
-combined local Pods/native cache to 8 GiB by least-recently-used access time, retains lightweight
-run records, and expires bulky run media after seven days. It runs before a build below the 16 GiB
-free-space floor and after every successful native build. `bun run artifacts:clean --all` is the
-explicit emergency operation and refuses to run while active or linked workspaces are present.
+physical byte count. The non-dry command applies the identical deterministic plan, removes cache
+schemas that the current harness no longer reads, and bounds the combined current Pods/native cache
+to 3 GiB by least-recently-used access time. It retains lightweight run records and expires bulky
+run media after seven days. Pruning runs before a build below the 16 GiB free-space floor and after
+every successful native build. `bun run artifacts:clean --all` is the explicit emergency operation
+and refuses to run while active or linked workspaces are present.
 
 ## Hosted execution
 
-Compatibility execution is hosted by GitHub Actions. Developer machines are not the default native
-build or device-test environment. Its topology is adapted directly from Expo:
+Compatibility execution is available as a manually dispatched GitHub Actions workflow. It does not
+run on pull requests, pushes, or a schedule because hosted runner usage is metered. Maintainers run
+the same commands locally by default and dispatch only the platform and mode needed for reviewed
+hosted evidence. Its topology is adapted directly from Expo:
 
 ```mermaid
 flowchart TB
-  Change["Detect platform changes"]
+  Dispatch["Manual platform and mode selection"]
   Mode{"Baseline or pair?"}
-  Change --> Mode
+  Dispatch --> Mode
 
-  Baseline["Pull request / push<br/>upstream baseline"]
-  Pair["Weekly schedule / manual pair<br/>upstream + candidate"]
+  Baseline["Manual upstream baseline"]
+  Pair["Manual upstream + candidate pair"]
   Mode --> Baseline
   Mode --> Pair
 
@@ -348,20 +351,19 @@ used by the workflow jobs; `setup-static` is the common base rather than a stand
 job. Every profile pins Node 24 because the Effect compatibility harness uses `NodeRuntime` and
 `NodeServices`; Bun remains the workspace package manager and test/script orchestrator. Only the
 build profile installs pnpm and materializes pinned Expo. Device jobs consume immutable products;
-comparison jobs consume downloaded evidence and never install Expo or generate the catalog. Pull
-requests and pushes run the upstream baseline for affected platforms. The weekly schedule and
-manual `pair` mode run upstream and candidate through the same build and device paths; candidate
-mode changes only Metro resolution. Differential verdicts are emitted in their own lightweight
-jobs.
+comparison jobs consume downloaded evidence and never install Expo or generate the catalog. A
+manual dispatch selects `web`, `ios`, `android`, or all platforms and chooses either an upstream
+baseline or a paired run. Candidate mode changes only Metro resolution. Cold builds require an
+explicit dispatch input, so routine verification can reuse validated native artifacts.
 
 The copied Expo primitives retain platform change classification, ccache configuration, Gradle and
 React Native download cache boundaries, Xcode-version invalidation, runner cleanup, and the pinned
 Maestro versions. Release products and successful evidence are retained for three days; failures
 are retained for seven. ccache keys exclude JavaScript, tests, and generated compatibility data;
 Gradle runs with its build cache and without configuration cache; iOS compiles only the selected
-simulator architecture. A weekly hygiene workflow bounds owned native caches to 8 GiB, below
-GitHub's default 10 GiB repository limit. Pull requests may restore and repack validated native
-artifacts. The weekly scheduled compatibility run forces cold native builds, proving that the
+simulator architecture. A manually dispatched hygiene workflow bounds owned native caches to 8 GiB,
+below GitHub's default 10 GiB repository limit. Manual compatibility runs may restore and repack
+validated native artifacts. Maintainers periodically request a cold build to prove that the
 non-cached path remains healthy.
 
 ```mermaid

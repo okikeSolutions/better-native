@@ -57,8 +57,9 @@ describe("verification lanes", () => {
       assert.ok(manifest.scripts?.["test:coverage"]?.includes("vitest.coverage.config.ts"))
       assert.ok(capability.verification.integrationSuites.includes("published"))
     }
-    assert.match(workflow, /\[\.capabilities\[\]\.id\]/)
-    assert.match(workflow, /fromJSON\(needs\.plan\.outputs\.capabilities\)/)
+    assert.match(workflow, /eval-task:/)
+    assert.match(workflow, /bun run evals validate\n/)
+    assert.match(workflow, /bun run evals validate --task "\$EVAL_TASK"/)
     assert.match(workflow, /name: Verification required/)
   })
 })

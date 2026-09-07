@@ -7,6 +7,7 @@ import * as Fiber from "effect/Fiber"
 import * as TestClock from "effect/testing/TestClock"
 import { provideLayer } from "../TestLayers.ts"
 import { ArtifactLifecycle, failedWorkspaceRetentionMillis, layer } from "./ArtifactLifecycle.ts"
+import { podsCacheDirectory } from "./CacheLayout.ts"
 
 describe("ArtifactLifecycle", () => {
   it.effect("serializes native compilers across independent service layers", () =>
@@ -82,7 +83,7 @@ describe("ArtifactLifecycle", () => {
       const fs = yield* FileSystem.FileSystem
       const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-lifecycle-active-" })
       const workspace = `${root}/.artifacts/workspaces/ios-upstream`
-      const cache = `${root}/.artifacts/pods-cache/v1/cache-a`
+      const cache = `${root}/.artifacts/pods-cache/${podsCacheDirectory}/entries/cache-a`
       yield* fs.makeDirectory(workspace, { recursive: true })
       yield* fs.makeDirectory(cache, { recursive: true })
       yield* fs.writeFileString(`${cache}/data`, "cache")
@@ -180,6 +181,34 @@ describe("ArtifactLifecycle", () => {
         report.entries.filter(({ decision }) => decision === "delete").map(({ path }) => path)
       assert.deepStrictEqual(selected(applied), selected(dryRun))
       for (const target of selected(dryRun)) assert.isFalse(yield* fs.exists(target))
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
+  )
+
+  it.effect("counts current Pods entries and removes obsolete cache schemas", () =>
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem
+      const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-lifecycle-pods-" })
+      const current = `${root}/.artifacts/pods-cache/${podsCacheDirectory}/entries/current`
+      const obsolete = `${root}/.artifacts/pods-cache/v2/entries/obsolete`
+      yield* fs.makeDirectory(current, { recursive: true })
+      yield* fs.makeDirectory(obsolete, { recursive: true })
+      yield* fs.writeFile(`${current}/binary`, new Uint8Array(8_192))
+      yield* fs.writeFile(`${obsolete}/binary`, new Uint8Array(8_192))
+
+      const report = yield* Effect.gen(function* () {
+        const lifecycle = yield* ArtifactLifecycle
+        return yield* lifecycle.prune({ dryRun: false, cacheBudgetBytes: 0 })
+      }).pipe(provideLayer(layer(root)))
+
+      assert.isAbove(report.cacheBytesBefore, 0)
+      assert.strictEqual(report.cacheBytesAfter, 0)
+      assert.strictEqual(report.entries.find(({ path }) => path === current)?.decision, "delete")
+      assert.strictEqual(
+        report.entries.find(({ path }) => path === obsolete)?.reason,
+        "obsolete cache schema is no longer read",
+      )
+      assert.isFalse(yield* fs.exists(current))
+      assert.isFalse(yield* fs.exists(obsolete))
     }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 

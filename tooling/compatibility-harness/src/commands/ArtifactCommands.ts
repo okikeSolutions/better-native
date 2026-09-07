@@ -4,7 +4,7 @@ import * as Command from "effect/unstable/cli/Command"
 import * as Flag from "effect/unstable/cli/Flag"
 import { ArtifactLifecycle, ArtifactLifecycleError } from "../artifacts/ArtifactLifecycle.ts"
 
-/** Reports or applies local artifact retention and the shared 8 GiB cache budget. */
+/** Reports or applies local artifact retention and the shared 3 GiB cache budget. */
 export const artifactsPrune = Command.make(
   "artifacts-prune",
   { dryRun: Flag.boolean("dry-run").pipe(Flag.withDefault(false)) },

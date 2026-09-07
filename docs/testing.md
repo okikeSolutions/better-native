@@ -24,10 +24,12 @@ bun run test:integration
 BETTER_NATIVE_INTEGRATION_SUITE=compile-contracts bun run test:integration
 ```
 
-CI runs all named integration suites as separate matrix jobs and derives the per-capability eval
-matrix directly from `compatibility/capabilities.json`. The host unit suite also excludes Vitest
-Evals task controls. Run the secretless reference, no-op, and broken controls through their
-dedicated configuration with:
+CI runs the named process-boundary integration suites sequentially in one job after preparing the
+workspace and rootless Podman once. The pinned-Expo integration suite runs after the local fast
+contract in the job that already materialized Expo. Deterministic eval controls also run together in
+one process-boundary job; a manual `eval-task` input can select one task when diagnosing a failure.
+The host unit suite excludes Vitest Evals task controls. Run the secretless reference, no-op, and
+broken controls through their dedicated configuration with:
 
 ```sh
 bun run evals validate
@@ -56,8 +58,9 @@ bun run check:effect
 
 Artifact lifecycle host tests prove that active workspace locks protect both workspaces and shared
 caches, dry-run and applied pruning choose identical deterministic targets, failed-workspace
-retention expires after 24 hours, sparse files are measured by physical allocation, and CocoaPods
-entries deduplicate upstream/candidate workspaces when their effective inputs and lockfile agree.
+retention expires after 24 hours, and sparse files are measured by physical allocation. The current
+CocoaPods schema must count toward the shared budget, obsolete schemas are deleted, and equal
+effective inputs and lockfiles deduplicate upstream/candidate workspaces.
 These tests do not replace a native build; native verification additionally proves that the product
 is published before its workspace and DerivedData are removed.
 
