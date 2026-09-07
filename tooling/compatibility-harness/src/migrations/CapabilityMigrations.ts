@@ -266,13 +266,14 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
               return contains(integrationConfig, "PublishedCapabilityPackages.test.ts")
             case "eval-controls":
               return Effect.all([
-                contains(checkWorkflow, "[.capabilities[].id]"),
-                contains(checkWorkflow, "fromJSON(needs.plan.outputs.capabilities)"),
-                contains(checkWorkflow, "bun run evals validate --task"),
+                contains(checkWorkflow, "eval-task:"),
+                contains(checkWorkflow, "bun run evals validate"),
+                contains(checkWorkflow, 'bun run evals validate --task "$EVAL_TASK"'),
                 contains(turboConfig, `${capability.candidatePackage}#build`),
               ]).pipe(
                 Effect.map(
-                  ([derived, matrix, command, build]) => derived && matrix && command && build,
+                  ([selectable, allTasks, selectedTask, build]) =>
+                    selectable && allTasks && selectedTask && build,
                 ),
               )
             case "compile-contracts":

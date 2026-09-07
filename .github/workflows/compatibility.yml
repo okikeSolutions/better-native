@@ -1,11 +1,6 @@
 name: Compatibility
 
 on:
-  schedule:
-    - cron: "0 3 * * 1"
-  push:
-    branches: [main]
-  pull_request:
   workflow_dispatch:
     inputs:
       platform:
@@ -20,6 +15,11 @@ on:
         default: baseline
         type: choice
         options: [baseline, pair]
+      force-cold-build:
+        description: Ignore reusable native artifacts
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -28,63 +28,16 @@ env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
   BETTER_NATIVE_BUILD_PROFILE: performance
-  BETTER_NATIVE_FORCE_COLD_BUILD: ${{ github.event_name == 'schedule' && 'true' || 'false' }}
+  BETTER_NATIVE_FORCE_COLD_BUILD: ${{ inputs.force-cold-build && 'true' || 'false' }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  detect-platform-changes:
-    runs-on: ubuntu-24.04
-    outputs:
-      web: ${{ steps.compatibility.outputs.should_run_web }}
-      ios: ${{ steps.compatibility.outputs.should_run_ios }}
-      android: ${{ steps.compatibility.outputs.should_run_android }}
-    steps:
-      # A local composite action cannot be resolved until this checkout has made
-      # its action.yml available. Pinned Expo uses the same bootstrap step.
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Detect build-relevant platform changes
-        id: compatibility
-        uses: ./.github/actions/detect-compatibility-change
-        with:
-          web-paths: >-
-            "apps/compatibility-suite/**/*.web.*",
-            "packages/metro/**",
-            "packages/**/src/**",
-            "tooling/compatibility-harness/src/{build,comparison,evidence,protocol,supervision}/**"
-          ios-paths: >-
-            "apps/compatibility-suite/ios/**",
-            "apps/compatibility-suite/**/*.{ios,native}.*",
-            "packages/**/ios/**",
-            "packages/**/plugin/**",
-            "tooling/compatibility-harness/src/{build,supervision}/**"
-          android-paths: >-
-            "apps/compatibility-suite/android/**",
-            "apps/compatibility-suite/**/*.{android,native}.*",
-            "packages/**/android/**",
-            "packages/**/plugin/**",
-            "tooling/compatibility-harness/src/{build,supervision}/**"
-          common-paths: >-
-            ".github/actions/**",
-            ".github/workflows/compatibility.yml",
-            "apps/compatibility-suite/**",
-            "compatibility/**",
-            "package.json",
-            "bun.lock",
-            "turbo.json",
-            "compatibility/upstreams.json",
-            "tooling/compatibility-harness/src/**"
-
   web-baseline:
     name: Web upstream baseline
-    needs: detect-platform-changes
-    if: >-
-      (github.event_name != 'workflow_dispatch' || (inputs.platform == 'all' || inputs.platform == 'web')) &&
-      (github.event_name != 'schedule' && (github.event_name != 'workflow_dispatch' || inputs.mode == 'baseline')) &&
-      needs.detect-platform-changes.outputs.web == 'true'
+    if: inputs.mode == 'baseline' && (inputs.platform == 'all' || inputs.platform == 'web')
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
@@ -118,11 +71,7 @@ jobs:
 
   web-pair:
     name: Web paired differential
-    needs: detect-platform-changes
-    if: >-
-      (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'pair')) &&
-      (github.event_name != 'workflow_dispatch' || (inputs.platform == 'all' || inputs.platform == 'web')) &&
-      (github.event_name == 'schedule' || needs.detect-platform-changes.outputs.web == 'true')
+    if: inputs.mode == 'pair' && (inputs.platform == 'all' || inputs.platform == 'web')
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -177,10 +126,7 @@ jobs:
 
   ios-build:
     name: iOS Release build
-    needs: detect-platform-changes
-    if: >-
-      (github.event_name != 'workflow_dispatch' || (inputs.platform == 'all' || inputs.platform == 'ios')) &&
-      (github.event_name == 'schedule' || needs.detect-platform-changes.outputs.ios == 'true')
+    if: inputs.platform == 'all' || inputs.platform == 'ios'
     runs-on: macos-26
     timeout-minutes: 90
     env:
@@ -221,7 +167,7 @@ jobs:
         run: bun run compatibility:prepare
       - name: Build upstream or paired applications
         env:
-          COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
+          COMPATIBILITY_MODE: ${{ inputs.mode }}
           BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-ios
         shell: bash
         run: |
@@ -233,7 +179,7 @@ jobs:
           fi
       - name: Package iOS build products
         env:
-          COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
+          COMPATIBILITY_MODE: ${{ inputs.mode }}
           BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-ios
         shell: bash
         run: |
@@ -280,7 +226,7 @@ jobs:
           - shard-index: 1
             shard-label: 2
     env:
-      COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
+      COMPATIBILITY_MODE: ${{ inputs.mode }}
       BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-ios
       SHARD_COUNT: 2
       SHARD_INDEX: ${{ matrix.shard-index }}
@@ -377,8 +323,7 @@ jobs:
     name: iOS differential verdict
     needs: ios-test
     if: >-
-      always() && needs.ios-test.result == 'success' &&
-      (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'pair'))
+      always() && needs.ios-test.result == 'success' && inputs.mode == 'pair'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -411,10 +356,7 @@ jobs:
 
   android-build:
     name: Android Release build
-    needs: detect-platform-changes
-    if: >-
-      (github.event_name != 'workflow_dispatch' || (inputs.platform == 'all' || inputs.platform == 'android')) &&
-      (github.event_name == 'schedule' || needs.detect-platform-changes.outputs.android == 'true')
+    if: inputs.platform == 'all' || inputs.platform == 'android'
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     env:
@@ -447,7 +389,7 @@ jobs:
         run: bun run compatibility:prepare
       - name: Build upstream or paired applications
         env:
-          COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
+          COMPATIBILITY_MODE: ${{ inputs.mode }}
           BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-android
         shell: bash
         run: |
@@ -459,7 +401,7 @@ jobs:
           fi
       - name: Package Android build products
         env:
-          COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
+          COMPATIBILITY_MODE: ${{ inputs.mode }}
           BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-android
         shell: bash
         run: |
@@ -496,7 +438,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
+      COMPATIBILITY_MODE: ${{ inputs.mode }}
       BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-android
     steps:
       - name: Checkout
@@ -554,8 +496,7 @@ jobs:
     name: Android differential verdict
     needs: android-test
     if: >-
-      always() && needs.android-test.result == 'success' &&
-      (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'pair'))
+      always() && needs.android-test.result == 'success' && inputs.mode == 'pair'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:

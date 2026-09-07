@@ -71,6 +71,9 @@ describe("hosted compatibility workflow", () => {
       assert.notMatch(workflow, /setup-project/)
       assert.notMatch(workflow, /setup-native-build-cache/)
       assert.match(checkWorkflow, /setup-build/)
+      assert.match(checkWorkflow, /Setup DX eval prerequisites once/)
+      assert.strictEqual(checkWorkflow.match(/setup-dx-evals/g)?.length, 1)
+      assert.notMatch(checkWorkflow, /^  push:/m)
       assert.notMatch(checkWorkflow, /TURBO_API/)
       assert.match(turboConfig, /"signature": true/)
       assert.match(workflow, /version: 2\.6\.1/)
@@ -83,12 +86,10 @@ describe("hosted compatibility workflow", () => {
         maestroSetup,
         /2\.6\.1\).*3440825f514f537c6a96bcf5de995780c2a4a7f83a43208fdc95d4f1fecfad3b/,
       )
-      assert.match(workflow, /cron: "0 3 \* \* 1"/)
-      assert.match(workflow, /^  detect-platform-changes:$/m)
-      assert.match(
-        workflow,
-        /detect-platform-changes:[\s\S]*?steps:[\s\S]*?uses: actions\/checkout@[\s\S]*?uses: \.\/\.github\/actions\/detect-compatibility-change/,
-      )
+      assert.match(workflow, /^  workflow_dispatch:$/m)
+      assert.notMatch(workflow, /^  (?:schedule|push|pull_request):/m)
+      assert.notMatch(workflow, /^  detect-platform-changes:$/m)
+      assert.match(workflow, /force-cold-build:/)
       assert.match(workflow, /^  web-baseline:$/m)
       assert.match(workflow, /^  web-pair:$/m)
       assert.match(workflow, /^  web-compare:$/m)

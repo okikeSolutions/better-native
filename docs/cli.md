@@ -576,8 +576,10 @@ workflow has the following contract:
   publishing versions;
 - disable package-manager caching in the Node setup step as npm recommends for trusted publishing;
 - install the repository with the pinned Bun version and frozen lockfile;
-- run the complete repository checks, build the selected package, inspect and install packed
-  tarballs in isolated fixtures, and upload exactly one verified artifact;
+- reuse one checkout and workspace installation for the local-registry gate, complete repository
+  checks, selected-package build, and packing;
+- inspect and install packed tarballs in isolated fixtures, and upload exactly one verified
+  artifact;
 - block both artifact creation and publishing on `bun run test:local-registry`, which publishes the
   CLI and all six capability packages to an isolated Verdaccio registry and exercises Keep Awake,
   Network, Secure Store, Battery, Clipboard, and SQLite in that order;
