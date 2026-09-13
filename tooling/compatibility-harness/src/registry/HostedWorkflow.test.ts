@@ -107,6 +107,7 @@ describe("hosted compatibility workflow", () => {
       assert.match(workflow, /--upstream \.artifacts\/compare\/upstream/)
       assert.match(workflow, /--candidate \.artifacts\/compare\/candidate/)
       assert.strictEqual(workflow.match(/--source "\$source"/g)?.length, 3)
+      assert.strictEqual(workflow.match(/--include-capabilities/g)?.length, 2)
       assert.strictEqual(workflow.match(/\.verification\.parityPlatforms \| index\(/g)?.length, 3)
       assert.strictEqual(
         workflow.match(/cp -R "\$\(dirname "\$record"\)\/\." "\$destination\/"/g)?.length,
