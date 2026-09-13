@@ -199,7 +199,7 @@ jobs:
           name: compatibility-web-verdict-${{ github.run_id }}-${{ github.run_attempt }}
           path: .artifacts/comparisons
           if-no-files-found: warn
-          retention-days: ${{ job.status == 'success' && 3 || 7 }}
+          retention-days: ${{ job.status == 'success' && 90 || 7 }}
 
   ios-build:
     name: iOS Release build
@@ -447,7 +447,7 @@ jobs:
           name: compatibility-ios-verdict-${{ github.run_id }}-${{ github.run_attempt }}
           path: .artifacts/comparisons
           if-no-files-found: warn
-          retention-days: ${{ job.status == 'success' && 3 || 7 }}
+          retention-days: ${{ job.status == 'success' && 90 || 7 }}
 
   android-build:
     name: Android Release build
@@ -637,7 +637,7 @@ jobs:
           name: compatibility-android-verdict-${{ github.run_id }}-${{ github.run_attempt }}
           path: .artifacts/comparisons
           if-no-files-found: warn
-          retention-days: ${{ job.status == 'success' && 3 || 7 }}
+          retention-days: ${{ job.status == 'success' && 90 || 7 }}
 
   integration-profile:
     name: Aggregate integration evidence
@@ -672,9 +672,4 @@ jobs:
           name: compatibility-android-verdict-${{ github.run_id }}-${{ github.run_attempt }}
           path: .artifacts/comparisons
       - name: Verify capability integration profiles
-        shell: bash
-        run: |
-          set -euo pipefail
-          while IFS= read -r capability; do
-            bun run verify:capability "$capability" --profile integration
-          done < <(jq -er '.capabilities[].id' compatibility/capabilities.json)
+        run: bun run replay:integration --evidence-dir .artifacts/comparisons

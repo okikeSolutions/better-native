@@ -45,9 +45,29 @@ candidate revision identifies the code being evaluated. Promotion adds physical 
 comparisons for capabilities whose ledger entry declares `physicalDevice`.
 
 Scheduled and full manual pair runs retain one verdict per platform. The aggregation job downloads
-all three verdicts and evaluates every capability in the reviewed ledger with the `integration`
-profile. It runs only after the web, iOS, and Android comparison jobs succeed. Platform-specific
+all three verdicts and replays the integration policy against every capability represented in the
+bundle. It runs only after the web, iOS, and Android comparison jobs succeed. Platform-specific
 manual runs retain their verdict but cannot make the cross-platform integration claim.
+
+Evaluator-only changes do not require another device run. Replay a completed GitHub Actions run
+from any checkout, including one with uncommitted evaluator changes:
+
+```sh
+bun run replay:integration --run-id 34782050788
+```
+
+Successful verdict bundles remain downloadable for 90 days. The command downloads them once,
+caches them under `.artifacts/replays`, and derives the subject revision from their records. The
+current checkout supplies only the evaluator and ledger. Replay fails if records mix subject or
+Expo revisions, disagree with the workflow head, contain malformed data, or lack a selected
+capability obligation. Use `--refresh` to replace the cached download, `--run-attempt <n>` for an
+older attempt, and repeated `--capability <id>` options for a focused replay. CI can evaluate
+already-downloaded records with
+`--evidence-dir .artifacts/comparisons`.
+
+Replay is deliberately integration-only. It accepts browser, simulator, and emulator verdicts;
+physical-device records are rejected. Promotion continues to use
+`verify:capability <id> --profile promotion` with separately retained physical-device evidence.
 
 ## Host tests and coverage
 

@@ -39,6 +39,7 @@
     "lint": "oxlint --disable-nested-config --config .oxlintrc.json .",
     "matrix": "bun run compatibility-harness matrix",
     "migration-status": "node --experimental-strip-types tooling/compatibility-harness/src/migrations/cli.ts",
+    "replay:integration": "node --experimental-strip-types tooling/replay-integration.ts",
     "prepare": "bun run effect:patch",
     "typecheck": "bun run effect:patch && turbo run typecheck --concurrency=90%",
     "verify:capability": "node --experimental-strip-types tooling/verify-capability.ts",

@@ -130,7 +130,8 @@ describe("hosted compatibility workflow", () => {
         workflow.match(/Download (?:web|iOS|Android) comparison verdict/g)?.length,
         3,
       )
-      assert.match(workflow, /bun run verify:capability "\$capability" --profile integration/)
+      assert.strictEqual(workflow.match(/job\.status == 'success' && 90 \|\| 7/g)?.length, 3)
+      assert.match(workflow, /bun run replay:integration --evidence-dir \.artifacts\/comparisons/)
       assert.strictEqual(workflow.match(/supervise-web-pair/g)?.length, 1)
       assert.match(workflow, /web-upstream-run-\*/)
       assert.match(workflow, /web-\*-run-\*/)

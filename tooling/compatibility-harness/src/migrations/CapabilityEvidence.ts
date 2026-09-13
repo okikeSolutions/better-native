@@ -28,11 +28,12 @@ export interface CapabilityProfileEvidence {
 
 interface EvidenceContext {
   readonly repositoryRoot: string
+  readonly evidenceRoot?: string
   readonly candidateRevision: string
   readonly expoRevision: string
 }
 
-interface LoadedRecord {
+export interface LoadedComparisonEvidenceRecord {
   readonly path: string
   readonly record?: ComparisonEvidenceRecordType
   readonly raw?: unknown
@@ -56,23 +57,16 @@ const recordFiles = (root: string): ReadonlyArray<string> => {
   return files.toSorted()
 }
 
-const loadRecords = (context: EvidenceContext, sourceId: string): ReadonlyArray<LoadedRecord> => {
-  const records: Array<LoadedRecord> = []
-  for (const path of recordFiles(join(context.repositoryRoot, ".artifacts", "comparisons"))) {
+export const loadComparisonEvidenceRecords = (
+  root: string,
+): ReadonlyArray<LoadedComparisonEvidenceRecord> => {
+  const records: Array<LoadedComparisonEvidenceRecord> = []
+  for (const path of recordFiles(root)) {
     let raw: unknown
     try {
       raw = JSON.parse(readFileSync(path, "utf8")) as unknown
     } catch (cause) {
       records.push({ path, error: `unreadable JSON: ${String(cause)}` })
-      continue
-    }
-    if (
-      typeof raw !== "object" ||
-      raw === null ||
-      !("sourceIds" in raw) ||
-      !Array.isArray(raw.sourceIds) ||
-      !raw.sourceIds.includes(sourceId)
-    ) {
       continue
     }
     try {
@@ -83,6 +77,17 @@ const loadRecords = (context: EvidenceContext, sourceId: string): ReadonlyArray<
   }
   return records
 }
+
+const loadRecords = (
+  context: EvidenceContext,
+  sourceId: string,
+): ReadonlyArray<LoadedComparisonEvidenceRecord> =>
+  loadComparisonEvidenceRecords(
+    context.evidenceRoot ?? join(context.repositoryRoot, ".artifacts", "comparisons"),
+  ).filter(({ raw }) => {
+    if (typeof raw !== "object" || raw === null || !("sourceIds" in raw)) return false
+    return Array.isArray(raw.sourceIds) && raw.sourceIds.includes(sourceId)
+  })
 
 const expectedDeviceKind = (
   platform: Capability["verification"]["parityPlatforms"][number],

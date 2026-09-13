@@ -76,7 +76,9 @@ files. The strict form fails when any declared integration is absent or stable s
 ownership or complete host evidence. The host verification profile is available through
 `bun run verify:capability <id> --profile host`. The `integration` and `promotion` variants compose
 that host gate with immutable differential verdicts retained by `compare-runs`; the latter adds any
-declared physical-device obligations.
+declared physical-device obligations. `bun run replay:integration` is the evaluator-only path: it
+loads a completed integration artifact bundle, keeps the recorded subject revision distinct from
+the current evaluator checkout, and never consumes promotion-only physical-device evidence.
 
 ## Repository boundaries
 
