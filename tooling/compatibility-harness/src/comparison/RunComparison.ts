@@ -154,7 +154,12 @@ const capabilityTargets = (sourceIds: ReadonlyArray<TestSourceId>): ReadonlySet<
  */
 export const loadCandidateTreatmentEvidence = Effect.fn(
   "RunComparison.loadCandidateTreatmentEvidence",
-)(function* (root: string, records: ReadonlyArray<RunRecordType>, manifest: ReplacementManifest) {
+)(function* (
+  root: string,
+  records: ReadonlyArray<RunRecordType>,
+  manifest: ReplacementManifest,
+  options: { readonly ignoreForeignRuns?: boolean } = {},
+) {
   const fs = yield* FileSystem.FileSystem
   const resolvedSources = new Set<string>()
   const issues: Array<string> = []
@@ -225,6 +230,7 @@ export const loadCandidateTreatmentEvidence = Effect.fn(
     )
     const record = recordsByRun.get(discovery.runId)
     if (record === undefined) {
+      if (options.ignoreForeignRuns === true) continue
       issues.push(`${path}: discovery references foreign run ${discovery.runId}`)
       continue
     }

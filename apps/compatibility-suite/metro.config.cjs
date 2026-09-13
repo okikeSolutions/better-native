@@ -30,6 +30,10 @@ if (
 const { getDefaultConfig } = require(path.join(pinnedExpoRoot, "packages", "expo", "metro-config"))
 
 const config = getDefaultConfig(__dirname)
+// Expo Router's generated context module depends on the app workspace even though
+// its source lives in the shared pinned Expo checkout. Keep paired workspace
+// transforms isolated so a cached context cannot point at the other build.
+config.cacheVersion = `${config.cacheVersion}:${buildId}`
 if (metroMaxWorkers !== undefined) config.maxWorkers = metroMaxWorkers
 if (!config.resolver.assetExts.includes("wasm")) config.resolver.assetExts.push("wasm")
 config.watchFolders = [...new Set([...(config.watchFolders ?? []), expoSourceRoot])]

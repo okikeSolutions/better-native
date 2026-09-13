@@ -379,6 +379,16 @@ describe("RunComparison", () => {
       )
       const stale = yield* inspect(event)
       assert.match(stale.issues.join("\n"), /discovery references foreign run/)
+      const scoped = yield* loadCandidateTreatmentEvidence(
+        root,
+        [withEvent(event)],
+        replacementManifest,
+        {
+          ignoreForeignRuns: true,
+        },
+      )
+      assert.deepEqual(scoped.issues, [])
+      assert.isTrue(scoped.resolvedSources.has("expo-network"))
     }).pipe(provideLayer(NodeServices.layer)),
   )
 })

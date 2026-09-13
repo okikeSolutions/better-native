@@ -128,7 +128,7 @@ export const compareRuns = Command.make(
     source: comparisonSourceFlag,
   },
   Effect.fn("Command.compareRuns")(function* ({ upstream, candidate, source }) {
-    const [upstreamRecords, candidateRecords, expectations, metadata, runnerPlans, replacements] =
+    const [loadedUpstream, loadedCandidate, expectations, metadata, runnerPlans, replacements] =
       yield* Effect.all(
         [
           RunComparison.load(upstream),
@@ -140,6 +140,15 @@ export const compareRuns = Command.make(
         ],
         { concurrency: "unbounded" },
       )
+    const selectedSource = Option.map(source, TestSourceId.make).pipe(Option.getOrUndefined)
+    const upstreamRecords =
+      selectedSource === undefined
+        ? loadedUpstream
+        : loadedUpstream.filter(({ plan }) => plan.unit.sourceId === selectedSource)
+    const candidateRecords =
+      selectedSource === undefined
+        ? loadedCandidate
+        : loadedCandidate.filter(({ plan }) => plan.unit.sourceId === selectedSource)
     const platform = upstreamRecords[0]?.plan.platform ?? candidateRecords[0]?.plan.platform
     const expectedSources = Option.match(source, {
       onNone: () =>
@@ -155,6 +164,7 @@ export const compareRuns = Command.make(
       candidate,
       candidateRecords,
       replacements,
+      { ignoreForeignRuns: selectedSource !== undefined },
     )
     const summary = RunComparison.compare(
       upstreamRecords,

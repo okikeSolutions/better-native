@@ -169,11 +169,28 @@ jobs:
         with:
           name: compatibility-web-pair-${{ github.run_id }}-${{ github.run_attempt }}
           path: .artifacts
+      - name: Group web evidence by build mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' record; do
+            mode=$(jq -er '.build.mode | select(. == "upstream" or . == "candidate")' "$record")
+            run_id=$(jq -er '.plan.id' "$record")
+            destination=".artifacts/compare/${mode}/${run_id}"
+            mkdir -p "$destination"
+            cp -R "$(dirname "$record")/." "$destination/"
+          done < <(find .artifacts/runs -type f -name record.json -print0)
       - name: Compare paired web evidence
-        run: >-
-          bun run compatibility-harness compare-runs
-          --upstream .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-upstream-run
-          --candidate .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-web-candidate-run
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r compatibility_source; do
+            source="better-native-capability#apps/compatibility-suite/src/capabilities/${compatibility_source}"
+            bun run compatibility-harness compare-runs \
+              --upstream .artifacts/compare/upstream \
+              --candidate .artifacts/compare/candidate \
+              --source "$source"
+          done < <(jq -er '.capabilities[] | select(.verification.parityPlatforms | index("web")) | .compatibilitySource' compatibility/capabilities.json)
       - name: Upload web comparison verdict
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -409,13 +426,19 @@ jobs:
             run_id=$(jq -er '.plan.id' "$record")
             destination=".artifacts/compare/${mode}/${run_id}"
             mkdir -p "$destination"
-            cp "$record" "$destination/record.json"
+            cp -R "$(dirname "$record")/." "$destination/"
           done < <(find .artifacts/runs -type f -name record.json -print0)
       - name: Compare paired iOS evidence
-        run: >-
-          bun run compatibility-harness compare-runs
-          --upstream .artifacts/compare/upstream
-          --candidate .artifacts/compare/candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r compatibility_source; do
+            source="better-native-capability#apps/compatibility-suite/src/capabilities/${compatibility_source}"
+            bun run compatibility-harness compare-runs \
+              --upstream .artifacts/compare/upstream \
+              --candidate .artifacts/compare/candidate \
+              --source "$source"
+          done < <(jq -er '.capabilities[] | select(.verification.parityPlatforms | index("ios")) | .compatibilitySource' compatibility/capabilities.json)
       - name: Upload iOS comparison verdict
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -584,11 +607,28 @@ jobs:
         with:
           name: compatibility-android-run-evidence-${{ github.run_id }}-${{ github.run_attempt }}
           path: .artifacts/runs
+      - name: Group Android evidence by build mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' record; do
+            mode=$(jq -er '.build.mode | select(. == "upstream" or . == "candidate")' "$record")
+            run_id=$(jq -er '.plan.id' "$record")
+            destination=".artifacts/compare/${mode}/${run_id}"
+            mkdir -p "$destination"
+            cp -R "$(dirname "$record")/." "$destination/"
+          done < <(find .artifacts/runs -type f -name record.json -print0)
       - name: Compare paired Android evidence
-        run: >-
-          bun run compatibility-harness compare-runs
-          --upstream .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-android-upstream
-          --candidate .artifacts/runs/ci-${{ github.run_id }}-${{ github.run_attempt }}-android-candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r compatibility_source; do
+            source="better-native-capability#apps/compatibility-suite/src/capabilities/${compatibility_source}"
+            bun run compatibility-harness compare-runs \
+              --upstream .artifacts/compare/upstream \
+              --candidate .artifacts/compare/candidate \
+              --source "$source"
+          done < <(jq -er '.capabilities[] | select(.verification.parityPlatforms | index("android")) | .compatibilitySource' compatibility/capabilities.json)
       - name: Upload Android comparison verdict
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
