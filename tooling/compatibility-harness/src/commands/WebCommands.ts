@@ -21,6 +21,7 @@ import {
 
 const webPort = Flag.integer("port").pipe(Flag.withDefault(8091))
 const webSource = Flag.string("source").pipe(Flag.optional)
+const capabilitiesOnlyFlag = Flag.boolean("capabilities-only").pipe(Flag.withDefault(false))
 
 const selectWebUnits = (
   units: ReadonlyArray<ReturnType<typeof AppRegistry.appExecutionUnits>[number]>,
@@ -87,15 +88,30 @@ export const supervisedWeb = Command.make(
  */
 export const supervisedWebPair = Command.make(
   "supervise-web-pair",
-  { buildId: buildIdFlag, source: webSource, timeoutMillis: timeoutMillisFlag, port: webPort },
-  Effect.fn("Command.superviseWebPair")(function* ({ buildId, source, timeoutMillis, port }) {
+  {
+    buildId: buildIdFlag,
+    source: webSource,
+    capabilitiesOnly: capabilitiesOnlyFlag,
+    timeoutMillis: timeoutMillisFlag,
+    port: webPort,
+  },
+  Effect.fn("Command.superviseWebPair")(function* ({
+    buildId,
+    source,
+    capabilitiesOnly,
+    timeoutMillis,
+    port,
+  }) {
     const repository = yield* ExpoRepository
     const builds = yield* BuildPipeline
     const web = yield* WebSupervisor
     const corpus = yield* Suites.discover()
     const revision = yield* configuredCandidateRevision
     const metadata = yield* AppRegistry.loadMetadata()
-    const units = selectWebUnits(AppRegistry.appExecutionUnits(metadata, "web"), source)
+    const availableUnits = capabilitiesOnly
+      ? AppRegistry.capabilityExecutionUnits(metadata, "web")
+      : AppRegistry.appExecutionUnits(metadata, "web")
+    const units = selectWebUnits(availableUnits, source)
     if (units.length === 0) {
       return yield* new HarnessError({
         operation: "select web source",

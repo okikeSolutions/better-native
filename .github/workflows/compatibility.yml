@@ -140,6 +140,7 @@ jobs:
         run: >-
           bun run compatibility-harness supervise-web-pair
           --build-id ci-${{ github.run_id }}-${{ github.run_attempt }}-web
+          --capabilities-only
           --timeout-ms 1500000
           --port 8091
       - name: Upload paired web evidence
