@@ -176,20 +176,24 @@ describe("AppRegistry", () => {
     }).pipe(provideLayer(NodeServices.layer)),
   )
 
-  it.effect("adds capability sources only when native integration evidence requests them", () =>
+  it.effect("selects capability-only native shards for integration evidence", () =>
     Effect.gen(function* () {
       const metadata = yield* AppRegistry.loadMetadata()
       const curated = AppRegistry.appExecutionShards(metadata, "android", 1)[0] ?? []
       const integrated =
         AppRegistry.appExecutionShards(metadata, "android", 1, {
-          includeCapabilities: true,
+          selection: "capabilities",
         })[0] ?? []
       const capabilitySources = AppRegistry.capabilityExecutionUnits(metadata, "android").map(
         ({ sourceId }) => sourceId,
       )
 
       assert.lengthOf(capabilitySources, 10)
-      assert.lengthOf(integrated, curated.length + capabilitySources.length)
+      assert.lengthOf(integrated, capabilitySources.length)
+      assert.notDeepEqual(
+        integrated.map(({ sourceId }) => sourceId).toSorted(),
+        curated.map(({ sourceId }) => sourceId).toSorted(),
+      )
       assert.deepEqual(
         integrated
           .filter(({ sourceId }) => sourceId.startsWith("better-native-capability#"))

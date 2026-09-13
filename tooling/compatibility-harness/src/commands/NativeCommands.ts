@@ -22,7 +22,7 @@ const recordPathFlag = Flag.string("record")
 const binaryPathFlag = Flag.string("binary")
 const nativeSourceFlag = Flag.string("source").pipe(Flag.optional)
 const physicalDeviceFlag = Flag.boolean("physical-device").pipe(Flag.withDefault(false))
-const includeCapabilitiesFlag = Flag.boolean("include-capabilities").pipe(Flag.withDefault(false))
+const capabilitiesOnlyFlag = Flag.boolean("capabilities-only").pipe(Flag.withDefault(false))
 
 /** Prevents a capability-scoped binary from running a source it did not compile. */
 export const validateCapabilityShell = (
@@ -47,14 +47,14 @@ const selectNativeUnits = (
   metadata: RegistryMetadata,
   platform: "ios" | "android",
   source: Option.Option<string>,
-  includeCapabilities: boolean,
+  capabilitiesOnly: boolean,
   shardIndex: number,
   shardCount: number,
 ) =>
   Option.match(source, {
     onNone: () =>
       AppRegistry.appExecutionShards(metadata, platform, shardCount, {
-        includeCapabilities,
+        selection: capabilitiesOnly ? "capabilities" : "curated",
       })[shardIndex] ?? [],
     onSome: (sourceId) => {
       const unit = AppRegistry.appExecutionUnitForSource(metadata, platform, sourceId)
@@ -72,7 +72,7 @@ export const supervisedNative = Command.make(
     recordPath: recordPathFlag,
     binaryPath: binaryPathFlag,
     source: nativeSourceFlag,
-    includeCapabilities: includeCapabilitiesFlag,
+    capabilitiesOnly: capabilitiesOnlyFlag,
     deviceId: deviceIdFlag,
     physicalDevice: physicalDeviceFlag,
     runId: runIdFlag,
@@ -85,7 +85,7 @@ export const supervisedNative = Command.make(
     recordPath,
     binaryPath,
     source,
-    includeCapabilities,
+    capabilitiesOnly,
     deviceId,
     physicalDevice,
     runId,
@@ -118,7 +118,7 @@ export const supervisedNative = Command.make(
       metadata,
       platform,
       source,
-      includeCapabilities,
+      capabilitiesOnly,
       shardIndex,
       shardCount,
     )
@@ -171,7 +171,7 @@ export const supervisedNativePair = Command.make(
     candidateRecordPath: candidateRecordPathFlag,
     candidateBinaryPath: candidateBinaryPathFlag,
     source: nativeSourceFlag,
-    includeCapabilities: includeCapabilitiesFlag,
+    capabilitiesOnly: capabilitiesOnlyFlag,
     deviceId: deviceIdFlag,
     physicalDevice: physicalDeviceFlag,
     runId: runIdFlag,
@@ -186,7 +186,7 @@ export const supervisedNativePair = Command.make(
     candidateRecordPath,
     candidateBinaryPath,
     source,
-    includeCapabilities,
+    capabilitiesOnly,
     deviceId,
     physicalDevice,
     runId,
@@ -219,7 +219,7 @@ export const supervisedNativePair = Command.make(
       metadata,
       platform,
       source,
-      includeCapabilities,
+      capabilitiesOnly,
       shardIndex,
       shardCount,
     )

@@ -385,7 +385,7 @@ jobs:
           fi
           upstream_binary=".artifacts/imports/${BUILD_ID}/upstream/BetterNativeCompatibility.app"
           if [ "$COMPATIBILITY_MODE" = pair ]; then
-            bun run compatibility-harness supervise-native-pair --platform ios --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/imports/${BUILD_ID}/candidate/BetterNativeCompatibility.app" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID" --include-capabilities --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000
+            bun run compatibility-harness supervise-native-pair --platform ios --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/imports/${BUILD_ID}/candidate/BetterNativeCompatibility.app" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID" --capabilities-only --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000
           else
             bun run compatibility-harness supervise-native --platform ios --record "$upstream_record" --binary "$upstream_binary" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID-upstream" --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000
           fi
@@ -576,7 +576,7 @@ jobs:
             fi
             upstream_binary=".artifacts/products/${BUILD_ID}/upstream/app-release.apk"
             if [ "$COMPATIBILITY_MODE" = pair ]; then
-              bun run compatibility-harness supervise-native-pair --platform android --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/products/${BUILD_ID}/candidate/app-release.apk" --device-id emulator-5554 --run-id "$BUILD_ID" --include-capabilities --timeout-ms 1200000
+              bun run compatibility-harness supervise-native-pair --platform android --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/products/${BUILD_ID}/candidate/app-release.apk" --device-id emulator-5554 --run-id "$BUILD_ID" --capabilities-only --timeout-ms 1200000
             else
               bun run compatibility-harness supervise-native --platform android --record "$upstream_record" --binary "$upstream_binary" --device-id emulator-5554 --run-id "$BUILD_ID-upstream" --timeout-ms 1200000
             fi

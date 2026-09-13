@@ -493,7 +493,7 @@ export const appExecutionShards = (
   metadata: RegistryMetadataType,
   platform: Platform,
   shardCount: number,
-  options: { readonly includeCapabilities?: boolean } = {},
+  options: { readonly selection?: "curated" | "capabilities" | "all" } = {},
 ): ReadonlyArray<ReadonlyArray<ExecutionUnit>> => {
   const weights = new Map(
     metadata.sources.map(({ sourceId, caseIds }) => [sourceId, Math.max(1, caseIds.length)]),
@@ -502,10 +502,15 @@ export const appExecutionShards = (
     weight: 0,
     units: [] as Array<ExecutionUnit>,
   }))
-  const selectedUnits = [
-    ...appExecutionUnits(metadata, platform),
-    ...(options.includeCapabilities === true ? capabilityExecutionUnits(metadata, platform) : []),
-  ]
+  const selectedUnits = Match.value(options.selection ?? "curated").pipe(
+    Match.when("curated", () => appExecutionUnits(metadata, platform)),
+    Match.when("capabilities", () => capabilityExecutionUnits(metadata, platform)),
+    Match.when("all", () => [
+      ...appExecutionUnits(metadata, platform),
+      ...capabilityExecutionUnits(metadata, platform),
+    ]),
+    Match.exhaustive,
+  )
   for (const unit of selectedUnits.toSorted(
     (left, right) =>
       (weights.get(right.sourceId) ?? 1) - (weights.get(left.sourceId) ?? 1) ||
