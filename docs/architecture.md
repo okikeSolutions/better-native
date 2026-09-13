@@ -39,18 +39,44 @@ The implementation may be incomplete. The compatibility denominator may not be i
 
 - `effect`: implemented by better-native;
 - `upstream`: delegated to the pinned Expo implementation;
-- `fallback`: better-native attempts an implementation and deliberately falls back;
+- `fallback`: better-native attempts an implementation and deliberately delegates at runtime;
 - `unsupported`: known and unavailable;
 - `intentional-divergence`: behavior differs under an explicit reviewed contract.
 
-Only `effect` counts as migrated.
+Ownership records runtime responsibility. It does not record verification maturity. Missing native
+or physical-device evidence is not a reason to label an Effect implementation `fallback` when it
+does not delegate at runtime.
+
+Evidence records what a defined verification method observed. Every record is limited to its tested
+behavior, platform, runtime, build, and environment. Repository configuration declares required
+evidence, while reports and retained records establish whether it exists. A missing obligation stays
+visible and limits the claims Better Native can make.
+
+Support status records the guarantee made to users:
+
+- `experimental`: the implementation may change and does not claim complete native parity;
+- `stable`: every applicable promotion obligation has current reviewed evidence.
+
+Support status is a maintainer decision constrained by evidence. Validation must reject `stable`
+when its promotion evidence is missing or stale. Only `effect` counts as implemented by Better
+Native, and a capability is migrated only when every intended entrypoint has reviewed `effect`
+ownership. Migration does not by itself imply stable support.
+
+This separation is established by
+[ADR 0001](./adr/0001-separate-ownership-evidence-and-support.md). The capability ledger records
+support status independently from ownership. Migration reporting validates that stable support has
+Effect ownership and complete host evidence. Integration and promotion are evaluated separately by
+the capability verifier against retained differential verdicts.
 
 `compatibility/capabilities.json` declares the common and package-specific work required for each
 migration. Each record also owns its unit project, coverage scope, named CI integration suites, and
 parity platforms. `bun run migration-status` derives package, documentation, mapping, installation,
 compatibility-app, generated-resolution, verification-routing, and DX-eval status from repository
-files. The strict form fails when any declared integration is absent. Ownership remains authoritative
-for promotion, so a complete checklist with `fallback` ownership is implemented but not migrated.
+files. The strict form fails when any declared integration is absent or stable support lacks Effect
+ownership or complete host evidence. The host verification profile is available through
+`bun run verify:capability <id> --profile host`. The `integration` and `promotion` variants compose
+that host gate with immutable differential verdicts retained by `compare-runs`; the latter adds any
+declared physical-device obligations.
 
 ## Repository boundaries
 

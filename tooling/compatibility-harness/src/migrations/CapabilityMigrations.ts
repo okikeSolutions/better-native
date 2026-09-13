@@ -9,6 +9,9 @@ const Platform = Schema.Literals(["web", "ios", "android"])
 
 const IntegrationSuite = Schema.Literals(["published", "eval-controls", "compile-contracts"])
 
+export const SupportStatus = Schema.Literals(["experimental", "stable"])
+export type SupportStatus = Schema.Schema.Type<typeof SupportStatus>
+
 const Verification = Schema.Struct({
   unitProject: Schema.NonEmptyString,
   coverageScope: Schema.NonEmptyString,
@@ -28,6 +31,7 @@ const Requirements = Schema.Struct({
 
 export const Capability = Schema.Struct({
   id: Schema.NonEmptyString,
+  supportStatus: SupportStatus,
   expoPackage: Schema.NonEmptyString,
   candidatePackage: Schema.NonEmptyString,
   compatibilitySource: Schema.NonEmptyString,
@@ -38,7 +42,7 @@ export const Capability = Schema.Struct({
 export type Capability = Schema.Schema.Type<typeof Capability>
 
 export const CapabilityLedger = Schema.Struct({
-  schemaVersion: Schema.Literal(1),
+  schemaVersion: Schema.Literal(2),
   capabilities: Schema.Array(Capability),
 })
 export type CapabilityLedger = Schema.Schema.Type<typeof CapabilityLedger>
@@ -52,10 +56,26 @@ export interface MigrationCheck {
 export interface MigrationStatus {
   readonly id: string
   readonly ownership: "effect" | "fallback" | "mixed" | "missing"
-  readonly promotable: boolean
+  readonly supportStatus: SupportStatus
+  readonly supportInvariantValid: boolean
+  readonly hostVerified: boolean
   readonly checks: ReadonlyArray<MigrationCheck>
   readonly requirements: Capability["requirements"]
 }
+
+interface SupportClaim {
+  readonly supportStatus: SupportStatus
+  readonly ownership: MigrationStatus["ownership"]
+  readonly hostEvidenceComplete: boolean
+}
+
+/** Checks the support invariants available before promotion evidence is evaluated. */
+export const validatesSupportInvariant = ({
+  supportStatus,
+  ownership,
+  hostEvidenceComplete,
+}: SupportClaim): boolean =>
+  supportStatus === "experimental" || (ownership === "effect" && hostEvidenceComplete)
 
 const json = (text: string, path: string) =>
   Effect.try({
@@ -368,10 +388,18 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
         ),
         check("DX eval registry", registryMentionsTask, taskModuleName),
       ]
+      const hostVerified = checks.every((item) => item.complete)
+      const supportInvariantValid = validatesSupportInvariant({
+        supportStatus: capability.supportStatus,
+        ownership: ownershipStatus,
+        hostEvidenceComplete: hostVerified,
+      })
       return {
         id: capability.id,
         ownership: ownershipStatus,
-        promotable: ownershipStatus === "effect" && checks.every((item) => item.complete),
+        supportStatus: capability.supportStatus,
+        supportInvariantValid,
+        hostVerified,
         checks,
         requirements: capability.requirements,
       } satisfies MigrationStatus
@@ -387,14 +415,21 @@ export const report = Effect.fn("CapabilityMigrations.report")(function* (
   const statuses = yield* inspect(repositoryRoot)
   for (const status of statuses) {
     yield* Console.log(`${status.id} [${status.ownership}]`)
+    yield* Console.log(
+      `  support: ${status.supportStatus}${status.supportInvariantValid ? "" : " (invalid invariant)"}`,
+    )
     for (const item of status.checks) {
       yield* Console.log(`  ${item.complete ? "ok" : "missing"}  ${item.name}: ${item.detail}`)
     }
-    yield* Console.log(`  promotable: ${status.promotable ? "yes" : "no"}`)
+    yield* Console.log(`  host profile: ${status.hostVerified ? "verified" : "incomplete"}`)
+    yield* Console.log(
+      `  promotion profile: evaluate with verify:capability ${status.id} --profile promotion`,
+    )
   }
-  const incomplete = statuses.flatMap((status) =>
-    status.checks.filter((item) => !item.complete).map((item) => `${status.id}: ${item.name}`),
-  )
+  const incomplete = statuses.flatMap((status) => [
+    ...status.checks.filter((item) => !item.complete).map((item) => `${status.id}: ${item.name}`),
+    ...(status.supportInvariantValid ? [] : [`${status.id}: support status`]),
+  ])
   if (strict && incomplete.length > 0) {
     return yield* new HarnessError({
       operation: "validate capability migrations",

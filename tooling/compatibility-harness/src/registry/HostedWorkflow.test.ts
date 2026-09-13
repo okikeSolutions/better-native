@@ -104,6 +104,17 @@ describe("hosted compatibility workflow", () => {
       assert.match(workflow, /if \[ "\$DEVICE_STATE" != Shutdown \]; then/)
       assert.notMatch(workflow, /simctl shutdown "\$DEVICE_ID" \|\| true/)
       assert.match(workflow, /^  android-compare:$/m)
+      assert.match(workflow, /^  integration-profile:$/m)
+      assert.match(
+        workflow,
+        /integration-profile:[\s\S]*?needs: \[web-compare, ios-compare, android-compare\]/,
+      )
+      assert.match(workflow, /integration-profile:[\s\S]*?uses: \.\/\.github\/actions\/setup-build/)
+      assert.strictEqual(
+        workflow.match(/Download (?:web|iOS|Android) comparison verdict/g)?.length,
+        3,
+      )
+      assert.match(workflow, /bun run verify:capability "\$capability" --profile integration/)
       assert.strictEqual(workflow.match(/supervise-web-pair/g)?.length, 1)
       assert.match(workflow, /web-upstream-run-\*/)
       assert.match(workflow, /web-\*-run-\*/)

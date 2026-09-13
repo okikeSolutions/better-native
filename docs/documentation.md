@@ -60,6 +60,7 @@ At minimum, the generated reference reports:
 | Package and subpath | The Expo import being evaluated                                              |
 | Export              | The public runtime or type export                                            |
 | Ownership           | `effect`, `upstream`, `fallback`, `unsupported`, or `intentional-divergence` |
+| Support status      | `experimental` or `stable` for the capability                                |
 | Platform            | Web, iOS, Android, or another applicable execution environment               |
 | Evidence            | The live vector or differential test supporting the claim                    |
 | Upstream revision   | The exact Expo source used as the oracle                                     |

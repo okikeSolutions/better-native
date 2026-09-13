@@ -1,8 +1,9 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "capabilities": [
     {
       "id": "battery",
+      "supportStatus": "stable",
       "expoPackage": "expo-battery",
       "candidatePackage": "@better-native/battery",
       "compatibilitySource": "Battery.ts",
@@ -25,6 +26,7 @@
     },
     {
       "id": "clipboard",
+      "supportStatus": "stable",
       "expoPackage": "expo-clipboard",
       "candidatePackage": "@better-native/clipboard",
       "compatibilitySource": "Clipboard.ts",
@@ -47,6 +49,7 @@
     },
     {
       "id": "network",
+      "supportStatus": "stable",
       "expoPackage": "expo-network",
       "candidatePackage": "@better-native/network",
       "compatibilitySource": "Network.ts",
@@ -69,6 +72,7 @@
     },
     {
       "id": "keep-awake",
+      "supportStatus": "stable",
       "expoPackage": "expo-keep-awake",
       "candidatePackage": "@better-native/keep-awake",
       "compatibilitySource": "KeepAwake.ts",
@@ -91,12 +95,13 @@
     },
     {
       "id": "secure-store",
+      "supportStatus": "stable",
       "expoPackage": "expo-secure-store",
       "candidatePackage": "@better-native/secure-store",
       "compatibilitySource": "SecureStore.ts",
       "expoSubpaths": ["."],
       "requirements": {
-        "platforms": ["web", "ios", "android"],
+        "platforms": ["ios", "android"],
         "dxEval": true,
         "events": false,
         "hooks": false,
@@ -108,11 +113,12 @@
         "unitProject": "@better-native/secure-store",
         "coverageScope": "packages/secure-store/src/**/*.ts",
         "integrationSuites": ["published", "eval-controls", "compile-contracts"],
-        "parityPlatforms": ["web", "ios", "android"]
+        "parityPlatforms": ["ios", "android"]
       }
     },
     {
       "id": "sqlite",
+      "supportStatus": "stable",
       "expoPackage": "expo-sqlite",
       "candidatePackage": "@better-native/sqlite",
       "compatibilitySource": "SQLite.ts",
@@ -135,6 +141,7 @@
     },
     {
       "id": "task-manager",
+      "supportStatus": "experimental",
       "expoPackage": "expo-task-manager",
       "candidatePackage": "@better-native/task-manager",
       "compatibilitySource": "TaskManager.ts",
@@ -157,6 +164,7 @@
     },
     {
       "id": "background-task",
+      "supportStatus": "experimental",
       "expoPackage": "expo-background-task",
       "candidatePackage": "@better-native/background-task",
       "compatibilitySource": "BackgroundTask.ts",
@@ -179,6 +187,7 @@
     },
     {
       "id": "location",
+      "supportStatus": "experimental",
       "expoPackage": "expo-location",
       "candidatePackage": "@better-native/location",
       "compatibilitySource": "Location.ts",
@@ -201,6 +210,7 @@
     },
     {
       "id": "notifications",
+      "supportStatus": "experimental",
       "expoPackage": "expo-notifications",
       "candidatePackage": "@better-native/notifications",
       "compatibilitySource": "Notifications.ts",
