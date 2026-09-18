@@ -3,6 +3,7 @@ import type { Capability } from "./CapabilityMigrations.ts"
 import {
   loadComparisonEvidenceRecords,
   readCapabilityProfileEvidence,
+  sourceIdFor,
   type CapabilityProfileEvidence,
 } from "./CapabilityEvidence.ts"
 
@@ -94,10 +95,11 @@ export const replayIntegrationEvidence = (input: IntegrationReplayInput): Integr
   }
 
   const sourceToCapability = new Map(
-    input.capabilities.map((capability) => [
-      `better-native-capability#apps/compatibility-suite/src/capabilities/${capability.compatibilitySource}`,
-      capability,
-    ]),
+    input.capabilities.flatMap((capability) =>
+      capability.verification.parityPlatforms.map(
+        (platform) => [sourceIdFor(capability, platform), capability] as const,
+      ),
+    ),
   )
   const recordedSources = new Set<string>(records.flatMap(({ sourceIds }) => sourceIds.map(String)))
   const unknownSources = [...recordedSources].filter(
@@ -112,8 +114,8 @@ export const replayIntegrationEvidence = (input: IntegrationReplayInput): Integr
   const selected =
     input.capabilityIds === undefined
       ? input.capabilities.filter((capability) =>
-          recordedSources.has(
-            `better-native-capability#apps/compatibility-suite/src/capabilities/${capability.compatibilitySource}`,
+          capability.verification.parityPlatforms.some((platform) =>
+            recordedSources.has(sourceIdFor(capability, platform)),
           ),
         )
       : input.capabilityIds.map((id) => {

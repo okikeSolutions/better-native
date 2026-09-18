@@ -64,16 +64,18 @@ ownership. Migration does not by itself imply stable support.
 
 This separation is established by
 [ADR 0001](./adr/0001-separate-ownership-evidence-and-support.md). The capability ledger records
-support status independently from ownership. Migration reporting validates that stable support has
-Effect ownership and complete host evidence. Integration and promotion are evaluated separately by
-the capability verifier against retained differential verdicts.
+support status independently from ownership. Migration reporting rejects stable support unless a
+durable reviewed promotion input is registered alongside Effect ownership and complete host
+evidence. No such durable input exists yet, so every current capability remains experimental.
+Integration and promotion are evaluated separately by the capability verifier against retained
+differential verdicts.
 
 `compatibility/capabilities.json` declares the common and package-specific work required for each
 migration. Each record also owns its unit project, coverage scope, named CI integration suites, and
 parity platforms. `bun run migration-status` derives package, documentation, mapping, installation,
 compatibility-app, generated-resolution, verification-routing, and DX-eval status from repository
-files. The strict form fails when any declared integration is absent or stable support lacks Effect
-ownership or complete host evidence. The host verification profile is available through
+files. The strict form fails when any declared integration is absent or a stable claim lacks Effect
+ownership, complete host evidence, or durable reviewed promotion evidence. The host verification profile is available through
 `bun run verify:capability <id> --profile host`. The `integration` and `promotion` variants compose
 that host gate with immutable differential verdicts retained by `compare-runs`; the latter adds any
 declared physical-device obligations. `bun run replay:integration` is the evaluator-only path: it

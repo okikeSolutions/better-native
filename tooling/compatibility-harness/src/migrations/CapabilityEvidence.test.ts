@@ -5,7 +5,7 @@ import { assert, describe, it } from "@effect/vitest"
 import * as Schema from "effect/Schema"
 import { BuildId, DeviceId, RunId, TestSourceId } from "../Domain.ts"
 import { Capability } from "./CapabilityMigrations.ts"
-import { obligationsFor, readCapabilityProfileEvidence } from "./CapabilityEvidence.ts"
+import { obligationsFor, readCapabilityProfileEvidence, sourceIdFor } from "./CapabilityEvidence.ts"
 
 const capability = Schema.decodeUnknownSync(Capability)({
   id: "task-manager",
@@ -74,6 +74,19 @@ const writeComparison = (
 }
 
 describe("capability retained evidence", () => {
+  it("selects a platform-specific capability source without dropping the platform", () => {
+    const platformSpecific = Schema.decodeUnknownSync(Capability)({
+      ...capability,
+      compatibilitySource: "SecureStore.ts",
+      verification: {
+        ...capability.verification,
+        paritySources: [{ platform: "web", source: "SecureStore.web.ts" }],
+      },
+    })
+    assert.match(sourceIdFor(platformSpecific, "web"), /SecureStore\.web\.ts$/)
+    assert.match(sourceIdFor(platformSpecific, "ios"), /SecureStore\.ts$/)
+  })
+
   it("adds physical native obligations only to promotion", () => {
     assert.deepEqual(obligationsFor(capability, "integration"), [
       { platform: "web", deviceKind: "browser" },

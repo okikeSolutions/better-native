@@ -50,6 +50,7 @@ export interface ComparisonSummary {
   readonly cases: number
   readonly matches: number
   readonly expectedDivergences: number
+  readonly caseIds: ReadonlyArray<TestCaseId>
   readonly issues: ReadonlyArray<string>
 }
 
@@ -134,7 +135,10 @@ const capabilityTargets = (sourceIds: ReadonlyArray<TestSourceId>): ReadonlySet<
     sourceIds.flatMap((sourceId) => {
       const name = sourceId.match(/\/capabilities\/([^/]+)\.ts$/)?.[1]
       if (name === undefined) return []
-      const capabilityPackageName = name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase()
+      const capabilityPackageName = name
+        .replace(/\.(?:web|ios|android)$/, "")
+        .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+        .toLowerCase()
       return [`@better-native/${capabilityPackageName}/expo`]
     }),
   )
@@ -521,6 +525,7 @@ export const compare = (
     cases: caseIds.length,
     matches,
     expectedDivergences,
+    caseIds,
     issues,
   }
 }

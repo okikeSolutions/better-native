@@ -5,7 +5,7 @@ import {
   ComparisonEvidenceRecord,
   type ComparisonEvidenceRecord as ComparisonEvidenceRecordType,
 } from "../Domain.ts"
-import type { Capability } from "./CapabilityMigrations.ts"
+import { compatibilitySourceFor, type Capability } from "./CapabilityMigrations.ts"
 import type { VerificationProfile } from "./CapabilityVerification.ts"
 
 export type NativeEvidenceKind = "browser" | "simulator" | "emulator" | "physical"
@@ -40,8 +40,11 @@ export interface LoadedComparisonEvidenceRecord {
   readonly error?: string
 }
 
-const sourceIdFor = (capability: Capability): string =>
-  `better-native-capability#apps/compatibility-suite/src/capabilities/${capability.compatibilitySource}`
+export const sourceIdFor = (
+  capability: Capability,
+  platform: Capability["verification"]["parityPlatforms"][number],
+): string =>
+  `better-native-capability#apps/compatibility-suite/src/capabilities/${compatibilitySourceFor(capability, platform)}`
 
 const recordFiles = (root: string): ReadonlyArray<string> => {
   if (!existsSync(root)) return []
@@ -138,9 +141,10 @@ export const readCapabilityProfileEvidence = (
   capability: Capability,
   profile: Exclude<VerificationProfile, "host">,
 ): CapabilityProfileEvidence => {
-  const sourceId = sourceIdFor(capability)
-  const records = loadRecords(context, sourceId)
+  const sourceId = `better-native-capability#apps/compatibility-suite/src/capabilities/${capability.compatibilitySource}`
   const obligations = obligationsFor(capability, profile).map(({ platform, deviceKind }) => {
+    const obligationSourceId = sourceIdFor(capability, platform)
+    const records = loadRecords(context, obligationSourceId)
     const candidates = records.filter(({ record, raw }) =>
       record === undefined
         ? rawMatchesObligation(raw, platform, deviceKind)
@@ -197,7 +201,7 @@ export const readCapabilityProfileEvidence = (
       platform,
       deviceKind,
       status: "missing" as const,
-      detail: `no retained ${platform}/${deviceKind} comparison includes ${sourceId}`,
+      detail: `no retained ${platform}/${deviceKind} comparison includes ${obligationSourceId}`,
     }
   })
   return {

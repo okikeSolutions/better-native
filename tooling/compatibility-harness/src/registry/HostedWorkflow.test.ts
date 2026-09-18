@@ -109,6 +109,7 @@ describe("hosted compatibility workflow", () => {
       assert.strictEqual(workflow.match(/--source "\$source"/g)?.length, 3)
       assert.strictEqual(workflow.match(/--capabilities-only/g)?.length, 3)
       assert.strictEqual(workflow.match(/\.verification\.parityPlatforms \| index\(/g)?.length, 3)
+      assert.strictEqual(workflow.match(/\.verification\.paritySources\[\]\?/g)?.length, 3)
       assert.strictEqual(
         workflow.match(/cp -R "\$\(dirname "\$record"\)\/\." "\$destination\/"/g)?.length,
         3,
@@ -131,7 +132,7 @@ describe("hosted compatibility workflow", () => {
         3,
       )
       assert.strictEqual(workflow.match(/job\.status == 'success' && 90 \|\| 7/g)?.length, 3)
-      assert.match(workflow, /bun run replay:integration --evidence-dir \.artifacts\/comparisons/)
+      assert.match(workflow, /bun run verify:capability "\$capability" --profile integration/)
       assert.strictEqual(workflow.match(/supervise-web-pair/g)?.length, 1)
       assert.match(workflow, /web-upstream-run-\*/)
       assert.match(workflow, /web-\*-run-\*/)

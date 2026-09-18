@@ -36,6 +36,17 @@ const nonEmpty = <A>(values: ReadonlyArray<A>): readonly [A, ...Array<A>] | unde
   return first === undefined ? undefined : [first, ...values.slice(1)]
 }
 
+const artifactIds = (records: ReadonlyArray<RunRecord>) =>
+  distinct(
+    records.flatMap((record) => [
+      ...record.build.artifacts.map(({ id }) => id),
+      ...record.attempts.flatMap((attempt) => [
+        ...attempt.artifacts,
+        ...attempt.results.flatMap((result) => result.artifacts),
+      ]),
+    ]),
+  )
+
 const retainSuccessfulComparison = Effect.fn("Command.retainSuccessfulComparison")(function* (
   upstream: ReadonlyArray<RunRecord>,
   candidate: ReadonlyArray<RunRecord>,
@@ -50,6 +61,7 @@ const retainSuccessfulComparison = Effect.fn("Command.retainSuccessfulComparison
   const candidateBuildIds = nonEmpty(distinct(candidate.map(({ build }) => build.id)))
   const upstreamRunIds = nonEmpty(upstream.map(({ plan }) => plan.id))
   const candidateRunIds = nonEmpty(candidate.map(({ plan }) => plan.id))
+  const retainedCaseIds = nonEmpty(summary.caseIds)
   if (retainedSources === undefined) {
     return yield* new HarnessError({
       operation: "retain compatibility comparison",
@@ -81,7 +93,8 @@ const retainSuccessfulComparison = Effect.fn("Command.retainSuccessfulComparison
     upstreamBuildIds === undefined ||
     candidateBuildIds === undefined ||
     upstreamRunIds === undefined ||
-    candidateRunIds === undefined
+    candidateRunIds === undefined ||
+    retainedCaseIds === undefined
   ) {
     return yield* new HarnessError({
       operation: "retain compatibility comparison",
@@ -99,6 +112,8 @@ const retainSuccessfulComparison = Effect.fn("Command.retainSuccessfulComparison
     candidateBuildIds,
     upstreamRunIds,
     candidateRunIds,
+    caseIds: retainedCaseIds,
+    artifactIds: artifactIds([...upstream, ...candidate]),
     verdict: {
       cases: summary.cases,
       matches: summary.matches,

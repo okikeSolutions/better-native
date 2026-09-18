@@ -45,8 +45,8 @@ candidate revision identifies the code being evaluated. Promotion adds physical 
 comparisons for capabilities whose ledger entry declares `physicalDevice`.
 
 Scheduled and full manual pair runs retain one verdict per platform. The aggregation job downloads
-all three verdicts and replays the integration policy against every capability represented in the
-bundle. It runs only after the web, iOS, and Android comparison jobs succeed. Platform-specific
+all three verdicts and evaluates the complete integration profile for every ledger capability. It
+runs only after the web, iOS, and Android comparison jobs succeed. Platform-specific
 manual runs retain their verdict but cannot make the cross-platform integration claim.
 
 Evaluator-only changes do not require another device run. Replay a completed GitHub Actions run

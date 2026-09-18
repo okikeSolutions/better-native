@@ -22,11 +22,11 @@ describe("capability migration ledger", () => {
       assert.strictEqual(statuses.filter(({ ownership }) => ownership === "fallback").length, 4)
       assert.strictEqual(
         statuses.filter(({ supportStatus }) => supportStatus === "stable").length,
-        6,
+        0,
       )
       assert.strictEqual(
         statuses.filter(({ supportStatus }) => supportStatus === "experimental").length,
-        4,
+        10,
       )
       assert.strictEqual(
         statuses.every(({ supportInvariantValid }) => supportInvariantValid),
@@ -45,6 +45,7 @@ describe("capability migration ledger", () => {
         supportStatus: "experimental",
         ownership: "fallback",
         hostEvidenceComplete: true,
+        promotionEvidenceComplete: false,
       }),
       true,
     )
@@ -56,6 +57,7 @@ describe("capability migration ledger", () => {
         supportStatus: "stable",
         ownership: "effect",
         hostEvidenceComplete: false,
+        promotionEvidenceComplete: true,
       }),
       false,
     )
@@ -67,8 +69,33 @@ describe("capability migration ledger", () => {
         supportStatus: "stable",
         ownership: "fallback",
         hostEvidenceComplete: true,
+        promotionEvidenceComplete: true,
       }),
       false,
+    )
+  })
+
+  it("requires reviewed promotion evidence for stable support", () => {
+    assert.strictEqual(
+      validatesSupportInvariant({
+        supportStatus: "stable",
+        ownership: "effect",
+        hostEvidenceComplete: true,
+        promotionEvidenceComplete: false,
+      }),
+      false,
+    )
+  })
+
+  it("accepts stable support only when every invariant is complete", () => {
+    assert.strictEqual(
+      validatesSupportInvariant({
+        supportStatus: "stable",
+        ownership: "effect",
+        hostEvidenceComplete: true,
+        promotionEvidenceComplete: true,
+      }),
+      true,
     )
   })
 })

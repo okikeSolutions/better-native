@@ -190,6 +190,7 @@ describe("RunComparison", () => {
     assert.deepEqual(paired.issues, [])
     assert.strictEqual(paired.matches, 1)
     assert.strictEqual(paired.expectedDivergences, 0)
+    assert.deepEqual(paired.caseIds, [caseId])
 
     const cannotMask = compare(
       [record("upstream", applicabilitySkip)],
@@ -291,6 +292,25 @@ describe("RunComparison", () => {
       { resolvedSources: new Set(["expo-network"]), issues: [] },
     )
     assert.notMatch(scoped.issues.join("\n"), /missing owned specifiers/)
+  })
+
+  it("binds platform-specific capability sources to the package replacement", () => {
+    const secureStoreManifest = {
+      ...replacementManifest,
+      replacements: [{ source: "expo-secure-store", target: "@better-native/secure-store/expo" }],
+    }
+    const summary = compare(
+      [record("upstream", passed)],
+      [record("candidate", passed)],
+      expectations(),
+      [
+        TestSourceId.make(
+          "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.web.ts",
+        ),
+      ],
+      secureStoreManifest,
+    )
+    assert.match(summary.issues.join("\n"), /missing owned specifiers: expo-secure-store/)
   })
 
   it.effect("binds candidate treatment to run, build, fingerprint, target and outcome", () =>

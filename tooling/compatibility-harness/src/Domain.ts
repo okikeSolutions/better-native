@@ -705,6 +705,10 @@ export const ComparisonEvidenceRecord = Schema.Struct({
   candidateBuildIds: Schema.NonEmptyArray(BuildId),
   upstreamRunIds: Schema.NonEmptyArray(RunId),
   candidateRunIds: Schema.NonEmptyArray(RunId),
+  /** Exact case denominator retained by new verdict writers. Optional for legacy replay. */
+  caseIds: Schema.optional(Schema.NonEmptyArray(TestCaseId)),
+  /** Build, attempt, and case artifacts referenced by the compared runs. */
+  artifactIds: Schema.optional(Schema.Array(ArtifactId)),
   verdict: Schema.Struct({
     cases: Schema.Int,
     matches: Schema.Int,

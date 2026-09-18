@@ -80,12 +80,10 @@ run("Package static contracts", "bun", [
   "--concurrency=90%",
 ])
 run("Package unit coverage", "bun", ["run", "--cwd", packageDirectory, "test:coverage"])
-if (profile === "host") {
-  run("Generated compatibility data", "bun", [
-    "run",
-    "tooling/compatibility-harness/src/checkGenerated.ts",
-  ])
-}
+run("Generated compatibility data", "bun", [
+  "run",
+  "tooling/compatibility-harness/src/checkGenerated.ts",
+])
 run("Strict migration ledger", "bun", ["run", "migration-status", "--strict"])
 
 console.log("\nHost verification passed.")

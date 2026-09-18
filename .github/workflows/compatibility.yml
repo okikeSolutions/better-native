@@ -191,7 +191,7 @@ jobs:
               --upstream .artifacts/compare/upstream \
               --candidate .artifacts/compare/candidate \
               --source "$source"
-          done < <(jq -er '.capabilities[] | select(.verification.parityPlatforms | index("web")) | .compatibilitySource' compatibility/capabilities.json)
+          done < <(jq -er '.capabilities[] | select(.verification.parityPlatforms | index("web")) | ([.verification.paritySources[]? | select(.platform == "web") | .source][0] // .compatibilitySource)' compatibility/capabilities.json)
       - name: Upload web comparison verdict
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -439,7 +439,7 @@ jobs:
               --upstream .artifacts/compare/upstream \
               --candidate .artifacts/compare/candidate \
               --source "$source"
-          done < <(jq -er '.capabilities[] | select(.verification.parityPlatforms | index("ios")) | .compatibilitySource' compatibility/capabilities.json)
+          done < <(jq -er '.capabilities[] | select(.verification.parityPlatforms | index("ios")) | ([.verification.paritySources[]? | select(.platform == "ios") | .source][0] // .compatibilitySource)' compatibility/capabilities.json)
       - name: Upload iOS comparison verdict
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -629,7 +629,7 @@ jobs:
               --upstream .artifacts/compare/upstream \
               --candidate .artifacts/compare/candidate \
               --source "$source"
-          done < <(jq -er '.capabilities[] | select(.verification.parityPlatforms | index("android")) | .compatibilitySource' compatibility/capabilities.json)
+          done < <(jq -er '.capabilities[] | select(.verification.parityPlatforms | index("android")) | ([.verification.paritySources[]? | select(.platform == "android") | .source][0] // .compatibilitySource)' compatibility/capabilities.json)
       - name: Upload Android comparison verdict
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -672,4 +672,9 @@ jobs:
           name: compatibility-android-verdict-${{ github.run_id }}-${{ github.run_attempt }}
           path: .artifacts/comparisons
       - name: Verify capability integration profiles
-        run: bun run replay:integration --evidence-dir .artifacts/comparisons
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r capability; do
+            bun run verify:capability "$capability" --profile integration
+          done < <(jq -er '.capabilities[].id' compatibility/capabilities.json)

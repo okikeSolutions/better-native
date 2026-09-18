@@ -17,6 +17,9 @@ const Verification = Schema.Struct({
   coverageScope: Schema.NonEmptyString,
   integrationSuites: Schema.Array(IntegrationSuite),
   parityPlatforms: Schema.Array(Platform),
+  paritySources: Schema.optional(
+    Schema.Array(Schema.Struct({ platform: Platform, source: Schema.NonEmptyString })),
+  ),
 })
 
 const Requirements = Schema.Struct({
@@ -40,6 +43,14 @@ export const Capability = Schema.Struct({
   verification: Verification,
 })
 export type Capability = Schema.Schema.Type<typeof Capability>
+
+/** Resolves the capability source that supplies one platform's parity evidence. */
+export const compatibilitySourceFor = (
+  capability: Capability,
+  platform: Capability["verification"]["parityPlatforms"][number],
+): string =>
+  capability.verification.paritySources?.find((entry) => entry.platform === platform)?.source ??
+  capability.compatibilitySource
 
 export const CapabilityLedger = Schema.Struct({
   schemaVersion: Schema.Literal(2),
@@ -67,15 +78,18 @@ interface SupportClaim {
   readonly supportStatus: SupportStatus
   readonly ownership: MigrationStatus["ownership"]
   readonly hostEvidenceComplete: boolean
+  readonly promotionEvidenceComplete: boolean
 }
 
-/** Checks the support invariants available before promotion evidence is evaluated. */
+/** Prevents stable support until ownership, host checks, and reviewed promotion evidence agree. */
 export const validatesSupportInvariant = ({
   supportStatus,
   ownership,
   hostEvidenceComplete,
+  promotionEvidenceComplete,
 }: SupportClaim): boolean =>
-  supportStatus === "experimental" || (ownership === "effect" && hostEvidenceComplete)
+  supportStatus === "experimental" ||
+  (ownership === "effect" && hostEvidenceComplete && promotionEvidenceComplete)
 
 const json = (text: string, path: string) =>
   Effect.try({
@@ -305,10 +319,17 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
         }),
       )
       const integrationSuitesRouted = integrationSuiteRoutes.every(Boolean)
+      const paritySourcePlatforms = (capability.verification.paritySources ?? []).map(
+        ({ platform }) => platform,
+      )
       const parityPlatformsMatch =
         capability.verification.parityPlatforms.length ===
           capability.requirements.platforms.length &&
         capability.requirements.platforms.every((platform) =>
+          capability.verification.parityPlatforms.includes(platform),
+        ) &&
+        new Set(paritySourcePlatforms).size === paritySourcePlatforms.length &&
+        paritySourcePlatforms.every((platform) =>
           capability.verification.parityPlatforms.includes(platform),
         )
       const registryMentionsTask = capability.requirements.dxEval
@@ -351,10 +372,18 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
         ),
         check(
           "compatibility source",
-          yield* exists(
-            resolve(`apps/compatibility-suite/src/capabilities/${capability.compatibilitySource}`),
-          ),
-          capability.compatibilitySource,
+          (yield* Effect.all(
+            [
+              capability.compatibilitySource,
+              ...(capability.verification.paritySources ?? []).map(({ source }) => source),
+            ].map((source) =>
+              exists(resolve(`apps/compatibility-suite/src/capabilities/${source}`)),
+            ),
+          )).every(Boolean),
+          [
+            capability.compatibilitySource,
+            ...(capability.verification.paritySources ?? []).map(({ source }) => source),
+          ].join(", "),
         ),
         check(
           "ownership",
@@ -393,6 +422,9 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
         supportStatus: capability.supportStatus,
         ownership: ownershipStatus,
         hostEvidenceComplete: hostVerified,
+        // Promotion evidence is intentionally evaluated outside the host-only migration report.
+        // A stable claim therefore cannot enter the ledger without a durable reviewed input here.
+        promotionEvidenceComplete: false,
       })
       return {
         id: capability.id,
