@@ -151,5 +151,7 @@ depends on the browser and several native-only operations fail through `Notifica
 See the [Expo Notifications guide](https://docs.expo.dev/versions/latest/sdk/notifications/) for
 provider credentials and platform restrictions.
 
-Package ownership remains `fallback` until paired Release and physical-device evidence has been
-reviewed. The exact Expo bridge remains available during incremental migration.
+Capability support remains `experimental` until paired Release and physical-device evidence has
+been reviewed. The ownership ledger currently records `fallback`; a separate runtime-ownership
+audit must resolve that classification. The exact Expo bridge remains available during incremental
+migration.

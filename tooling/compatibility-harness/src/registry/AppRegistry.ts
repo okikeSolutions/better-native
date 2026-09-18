@@ -196,6 +196,19 @@ const secureStoreWebCapabilityCases = [
 const secureStoreCapabilitySourceId = TestSourceId.make(
   "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.ts",
 )
+
+const capabilitySourceIdsForPlatform = (platform: Platform): ReadonlyArray<TestSourceId> => [
+  keepAwakeCapabilitySourceId,
+  networkCapabilitySourceId,
+  batteryCapabilitySourceId,
+  clipboardCapabilitySourceId,
+  sqliteCapabilitySourceId,
+  taskManagerCapabilitySourceId,
+  backgroundTaskCapabilitySourceId,
+  locationCapabilitySourceId,
+  notificationsCapabilitySourceId,
+  platform === "web" ? secureStoreWebCapabilitySourceId : secureStoreCapabilitySourceId,
+]
 const secureStoreCapabilityPath = "src/capabilities/SecureStore.ts"
 const secureStoreCapabilityCases = [
   TestCaseId.make(
@@ -453,6 +466,16 @@ export const appExecutionUnitForSource = (
   }
 }
 
+/** Selects the project-owned capability sources that supplement Expo's native cohort. */
+export const capabilityExecutionUnits = (
+  metadata: RegistryMetadataType,
+  platform: Platform,
+): ReadonlyArray<ExecutionUnit> =>
+  capabilitySourceIdsForPlatform(platform).flatMap((sourceId) => {
+    const unit = appExecutionUnitForSource(metadata, platform, sourceId)
+    return unit === null ? [] : [unit]
+  })
+
 /**
  * Balances complete source units across native shards by discovered case weight.
  *
@@ -470,6 +493,7 @@ export const appExecutionShards = (
   metadata: RegistryMetadataType,
   platform: Platform,
   shardCount: number,
+  options: { readonly selection?: "curated" | "capabilities" | "all" } = {},
 ): ReadonlyArray<ReadonlyArray<ExecutionUnit>> => {
   const weights = new Map(
     metadata.sources.map(({ sourceId, caseIds }) => [sourceId, Math.max(1, caseIds.length)]),
@@ -478,7 +502,16 @@ export const appExecutionShards = (
     weight: 0,
     units: [] as Array<ExecutionUnit>,
   }))
-  for (const unit of appExecutionUnits(metadata, platform).toSorted(
+  const selectedUnits = Match.value(options.selection ?? "curated").pipe(
+    Match.when("curated", () => appExecutionUnits(metadata, platform)),
+    Match.when("capabilities", () => capabilityExecutionUnits(metadata, platform)),
+    Match.when("all", () => [
+      ...appExecutionUnits(metadata, platform),
+      ...capabilityExecutionUnits(metadata, platform),
+    ]),
+    Match.exhaustive,
+  )
+  for (const unit of selectedUnits.toSorted(
     (left, right) =>
       (weights.get(right.sourceId) ?? 1) - (weights.get(left.sourceId) ?? 1) ||
       left.sourceId.localeCompare(right.sourceId),
@@ -1039,16 +1072,7 @@ export const generate = Effect.fn("AppRegistry.generate")(function* (
       ).map(({ id }) => id),
     )
     for (const sourceId of [
-      keepAwakeCapabilitySourceId,
-      networkCapabilitySourceId,
-      batteryCapabilitySourceId,
-      clipboardCapabilitySourceId,
-      sqliteCapabilitySourceId,
-      taskManagerCapabilitySourceId,
-      backgroundTaskCapabilitySourceId,
-      locationCapabilitySourceId,
-      notificationsCapabilitySourceId,
-      platform === "web" ? secureStoreWebCapabilitySourceId : secureStoreCapabilitySourceId,
+      ...capabilitySourceIdsForPlatform(platform),
       ...(platform === "ios" ? [secureStoreNativeFailureSourceId] : []),
     ]) {
       sourceIds.add(sourceId)

@@ -26,6 +26,7 @@ describe("hosted compatibility workflow", () => {
         rootPackage,
         harnessPackage,
         appBuildExecutor,
+        compatibilityMetro,
         cacheHygiene,
         envExample,
       ] = yield* Effect.all([
@@ -45,6 +46,7 @@ describe("hosted compatibility workflow", () => {
         fs.readFileString("package.json"),
         fs.readFileString("tooling/compatibility-harness/package.json"),
         fs.readFileString("tooling/compatibility-harness/src/build/AppBuildExecutor.ts"),
+        fs.readFileString("apps/compatibility-suite/metro.config.cjs"),
         fs.readFileString(".github/workflows/cache-hygiene.yml"),
         fs.readFileString(".env.example"),
       ])
@@ -98,12 +100,39 @@ describe("hosted compatibility workflow", () => {
       assert.strictEqual(workflow.match(/--shard-index "\$SHARD_INDEX"/g)?.length, 2)
       assert.match(workflow, /compatibility-ios-run-evidence-.*-shard-\*/)
       assert.match(workflow, /merge-multiple: true/)
-      assert.match(workflow, /Group iOS evidence by build mode/)
+      assert.strictEqual(
+        workflow.match(/Group (?:web|iOS|Android) evidence by build mode/g)?.length,
+        3,
+      )
       assert.match(workflow, /--upstream \.artifacts\/compare\/upstream/)
       assert.match(workflow, /--candidate \.artifacts\/compare\/candidate/)
+      assert.strictEqual(workflow.match(/--source "\$source"/g)?.length, 3)
+      assert.strictEqual(workflow.match(/--capabilities-only/g)?.length, 3)
+      assert.strictEqual(workflow.match(/\.verification\.parityPlatforms \| index\(/g)?.length, 3)
+      assert.strictEqual(workflow.match(/\.verification\.paritySources\[\]\?/g)?.length, 3)
+      assert.strictEqual(
+        workflow.match(/cp -R "\$\(dirname "\$record"\)\/\." "\$destination\/"/g)?.length,
+        3,
+      )
+      assert.match(
+        compatibilityMetro,
+        /config\.cacheVersion = `\$\{config\.cacheVersion\}:\$\{buildId\}`/,
+      )
       assert.match(workflow, /if \[ "\$DEVICE_STATE" != Shutdown \]; then/)
       assert.notMatch(workflow, /simctl shutdown "\$DEVICE_ID" \|\| true/)
       assert.match(workflow, /^  android-compare:$/m)
+      assert.match(workflow, /^  integration-profile:$/m)
+      assert.match(
+        workflow,
+        /integration-profile:[\s\S]*?needs: \[web-compare, ios-compare, android-compare\]/,
+      )
+      assert.match(workflow, /integration-profile:[\s\S]*?uses: \.\/\.github\/actions\/setup-build/)
+      assert.strictEqual(
+        workflow.match(/Download (?:web|iOS|Android) comparison verdict/g)?.length,
+        3,
+      )
+      assert.strictEqual(workflow.match(/job\.status == 'success' && 90 \|\| 7/g)?.length, 3)
+      assert.match(workflow, /bun run verify:capability "\$capability" --profile integration/)
       assert.strictEqual(workflow.match(/supervise-web-pair/g)?.length, 1)
       assert.match(workflow, /web-upstream-run-\*/)
       assert.match(workflow, /web-\*-run-\*/)

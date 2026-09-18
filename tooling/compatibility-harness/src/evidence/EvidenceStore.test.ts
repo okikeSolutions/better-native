@@ -38,6 +38,21 @@ describe("EvidenceStore", () => {
     }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 
+  it.effect("retains comparison verdicts in their own collection", () =>
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem
+      const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-comparison-" })
+      const artifact = yield* Effect.gen(function* () {
+        const store = yield* EvidenceStore
+        return yield* store.writeJson("comparisons", "comparison-1", "record.json", Record, {
+          schemaVersion: 1,
+          value: "passed",
+        })
+      }).pipe(provideLayer(layer(root)))
+      assert.strictEqual(artifact.path, ".artifacts/comparisons/comparison-1/record.json")
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
+  )
+
   it.effect("rejects evidence directories redirected through symbolic links", () =>
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem

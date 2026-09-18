@@ -50,6 +50,7 @@ export interface ComparisonSummary {
   readonly cases: number
   readonly matches: number
   readonly expectedDivergences: number
+  readonly caseIds: ReadonlyArray<TestCaseId>
   readonly issues: ReadonlyArray<string>
 }
 
@@ -134,7 +135,10 @@ const capabilityTargets = (sourceIds: ReadonlyArray<TestSourceId>): ReadonlySet<
     sourceIds.flatMap((sourceId) => {
       const name = sourceId.match(/\/capabilities\/([^/]+)\.ts$/)?.[1]
       if (name === undefined) return []
-      const capabilityPackageName = name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase()
+      const capabilityPackageName = name
+        .replace(/\.(?:web|ios|android)$/, "")
+        .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+        .toLowerCase()
       return [`@better-native/${capabilityPackageName}/expo`]
     }),
   )
@@ -154,7 +158,12 @@ const capabilityTargets = (sourceIds: ReadonlyArray<TestSourceId>): ReadonlySet<
  */
 export const loadCandidateTreatmentEvidence = Effect.fn(
   "RunComparison.loadCandidateTreatmentEvidence",
-)(function* (root: string, records: ReadonlyArray<RunRecordType>, manifest: ReplacementManifest) {
+)(function* (
+  root: string,
+  records: ReadonlyArray<RunRecordType>,
+  manifest: ReplacementManifest,
+  options: { readonly ignoreForeignRuns?: boolean } = {},
+) {
   const fs = yield* FileSystem.FileSystem
   const resolvedSources = new Set<string>()
   const issues: Array<string> = []
@@ -225,6 +234,7 @@ export const loadCandidateTreatmentEvidence = Effect.fn(
     )
     const record = recordsByRun.get(discovery.runId)
     if (record === undefined) {
+      if (options.ignoreForeignRuns === true) continue
       issues.push(`${path}: discovery references foreign run ${discovery.runId}`)
       continue
     }
@@ -515,6 +525,7 @@ export const compare = (
     cases: caseIds.length,
     matches,
     expectedDivergences,
+    caseIds,
     issues,
   }
 }

@@ -190,6 +190,7 @@ describe("RunComparison", () => {
     assert.deepEqual(paired.issues, [])
     assert.strictEqual(paired.matches, 1)
     assert.strictEqual(paired.expectedDivergences, 0)
+    assert.deepEqual(paired.caseIds, [caseId])
 
     const cannotMask = compare(
       [record("upstream", applicabilitySkip)],
@@ -293,6 +294,25 @@ describe("RunComparison", () => {
     assert.notMatch(scoped.issues.join("\n"), /missing owned specifiers/)
   })
 
+  it("binds platform-specific capability sources to the package replacement", () => {
+    const secureStoreManifest = {
+      ...replacementManifest,
+      replacements: [{ source: "expo-secure-store", target: "@better-native/secure-store/expo" }],
+    }
+    const summary = compare(
+      [record("upstream", passed)],
+      [record("candidate", passed)],
+      expectations(),
+      [
+        TestSourceId.make(
+          "better-native-capability#apps/compatibility-suite/src/capabilities/SecureStore.web.ts",
+        ),
+      ],
+      secureStoreManifest,
+    )
+    assert.match(summary.issues.join("\n"), /missing owned specifiers: expo-secure-store/)
+  })
+
   it.effect("binds candidate treatment to run, build, fingerprint, target and outcome", () =>
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem
@@ -379,6 +399,16 @@ describe("RunComparison", () => {
       )
       const stale = yield* inspect(event)
       assert.match(stale.issues.join("\n"), /discovery references foreign run/)
+      const scoped = yield* loadCandidateTreatmentEvidence(
+        root,
+        [withEvent(event)],
+        replacementManifest,
+        {
+          ignoreForeignRuns: true,
+        },
+      )
+      assert.deepEqual(scoped.issues, [])
+      assert.isTrue(scoped.resolvedSources.has("expo-network"))
     }).pipe(provideLayer(NodeServices.layer)),
   )
 })

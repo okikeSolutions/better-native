@@ -8,6 +8,67 @@ better-native uses layered tests. No single layer proves compatibility by itself
 - app-runner tests prove registry selection and result normalization; and
 - paired native runs prove that upstream Expo and the candidate have the same observed behavior.
 
+## Verification profiles
+
+Better Native groups these layers by the claim they support. The profile names describe policy, not
+three copies of the test suite:
+
+| Profile       | Required evidence                                                                                      | Permitted outcome                    |
+| ------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| `host`        | Complete ledger, package, types, documentation, host behavior, scoped coverage, deterministic controls | Merge with experimental support      |
+| `integration` | Host plus applicable installation, bundling, config-plugin, web, simulator, and emulator evidence      | Record platform-scoped compatibility |
+| `promotion`   | Integration plus every capability-specific native and physical-device obligation                       | Eligible for stable support          |
+
+The complete compatibility denominator is required in every profile. A lower profile may defer an
+expensive evidence obligation, but it may not omit the obligation, mark it as passing, or support a
+stronger claim. Deferred evidence records its reason and tracking issue.
+
+Ordinary capability work uses the host profile. Integration profiles run when relevant infrastructure
+is available or the affected behavior requires them. Promotion runs before stable support, after a
+relevant Expo revision change, and when evidence has become stale. Shared catalog, resolution,
+build, or verification-policy changes may widen any profile to the repository-wide checks.
+
+The capability-verification command exposes all three profiles:
+
+```sh
+bun run verify:capability clipboard --profile host
+bun run verify:capability clipboard --profile integration
+bun run verify:capability clipboard --profile promotion
+```
+
+Omitting `--profile` selects `host` for backward compatibility. Integration and promotion first run
+the host gate, then read immutable successful comparison records from `.artifacts/comparisons`.
+Evidence counts only when its capability source, platform, device class, pinned Expo revision, and
+candidate revision match the requested obligation. Missing, malformed, null-revision, or stale
+evidence fails without starting a native build. Outside CI, tracked changes must be committed so the
+candidate revision identifies the code being evaluated. Promotion adds physical iOS and Android
+comparisons for capabilities whose ledger entry declares `physicalDevice`.
+
+Scheduled and full manual pair runs retain one verdict per platform. The aggregation job downloads
+all three verdicts and evaluates the complete integration profile for every ledger capability. It
+runs only after the web, iOS, and Android comparison jobs succeed. Platform-specific
+manual runs retain their verdict but cannot make the cross-platform integration claim.
+
+Evaluator-only changes do not require another device run. Replay a completed GitHub Actions run
+from any checkout, including one with uncommitted evaluator changes:
+
+```sh
+bun run replay:integration --run-id 34782050788
+```
+
+Successful verdict bundles remain downloadable for 90 days. The command downloads them once,
+caches them under `.artifacts/replays`, and derives the subject revision from their records. The
+current checkout supplies only the evaluator and ledger. Replay fails if records mix subject or
+Expo revisions, disagree with the workflow head, contain malformed data, or lack a selected
+capability obligation. Use `--refresh` to replace the cached download, `--run-attempt <n>` for an
+older attempt, and repeated `--capability <id>` options for a focused replay. CI can evaluate
+already-downloaded records with
+`--evidence-dir .artifacts/comparisons`.
+
+Replay is deliberately integration-only. It accepts browser, simulator, and emulator verdicts;
+physical-device records are rejected. Promotion continues to use
+`verify:capability <id> --profile promotion` with separately retained physical-device evidence.
+
 ## Host tests and coverage
 
 Run the fast, in-process host suite with:
@@ -147,7 +208,8 @@ Native parity is a paired comparison, not a host-test result:
 2. Build a candidate Release app that resolves the reviewed replacements.
 3. Run the same source or explicit smoke selection on the same simulator, emulator, or device state.
 4. Capture each app's chunked `BETTER_NATIVE_RESULT_V1` result and immutable build/run evidence.
-5. Compare the records with `bun run compatibility-harness compare-runs`.
+5. Compare the records with `bun run compatibility-harness compare-runs`; a successful comparison
+   is retained as the profile-readable verdict.
 
 The curated `native-e2e` cohort remains owned by pinned Expo source and must not be changed to
 improve Better Native coverage. Capability-specific parity runs are separate and opt-in.
