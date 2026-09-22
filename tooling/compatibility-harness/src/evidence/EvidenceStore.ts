@@ -19,14 +19,14 @@ export class EvidenceError extends Data.TaggedError("EvidenceError")<{
 /** Immutable artifact store shared by build and run supervisors. */
 export interface Service {
   readonly writeBytes: (
-    collection: "builds" | "runs",
+    collection: "builds" | "runs" | "comparisons",
     recordId: string,
     name: string,
     mediaType: string,
     bytes: Uint8Array,
   ) => Effect.Effect<Artifact, EvidenceError>
   readonly writeJson: <A>(
-    collection: "builds" | "runs",
+    collection: "builds" | "runs" | "comparisons",
     recordId: string,
     name: string,
     schema: Schema.Schema<A> & { readonly EncodingServices: never },

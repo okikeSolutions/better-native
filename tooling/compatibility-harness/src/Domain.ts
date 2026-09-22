@@ -693,6 +693,29 @@ export const Comparison = Schema.Struct({
   ]),
   detail: Schema.NullOr(Schema.String),
 })
+/** Successful differential verdict retained for later capability-profile evaluation. */
+export const ComparisonEvidenceRecord = Schema.Struct({
+  schemaVersion: Schema.Literal(1),
+  sourceIds: Schema.NonEmptyArray(TestSourceId),
+  platform: Platform,
+  device: DeviceRecord,
+  expoRevision: Schema.NonEmptyString,
+  candidateRevision: Schema.NonEmptyString,
+  upstreamBuildIds: Schema.NonEmptyArray(BuildId),
+  candidateBuildIds: Schema.NonEmptyArray(BuildId),
+  upstreamRunIds: Schema.NonEmptyArray(RunId),
+  candidateRunIds: Schema.NonEmptyArray(RunId),
+  /** Exact case denominator retained by new verdict writers. Optional for legacy replay. */
+  caseIds: Schema.optional(Schema.NonEmptyArray(TestCaseId)),
+  /** Build, attempt, and case artifacts referenced by the compared runs. */
+  artifactIds: Schema.optional(Schema.Array(ArtifactId)),
+  verdict: Schema.Struct({
+    cases: Schema.Int,
+    matches: Schema.Int,
+    expectedDivergences: Schema.Int,
+    issues: Schema.Array(Schema.String),
+  }),
+})
 /** Aggregate compatibility report over builds, runs, and comparisons. */
 export const Report = Schema.Struct({
   schemaVersion: Schema.Literal(1),
@@ -718,6 +741,8 @@ export type BuildId = Schema.Schema.Type<typeof BuildId>
 export type BuildRecord = Schema.Schema.Type<typeof BuildRecord>
 /** Decoded case result accepted by {@link CaseResult}. */
 export type CaseResult = Schema.Schema.Type<typeof CaseResult>
+/** Decoded retained differential verdict accepted by {@link ComparisonEvidenceRecord}. */
+export type ComparisonEvidenceRecord = Schema.Schema.Type<typeof ComparisonEvidenceRecord>
 /** Decoded catalog snapshot accepted by {@link CatalogSnapshot}. */
 export type CatalogSnapshot = Schema.Schema.Type<typeof CatalogSnapshot>
 /** Decoded content hash accepted by {@link ContentHash}. */

@@ -5,8 +5,15 @@ import * as Option from "effect/Option"
 import * as Command from "effect/unstable/cli/Command"
 import * as Flag from "effect/unstable/cli/Flag"
 import { ExpoRepository } from "../ExpoRepository.ts"
-import { TestSourceId } from "../Domain.ts"
+import {
+  ComparisonEvidenceRecord,
+  TestSourceId,
+  type ComparisonEvidenceRecord as ComparisonEvidenceRecordType,
+  type RunRecord,
+  type TestSourceId as TestSourceIdType,
+} from "../Domain.ts"
 import { HarnessError } from "../HarnessError.ts"
+import { EvidenceStore } from "../evidence/EvidenceStore.ts"
 import * as AppRegistry from "../registry/AppRegistry.ts"
 import * as RunnerPlanExecution from "../registry/RunnerPlanExecution.ts"
 import * as Expectations from "../policy/Expectations.ts"
@@ -22,6 +29,106 @@ import { shardCountFlag, shardIndexFlag, timeoutMillisFlag } from "./Shared.ts"
 const upstreamEvidenceFlag = Flag.string("upstream")
 const candidateEvidenceFlag = Flag.string("candidate")
 const comparisonSourceFlag = Flag.string("source").pipe(Flag.optional)
+
+const distinct = <A>(values: ReadonlyArray<A>): ReadonlyArray<A> => [...new Set(values)]
+const nonEmpty = <A>(values: ReadonlyArray<A>): readonly [A, ...Array<A>] | undefined => {
+  const first = values[0]
+  return first === undefined ? undefined : [first, ...values.slice(1)]
+}
+
+const artifactIds = (records: ReadonlyArray<RunRecord>) =>
+  distinct(
+    records.flatMap((record) => [
+      ...record.build.artifacts.map(({ id }) => id),
+      ...record.attempts.flatMap((attempt) => [
+        ...attempt.artifacts,
+        ...attempt.results.flatMap((result) => result.artifacts),
+      ]),
+    ]),
+  )
+
+const retainSuccessfulComparison = Effect.fn("Command.retainSuccessfulComparison")(function* (
+  upstream: ReadonlyArray<RunRecord>,
+  candidate: ReadonlyArray<RunRecord>,
+  sourceIds: ReadonlyArray<TestSourceIdType>,
+  summary: RunComparison.ComparisonSummary,
+) {
+  const evidence = yield* EvidenceStore
+  const candidateRevisions = distinct(candidate.map(({ build }) => build.candidateRevision))
+  const devices = distinct([...upstream, ...candidate].map(({ device }) => JSON.stringify(device)))
+  const retainedSources = nonEmpty(sourceIds)
+  const upstreamBuildIds = nonEmpty(distinct(upstream.map(({ build }) => build.id)))
+  const candidateBuildIds = nonEmpty(distinct(candidate.map(({ build }) => build.id)))
+  const upstreamRunIds = nonEmpty(upstream.map(({ plan }) => plan.id))
+  const candidateRunIds = nonEmpty(candidate.map(({ plan }) => plan.id))
+  const retainedCaseIds = nonEmpty(summary.caseIds)
+  if (retainedSources === undefined) {
+    return yield* new HarnessError({
+      operation: "retain compatibility comparison",
+      cause: "comparison has no source denominator",
+    })
+  }
+  if (
+    candidateRevisions.length !== 1 ||
+    candidateRevisions[0] === null ||
+    candidateRevisions[0] === undefined ||
+    candidateRevisions[0].length === 0
+  ) {
+    return yield* new HarnessError({
+      operation: "retain compatibility comparison",
+      cause: "candidate evidence must identify one non-empty candidate revision",
+    })
+  }
+  if (devices.length !== 1) {
+    return yield* new HarnessError({
+      operation: "retain compatibility comparison",
+      cause: "upstream and candidate evidence must use one identical device identity",
+    })
+  }
+  const device = upstream[0]?.device ?? candidate[0]?.device
+  const firstCandidateRun = candidate[0]?.plan.id
+  if (
+    device === undefined ||
+    firstCandidateRun === undefined ||
+    upstreamBuildIds === undefined ||
+    candidateBuildIds === undefined ||
+    upstreamRunIds === undefined ||
+    candidateRunIds === undefined ||
+    retainedCaseIds === undefined
+  ) {
+    return yield* new HarnessError({
+      operation: "retain compatibility comparison",
+      cause: "comparison has no candidate run identity",
+    })
+  }
+  const record: ComparisonEvidenceRecordType = {
+    schemaVersion: 1,
+    sourceIds: retainedSources,
+    platform: summary.platform,
+    device,
+    expoRevision: candidate[0]!.build.expoRevision,
+    candidateRevision: candidateRevisions[0],
+    upstreamBuildIds,
+    candidateBuildIds,
+    upstreamRunIds,
+    candidateRunIds,
+    caseIds: retainedCaseIds,
+    artifactIds: artifactIds([...upstream, ...candidate]),
+    verdict: {
+      cases: summary.cases,
+      matches: summary.matches,
+      expectedDivergences: summary.expectedDivergences,
+      issues: [],
+    },
+  }
+  return yield* evidence.writeJson(
+    "comparisons",
+    `${firstCandidateRun}-comparison`,
+    "record.json",
+    ComparisonEvidenceRecord,
+    record,
+  )
+})
 /**
  * Compares upstream and candidate evidence and emits a differential verdict.
  *
@@ -36,7 +143,7 @@ export const compareRuns = Command.make(
     source: comparisonSourceFlag,
   },
   Effect.fn("Command.compareRuns")(function* ({ upstream, candidate, source }) {
-    const [upstreamRecords, candidateRecords, expectations, metadata, runnerPlans, replacements] =
+    const [loadedUpstream, loadedCandidate, expectations, metadata, runnerPlans, replacements] =
       yield* Effect.all(
         [
           RunComparison.load(upstream),
@@ -48,6 +155,15 @@ export const compareRuns = Command.make(
         ],
         { concurrency: "unbounded" },
       )
+    const selectedSource = Option.map(source, TestSourceId.make).pipe(Option.getOrUndefined)
+    const upstreamRecords =
+      selectedSource === undefined
+        ? loadedUpstream
+        : loadedUpstream.filter(({ plan }) => plan.unit.sourceId === selectedSource)
+    const candidateRecords =
+      selectedSource === undefined
+        ? loadedCandidate
+        : loadedCandidate.filter(({ plan }) => plan.unit.sourceId === selectedSource)
     const platform = upstreamRecords[0]?.plan.platform ?? candidateRecords[0]?.plan.platform
     const expectedSources = Option.match(source, {
       onNone: () =>
@@ -63,6 +179,7 @@ export const compareRuns = Command.make(
       candidate,
       candidateRecords,
       replacements,
+      { ignoreForeignRuns: selectedSource !== undefined },
     )
     const summary = RunComparison.compare(
       upstreamRecords,
@@ -77,13 +194,22 @@ export const compareRuns = Command.make(
       executable: runnerPlans.entries.filter(({ status }) => status === "executable").length,
       blocked: runnerPlans.entries.filter(({ status }) => status === "blocked").length,
     }
-    yield* Console.log(JSON.stringify({ ...summary, runnerPlanCoverage }, null, 2))
     if (summary.issues.length > 0) {
+      yield* Console.log(JSON.stringify({ ...summary, runnerPlanCoverage }, null, 2))
       return yield* new HarnessError({
         operation: "compare compatibility runs",
         cause: summary.issues,
       })
     }
+    const comparisonArtifact = yield* retainSuccessfulComparison(
+      upstreamRecords,
+      candidateRecords,
+      expectedSources,
+      summary,
+    )
+    yield* Console.log(
+      JSON.stringify({ ...summary, runnerPlanCoverage, comparisonArtifact }, null, 2),
+    )
     return undefined
   }),
 ).pipe(

@@ -9,11 +9,17 @@ const Platform = Schema.Literals(["web", "ios", "android"])
 
 const IntegrationSuite = Schema.Literals(["published", "eval-controls", "compile-contracts"])
 
+export const SupportStatus = Schema.Literals(["experimental", "stable"])
+export type SupportStatus = Schema.Schema.Type<typeof SupportStatus>
+
 const Verification = Schema.Struct({
   unitProject: Schema.NonEmptyString,
   coverageScope: Schema.NonEmptyString,
   integrationSuites: Schema.Array(IntegrationSuite),
   parityPlatforms: Schema.Array(Platform),
+  paritySources: Schema.optional(
+    Schema.Array(Schema.Struct({ platform: Platform, source: Schema.NonEmptyString })),
+  ),
 })
 
 const Requirements = Schema.Struct({
@@ -28,6 +34,7 @@ const Requirements = Schema.Struct({
 
 export const Capability = Schema.Struct({
   id: Schema.NonEmptyString,
+  supportStatus: SupportStatus,
   expoPackage: Schema.NonEmptyString,
   candidatePackage: Schema.NonEmptyString,
   compatibilitySource: Schema.NonEmptyString,
@@ -37,8 +44,16 @@ export const Capability = Schema.Struct({
 })
 export type Capability = Schema.Schema.Type<typeof Capability>
 
+/** Resolves the capability source that supplies one platform's parity evidence. */
+export const compatibilitySourceFor = (
+  capability: Capability,
+  platform: Capability["verification"]["parityPlatforms"][number],
+): string =>
+  capability.verification.paritySources?.find((entry) => entry.platform === platform)?.source ??
+  capability.compatibilitySource
+
 export const CapabilityLedger = Schema.Struct({
-  schemaVersion: Schema.Literal(1),
+  schemaVersion: Schema.Literal(2),
   capabilities: Schema.Array(Capability),
 })
 export type CapabilityLedger = Schema.Schema.Type<typeof CapabilityLedger>
@@ -52,10 +67,29 @@ export interface MigrationCheck {
 export interface MigrationStatus {
   readonly id: string
   readonly ownership: "effect" | "fallback" | "mixed" | "missing"
-  readonly promotable: boolean
+  readonly supportStatus: SupportStatus
+  readonly supportInvariantValid: boolean
+  readonly hostVerified: boolean
   readonly checks: ReadonlyArray<MigrationCheck>
   readonly requirements: Capability["requirements"]
 }
+
+interface SupportClaim {
+  readonly supportStatus: SupportStatus
+  readonly ownership: MigrationStatus["ownership"]
+  readonly hostEvidenceComplete: boolean
+  readonly promotionEvidenceComplete: boolean
+}
+
+/** Prevents stable support until ownership, host checks, and reviewed promotion evidence agree. */
+export const validatesSupportInvariant = ({
+  supportStatus,
+  ownership,
+  hostEvidenceComplete,
+  promotionEvidenceComplete,
+}: SupportClaim): boolean =>
+  supportStatus === "experimental" ||
+  (ownership === "effect" && hostEvidenceComplete && promotionEvidenceComplete)
 
 const json = (text: string, path: string) =>
   Effect.try({
@@ -285,10 +319,17 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
         }),
       )
       const integrationSuitesRouted = integrationSuiteRoutes.every(Boolean)
+      const paritySourcePlatforms = (capability.verification.paritySources ?? []).map(
+        ({ platform }) => platform,
+      )
       const parityPlatformsMatch =
         capability.verification.parityPlatforms.length ===
           capability.requirements.platforms.length &&
         capability.requirements.platforms.every((platform) =>
+          capability.verification.parityPlatforms.includes(platform),
+        ) &&
+        new Set(paritySourcePlatforms).size === paritySourcePlatforms.length &&
+        paritySourcePlatforms.every((platform) =>
           capability.verification.parityPlatforms.includes(platform),
         )
       const registryMentionsTask = capability.requirements.dxEval
@@ -331,10 +372,18 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
         ),
         check(
           "compatibility source",
-          yield* exists(
-            resolve(`apps/compatibility-suite/src/capabilities/${capability.compatibilitySource}`),
-          ),
-          capability.compatibilitySource,
+          (yield* Effect.all(
+            [
+              capability.compatibilitySource,
+              ...(capability.verification.paritySources ?? []).map(({ source }) => source),
+            ].map((source) =>
+              exists(resolve(`apps/compatibility-suite/src/capabilities/${source}`)),
+            ),
+          )).every(Boolean),
+          [
+            capability.compatibilitySource,
+            ...(capability.verification.paritySources ?? []).map(({ source }) => source),
+          ].join(", "),
         ),
         check(
           "ownership",
@@ -368,10 +417,21 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
         ),
         check("DX eval registry", registryMentionsTask, taskModuleName),
       ]
+      const hostVerified = checks.every((item) => item.complete)
+      const supportInvariantValid = validatesSupportInvariant({
+        supportStatus: capability.supportStatus,
+        ownership: ownershipStatus,
+        hostEvidenceComplete: hostVerified,
+        // Promotion evidence is intentionally evaluated outside the host-only migration report.
+        // A stable claim therefore cannot enter the ledger without a durable reviewed input here.
+        promotionEvidenceComplete: false,
+      })
       return {
         id: capability.id,
         ownership: ownershipStatus,
-        promotable: ownershipStatus === "effect" && checks.every((item) => item.complete),
+        supportStatus: capability.supportStatus,
+        supportInvariantValid,
+        hostVerified,
         checks,
         requirements: capability.requirements,
       } satisfies MigrationStatus
@@ -387,14 +447,21 @@ export const report = Effect.fn("CapabilityMigrations.report")(function* (
   const statuses = yield* inspect(repositoryRoot)
   for (const status of statuses) {
     yield* Console.log(`${status.id} [${status.ownership}]`)
+    yield* Console.log(
+      `  support: ${status.supportStatus}${status.supportInvariantValid ? "" : " (invalid invariant)"}`,
+    )
     for (const item of status.checks) {
       yield* Console.log(`  ${item.complete ? "ok" : "missing"}  ${item.name}: ${item.detail}`)
     }
-    yield* Console.log(`  promotable: ${status.promotable ? "yes" : "no"}`)
+    yield* Console.log(`  host profile: ${status.hostVerified ? "verified" : "incomplete"}`)
+    yield* Console.log(
+      `  promotion profile: evaluate with verify:capability ${status.id} --profile promotion`,
+    )
   }
-  const incomplete = statuses.flatMap((status) =>
-    status.checks.filter((item) => !item.complete).map((item) => `${status.id}: ${item.name}`),
-  )
+  const incomplete = statuses.flatMap((status) => [
+    ...status.checks.filter((item) => !item.complete).map((item) => `${status.id}: ${item.name}`),
+    ...(status.supportInvariantValid ? [] : [`${status.id}: support status`]),
+  ])
   if (strict && incomplete.length > 0) {
     return yield* new HarnessError({
       operation: "validate capability migrations",

@@ -358,8 +358,11 @@ Both commands normalize runner output before accepting it as evidence.
 `compare-runs` loads every `record.json` below the two supplied run roots. It
 rejects missing evidence, candidate regressions, unapproved divergences,
 incomplete source coverage, and candidate resolutions that do not match the
-generated replacement manifest. Add a behavioral exception only when it is
-intentional and reviewed, in `compatibility/expectations.json`.
+generated replacement manifest. A successful verdict is retained under
+`.artifacts/comparisons`; it requires one non-empty candidate revision and identical upstream and
+candidate device identity. The capability verification command reads these records for its
+`integration` and `promotion` profiles. Add a behavioral exception only when it is intentional and
+reviewed, in `compatibility/expectations.json`.
 
 Candidate routing is controlled by `compatibility/ownership.json`. After a
 legitimate Expo surface change, review the generated surface and update the

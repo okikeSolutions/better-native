@@ -22,12 +22,16 @@ bun run compatibility
 bun run matrix
 bun run migration-status
 bun run check                    # local static, unit, and coverage fast path
-bun run verify:capability clipboard
+bun run verify:capability clipboard --profile host
 ```
 
 Process, container, deterministic eval, and native parity suites run in CI. Maintainers can invoke
 `bun run test:integration` or `bun run evals validate --task clipboard` when reproducing those jobs
 locally.
+
+The capability ledger records implementation ownership separately from `experimental` or `stable`
+support. Host verification permits experimental work to merge while unavailable native evidence
+remains visible; stable support still requires the complete capability-specific promotion evidence.
 
 The architecture and compatibility contract live in [docs/architecture.md](./docs/architecture.md).
 The documentation target lives in [docs/documentation.md](./docs/documentation.md).
