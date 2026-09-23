@@ -2,3 +2,13 @@ When contributing a new Expo package migration, add it to `compatibility/capabil
 Follow `docs/architecture.md`, `docs/testing.md`, and `docs/documentation.md`; a wrapper alone is not a completed migration, only reviewed `effect` ownership counts as migrated, and migration does not imply stable support.
 Before diagnosing native app failures, verify and record the required runner toolchain (including JDK 17 for Maestro) and run upstream and candidate cohorts with the same simulator, binaries, and environment; do not report runner-environment failures as app regressions.
 Build at most one reusable release binary per platform for a verification cycle and run all cohorts against it; do not rebuild iOS or Android unless native build inputs changed, the artifact is missing or invalid, or the task explicitly requires a clean rebuild.
+
+## Agent skills
+
+### Issue tracker
+
+Engineering-Spezifikationen und Aufgaben liegen in GitHub Issues. Siehe `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Zentrale Begriffe stehen in `CONTEXT.md`, Entscheidungen in `docs/adr/`. Siehe `docs/agents/domain.md`.
