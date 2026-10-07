@@ -559,10 +559,10 @@ const coverageEntries = Effect.fn("Coverage.coverageEntries")(function* (
           ...(mapping.status === "intentional-divergence"
             ? { reason: mapping.reason }
             : {
-                ...(mapping.deprecated === true
+                ...(mapping.deprecated === true && mapping.deprecationReason !== undefined
                   ? {
                       deprecated: true as const,
-                      deprecationReason: mapping.deprecationReason!,
+                      deprecationReason: mapping.deprecationReason,
                     }
                   : {}),
                 ...(mapping.atomTarget === undefined ? {} : { atomTarget: mapping.atomTarget }),

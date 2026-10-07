@@ -24,7 +24,11 @@ import {
   applyBuildProfile,
   buildProfileEnvironment,
 } from "./BuildProfile.ts"
-import { NativeArtifactCache, nativeArtifactName } from "./NativeArtifactCache.ts"
+import {
+  NativeArtifactCache,
+  nativeArtifactName,
+  type NativeCacheRestore,
+} from "./NativeArtifactCache.ts"
 import {
   canonicalNativeFingerprintSources,
   nativeClosureFingerprintInput,
@@ -42,6 +46,20 @@ interface Service {
     toolchain: PinnedExpoToolchain,
   ) => Effect.Effect<BuildOutput, BuildPipelineError>
 }
+
+const nativeCacheEvidenceFor = (
+  cache: NativeCacheRestore,
+  source: "native-cache" | "full-build",
+): BuildRecordType["nativeArtifact"] =>
+  cache.sourceBuildId === null || cache.artifactHash === null
+    ? null
+    : {
+        cacheKey: cache.key,
+        source,
+        sourceBuildId: cache.sourceBuildId,
+        artifactHash: cache.artifactHash,
+        validated: true,
+      }
 
 const nativeAutolinkingPlatform = (platform: "ios" | "android") =>
   Match.value(platform).pipe(
@@ -489,14 +507,15 @@ export const layer = (
                 }
                 yield* ensureNativeRebuildAllowed(request, restored)
                 if (restored.hit) {
+                  const cacheProvenance = nativeCacheEvidenceFor(restored, "native-cache")
+                  if (cacheProvenance === null)
+                    return yield* new BuildPipelineError({
+                      phase: "evidence",
+                      request,
+                      cause: new Error("Native cache hit has no validated artifact provenance"),
+                    })
                   buildDecision = "repack"
-                  nativeCacheEvidence = {
-                    cacheKey: restored.key,
-                    source: "native-cache",
-                    sourceBuildId: restored.sourceBuildId!,
-                    artifactHash: restored.artifactHash!,
-                    validated: true,
-                  }
+                  nativeCacheEvidence = cacheProvenance
                 } else {
                   results.push(
                     yield* Effect.scoped(
@@ -537,13 +556,7 @@ export const layer = (
                     nativeFingerprint,
                     toolchainFingerprint,
                   })
-                  nativeCacheEvidence = {
-                    cacheKey: published.key,
-                    source: "full-build",
-                    sourceBuildId: published.sourceBuildId!,
-                    artifactHash: published.artifactHash!,
-                    validated: true,
-                  }
+                  nativeCacheEvidence = nativeCacheEvidenceFor(published, "full-build")
                 }
               } else {
                 const iosDirectory = path.join(appDirectory, "ios")
@@ -585,14 +598,15 @@ export const layer = (
                 }
                 yield* ensureNativeRebuildAllowed(request, restored)
                 if (restored.hit) {
+                  const cacheProvenance = nativeCacheEvidenceFor(restored, "native-cache")
+                  if (cacheProvenance === null)
+                    return yield* new BuildPipelineError({
+                      phase: "evidence",
+                      request,
+                      cause: new Error("Native cache hit has no validated artifact provenance"),
+                    })
                   buildDecision = "repack"
-                  nativeCacheEvidence = {
-                    cacheKey: restored.key,
-                    source: "native-cache",
-                    sourceBuildId: restored.sourceBuildId!,
-                    artifactHash: restored.artifactHash!,
-                    validated: true,
-                  }
+                  nativeCacheEvidence = cacheProvenance
                 } else {
                   const iosNativeFingerprint = nativeFingerprint
                   const iosToolchainFingerprint = toolchainFingerprint
@@ -707,13 +721,7 @@ export const layer = (
                             nativeFingerprint: iosNativeFingerprint,
                             toolchainFingerprint: iosToolchainFingerprint,
                           })
-                          nativeCacheEvidence = {
-                            cacheKey: published.key,
-                            source: "full-build",
-                            sourceBuildId: published.sourceBuildId!,
-                            artifactHash: published.artifactHash!,
-                            validated: true,
-                          }
+                          nativeCacheEvidence = nativeCacheEvidenceFor(published, "full-build")
                         }),
                       ),
                     ),

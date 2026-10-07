@@ -19,7 +19,7 @@ export const Limits = Schema.Struct({
     expected: "virtual-workspace limits whose default list size does not exceed the path ceiling",
   }),
 )
-export type Limits = Schema.Schema.Type<typeof Limits>
+export interface Limits extends Schema.Schema.Type<typeof Limits> {}
 
 /** Reviewed virtual-workspace limits shared by schemas, handlers, tests, and evidence metadata. */
 export const defaultLimits = Schema.decodeUnknownSync(Limits)({
@@ -97,7 +97,10 @@ const editReplacements = (
     ),
     Match.when(
       (candidate) => candidate.oldText !== undefined && candidate.newText !== undefined,
-      (candidate) => [{ oldText: candidate.oldText!, newText: candidate.newText! }],
+      (candidate) => {
+        const { oldText, newText } = candidate
+        return oldText === undefined || newText === undefined ? [] : [{ oldText, newText }]
+      },
     ),
     Match.orElse(() => []),
   )
