@@ -5,10 +5,6 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
-    inputs:
-      diagnostic_compile:
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -35,14 +31,12 @@ jobs:
         uses: ./.github/actions/setup-build
 
       - name: Run the local fast contract
-        if: ${{ !inputs.diagnostic_compile }}
         run: bun run check:fast
 
       - name: Setup DX eval prerequisites
         uses: ./.github/actions/setup-dx-evals
 
       - name: Run selected integration suites
-        if: ${{ !inputs.diagnostic_compile }}
         shell: bash
         run: |
           set -euo pipefail
@@ -52,14 +46,7 @@ jobs:
             echo "::endgroup::"
           done
 
-      - name: Diagnose one compile contract
-        if: ${{ inputs.diagnostic_compile }}
-        env:
-          BETTER_NATIVE_DEBUG_COMPILE: "1"
-        run: bun x vitest run --config vitest.integration.config.ts tooling/dx-evals/src/agent/compile-contracts/SqliteCompileContract.test.ts
-
       - name: Validate every ledger capability's deterministic controls
-        if: ${{ !inputs.diagnostic_compile }}
         shell: bash
         run: |
           set -euo pipefail

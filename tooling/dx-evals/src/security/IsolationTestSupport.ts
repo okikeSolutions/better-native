@@ -23,10 +23,7 @@ export const makeConfig = (
   repositoryRoot,
   artifactsRoot: `${repositoryRoot}/.artifacts/evals`,
   effectPackageRoot: `${repositoryRoot}/node_modules/effect`,
-  effectRuntimePackages: [
-    { name: "fast-check", root: `${repositoryRoot}/node_modules/fast-check` },
-    { name: "pure-rand", root: `${repositoryRoot}/node_modules/pure-rand` },
-  ],
+  effectRuntimePackages: [],
   runnerRuntimePackages: [
     {
       name: "@effect/platform-node",
