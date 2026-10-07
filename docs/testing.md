@@ -85,8 +85,10 @@ bun run test:integration
 BETTER_NATIVE_INTEGRATION_SUITE=compile-contracts bun run test:integration
 ```
 
-CI runs all named integration suites as separate matrix jobs and derives the per-capability eval
-matrix directly from `compatibility/capabilities.json`. The host unit suite also excludes Vitest
+CI selects each named integration suite and each ledger capability in one sequential verification
+job. It reads capability IDs directly from `compatibility/capabilities.json`, so each fixture remains
+selectable without repeating workspace installation, Expo setup, and Podman setup in separate jobs.
+The host unit suite also excludes Vitest
 Evals task controls. Run the secretless reference, no-op, and broken controls through their
 dedicated configuration with:
 
