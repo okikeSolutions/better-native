@@ -169,10 +169,9 @@ they exercise Effect programs. Promise-, callback-, SDK-, container-, and Vitest
 kept at narrow adapters and lifted into Effect rather than becoming the orchestration model.
 
 The workspace imports Effect through normal package entrypoints such as `effect/Effect` and
-`effect/Schema`, using the exact root dependency version associated with the revision recorded for
-`vendor/effect`. It does not import source files through `vendor/effect` paths. The vendored checkout
-is the pinned authoritative source and research reference; the installed `effect` package is the
-compilation and runtime boundary. Dependency and revision identities are recorded in eval evidence.
+`effect/Schema`. The installed `effect` package supplies the implementation used by the compiler
+and runtime. `compatibility/upstreams.json` records its version and the corresponding upstream
+revision for research. Dependency and revision identities are recorded in eval evidence.
 `evals/tasks/*/grader` is data-only: fixtures, expected values, and declarative grader configuration.
 `evals/tasks` is not an unchecked executable-code root.
 
@@ -833,8 +832,7 @@ The current implementation contains:
   values, plus exhaustive Effect `Match` dispatch for closed domain alternatives;
 - one process-owned `ManagedRuntime` built from `NodeServices.layer` and the complete application
   Layer, reused by every trial in that process and covered by a disposal test;
-- a conformance check rejecting direct imports from `vendor/effect` and recording the installed
-  Effect version and pinned source revision;
+- a conformance check recording the installed Effect version and pinned upstream revision;
 - one synthetic consumer task with no Expo or native dependency;
 - task-schema and filtered-export validation;
 - reference, no-op, and deliberately broken deterministic adapters;

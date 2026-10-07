@@ -90,8 +90,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
       - name: Setup build profile
         uses: ./.github/actions/setup-build
       - name: Install Playwright Chromium
@@ -128,8 +126,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
       - name: Setup build profile
         uses: ./.github/actions/setup-build
       - name: Install Playwright Chromium
@@ -216,8 +212,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
       - name: Setup build profile
         uses: ./.github/actions/setup-build
       - name: Setup Ruby
@@ -464,8 +458,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
       - name: Cleanup Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: Setup build profile
@@ -652,8 +644,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
       - name: Setup host verification profile
         uses: ./.github/actions/setup-build
       - name: Download web comparison verdict

@@ -98,7 +98,7 @@ compatibility/api-mappings.json Reviewed Expo-to-Effect semantic API mappings
 compatibility/surface-lock.json Reviewed lock for the complete discovered export denominator
 compatibility/expectations.json Case-level known upstream or candidate behavior
 compatibility/suites.json      Declarative upstream test discovery rules
-vendor/effect                  Pinned Effect source
+node_modules/effect            Installed, pinned Effect implementation
 ../expo                        External pinned Expo source and behavioral oracle
 .artifacts                     Disposable catalogs, reports, builds, logs, and screenshots
 ```

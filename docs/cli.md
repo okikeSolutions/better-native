@@ -335,9 +335,9 @@ whose provider is absent.
 
 ## Effect implementation
 
-The CLI is an Effect application and follows the pinned source under `vendor/effect` as its
-authoritative implementation reference. Published code must import installed packages and must
-never import `vendor/effect` directly.
+The CLI is an Effect application. Its installed `effect` package is the implementation used by
+CI and published code; `compatibility/upstreams.json` records the corresponding upstream source
+revision for reference.
 
 The command tree uses:
 
@@ -676,16 +676,16 @@ package names alone:
   [`autolinking.mdx`](../../expo/docs/pages/modules/autolinking.mdx) and
   [`resolution.ts`](../../expo/packages/expo-modules-autolinking/src/dependencies/resolution.ts)
 - Effect CLI configuration and runner behavior:
-  [`CliConfig.ts`](../vendor/effect/packages/effect/src/unstable/cli/CliConfig.ts),
-  [`GlobalFlag.ts`](../vendor/effect/packages/effect/src/unstable/cli/GlobalFlag.ts), and
-  [`Command.ts`](../vendor/effect/packages/effect/src/unstable/cli/Command.ts)
+  [`CliConfig.ts`](https://github.com/Effect-TS/effect/blob/269a7c864351231d42e6e95b7fa8f32050df3691/packages/effect/src/unstable/cli/CliConfig.ts),
+  [`GlobalFlag.ts`](https://github.com/Effect-TS/effect/blob/269a7c864351231d42e6e95b7fa8f32050df3691/packages/effect/src/unstable/cli/GlobalFlag.ts), and
+  [`Command.ts`](https://github.com/Effect-TS/effect/blob/269a7c864351231d42e6e95b7fa8f32050df3691/packages/effect/src/unstable/cli/Command.ts)
 - Effect's process-owned Layer lifecycle:
-  [`ManagedRuntime.ts`](../vendor/effect/packages/effect/src/ManagedRuntime.ts) and the pinned
-  [`ManagedRuntime` integration guide](../vendor/effect/ai-docs/src/04_integration/10_managed-runtime.ts)
+  [`ManagedRuntime.ts`](https://github.com/Effect-TS/effect/blob/269a7c864351231d42e6e95b7fa8f32050df3691/packages/effect/src/ManagedRuntime.ts) and the pinned
+  [`ManagedRuntime` integration guide](https://github.com/Effect-TS/effect/blob/269a7c864351231d42e6e95b7fa8f32050df3691/ai-docs/src/04_integration/10_managed-runtime.ts)
 - Effect child-process and Node boundaries:
-  [`ChildProcess.ts`](../vendor/effect/packages/effect/src/unstable/process/ChildProcess.ts),
-  [`ChildProcessSpawner.ts`](../vendor/effect/packages/effect/src/unstable/process/ChildProcessSpawner.ts),
-  and [`NodeServices.ts`](../vendor/effect/packages/platform/node/src/NodeServices.ts)
+  [`ChildProcess.ts`](https://github.com/Effect-TS/effect/blob/269a7c864351231d42e6e95b7fa8f32050df3691/packages/effect/src/unstable/process/ChildProcess.ts),
+  [`ChildProcessSpawner.ts`](https://github.com/Effect-TS/effect/blob/269a7c864351231d42e6e95b7fa8f32050df3691/packages/effect/src/unstable/process/ChildProcessSpawner.ts),
+  and [`NodeServices.ts`](https://github.com/Effect-TS/effect/blob/269a7c864351231d42e6e95b7fa8f32050df3691/packages/platform/node/src/NodeServices.ts)
 - npm optional-peer and executable semantics:
   [npm `package.json` documentation](https://docs.npmjs.com/cli/configuring-npm/package-json/) and
   [npm `npx` documentation](https://docs.npmjs.com/cli/commands/npx/)
