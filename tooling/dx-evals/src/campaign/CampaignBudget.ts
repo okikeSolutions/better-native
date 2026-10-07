@@ -1,10 +1,10 @@
 import * as Context from "effect/Context"
 import * as Config from "effect/Config"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
 import * as Ref from "effect/Ref"
+import * as Schema from "effect/Schema"
 import * as Campaigns from "./Campaigns.ts"
 import * as Domain from "../Domain.ts"
 
@@ -21,16 +21,22 @@ type ReservationResult =
   | { readonly type: "rejected"; readonly remainingCostUsd: number }
 
 /** Failure raised before a trial whose reservation would exceed the campaign ceiling. */
-export class CampaignCostLimitExceeded extends Data.TaggedError("CampaignCostLimitExceeded")<{
-  readonly runId: Domain.RunId
-  readonly requestedCostUsd: number
-  readonly remainingCostUsd: number
-}> {}
+export class CampaignCostLimitExceeded extends Schema.TaggedError<CampaignCostLimitExceeded>()(
+  "CampaignCostLimitExceeded",
+  {
+    runId: Domain.RunId,
+    requestedCostUsd: Schema.Number,
+    remainingCostUsd: Schema.Number,
+  },
+) {}
 
 /** Failure raised when a paid run identity is reused within one controller process. */
-export class CampaignRunIdAlreadyReserved extends Data.TaggedError("CampaignRunIdAlreadyReserved")<{
-  readonly runId: Domain.RunId
-}> {}
+export class CampaignRunIdAlreadyReserved extends Schema.TaggedError<CampaignRunIdAlreadyReserved>()(
+  "CampaignRunIdAlreadyReserved",
+  {
+    runId: Domain.RunId,
+  },
+) {}
 
 /** Process-owned fail-fast budget operations for paid trials. */
 export interface Service {
@@ -110,7 +116,7 @@ const makeLayer = (maximumCostUsd: number) =>
 
 /** Runtime budget selected by the reviewed campaign CLI, with a safe deterministic default. */
 export const layer = Layer.unwrap(
-  Config.number("BETTER_NATIVE_EVAL_CAMPAIGN_MAX_COST_USD").pipe(
+  Config.Number("BETTER_NATIVE_EVAL_CAMPAIGN_MAX_COST_USD").pipe(
     Config.withDefault(Campaigns.reviewedMaximumKeyLimitUsd),
     Effect.map(makeLayer),
   ),

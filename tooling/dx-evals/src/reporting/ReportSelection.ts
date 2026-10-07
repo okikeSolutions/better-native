@@ -1,4 +1,3 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Match from "effect/Match"
@@ -20,9 +19,17 @@ export type Scope =
   | { readonly kind: "all" }
 
 /** Failure raised when report flags or retained report artifacts are invalid. */
-export class ReportSelectionInvalid extends Data.TaggedError("ReportSelectionInvalid")<{
-  readonly reason: "conflicting-flags" | "invalid-campaign" | "no-reports" | "no-campaign-reports"
-}> {}
+export class ReportSelectionInvalid extends Schema.TaggedError<ReportSelectionInvalid>()(
+  "ReportSelectionInvalid",
+  {
+    reason: Schema.Literals([
+      "conflicting-flags",
+      "invalid-campaign",
+      "no-reports",
+      "no-campaign-reports",
+    ]),
+  },
+) {}
 
 /** Resolves CLI flags; the safe default is exactly the latest retained campaign. */
 export const resolveScope = (input: {

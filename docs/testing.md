@@ -115,6 +115,10 @@ bun run typecheck
 bun run check:effect
 ```
 
+`oxlint` keeps Effect's type and service diagnostics enabled. Its `unstable-api-usage` rule is
+disabled because the pinned Effect v4 release marks required SQL, reactivity, platform, and test
+modules unstable; that annotation does not identify a replacement API for these integrations.
+
 Artifact lifecycle host tests prove that active workspace locks protect both workspaces and shared
 caches, dry-run and applied pruning choose identical deterministic targets, failed-workspace
 retention expires after 24 hours, sparse files are measured by physical allocation, and CocoaPods

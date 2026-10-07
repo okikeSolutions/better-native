@@ -1,11 +1,13 @@
 import * as Duration from "effect/Duration"
 import * as Effect from "effect/Effect"
-import * as Prompt from "effect/unstable/ai/Prompt"
-import type * as AiError from "effect/unstable/ai/AiError"
-import * as LanguageModel from "effect/unstable/ai/LanguageModel"
+import * as Prompt from "effect/ai/Prompt"
+import type * as AiError from "effect/ai/AiError"
+import type * as Response from "effect/ai/Response"
+import type * as Tool from "effect/ai/Tool"
+import * as LanguageModel from "effect/ai/LanguageModel"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
-import * as Toolkit from "effect/unstable/ai/Toolkit"
+import * as Toolkit from "effect/ai/Toolkit"
 import * as OpenRouterLanguageModel from "@effect/ai-openrouter/OpenRouterLanguageModel"
 import * as Ref from "effect/Ref"
 import * as Schema from "effect/Schema"
@@ -97,7 +99,12 @@ type ObservedUsage = Pick<
   | "providerFingerprint"
 > & { readonly costUsd?: number }
 
-const usageFromResponse = (response: LanguageModel.GenerateTextResponse<any>): ObservedUsage => {
+const usageFromResponse = <
+  Tools extends Record<string, Tool.Any>,
+  Mode extends Response.ToolParametersMode,
+>(
+  response: LanguageModel.GenerateTextResponse<Tools, Mode>,
+): ObservedUsage => {
   const finish = response.content.find((part) => part.type === "finish")
   const openrouter = finish?.metadata.openrouter
   const rawUsage = openrouter?.usage
@@ -153,7 +160,10 @@ const addUsage = (
 })
 
 const responseTranscript = (
-  response: LanguageModel.GenerateTextResponse<Toolkit.Tools<typeof CodingTools.CodingToolkit>>,
+  response: LanguageModel.GenerateTextResponse<
+    Toolkit.Tools<typeof CodingTools.CodingToolkit>,
+    "opaque"
+  >,
   turn: number,
 ): ReadonlyArray<Domain.TranscriptEvent> => {
   const events: Array<Domain.TranscriptEvent> = []

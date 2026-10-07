@@ -1,4 +1,3 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import * as Schema from "effect/Schema"
@@ -7,20 +6,24 @@ import { TestCaseId, type CaseResult, type RunId, type TestSourceId } from "../D
 import type { ProcessSpec } from "../supervision/ProcessSupervisor.ts"
 
 /** Failure raised when an external runner report cannot be parsed or normalized. */
-export class RunnerOutputError extends Data.TaggedError("RunnerOutputError")<{
-  readonly runner:
-    | "jest"
-    | "node-test"
-    | "bun-test"
-    | "xctest"
-    | "gradle-unit"
-    | "gradle-instrumentation"
-    | "maestro"
-    | "playwright"
-    | "detox"
-    | "workflow"
-  readonly cause: unknown
-}> {}
+export class RunnerOutputError extends Schema.TaggedError<RunnerOutputError>()(
+  "RunnerOutputError",
+  {
+    runner: Schema.Literals([
+      "jest",
+      "node-test",
+      "bun-test",
+      "xctest",
+      "gradle-unit",
+      "gradle-instrumentation",
+      "maestro",
+      "playwright",
+      "detox",
+      "workflow",
+    ]),
+    cause: Schema.Defect(),
+  },
+) {}
 
 /**
  * Builds the bounded Jest command used by reviewed runner plans.

@@ -1,11 +1,11 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Queue from "effect/Queue"
+import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
 import * as SynchronizedRef from "effect/SynchronizedRef"
-import * as Atom from "effect/unstable/reactivity/Atom"
+import * as Atom from "effect/reactivity/Atom"
 import * as ExpoKeepAwake from "expo-keep-awake"
 
 /**
@@ -63,9 +63,12 @@ export interface KeepAwakeLeaseOptions {
  * @category errors
  * @since 0.0.0
  */
-export class KeepAwakeUnavailable extends Data.TaggedError("KeepAwakeUnavailable")<{
-  readonly method: string
-}> {}
+export class KeepAwakeUnavailable extends Schema.TaggedError<KeepAwakeUnavailable>()(
+  "KeepAwakeUnavailable",
+  {
+    method: Schema.String,
+  },
+) {}
 
 /**
  * Tagged error raised when an Expo KeepAwake operation fails.
@@ -73,10 +76,10 @@ export class KeepAwakeUnavailable extends Data.TaggedError("KeepAwakeUnavailable
  * @category errors
  * @since 0.0.0
  */
-export class KeepAwakeFailure extends Data.TaggedError("KeepAwakeFailure")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class KeepAwakeFailure extends Schema.TaggedError<KeepAwakeFailure>()("KeepAwakeFailure", {
+  method: Schema.String,
+  cause: Schema.Defect(),
+}) {}
 
 /**
  * Keep-awake service contract used by the Effect-native API.

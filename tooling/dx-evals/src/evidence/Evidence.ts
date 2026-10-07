@@ -1,6 +1,5 @@
 import * as Context from "effect/Context"
 import * as Crypto from "effect/Crypto"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
@@ -65,9 +64,12 @@ export class Evidence extends Context.Service<Evidence, Service>()(
 ) {}
 
 /** Failure raised when authenticated evidence cannot be published atomically. */
-export class EvidenceWriteFailure extends Data.TaggedError("EvidenceWriteFailure")<{
-  readonly reason: string
-}> {}
+export class EvidenceWriteFailure extends Schema.TaggedError<EvidenceWriteFailure>()(
+  "EvidenceWriteFailure",
+  {
+    reason: Schema.String,
+  },
+) {}
 
 const canonicalize = (value: unknown): string => {
   if (value === null || typeof value !== "object") return JSON.stringify(value) ?? "null"

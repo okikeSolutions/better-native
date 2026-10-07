@@ -1,9 +1,9 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
+import * as Schema from "effect/Schema"
 import type { Platform, ProcessObservation, RunId } from "../Domain.ts"
 import { HarnessConfig } from "../HarnessConfig.ts"
 import { ProcessSupervisor, type ProcessResult, type ProcessSpec } from "./ProcessSupervisor.ts"
@@ -16,12 +16,18 @@ export interface NativeDevice {
   readonly kind?: "simulator" | "emulator" | "physical"
 }
 
+const isNativeDevice = (value: unknown): value is NativeDevice =>
+  typeof value === "object" && value !== null
+
 /** Failure raised by device installation, liveness, logging, or result collection. */
-export class PlatformDriverError extends Data.TaggedError("PlatformDriverError")<{
-  readonly operation: "install" | "maestro" | "liveness" | "logs" | "result"
-  readonly device: NativeDevice
-  readonly cause: unknown
-}> {}
+export class PlatformDriverError extends Schema.TaggedError<PlatformDriverError>()(
+  "PlatformDriverError",
+  {
+    operation: Schema.Literals(["install", "maestro", "liveness", "logs", "result"]),
+    device: Schema.declare(isNativeDevice),
+    cause: Schema.Defect(),
+  },
+) {}
 
 /** Platform operations required by the native supervisor. */
 export interface Service {

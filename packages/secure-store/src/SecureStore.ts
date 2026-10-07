@@ -1,7 +1,7 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
+import * as Schema from "effect/Schema"
 import * as ExpoSecureStore from "expo-secure-store"
 
 /**
@@ -93,11 +93,14 @@ export const WHEN_UNLOCKED_THIS_DEVICE_ONLY = ExpoSecureStore.WHEN_UNLOCKED_THIS
  * @category errors
  * @since 0.0.0
  */
-export class SecureStoreFailure extends Data.TaggedError("SecureStoreFailure")<{
-  readonly method: string
-  readonly key?: string
-  readonly cause: unknown
-}> {}
+export class SecureStoreFailure extends Schema.TaggedError<SecureStoreFailure>()(
+  "SecureStoreFailure",
+  {
+    method: Schema.String,
+    key: Schema.optional(Schema.String),
+    cause: Schema.Defect(),
+  },
+) {}
 
 /**
  * SecureStore service contract used by the Effect-native API.

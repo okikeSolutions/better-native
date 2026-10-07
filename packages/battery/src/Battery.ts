@@ -1,12 +1,11 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
 import * as Queue from "effect/Queue"
 import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as Atom from "effect/unstable/reactivity/Atom"
+import * as Atom from "effect/reactivity/Atom"
 import * as ExpoBattery from "expo-battery"
 
 /**
@@ -83,10 +82,10 @@ export type Subscription = ExpoBattery.Subscription
  * @category errors
  * @since 0.0.0
  */
-export class BatteryFailure extends Data.TaggedError("BatteryFailure")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class BatteryFailure extends Schema.TaggedError<BatteryFailure>()("BatteryFailure", {
+  method: Schema.String,
+  cause: Schema.Defect(),
+}) {}
 
 /**
  * Battery service contract used by the Effect-native API.
@@ -388,15 +387,18 @@ const powerStateChanges = Stream.merge(
     value: event.lowPowerMode,
   })),
 ).pipe(
-  Stream.scan(initialPowerState, (current, update) => {
-    return Match.value(update).pipe(
-      Match.when({ _tag: "snapshot" }, ({ value }) => value),
-      Match.when({ _tag: "level" }, ({ value }) => ({ ...current, batteryLevel: value })),
-      Match.when({ _tag: "state" }, ({ value }) => ({ ...current, batteryState: value })),
-      Match.when({ _tag: "lowPowerMode" }, ({ value }) => ({ ...current, lowPowerMode: value })),
-      Match.exhaustive,
-    )
-  }),
+  Stream.scan(
+    () => initialPowerState,
+    (current, update) => {
+      return Match.value(update).pipe(
+        Match.when({ _tag: "snapshot" }, ({ value }) => value),
+        Match.when({ _tag: "level" }, ({ value }) => ({ ...current, batteryLevel: value })),
+        Match.when({ _tag: "state" }, ({ value }) => ({ ...current, batteryState: value })),
+        Match.when({ _tag: "lowPowerMode" }, ({ value }) => ({ ...current, lowPowerMode: value })),
+        Match.exhaustive,
+      )
+    },
+  ),
 )
 
 /**

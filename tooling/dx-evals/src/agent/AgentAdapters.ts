@@ -1,9 +1,9 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as FileSystem from "effect/FileSystem"
 import * as Path from "effect/Path"
+import * as Schema from "effect/Schema"
 import type * as PlatformError from "effect/PlatformError"
 import * as Config from "../Config.ts"
 import * as Domain from "../Domain.ts"
@@ -49,9 +49,9 @@ export interface AgentAdapter {
 }
 
 /** Failure raised when a trial requests an adapter outside the reviewed registry. */
-export class AdapterNotFound extends Data.TaggedError("AdapterNotFound")<{
-  readonly adapterId: Domain.AdapterId
-}> {}
+export class AdapterNotFound extends Schema.TaggedError<AdapterNotFound>()("AdapterNotFound", {
+  adapterId: Domain.AdapterId,
+}) {}
 
 /** Agent-adapter registry service used by the trial runner. */
 export interface Service {
@@ -94,7 +94,7 @@ export const reference: AgentAdapter = {
       const path = yield* Path.Path
       const patch = yield* fs.readFileString(path.join(task.root, "reference.patch"))
       const content = yield* Submission.applySingleFilePatch(
-        task.fixtureFiles[0]!.content,
+        task.fixtureFiles[0].content,
         patch,
         task.definition.entrypoint,
       )
@@ -137,7 +137,7 @@ export const broken: AgentAdapter = {
       const path = yield* Path.Path
       const patch = yield* fs.readFileString(path.join(task.root, "broken.patch"))
       const content = yield* Submission.applySingleFilePatch(
-        task.fixtureFiles[0]!.content,
+        task.fixtureFiles[0].content,
         patch,
         task.definition.entrypoint,
       )

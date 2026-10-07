@@ -37,7 +37,7 @@ export const assertReferenceCompiles = (task: TaskModel.TaskBase) =>
     const path = yield* Path.Path
     const patch = yield* fs.readFileString(path.join(task.root, "reference.patch"))
     const content = yield* Submission.applySingleFilePatch(
-      task.fixtureFiles[0]!.content,
+      task.fixtureFiles[0].content,
       patch,
       task.definition.entrypoint,
     )

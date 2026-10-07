@@ -1,6 +1,7 @@
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Schema from "effect/Schema";
 import type { MetroConfig } from "@expo/metro-config";
 export type ResolutionMode = "upstream" | "candidate";
 export type ResolutionDecision = "upstream" | "candidate" | "self-upstream" | "unmanaged";
@@ -64,12 +65,10 @@ export interface ResolutionDirective {
     readonly requestedSpecifier: string;
     readonly replacement: string | null;
 }
-declare const MetroConfigurationError_base: new <A extends Record<string, any> = {}>(args: import("effect/Types").VoidIfEmpty<{ readonly [P in keyof A as P extends "_tag" ? never : P]: A[P]; }>) => import("effect/Cause").YieldableError & {
-    readonly _tag: "MetroConfigurationError";
-} & Readonly<A>;
-export declare class MetroConfigurationError extends MetroConfigurationError_base<{
-    readonly cause: unknown;
-}> {
+declare const MetroConfigurationError_base: Schema.Class<MetroConfigurationError, Schema.TaggedStruct<"MetroConfigurationError", {
+    readonly cause: Schema.Defect;
+}>, import("effect/Cause").YieldableError>;
+export declare class MetroConfigurationError extends MetroConfigurationError_base {
 }
 declare const ResolutionPolicy_base: Context.ServiceClass<ResolutionPolicy, "@better-native/metro/ResolutionPolicy", {
     readonly resolve: (request: ResolutionRequest) => Effect.Effect<ResolutionDirective>;

@@ -9,16 +9,16 @@ Install both native providers and the two matching Better Native packages:
 npx expo install expo-background-task expo-task-manager \
   @better-native/background-task@0.0.1-alpha.1 \
   @better-native/task-manager@0.0.1-alpha.1 \
-  effect@4.0.0-rc.112
+  effect@4.0.2
 ```
 
 Manual equivalents use the reviewed provider range:
 
 ```sh
-npm install expo-background-task@">=57.0.0 <58.0.0" expo-task-manager@">=57.0.0 <58.0.0" @better-native/background-task@0.0.1-alpha.1 @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-rc.112
-pnpm add expo-background-task@">=57.0.0 <58.0.0" expo-task-manager@">=57.0.0 <58.0.0" @better-native/background-task@0.0.1-alpha.1 @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-rc.112
-yarn add expo-background-task@">=57.0.0 <58.0.0" expo-task-manager@">=57.0.0 <58.0.0" @better-native/background-task@0.0.1-alpha.1 @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-rc.112
-bun add expo-background-task@">=57.0.0 <58.0.0" expo-task-manager@">=57.0.0 <58.0.0" @better-native/background-task@0.0.1-alpha.1 @better-native/task-manager@0.0.1-alpha.1 effect@4.0.0-rc.112
+npm install expo-background-task@">=57.0.0 <58.0.0" expo-task-manager@">=57.0.0 <58.0.0" @better-native/background-task@0.0.1-alpha.1 @better-native/task-manager@0.0.1-alpha.1 effect@4.0.2
+pnpm add expo-background-task@">=57.0.0 <58.0.0" expo-task-manager@">=57.0.0 <58.0.0" @better-native/background-task@0.0.1-alpha.1 @better-native/task-manager@0.0.1-alpha.1 effect@4.0.2
+yarn add expo-background-task@">=57.0.0 <58.0.0" expo-task-manager@">=57.0.0 <58.0.0" @better-native/background-task@0.0.1-alpha.1 @better-native/task-manager@0.0.1-alpha.1 effect@4.0.2
+bun add expo-background-task@">=57.0.0 <58.0.0" expo-task-manager@">=57.0.0 <58.0.0" @better-native/background-task@0.0.1-alpha.1 @better-native/task-manager@0.0.1-alpha.1 effect@4.0.2
 ```
 
 Define the handler at module scope. Background launches do not mount React components.

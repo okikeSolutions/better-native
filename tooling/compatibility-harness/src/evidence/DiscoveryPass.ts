@@ -1,5 +1,4 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Schema from "effect/Schema"
@@ -10,6 +9,7 @@ import {
   PackageName,
   ResolutionObservation,
   Subpath,
+  RunId,
   TestCaseId,
   type AppRunSummary,
   type BuildId,
@@ -18,7 +18,6 @@ import {
   type Mode,
   type Platform,
   type ProcessObservation,
-  type RunId,
 } from "../Domain.ts"
 import { EvidenceStore } from "./EvidenceStore.ts"
 
@@ -69,10 +68,10 @@ export interface DiscoveryInput {
 }
 
 /** Signals malformed or inconsistent runtime discovery data. */
-export class DiscoveryError extends Data.TaggedError("DiscoveryError")<{
-  readonly runId: RunId
-  readonly cause: unknown
-}> {}
+export class DiscoveryError extends Schema.TaggedError<DiscoveryError>()("DiscoveryError", {
+  runId: RunId,
+  cause: Schema.Defect(),
+}) {}
 
 /** Runtime-discovery service that materializes a discovery record. */
 export interface Service {

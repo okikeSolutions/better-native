@@ -1,7 +1,7 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
+import * as Schema from "effect/Schema"
 import type * as ManagedRuntime from "effect/ManagedRuntime"
 import type * as Scope from "effect/Scope"
 import * as ExpoTaskManager from "expo-task-manager"
@@ -85,10 +85,13 @@ export interface TaskDefinition {
  * @category errors
  * @since 0.0.0
  */
-export class TaskManagerFailure extends Data.TaggedError("TaskManagerFailure")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class TaskManagerFailure extends Schema.TaggedError<TaskManagerFailure>()(
+  "TaskManagerFailure",
+  {
+    method: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 /**
  * Typed failure for APIs unavailable on the current platform.
@@ -96,10 +99,13 @@ export class TaskManagerFailure extends Data.TaggedError("TaskManagerFailure")<{
  * @category errors
  * @since 0.0.0
  */
-export class TaskManagerUnavailable extends Data.TaggedError("TaskManagerUnavailable")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class TaskManagerUnavailable extends Schema.TaggedError<TaskManagerUnavailable>()(
+  "TaskManagerUnavailable",
+  {
+    method: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 /**
  * Effect-native service for persistent Task Manager inspection and removal operations.

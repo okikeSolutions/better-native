@@ -1,5 +1,4 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
@@ -55,11 +54,14 @@ export const ExternalRunRequest = Schema.Struct({
 export type ExternalRunRequest = Schema.Schema.Type<typeof ExternalRunRequest>
 
 /** Failure raised while running, parsing, or recording external test output. */
-export class ExternalRunnerError extends Data.TaggedError("ExternalRunnerError")<{
-  readonly request: ExternalRunRequest
-  readonly phase: "process" | "report" | "evidence"
-  readonly cause: unknown
-}> {}
+export class ExternalRunnerError extends Schema.TaggedError<ExternalRunnerError>()(
+  "ExternalRunnerError",
+  {
+    request: ExternalRunRequest,
+    phase: Schema.Literals(["process", "report", "evidence"]),
+    cause: Schema.Defect(),
+  },
+) {}
 
 /** External runner operation that returns validated case results. */
 export interface Service {
@@ -233,7 +235,7 @@ export const layer = (
             let totalBytes = 0
             for (;;) {
               const capacity = Math.min(64 * 1024, maximumReportBytes + 1 - totalBytes)
-              const chunk = yield* file.readAlloc(FileSystem.Size(capacity))
+              const chunk = yield* file.readAlloc(capacity)
               if (Option.isNone(chunk)) break
               totalBytes += chunk.value.byteLength
               if (totalBytes > maximumReportBytes) {

@@ -2,8 +2,8 @@ import * as Effect from "effect/Effect"
 import * as Context from "effect/Context"
 import * as Match from "effect/Match"
 import * as Schema from "effect/Schema"
-import * as WorkerRunner from "effect/unstable/workers/WorkerRunner"
-import type { WorkerError } from "effect/unstable/workers/WorkerError"
+import * as WorkerRunner from "effect/workers/WorkerRunner"
+import type { WorkerError } from "effect/workers/WorkerError"
 import type { SupervisorRequest, WorkerResponse } from "./Protocol.ts"
 import { makeWorkerRuntime } from "./Runtime.ts"
 import * as WorkerSupport from "./WorkerSupport.ts"
@@ -60,13 +60,7 @@ try {
                   Effect.isEffect(value)
                 const effectIsValid = isRunnableEffect(effectValue)
                 const exit = effectIsValid
-                  ? yield* Effect.exit(
-                      effectValue.pipe(
-                        Effect.updateContext(
-                          (_: Context.Context<never>): Context.Context<never> => Context.empty(),
-                        ),
-                      ),
-                    )
+                  ? yield* Effect.exit(effectValue.pipe(Effect.setContext(Context.empty())))
                   : undefined
                 const effectOutcome = Match.value(exit).pipe(
                   Match.when({ _tag: "Success" }, ({ value }) => ({

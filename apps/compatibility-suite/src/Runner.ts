@@ -1,4 +1,3 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import * as Schema from "effect/Schema"
@@ -85,9 +84,12 @@ export type RunSelection = Schema.Schema.Type<typeof AnyRunSelection>
 export type RunSummary = Schema.Schema.Type<typeof RunSummary>
 export type CaseResult = Schema.Schema.Type<typeof CaseResult>
 
-export class RunSelectionError extends Data.TaggedError("RunSelectionError")<{
-  readonly reason: string
-}> {}
+export class RunSelectionError extends Schema.TaggedError<RunSelectionError>()(
+  "RunSelectionError",
+  {
+    reason: Schema.String,
+  },
+) {}
 
 const isExpoTestModule = (value: unknown): value is ExpoTestModule =>
   typeof value === "object" &&

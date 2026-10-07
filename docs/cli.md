@@ -146,7 +146,7 @@ The CLI:
 6. inspects the existing `expo-network` installation and native-autolinking result;
 7. gives the project-local Expo CLI one package list containing the provider and exact third-party
    specifications, for example `expo-network @better-native/network@0.0.1-alpha.1
-effect@4.0.0-rc.112`;
+effect@4.0.2`;
 8. lets Expo select the provider version from its SDK version sources and pass the exact Better
    Native and Effect specifications through to the detected package manager;
 9. validates the resulting direct dependencies, config-plugin edits, native selection, JavaScript
@@ -170,7 +170,7 @@ Example result:
 ✓ Expo SDK 57 detected
 ✓ expo-network 57.0.1 retained
 + @better-native/network 0.0.1-alpha.1
-+ effect 4.0.0-rc.112
++ effect 4.0.2
 ✓ @better-native/network resolves
 ℹ Provider already present in the current binary; no native rebuild required
 ```
@@ -227,7 +227,7 @@ The CLI is the recommended coordinator, not the only supported installation path
 perform the same steps explicitly:
 
 ```sh
-npx expo install expo-network @better-native/network@0.0.1-alpha.1 effect@4.0.0-rc.112
+npx expo install expo-network @better-native/network@0.0.1-alpha.1 effect@4.0.2
 ```
 
 This is the npm spelling; the published guide also shows the equivalent Yarn, pnpm, and Bun commands.
@@ -342,16 +342,16 @@ never import `vendor/effect` directly.
 The command tree uses:
 
 ```ts
-import * as Argument from "effect/unstable/cli/Argument"
-import * as CliCommand from "effect/unstable/cli/Command"
-import * as Flag from "effect/unstable/cli/Flag"
+import * as Argument from "effect/cli/Argument"
+import * as CliCommand from "effect/cli/Command"
+import * as Flag from "effect/cli/Flag"
 ```
 
 External processes use:
 
 ```ts
-import * as ChildProcess from "effect/unstable/process/ChildProcess"
-import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
+import * as ChildProcess from "effect/process/ChildProcess"
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner"
 ```
 
 The executable boundary uses:
@@ -685,7 +685,7 @@ package names alone:
 - Effect child-process and Node boundaries:
   [`ChildProcess.ts`](../vendor/effect/packages/effect/src/unstable/process/ChildProcess.ts),
   [`ChildProcessSpawner.ts`](../vendor/effect/packages/effect/src/unstable/process/ChildProcessSpawner.ts),
-  and [`NodeServices.ts`](../vendor/effect/packages/platform-node/src/NodeServices.ts)
+  and [`NodeServices.ts`](../vendor/effect/packages/platform/node/src/NodeServices.ts)
 - npm optional-peer and executable semantics:
   [npm `package.json` documentation](https://docs.npmjs.com/cli/configuring-npm/package-json/) and
   [npm `npx` documentation](https://docs.npmjs.com/cli/commands/npx/)

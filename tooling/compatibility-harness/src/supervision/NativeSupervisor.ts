@@ -1,6 +1,5 @@
 import * as Clock from "effect/Clock"
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
@@ -42,12 +41,18 @@ export interface NativeBatchRequest {
   readonly timeoutMillis: number
 }
 
+const isNativeRunRequest = (value: unknown): value is NativeRunRequest =>
+  typeof value === "object" && value !== null
+
 /** Failure raised while building, launching, validating, or recording a native run. */
-export class NativeSupervisorError extends Data.TaggedError("NativeSupervisorError")<{
-  readonly phase: "device" | "crash" | "protocol" | "timeout" | "runner" | "evidence"
-  readonly request: NativeRunRequest
-  readonly cause: unknown
-}> {}
+export class NativeSupervisorError extends Schema.TaggedError<NativeSupervisorError>()(
+  "NativeSupervisorError",
+  {
+    phase: Schema.Literals(["device", "crash", "protocol", "timeout", "runner", "evidence"]),
+    request: Schema.declare(isNativeRunRequest),
+    cause: Schema.Defect(),
+  },
+) {}
 
 /** Native supervisor operations that produce immutable run records. */
 export interface Service {

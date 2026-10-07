@@ -1,5 +1,4 @@
 import * as Console from "effect/Console"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Schema from "effect/Schema"
 import * as Semver from "semver"
@@ -32,9 +31,12 @@ export interface ReviewedException {
 }
 
 /** Signals unreviewed or stale dependency advisories. */
-export class SecurityAuditError extends Data.TaggedError("SecurityAuditError")<{
-  readonly issues: ReadonlyArray<string>
-}> {}
+export class SecurityAuditError extends Schema.TaggedError<SecurityAuditError>()(
+  "SecurityAuditError",
+  {
+    issues: Schema.Array(Schema.String),
+  },
+) {}
 
 const reviewed: ReadonlyArray<ReviewedException> = [
   {

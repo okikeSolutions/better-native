@@ -4,8 +4,8 @@ import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import type * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as WorkerRunner from "effect/unstable/workers/WorkerRunner"
-import type { WorkerError } from "effect/unstable/workers/WorkerError"
+import * as WorkerRunner from "effect/workers/WorkerRunner"
+import type { WorkerError } from "effect/workers/WorkerError"
 import type { SupervisorRequest, WorkerResponse } from "./Protocol.ts"
 import { makeWorkerRuntime } from "./Runtime.ts"
 import * as WorkerSupport from "./WorkerSupport.ts"
@@ -90,9 +90,7 @@ try {
                         Stream.take(take),
                         Stream.runCollect,
                         Effect.mapError(WorkerSupport.candidateEffectFailure),
-                        Effect.updateContext(
-                          (_: Context.Context<never>): Context.Context<never> => Context.empty(),
-                        ),
+                        Effect.setContext(Context.empty()),
                       ),
                     )
                   : undefined

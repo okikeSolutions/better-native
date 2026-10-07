@@ -1,12 +1,15 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
+import * as Schema from "effect/Schema"
 import type { ProcessObservation } from "../Domain.ts"
 import type { PreparedAppWorkspace } from "./AppWorkspace.ts"
 
 /** Failure raised when native autolinking escapes the prepared package roots. */
-export class NativeResolutionError extends Data.TaggedError("NativeResolutionError")<{
-  readonly cause: unknown
-}> {}
+export class NativeResolutionError extends Schema.TaggedError<NativeResolutionError>()(
+  "NativeResolutionError",
+  {
+    cause: Schema.Defect(),
+  },
+) {}
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value)

@@ -2,7 +2,7 @@ import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, describe, it } from "@effect/vitest"
 import * as Crypto from "effect/Crypto"
 import * as Effect from "effect/Effect"
-import * as Encoding from "effect/Encoding"
+import * as Hex from "effect/encoding/Hex"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import { ArtifactId, BuildId, ContentHash, type BuildRecord } from "../Domain.ts"
@@ -115,7 +115,7 @@ describe("BuildPipeline imported products", () => {
       yield* fs.writeFile(binaryPath, bytes)
       const nativeBinaryHash = yield* crypto
         .digest("SHA-256", bytes)
-        .pipe(Effect.map((digest) => ContentHash.make(Encoding.encodeHex(digest))))
+        .pipe(Effect.map((digest) => ContentHash.make(Hex.encode(digest))))
       const record: BuildRecord = {
         schemaVersion: 2,
         id: BuildId.make("imported-build"),

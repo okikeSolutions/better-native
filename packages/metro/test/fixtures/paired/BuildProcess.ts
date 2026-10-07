@@ -7,9 +7,9 @@ import * as Path from "node:path"
 // @ts-expect-error -- intentionally testing the exact installed Expo CLI implementation.
 import ExpoMetroResolvers from "@expo/cli/build/src/start/server/metro/withMetroResolvers"
 import * as Crypto from "effect/Crypto"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
-import * as Encoding from "effect/Encoding"
+import * as Schema from "effect/Schema"
+import * as Hex from "effect/encoding/Hex"
 import * as Layer from "effect/Layer"
 import { withBetterNative, type ResolutionEvent } from "../../../src/BetterNativeMetroConfig.ts"
 
@@ -23,10 +23,10 @@ const buildId = `${mode}-production-build`
 const runId = `${mode}-production-run`
 const { withMetroResolvers } = ExpoMetroResolvers
 
-class MetroBuildError extends Data.TaggedError("MetroBuildError")<{
-  readonly mode: "upstream" | "candidate"
-  readonly cause: unknown
-}> {}
+class MetroBuildError extends Schema.TaggedError<MetroBuildError>()("MetroBuildError", {
+  mode: Schema.Literals(["upstream", "candidate"]),
+  cause: Schema.Defect(),
+}) {}
 
 const program = Effect.gen(function* () {
   const crypto = yield* Crypto.Crypto
@@ -68,7 +68,7 @@ const program = Effect.gen(function* () {
         mode,
         buildId,
         runId,
-        hash: Encoding.encodeHex(digest),
+        hash: Hex.encode(digest),
         eventCount: events.length,
         unmanagedCount: events.filter((event) => event.decision === "unmanaged").length,
         networkEvent,

@@ -1,8 +1,8 @@
 import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
 import * as Option from "effect/Option"
-import * as Command from "effect/unstable/cli/Command"
-import * as Flag from "effect/unstable/cli/Flag"
+import * as Command from "effect/cli/Command"
+import * as Flag from "effect/cli/Flag"
 import { RunId, type BuildRecord, type RegistryMetadata } from "../Domain.ts"
 import { HarnessError } from "../HarnessError.ts"
 import * as AppRegistry from "../registry/AppRegistry.ts"
@@ -18,11 +18,11 @@ import {
   timeoutMillisFlag,
 } from "./Shared.ts"
 
-const recordPathFlag = Flag.string("record")
-const binaryPathFlag = Flag.string("binary")
-const nativeSourceFlag = Flag.string("source").pipe(Flag.optional)
-const physicalDeviceFlag = Flag.boolean("physical-device").pipe(Flag.withDefault(false))
-const capabilitiesOnlyFlag = Flag.boolean("capabilities-only").pipe(Flag.withDefault(false))
+const recordPathFlag = Flag.String("record")
+const binaryPathFlag = Flag.String("binary")
+const nativeSourceFlag = Flag.String("source").pipe(Flag.optional)
+const physicalDeviceFlag = Flag.Boolean("physical-device").pipe(Flag.withDefault(false))
+const capabilitiesOnlyFlag = Flag.Boolean("capabilities-only").pipe(Flag.withDefault(false))
 
 /** Prevents a capability-scoped binary from running a source it did not compile. */
 export const validateCapabilityShell = (
@@ -154,10 +154,10 @@ export const supervisedNative = Command.make(
   ),
 )
 
-const upstreamRecordPathFlag = Flag.string("upstream-record")
-const upstreamBinaryPathFlag = Flag.string("upstream-binary")
-const candidateRecordPathFlag = Flag.string("candidate-record")
-const candidateBinaryPathFlag = Flag.string("candidate-binary")
+const upstreamRecordPathFlag = Flag.String("upstream-record")
+const upstreamBinaryPathFlag = Flag.String("upstream-binary")
+const candidateRecordPathFlag = Flag.String("candidate-record")
+const candidateBinaryPathFlag = Flag.String("candidate-binary")
 
 /**
  * Runs paired upstream and candidate native shards.

@@ -1,10 +1,10 @@
-import * as ChildProcess from "effect/unstable/process/ChildProcess"
-import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
-import * as Command from "effect/unstable/cli/Command"
-import * as Flag from "effect/unstable/cli/Flag"
+import * as Schema from "effect/Schema"
+import * as ChildProcess from "effect/process/ChildProcess"
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner"
+import * as Command from "effect/cli/Command"
+import * as Flag from "effect/cli/Flag"
 import * as Console from "effect/Console"
 import * as Crypto from "effect/Crypto"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import * as AgentProfiles from "./agent/AgentProfiles.ts"
@@ -18,22 +18,40 @@ import * as ReportSelection from "./reporting/ReportSelection.ts"
 import * as ReportSmoke from "./reporting/ReportSmoke.ts"
 
 /** Failure raised when a trusted eval subprocess exits unsuccessfully. */
-export class EvalProcessFailure extends Data.TaggedError("EvalProcessFailure")<{
-  readonly operation: string
-  readonly exitCode?: number
-  readonly cause?: unknown
-}> {}
+export class EvalProcessFailure extends Schema.TaggedError<EvalProcessFailure>()(
+  "EvalProcessFailure",
+  {
+    operation: Schema.String,
+    exitCode: Schema.optional(Schema.Number),
+    cause: Schema.optional(Schema.Defect()),
+  },
+) {}
 
 /** Failure raised when paid execution was not explicitly confirmed. */
-export class PaidExecutionNotConfirmed extends Data.TaggedError("PaidExecutionNotConfirmed") {}
+export class PaidExecutionNotConfirmed extends Schema.TaggedError<PaidExecutionNotConfirmed>()(
+  "PaidExecutionNotConfirmed",
+  {},
+) {}
 
 /** Failure raised when a paid provider probe was not explicitly confirmed. */
-export class PaidProbeNotConfirmed extends Data.TaggedError("PaidProbeNotConfirmed") {}
+export class PaidProbeNotConfirmed extends Schema.TaggedError<PaidProbeNotConfirmed>()(
+  "PaidProbeNotConfirmed",
+  {},
+) {}
 
 /** Failure raised when an explicit provider does not pass the compatibility probe. */
-export class ProviderCompatibilityRejected extends Data.TaggedError(
+export class ProviderCompatibilityRejected extends Schema.TaggedError<ProviderCompatibilityRejected>()(
   "ProviderCompatibilityRejected",
-)<{ readonly reason: ProviderCompatibility.Quarantined["reason"] }> {}
+  {
+    reason: Schema.Literals([
+      "malformed-response",
+      "missing-tool-call",
+      "missing-usage-evidence",
+      "provider-error",
+      "timeout",
+    ]),
+  },
+) {}
 
 const executeProcess = (
   operation: string,
@@ -79,11 +97,11 @@ const runProcess = (
     ),
   )
 
-const campaignFlag = Flag.choice("campaign", Campaigns.campaignNames).pipe(
+const campaignFlag = Flag.Literals("campaign", Campaigns.campaignNames).pipe(
   Flag.withDefault("checkpoint-5-diagnostic"),
   Flag.withDescription("Select a reviewed campaign definition"),
 )
-const taskFlag = Flag.choice("task", [
+const taskFlag = Flag.Literals("task", [
   "all",
   "network",
   "battery",
@@ -93,7 +111,7 @@ const taskFlag = Flag.choice("task", [
   Flag.withDefault("all"),
   Flag.withDescription("Run all campaign tasks or one diagnostic subset"),
 )
-const validationTaskFlag = Flag.choice("task", [
+const validationTaskFlag = Flag.Literals("task", [
   "all",
   "background-task",
   "battery",
@@ -109,7 +127,7 @@ const validationTaskFlag = Flag.choice("task", [
   Flag.withDefault("all"),
   Flag.withDescription("Validate every deterministic task or one capability"),
 )
-const campaignProfileFlag = Flag.choice("profile", Campaigns.profileSelections).pipe(
+const campaignProfileFlag = Flag.Literals("profile", Campaigns.profileSelections).pipe(
   Flag.withDefault("all"),
   Flag.withDescription("Run every reviewed profile or one explicit profile"),
 )
@@ -172,15 +190,15 @@ export const smoke = Command.make("smoke", {}, () => ReportSmoke.run).pipe(
 export const report = Command.make(
   "report",
   {
-    latest: Flag.boolean("latest").pipe(
+    latest: Flag.Boolean("latest").pipe(
       Flag.withDescription("Serve only the latest retained report (the default)"),
       Flag.withDefault(false),
     ),
-    campaign: Flag.string("campaign").pipe(
+    campaign: Flag.String("campaign").pipe(
       Flag.optional,
       Flag.withDescription("Serve reports whose run ID belongs to this campaign"),
     ),
-    all: Flag.boolean("all").pipe(
+    all: Flag.Boolean("all").pipe(
       Flag.withDescription("Serve every retained report, including historical campaigns"),
       Flag.withDefault(false),
     ),
@@ -205,11 +223,11 @@ export const report = Command.make(
 export const probeProvider = Command.make(
   "probe-provider",
   {
-    profile: Flag.choice("profile", AgentProfiles.reviewedProfileIds).pipe(
+    profile: Flag.Literals("profile", AgentProfiles.reviewedProfileIds).pipe(
       Flag.withDefault("deepseek-v4-flash-0731"),
       Flag.withDescription("Select the reviewed profile to probe"),
     ),
-    confirmPaid: Flag.boolean("confirm-paid").pipe(
+    confirmPaid: Flag.Boolean("confirm-paid").pipe(
       Flag.withDescription("Confirm the single bounded provider request"),
       Flag.withDefault(false),
     ),
@@ -240,7 +258,7 @@ export const run = Command.make(
     campaign: campaignFlag,
     task: taskFlag,
     profile: campaignProfileFlag,
-    confirmPaid: Flag.boolean("confirm-paid").pipe(
+    confirmPaid: Flag.Boolean("confirm-paid").pipe(
       Flag.withDescription("Confirm that the reviewed maximum cost may be spent"),
       Flag.withDefault(false),
     ),

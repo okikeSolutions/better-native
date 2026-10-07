@@ -1,5 +1,4 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
@@ -211,9 +210,12 @@ export const tokenLimitConfig = (
 const profiles = Schema.decodeUnknownSync(Schema.Array(AgentProfile))(rawProfiles)
 
 /** Failure raised when a trial selects an unreviewed agent profile. */
-export class AgentProfileNotFound extends Data.TaggedError("AgentProfileNotFound")<{
-  readonly profileId: Domain.AgentProfileId
-}> {}
+export class AgentProfileNotFound extends Schema.TaggedError<AgentProfileNotFound>()(
+  "AgentProfileNotFound",
+  {
+    profileId: Domain.AgentProfileId,
+  },
+) {}
 
 /** Reviewed profile-registry operations. */
 export interface Service {

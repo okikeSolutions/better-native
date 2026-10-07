@@ -1,12 +1,12 @@
 import * as Context from "effect/Context"
 import * as Console from "effect/Console"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
 import * as Path from "effect/Path"
 import * as PlatformError from "effect/PlatformError"
+import * as Schema from "effect/Schema"
 import * as Scope from "effect/Scope"
 import { randomUUID } from "node:crypto"
 import { statfs } from "node:fs/promises"
@@ -26,10 +26,13 @@ export const bulkyRunRetentionMillis = 7 * 24 * 60 * 60 * 1_000
 /** Grace window protecting a lock directory while its owner record is being initialized. */
 export const lockInitializationGraceMillis = 60_000
 
-export class ArtifactLifecycleError extends Data.TaggedError("ArtifactLifecycleError")<{
-  readonly operation: string
-  readonly cause: unknown
-}> {}
+export class ArtifactLifecycleError extends Schema.TaggedError<ArtifactLifecycleError>()(
+  "ArtifactLifecycleError",
+  {
+    operation: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 export interface ArtifactPruneEntry {
   readonly path: string

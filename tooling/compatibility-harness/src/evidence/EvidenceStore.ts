@@ -1,8 +1,7 @@
 import * as Context from "effect/Context"
 import * as Crypto from "effect/Crypto"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
-import * as Encoding from "effect/Encoding"
+import * as Hex from "effect/encoding/Hex"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Path from "effect/Path"
@@ -10,11 +9,11 @@ import * as Schema from "effect/Schema"
 import { ArtifactId, ContentHash, isSafePathSegment, type Artifact } from "../Domain.ts"
 
 /** Describes a failed evidence read, write, hash, or path validation. */
-export class EvidenceError extends Data.TaggedError("EvidenceError")<{
-  readonly operation: string
-  readonly path: string
-  readonly cause: unknown
-}> {}
+export class EvidenceError extends Schema.TaggedError<EvidenceError>()("EvidenceError", {
+  operation: Schema.String,
+  path: Schema.String,
+  cause: Schema.Defect(),
+}) {}
 
 /** Immutable artifact store shared by build and run supervisors. */
 export interface Service {
@@ -63,7 +62,7 @@ export const layer = (
         new EvidenceError({ operation, path: target, cause })
       const hash = (bytes: Uint8Array) =>
         crypto.digest("SHA-256", bytes).pipe(
-          Effect.map((digest) => ContentHash.make(Encoding.encodeHex(digest))),
+          Effect.map((digest) => ContentHash.make(Hex.encode(digest))),
           Effect.mapError((cause) => fail("hash evidence", root, cause)),
         )
       /**

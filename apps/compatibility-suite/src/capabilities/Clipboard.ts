@@ -2,7 +2,7 @@ import { Clipboard } from "@better-native/clipboard"
 import * as Effect from "effect/Effect"
 import * as Fiber from "effect/Fiber"
 import * as Stream from "effect/Stream"
-import * as AtomRegistry from "effect/unstable/reactivity/AtomRegistry"
+import * as AtomRegistry from "effect/reactivity/AtomRegistry"
 import * as ExpoClipboard from "expo-clipboard"
 import { Platform } from "react-native"
 

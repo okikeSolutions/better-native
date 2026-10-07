@@ -1,4 +1,3 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Match from "effect/Match"
@@ -55,11 +54,14 @@ export interface ComparisonSummary {
 }
 
 /** Describes an unreadable, undecodable, or invalid comparison input. */
-export class RunComparisonError extends Data.TaggedError("RunComparisonError")<{
-  readonly operation: "read" | "decode" | "compare"
-  readonly path?: string
-  readonly cause: unknown
-}> {}
+export class RunComparisonError extends Schema.TaggedError<RunComparisonError>()(
+  "RunComparisonError",
+  {
+    operation: Schema.Literals(["read", "decode", "compare"]),
+    path: Schema.optional(Schema.String),
+    cause: Schema.Defect(),
+  },
+) {}
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value)

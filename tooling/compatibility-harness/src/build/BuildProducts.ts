@@ -1,7 +1,7 @@
 import * as Context from "effect/Context"
 import * as Crypto from "effect/Crypto"
 import * as Effect from "effect/Effect"
-import * as Encoding from "effect/Encoding"
+import * as Hex from "effect/encoding/Hex"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Path from "effect/Path"
@@ -36,7 +36,7 @@ export const layer: Layer.Layer<
       new Error(`failed to ${operation} build product ${target}: ${String(cause)}`, { cause })
     const digest: Service["digest"] = (bytes) =>
       crypto.digest("SHA-256", bytes).pipe(
-        Effect.map((value) => ContentHash.make(Encoding.encodeHex(value))),
+        Effect.map((value) => ContentHash.make(Hex.encode(value))),
         Effect.mapError((cause) => failure("digest", "bytes", cause)),
       )
     const hash: Service["hash"] = (target) =>

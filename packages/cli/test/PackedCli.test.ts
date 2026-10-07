@@ -148,32 +148,32 @@ const installationShapes = [
   {
     capability: "keep-awake",
     reason: "simplest provider case",
-    packages: `expo-keep-awake @better-native/keep-awake@${capabilities["keep-awake"].wrapperVersion} effect@4.0.0-rc.112`,
+    packages: `expo-keep-awake @better-native/keep-awake@${capabilities["keep-awake"].wrapperVersion} effect@4.0.2`,
   },
   {
     capability: "network",
     reason: "confirms the exact three-package dependency result",
-    packages: `expo-network @better-native/network@${capabilities.network.wrapperVersion} effect@4.0.0-rc.112`,
+    packages: `expo-network @better-native/network@${capabilities.network.wrapperVersion} effect@4.0.2`,
   },
   {
     capability: "secure-store",
     reason: "exercises config-plugin and rebuild behavior",
-    packages: `expo-secure-store @better-native/secure-store@${capabilities["secure-store"].wrapperVersion} effect@4.0.0-rc.112`,
+    packages: `expo-secure-store @better-native/secure-store@${capabilities["secure-store"].wrapperVersion} effect@4.0.2`,
   },
   {
     capability: "battery",
     reason: "confirms the ordinary event/stream case",
-    packages: `expo-battery @better-native/battery@${capabilities.battery.wrapperVersion} effect@4.0.0-rc.112`,
+    packages: `expo-battery @better-native/battery@${capabilities.battery.wrapperVersion} effect@4.0.2`,
   },
   {
     capability: "clipboard",
     reason: "confirms the read, write, and event-stream case",
-    packages: `expo-clipboard @better-native/clipboard@${capabilities.clipboard.wrapperVersion} effect@4.0.0-rc.112`,
+    packages: `expo-clipboard @better-native/clipboard@${capabilities.clipboard.wrapperVersion} effect@4.0.2`,
   },
   {
     capability: "sqlite",
     reason: "confirms the database provider and Effect SQL client case",
-    packages: `expo-sqlite @better-native/sqlite@${capabilities.sqlite.wrapperVersion} effect@4.0.0-rc.112`,
+    packages: `expo-sqlite @better-native/sqlite@${capabilities.sqlite.wrapperVersion} effect@4.0.2`,
   },
 ] as const
 
@@ -204,7 +204,7 @@ describe("packed better-native CLI installation shapes", () => {
       }
       assert.property(manifest.dependencies, `expo-${shape.capability}`)
       assert.property(manifest.dependencies, `@better-native/${shape.capability}`)
-      assert.strictEqual(manifest.dependencies.effect, "4.0.0-rc.112")
+      assert.strictEqual(manifest.dependencies.effect, "4.0.2")
       assert.notProperty(manifest.dependencies, "better-native")
       assert.notProperty(manifest.dependencies, "expo-modules-core")
 

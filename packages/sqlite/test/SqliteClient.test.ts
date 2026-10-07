@@ -6,10 +6,10 @@ import * as Effect from "effect/Effect"
 import * as Fiber from "effect/Fiber"
 import * as Layer from "effect/Layer"
 import * as Stream from "effect/Stream"
-import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
-import * as AtomRegistry from "effect/unstable/reactivity/AtomRegistry"
-import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { SqlError } from "effect/unstable/sql/SqlError"
+import * as AsyncResult from "effect/reactivity/AsyncResult"
+import * as AtomRegistry from "effect/reactivity/AtomRegistry"
+import * as SqlClient from "effect/sql/SqlClient"
+import { SqlError } from "effect/sql/SqlError"
 
 const mocks = vi.hoisted(() => ({
   addDatabaseChangeListener: vi.fn(),

@@ -1,11 +1,11 @@
 import { randomUUID } from "node:crypto"
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
 import * as Path from "effect/Path"
+import * as Schema from "effect/Schema"
 import { isSafePathSegment } from "../Domain.ts"
 import { BuildPipelineError, type BuildRequest } from "./BuildModel.ts"
 import { BuildProducts } from "./BuildProducts.ts"
@@ -44,9 +44,12 @@ export class PodsCache extends Context.Service<PodsCache, Service>()(
   "@better-native/compatibility-harness/PodsCache",
 ) {}
 
-class PodsCacheIdentityError extends Data.TaggedError("PodsCacheIdentityError")<{
-  readonly cause: string
-}> {}
+class PodsCacheIdentityError extends Schema.TaggedError<PodsCacheIdentityError>()(
+  "PodsCacheIdentityError",
+  {
+    cause: Schema.String,
+  },
+) {}
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value)

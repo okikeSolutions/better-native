@@ -3,12 +3,12 @@
  *
  * @since 0.0.0
  */
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
-import * as Client from "effect/unstable/sql/SqlClient"
-import type { SqlError } from "effect/unstable/sql/SqlError"
+import * as Schema from "effect/Schema"
+import * as Client from "effect/sql/SqlClient"
+import type { SqlError } from "effect/sql/SqlError"
 
 /**
  * Options for loading and recording ordered migrations.
@@ -50,12 +50,11 @@ export interface Migration {
  * Failure raised while loading, validating, locking, or running migrations.
  * @since 0.0.0
  */
-export class MigrationError extends Data.TaggedError("MigrationError")<{
-  readonly _tag: "MigrationError"
-  readonly cause?: unknown
-  readonly kind: "BadState" | "ImportError" | "Failed" | "Duplicates" | "Locked"
-  readonly message: string
-}> {}
+export class MigrationError extends Schema.TaggedError<MigrationError>()("MigrationError", {
+  cause: Schema.optional(Schema.Defect()),
+  kind: Schema.Literals(["BadState", "ImportError", "Failed", "Duplicates", "Locked"]),
+  message: Schema.String,
+}) {}
 
 const isConstraintConflict = (error: SqlError): boolean =>
   error.reason._tag === "ConstraintError" || error.reason._tag === "UniqueViolation"
@@ -182,8 +181,8 @@ export const make =
                 message: `Default export was not an Effect for migration "${id}_${name}"`,
               }),
           ),
-          // Migration error types are intentionally open and become a `MigrationError` defect below.
-          // oxlint-disable-next-line effecttsgo/any-unknown-in-error-context
+          // Reviewed migration modules may require SqlClient; Effect cannot inspect requirements at runtime.
+          // oxlint-disable-next-line effecttsgo/unsafe-effect-type-assertion, effecttsgo/any-unknown-in-error-context
           Effect.map((migration) => migration as Effect.Effect<unknown, unknown, Client.SqlClient>),
         )
 

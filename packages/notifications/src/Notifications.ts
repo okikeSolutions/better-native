@@ -1,12 +1,12 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import type * as ManagedRuntime from "effect/ManagedRuntime"
 import * as Queue from "effect/Queue"
 import type * as Scope from "effect/Scope"
+import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as Atom from "effect/unstable/reactivity/Atom"
+import * as Atom from "effect/reactivity/Atom"
 import * as ExpoNotifications from "expo-notifications"
 
 /**
@@ -192,10 +192,13 @@ export type NotificationTimeoutError = ExpoNotifications.NotificationTimeoutErro
  * @category errors
  * @since 0.0.0
  */
-export class NotificationsFailure extends Data.TaggedError("NotificationsFailure")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class NotificationsFailure extends Schema.TaggedError<NotificationsFailure>()(
+  "NotificationsFailure",
+  {
+    method: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 /**
  * A typed failure for an operation unavailable on the current platform.
@@ -203,10 +206,13 @@ export class NotificationsFailure extends Data.TaggedError("NotificationsFailure
  * @category errors
  * @since 0.0.0
  */
-export class NotificationsUnavailable extends Data.TaggedError("NotificationsUnavailable")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class NotificationsUnavailable extends Schema.TaggedError<NotificationsUnavailable>()(
+  "NotificationsUnavailable",
+  {
+    method: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 /**
  * Shared error channel for Effect-native notification operations.

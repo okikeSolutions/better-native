@@ -2,8 +2,8 @@ import { describe, expect, it, vi } from "vitest"
 import * as Cause from "effect/Cause"
 import * as Effect from "effect/Effect"
 import * as Exit from "effect/Exit"
-import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { classifySqliteError, SqlError } from "effect/unstable/sql/SqlError"
+import * as SqlClient from "effect/sql/SqlClient"
+import { classifySqliteError, SqlError } from "effect/sql/SqlError"
 import * as SqliteMigrator from "../src/SqliteMigrator"
 
 type Dialect = "mssql" | "mysql" | "pg" | "sqlite"
@@ -54,15 +54,15 @@ const makeSql = (options?: {
   return { sql, statements }
 }
 
-const runWith = <A, E, R>(effect: Effect.Effect<A, E, R>, sql: SqlClient.SqlClient) =>
-  Effect.runPromise(
-    effect.pipe(Effect.provideService(SqlClient.SqlClient, sql)) as Effect.Effect<A, E>,
-  )
+const runWith = <A, E>(
+  effect: Effect.Effect<A, E, SqlClient.SqlClient>,
+  sql: SqlClient.SqlClient,
+) => Effect.runPromise(effect.pipe(Effect.provideService(SqlClient.SqlClient, sql)))
 
-const runExitWith = <A, E, R>(effect: Effect.Effect<A, E, R>, sql: SqlClient.SqlClient) =>
-  Effect.runPromiseExit(
-    effect.pipe(Effect.provideService(SqlClient.SqlClient, sql)) as Effect.Effect<A, E>,
-  )
+const runExitWith = <A, E>(
+  effect: Effect.Effect<A, E, SqlClient.SqlClient>,
+  sql: SqlClient.SqlClient,
+) => Effect.runPromiseExit(effect.pipe(Effect.provideService(SqlClient.SqlClient, sql)))
 
 describe("@better-native/sqlite migrator", () => {
   it("parses and sorts glob, Babel-glob, and record loaders", async () => {

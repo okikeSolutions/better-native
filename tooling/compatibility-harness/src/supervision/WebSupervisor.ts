@@ -1,7 +1,6 @@
 import { chromium, type Browser } from "playwright"
 import * as Clock from "effect/Clock"
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Exit from "effect/Exit"
 import * as Layer from "effect/Layer"
@@ -43,17 +42,25 @@ export type WebProbeRequest = Omit<WebRunRequest, "unit"> & {
   readonly specifier: string
 }
 
+type WebSupervisorRequest = WebRunRequest | WebProbeRequest
+
+const isWebSupervisorRequest = (value: unknown): value is WebSupervisorRequest =>
+  typeof value === "object" && value !== null
+
 /** Failure raised while serving, driving, validating, or recording a web run. */
-export class WebSupervisorError extends Data.TaggedError("WebSupervisorError")<{
-  readonly phase: "serve" | "browser" | "protocol" | "evidence"
-  readonly request: WebRunRequest | WebProbeRequest
-  readonly cause: unknown
-  readonly observations: ReadonlyArray<ProcessObservation>
-}> {}
+export class WebSupervisorError extends Schema.TaggedError<WebSupervisorError>()(
+  "WebSupervisorError",
+  {
+    phase: Schema.Literals(["serve", "browser", "protocol", "evidence"]),
+    request: Schema.declare(isWebSupervisorRequest),
+    cause: Schema.Defect(),
+    observations: Schema.Array(ProcessObservationSchema),
+  },
+) {}
 
 const webFailure = (
   phase: WebSupervisorError["phase"],
-  request: WebRunRequest | WebProbeRequest,
+  request: WebSupervisorRequest,
   cause: unknown,
 ) => new WebSupervisorError({ phase, request, cause, observations: [] })
 
@@ -102,10 +109,13 @@ export interface BrowserResult {
 }
 
 /** Failure raised by Playwright, including captured browser console output. */
-export class BrowserDriverError extends Data.TaggedError("BrowserDriverError")<{
-  readonly cause: unknown
-  readonly console: ReadonlyArray<string>
-}> {}
+export class BrowserDriverError extends Schema.TaggedError<BrowserDriverError>()(
+  "BrowserDriverError",
+  {
+    cause: Schema.Defect(),
+    console: Schema.Array(Schema.String),
+  },
+) {}
 
 const WebRunFailure = Schema.Struct({
   schemaVersion: Schema.Literal(1),

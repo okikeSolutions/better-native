@@ -1,4 +1,4 @@
-import * as Data from "effect/Data"
+import * as Schema from "effect/Schema"
 
 export const capabilityNames = [
   "keep-awake",
@@ -39,7 +39,7 @@ export const capabilities: Readonly<Record<CapabilityName, Capability>> = {
     provider: "expo-network",
     wrapper: "@better-native/network",
     wrapperVersion: capabilityVersions.network,
-    effectVersion: "4.0.0-rc.112",
+    effectVersion: "4.0.2",
     importName: "Network",
     status: "effect",
   },
@@ -48,7 +48,7 @@ export const capabilities: Readonly<Record<CapabilityName, Capability>> = {
     provider: "expo-battery",
     wrapper: "@better-native/battery",
     wrapperVersion: capabilityVersions.battery,
-    effectVersion: "4.0.0-rc.112",
+    effectVersion: "4.0.2",
     importName: "Battery",
     status: "effect",
   },
@@ -57,7 +57,7 @@ export const capabilities: Readonly<Record<CapabilityName, Capability>> = {
     provider: "expo-clipboard",
     wrapper: "@better-native/clipboard",
     wrapperVersion: capabilityVersions.clipboard,
-    effectVersion: "4.0.0-rc.112",
+    effectVersion: "4.0.2",
     importName: "Clipboard",
     status: "effect",
   },
@@ -66,7 +66,7 @@ export const capabilities: Readonly<Record<CapabilityName, Capability>> = {
     provider: "expo-sqlite",
     wrapper: "@better-native/sqlite",
     wrapperVersion: capabilityVersions.sqlite,
-    effectVersion: "4.0.0-rc.112",
+    effectVersion: "4.0.2",
     importName: "SQLite",
     status: "effect",
   },
@@ -75,7 +75,7 @@ export const capabilities: Readonly<Record<CapabilityName, Capability>> = {
     provider: "expo-keep-awake",
     wrapper: "@better-native/keep-awake",
     wrapperVersion: capabilityVersions["keep-awake"],
-    effectVersion: "4.0.0-rc.112",
+    effectVersion: "4.0.2",
     importName: "KeepAwake",
     status: "effect",
   },
@@ -84,14 +84,20 @@ export const capabilities: Readonly<Record<CapabilityName, Capability>> = {
     provider: "expo-secure-store",
     wrapper: "@better-native/secure-store",
     wrapperVersion: capabilityVersions["secure-store"],
-    effectVersion: "4.0.0-rc.112",
+    effectVersion: "4.0.2",
     importName: "SecureStore",
     status: "effect",
   },
 }
 
-export class CliFailure extends Data.TaggedError("CliFailure")<{
-  readonly responsibility: "project" | "package-manager" | "compatibility" | "expo" | "validation"
-  readonly message: string
-  readonly cause?: unknown
-}> {}
+export class CliFailure extends Schema.TaggedError<CliFailure>()("CliFailure", {
+  responsibility: Schema.Literals([
+    "project",
+    "package-manager",
+    "compatibility",
+    "expo",
+    "validation",
+  ]),
+  message: Schema.String,
+  cause: Schema.optional(Schema.Defect()),
+}) {}

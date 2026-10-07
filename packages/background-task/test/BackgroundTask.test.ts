@@ -4,6 +4,8 @@ import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as ManagedRuntime from "effect/ManagedRuntime"
 import * as Stream from "effect/Stream"
+import type { BackgroundTask as BackgroundTaskService } from "../src/BackgroundTask.ts"
+import type { TaskManager as TaskManagerService } from "../../task-manager/src/TaskManager.ts"
 
 /* oxlint-disable effecttsgo/strict-effect-provide -- test runtime entry points */
 
@@ -37,10 +39,10 @@ const { TaskManager } = await import("@better-native/task-manager")
 
 const BackgroundLive = BackgroundTask.live
 const AppLive = Layer.merge(BackgroundLive, TaskManager.live)
-const run = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
-  Effect.runPromise(effect.pipe(Effect.provide(BackgroundLive)) as Effect.Effect<A, E>)
-const runApp = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
-  Effect.runPromise(effect.pipe(Effect.provide(AppLive)) as Effect.Effect<A, E>)
+const run = <A, E>(effect: Effect.Effect<A, E, BackgroundTaskService>) =>
+  Effect.runPromise(effect.pipe(Effect.provide(BackgroundLive)))
+const runApp = <A, E>(effect: Effect.Effect<A, E, BackgroundTaskService | TaskManagerService>) =>
+  Effect.runPromise(effect.pipe(Effect.provide(AppLive)))
 
 describe("@better-native/background-task", () => {
   beforeEach(() => vi.clearAllMocks())

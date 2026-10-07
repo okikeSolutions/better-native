@@ -1,12 +1,12 @@
 import * as Cause from "effect/Cause"
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
 import * as Queue from "effect/Queue"
+import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as Atom from "effect/unstable/reactivity/Atom"
+import * as Atom from "effect/reactivity/Atom"
 import * as ExpoLocation from "expo-location"
 import type { TaskDefinition } from "@better-native/task-manager"
 
@@ -361,10 +361,13 @@ export interface SensorStreamOptions {
  * @category errors
  * @since 0.0.0
  */
-export class LocationUnavailable extends Data.TaggedError("LocationUnavailable")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class LocationUnavailable extends Schema.TaggedError<LocationUnavailable>()(
+  "LocationUnavailable",
+  {
+    method: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 /**
  * Typed failure for rejected Location operations and watcher errors.
@@ -372,10 +375,10 @@ export class LocationUnavailable extends Data.TaggedError("LocationUnavailable")
  * @category errors
  * @since 0.0.0
  */
-export class LocationFailure extends Data.TaggedError("LocationFailure")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class LocationFailure extends Schema.TaggedError<LocationFailure>()("LocationFailure", {
+  method: Schema.String,
+  cause: Schema.Defect(),
+}) {}
 
 type ErrorType = LocationUnavailable | LocationFailure
 

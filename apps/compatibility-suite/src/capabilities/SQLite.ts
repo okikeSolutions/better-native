@@ -1,11 +1,11 @@
 import * as SqliteClient from "@better-native/sqlite/client"
 import { addDatabaseChangeListener, sqliteClientAtom } from "@better-native/sqlite/sqlite"
 import * as Effect from "effect/Effect"
-import * as Data from "effect/Data"
 import * as ExpoSQLite from "expo-sqlite"
-import * as SqlClient from "effect/unstable/sql/SqlClient"
-import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
-import * as AtomRegistry from "effect/unstable/reactivity/AtomRegistry"
+import * as Schema from "effect/Schema"
+import * as SqlClient from "effect/sql/SqlClient"
+import * as AsyncResult from "effect/reactivity/AsyncResult"
+import * as AtomRegistry from "effect/reactivity/AtomRegistry"
 import * as Option from "effect/Option"
 import * as Stream from "effect/Stream"
 import { Platform } from "react-native"
@@ -22,7 +22,7 @@ const assert: (condition: unknown, message: string) => asserts condition = (cond
 }
 
 const databaseName = "better-native-sqlite-capability.db"
-class Rollback extends Data.TaggedError("SQLiteCapabilityRollback") {}
+class Rollback extends Schema.TaggedError<Rollback>()("SQLiteCapabilityRollback", {}) {}
 /* oxlint-disable effecttsgo/strict-effect-provide -- compatibility capability entry point */
 const run = <A, E>(effect: Effect.Effect<A, E, SqliteClient.SqliteClient | SqlClient.SqlClient>) =>
   Effect.runPromise(

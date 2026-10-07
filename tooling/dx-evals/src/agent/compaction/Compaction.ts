@@ -1,6 +1,6 @@
 import * as Match from "effect/Match"
 import * as Schema from "effect/Schema"
-import * as Prompt from "effect/unstable/ai/Prompt"
+import * as Prompt from "effect/ai/Prompt"
 import * as Domain from "../../Domain.ts"
 import type * as CodingTools from "../tools/index.ts"
 

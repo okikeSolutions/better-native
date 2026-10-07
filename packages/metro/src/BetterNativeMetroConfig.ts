@@ -1,5 +1,4 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
@@ -71,9 +70,12 @@ export interface ResolutionDirective {
   readonly replacement: string | null
 }
 
-export class MetroConfigurationError extends Data.TaggedError("MetroConfigurationError")<{
-  readonly cause: unknown
-}> {}
+export class MetroConfigurationError extends Schema.TaggedError<MetroConfigurationError>()(
+  "MetroConfigurationError",
+  {
+    cause: Schema.Defect(),
+  },
+) {}
 
 export class ResolutionPolicy extends Context.Service<
   ResolutionPolicy,

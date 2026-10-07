@@ -1,17 +1,19 @@
 import * as Deferred from "effect/Deferred"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Fiber from "effect/Fiber"
 import * as Match from "effect/Match"
-import * as Worker from "effect/unstable/workers/Worker"
-import type { WorkerError } from "effect/unstable/workers/WorkerError"
-import type * as Schema from "effect/Schema"
+import * as Schema from "effect/Schema"
+import * as Worker from "effect/workers/Worker"
+import type { WorkerError } from "effect/workers/WorkerError"
 import { decodeWorkerResponse, type SupervisorRequest, type WorkerResponse } from "./Protocol.ts"
 
-class WorkerProtocolInvalid extends Data.TaggedError("WorkerProtocolInvalid")<{
-  readonly reason: string
-  readonly cause?: unknown
-}> {}
+class WorkerProtocolInvalid extends Schema.TaggedError<WorkerProtocolInvalid>()(
+  "WorkerProtocolInvalid",
+  {
+    reason: Schema.String,
+    cause: Schema.optional(Schema.Defect()),
+  },
+) {}
 
 /**
  * Exchanges one request with a task worker through Effect's Worker protocol. The nonce is minted

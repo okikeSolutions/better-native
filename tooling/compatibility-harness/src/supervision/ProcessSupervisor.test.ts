@@ -1,11 +1,11 @@
 import { assert, describe, it } from "@effect/vitest"
 import * as NodeServices from "@effect/platform-node/NodeServices"
 import * as Deferred from "effect/Deferred"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Fiber from "effect/Fiber"
 import * as Layer from "effect/Layer"
 import * as Ref from "effect/Ref"
+import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
 import * as TestClock from "effect/testing/TestClock"
 import { provideLayer } from "../TestLayers.ts"
@@ -22,9 +22,9 @@ import {
 const spec = { command: "fake", timeoutMillis: 1_000 }
 const encoder = new TextEncoder()
 
-class TestProcessError extends Data.TaggedError("TestProcessError")<{
-  readonly message: string
-}> {}
+class TestProcessError extends Schema.TaggedError<TestProcessError>()("TestProcessError", {
+  message: Schema.String,
+}) {}
 
 const testFailure = (message: string) => new TestProcessError({ message })
 

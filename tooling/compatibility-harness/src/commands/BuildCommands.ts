@@ -1,7 +1,7 @@
 import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
 import * as Option from "effect/Option"
-import * as Command from "effect/unstable/cli/Command"
+import * as Command from "effect/cli/Command"
 import { BuildId } from "../Domain.ts"
 import { ExpoRepository } from "../ExpoRepository.ts"
 import { BuildPipeline } from "../build/BuildPipeline.ts"

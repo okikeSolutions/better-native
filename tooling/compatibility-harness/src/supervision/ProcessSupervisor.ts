@@ -1,17 +1,17 @@
 import { existsSync } from "node:fs"
 import * as Clock from "effect/Clock"
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Exit from "effect/Exit"
 import * as Fiber from "effect/Fiber"
 import * as Layer from "effect/Layer"
 import * as Ref from "effect/Ref"
 import type * as Scope from "effect/Scope"
+import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as ChildProcess from "effect/unstable/process/ChildProcess"
-import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
-import type { ProcessObservation } from "../Domain.ts"
+import * as ChildProcess from "effect/process/ChildProcess"
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner"
+import { ProcessObservation } from "../Domain.ts"
 
 /** Bounded child-process launch specification. */
 export interface ProcessSpec {
@@ -51,13 +51,16 @@ export const processInvocation = (
       }
     : { command: spec.command, args: spec.args ?? [] }
 
+const isProcessSpec = (value: unknown): value is ProcessSpec =>
+  typeof value === "object" && value !== null
+
 /** Failure raised when a child process cannot be spawned, drained, or terminated. */
-export class ProcessFailure extends Data.TaggedError("ProcessFailure")<{
-  readonly reason: "spawn" | "stream" | "exit" | "timeout"
-  readonly spec: ProcessSpec
-  readonly observations: ReadonlyArray<ProcessObservation>
-  readonly cause: unknown
-}> {}
+export class ProcessFailure extends Schema.TaggedError<ProcessFailure>()("ProcessFailure", {
+  reason: Schema.Literals(["spawn", "stream", "exit", "timeout"]),
+  spec: Schema.declare(isProcessSpec),
+  observations: Schema.Array(ProcessObservation),
+  cause: Schema.Defect(),
+}) {}
 
 /** Backend process handle exposed to the supervisor lifecycle. */
 export interface ProcessHandle {

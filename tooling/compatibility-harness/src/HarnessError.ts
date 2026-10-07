@@ -1,8 +1,8 @@
-import * as Data from "effect/Data"
+import * as Schema from "effect/Schema"
 
 /** A deterministic failure at the compatibility boundary. */
-export class HarnessError extends Data.TaggedError("HarnessError")<{
-  readonly operation: string
-  readonly path?: string
-  readonly cause: unknown
-}> {}
+export class HarnessError extends Schema.TaggedError<HarnessError>()("HarnessError", {
+  operation: Schema.String,
+  path: Schema.optional(Schema.String),
+  cause: Schema.Defect(),
+}) {}

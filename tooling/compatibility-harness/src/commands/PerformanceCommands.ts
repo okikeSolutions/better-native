@@ -5,8 +5,8 @@ import * as Clock from "effect/Clock"
 import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
 import * as Schema from "effect/Schema"
-import * as Command from "effect/unstable/cli/Command"
-import * as Flag from "effect/unstable/cli/Flag"
+import * as Command from "effect/cli/Command"
+import * as Flag from "effect/cli/Flag"
 import { BuildRecord } from "../Domain.ts"
 import { HarnessError } from "../HarnessError.ts"
 import { HarnessConfig } from "../HarnessConfig.ts"
@@ -21,10 +21,10 @@ import { ProcessSupervisor } from "../supervision/ProcessSupervisor.ts"
 import { BuildProducts } from "../build/BuildProducts.ts"
 import { buildIdFlag, nativePlatform, timeoutMillisFlag } from "./Shared.ts"
 
-const sourceAppFlag = Flag.string("source-app")
-const recordFlag = Flag.string("record")
-const cacheHitRecordFlag = Flag.string("cache-hit-record")
-const coldBuildRecordFlag = Flag.string("cold-build-record")
+const sourceAppFlag = Flag.String("source-app")
+const recordFlag = Flag.String("record")
+const cacheHitRecordFlag = Flag.String("cache-hit-record")
+const coldBuildRecordFlag = Flag.String("cold-build-record")
 const repackModulePath = fileURLToPath(import.meta.resolve("@expo/repack-app"))
 
 const PositiveFinite = Schema.Finite.check(Schema.isGreaterThan(0))

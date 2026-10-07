@@ -73,7 +73,7 @@ export interface TaskBase<D extends TaskDefinition = TaskDefinition> {
   readonly taskType: string
   readonly root: string
   readonly instruction: string
-  readonly fixtureFiles: ReadonlyArray<FixtureFile>
+  readonly fixtureFiles: readonly [FixtureFile, ...FixtureFile[]]
   readonly definition: D
   readonly publicPackages: ReadonlyArray<string>
   readonly packedPackage: PackedPackageSpec | null
@@ -115,7 +115,7 @@ export type TaskRequirements =
   | import("effect/FileSystem").FileSystem
   | import("effect/Crypto").Crypto
   | import("effect/Path").Path
-  | import("effect/unstable/process/ChildProcessSpawner").ChildProcessSpawner
+  | import("effect/process/ChildProcessSpawner").ChildProcessSpawner
   | import("../security/Isolation.ts").Isolation
   | import("./PackageArtifact.ts").PackageArtifacts
 

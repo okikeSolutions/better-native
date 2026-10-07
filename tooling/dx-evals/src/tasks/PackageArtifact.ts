@@ -1,7 +1,6 @@
 import * as Cache from "effect/Cache"
 import * as Context from "effect/Context"
 import * as Crypto from "effect/Crypto"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
@@ -10,8 +9,8 @@ import * as Path from "effect/Path"
 import type * as PlatformError from "effect/PlatformError"
 import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as ChildProcess from "effect/unstable/process/ChildProcess"
-import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
+import * as ChildProcess from "effect/process/ChildProcess"
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner"
 import ts from "typescript"
 import * as ArtifactStore from "../evidence/ArtifactStore.ts"
 import * as Config from "../Config.ts"
@@ -19,9 +18,12 @@ import * as Domain from "../Domain.ts"
 import type * as TaskModel from "./TaskModel.ts"
 
 /** Failure raised when a repository-owned task bundle or package artifact is malformed. */
-export class TaskBundleInvalid extends Data.TaggedError("TaskBundleInvalid")<{
-  readonly reason: string
-}> {}
+export class TaskBundleInvalid extends Schema.TaggedError<TaskBundleInvalid>()(
+  "TaskBundleInvalid",
+  {
+    reason: Schema.String,
+  },
+) {}
 
 const PackedPackageSpecSchema = Schema.Struct({
   taskName: Domain.NonEmptyString,

@@ -1,13 +1,13 @@
 import * as Context from "effect/Context"
 import * as Crypto from "effect/Crypto"
 import * as Effect from "effect/Effect"
-import * as Encoding from "effect/Encoding"
+import * as Hex from "effect/encoding/Hex"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
-import * as ChildProcess from "effect/unstable/process/ChildProcess"
-import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
+import * as ChildProcess from "effect/process/ChildProcess"
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner"
 import { HarnessConfig } from "./HarnessConfig.ts"
 import { HarnessError } from "./HarnessError.ts"
 
@@ -269,7 +269,7 @@ export const layer = (
         ),
         hashString: (value) =>
           crypto.digest("SHA-256", new TextEncoder().encode(value)).pipe(
-            Effect.map(Encoding.encodeHex),
+            Effect.map(Hex.encode),
             Effect.mapError((cause) => failure("hash compatibility data", undefined, cause)),
           ),
         writeArtifact: (relativePath, value) =>

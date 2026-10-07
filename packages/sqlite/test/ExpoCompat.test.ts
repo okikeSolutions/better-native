@@ -4,7 +4,7 @@ const plugin = vi.fn()
 const kvStore = vi.hoisted(() => ({
   default: { getItem: vi.fn() },
 }))
-const installLocalStorage = vi.hoisted(() => vi.fn())
+const localStorageInstall = vi.hoisted(() => ({ evaluated: false }))
 
 const runtime = {
   SQLiteDatabase: class SQLiteDatabase {},
@@ -32,7 +32,7 @@ vi.mock("expo-sqlite", () => runtime)
 vi.mock("expo-sqlite/plugin", () => ({ default: plugin }))
 vi.mock("expo-sqlite/kv-store", () => kvStore)
 vi.mock("expo-sqlite/localStorage/install", () => {
-  installLocalStorage()
+  localStorageInstall.evaluated = true
   return {}
 })
 
@@ -55,6 +55,6 @@ describe("@better-native/sqlite/expo", () => {
 
   it("preserves the kv-store default export and localStorage installation side effect", () => {
     expect(KVStore.default).toBe(kvStore.default)
-    expect(installLocalStorage).toHaveBeenCalledTimes(1)
+    expect(localStorageInstall.evaluated).toBe(true)
   })
 })
