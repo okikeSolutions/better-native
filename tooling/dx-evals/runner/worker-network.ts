@@ -1,3 +1,4 @@
+import * as Cause from "effect/Cause"
 import * as Effect from "effect/Effect"
 import * as Context from "effect/Context"
 import * as Match from "effect/Match"
@@ -101,12 +102,14 @@ try {
               observation: yield* WorkerSupport.toJsonOr(observation, fallback),
             }
           }).pipe(
-            Effect.catchCause(() =>
-              Effect.succeed({
-                type: "error" as const,
-                nonce: request.nonce,
-                reason: "worker-handler-failure",
-              }),
+            Effect.catchCause((cause) =>
+              Cause.hasInterrupts(cause)
+                ? Effect.interrupt
+                : Effect.succeed({
+                    type: "error" as const,
+                    nonce: request.nonce,
+                    reason: "worker-handler-failure",
+                  }),
             ),
             Effect.flatMap((response) => runner.send(portId, response)),
           ),

@@ -75,7 +75,7 @@ const Observation = Schema.Struct({
   optionsMatched: Schema.Boolean,
   failureCategory: Schema.optional(Schema.Literal("module-load")),
 })
-type Observation = Schema.Schema.Type<typeof Observation>
+interface Observation extends Schema.Schema.Type<typeof Observation> {}
 
 const decodeObservation = (value: unknown) =>
   Schema.decodeUnknownEffect(Observation)(value).pipe(

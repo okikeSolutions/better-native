@@ -51,7 +51,7 @@ export const ExternalRunRequest = Schema.Struct({
   reportPath: Schema.NonEmptyString,
 })
 /** Decoded external runner request accepted by {@link ExternalRunRequest}. */
-export type ExternalRunRequest = Schema.Schema.Type<typeof ExternalRunRequest>
+export interface ExternalRunRequest extends Schema.Schema.Type<typeof ExternalRunRequest> {}
 
 /** Failure raised while running, parsing, or recording external test output. */
 export class ExternalRunnerError extends Schema.TaggedError<ExternalRunnerError>()(
@@ -254,7 +254,7 @@ export const layer = (
             return new TextDecoder().decode(bytes)
           }),
         )
-      const run: Service["run"] = (request) =>
+      const run: Service["run"] = Effect.fn("ExternalRunnerSupervisor.run")((request) =>
         Effect.gen(function* () {
           const reportExtension = reportExtensionFor(request.runner)
           const initialReport = yield* resolveReport(
@@ -395,7 +395,8 @@ export const layer = (
               ? cause
               : new ExternalRunnerError({ request, phase: "report", cause }),
           ),
-        )
+        ),
+      )
       return ExternalRunnerSupervisor.of({ run })
     }),
   ).pipe(Layer.provide(harnessConfigLayer(root).pipe(Layer.orDie)))

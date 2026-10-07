@@ -111,7 +111,7 @@ export const layer: Layer.Layer<DiscoveryPass, never, EvidenceStore> = Layer.eff
   DiscoveryPass,
   Effect.gen(function* () {
     const evidence = yield* EvidenceStore
-    const collect: Service["collect"] = (input) =>
+    const collect: Service["collect"] = Effect.fn("DiscoveryPass.collect")((input) =>
       Effect.gen(function* () {
         const resolutionJson = input.processObservations
           .map(({ text }) => sentinelJson(text, "BETTER_NATIVE_RESOLUTION_V1="))
@@ -199,7 +199,8 @@ export const layer: Layer.Layer<DiscoveryPass, never, EvidenceStore> = Layer.eff
           .writeJson("runs", input.runId, "discovery.json", DiscoveryRecord, record)
           .pipe(Effect.mapError((cause) => new DiscoveryError({ runId: input.runId, cause })))
         return record
-      })
+      }),
+    )
     return DiscoveryPass.of({ collect })
   }),
 )

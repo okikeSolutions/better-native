@@ -263,15 +263,19 @@ export const defineTask = <Data, A, E, R, ER>(
 export const live = Layer.succeed(
   TaskManager,
   TaskManager.of({
-    isDefined: (name) => Effect.sync(() => ExpoTaskManager.isTaskDefined(name)),
+    isDefined: Effect.fn("TaskManager.isDefined")((name) =>
+      Effect.sync(() => ExpoTaskManager.isTaskDefined(name)),
+    ),
     isAvailable: native("isAvailableAsync", ExpoTaskManager.isAvailableAsync),
-    isRegistered: (name) =>
+    isRegistered: Effect.fn("TaskManager.isRegistered")((name) =>
       native("isTaskRegisteredAsync", () => ExpoTaskManager.isTaskRegisteredAsync(name)),
+    ),
     getOptions: (name) =>
       native("getTaskOptionsAsync", () => ExpoTaskManager.getTaskOptionsAsync(name)),
     registeredTasks: native("getRegisteredTasksAsync", ExpoTaskManager.getRegisteredTasksAsync),
-    unregister: (name) =>
+    unregister: Effect.fn("TaskManager.unregister")((name) =>
       native("unregisterTaskAsync", () => ExpoTaskManager.unregisterTaskAsync(name)),
+    ),
     unregisterAll: native("unregisterAllTasksAsync", ExpoTaskManager.unregisterAllTasksAsync),
   }),
 )

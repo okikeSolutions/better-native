@@ -86,9 +86,11 @@ const retainSuccessfulComparison = Effect.fn("Command.retainSuccessfulComparison
     })
   }
   const device = upstream[0]?.device ?? candidate[0]?.device
-  const firstCandidateRun = candidate[0]?.plan.id
+  const firstCandidate = candidate[0]
+  const firstCandidateRun = firstCandidate?.plan.id
   if (
     device === undefined ||
+    firstCandidate === undefined ||
     firstCandidateRun === undefined ||
     upstreamBuildIds === undefined ||
     candidateBuildIds === undefined ||
@@ -106,7 +108,7 @@ const retainSuccessfulComparison = Effect.fn("Command.retainSuccessfulComparison
     sourceIds: retainedSources,
     platform: summary.platform,
     device,
-    expoRevision: candidate[0]!.build.expoRevision,
+    expoRevision: firstCandidate.build.expoRevision,
     candidateRevision: candidateRevisions[0],
     upstreamBuildIds,
     candidateBuildIds,

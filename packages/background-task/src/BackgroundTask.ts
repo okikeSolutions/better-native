@@ -322,10 +322,12 @@ export const live = Layer.succeed(
   BackgroundTask,
   BackgroundTask.of({
     status: native("getStatusAsync", ExpoBackgroundTask.getStatusAsync),
-    register: (name, options) =>
+    register: Effect.fn("BackgroundTask.register")((name, options) =>
       native("registerTaskAsync", () => ExpoBackgroundTask.registerTaskAsync(name, options)),
-    unregister: (name) =>
+    ),
+    unregister: Effect.fn("BackgroundTask.unregister")((name) =>
       native("unregisterTaskAsync", () => ExpoBackgroundTask.unregisterTaskAsync(name)),
+    ),
     triggerForTesting: native(
       "triggerTaskWorkerForTestingAsync",
       ExpoBackgroundTask.triggerTaskWorkerForTestingAsync,

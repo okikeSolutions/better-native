@@ -199,7 +199,7 @@ export const layer: Layer.Layer<
         ),
     )
     return Isolation.of({
-      observe: (request) =>
+      observe: Effect.fn("Isolation.observe")((request) =>
         Effect.scoped(
           Effect.gen(function* () {
             yield* rootlessPreflight
@@ -306,6 +306,7 @@ export const layer: Layer.Layer<
             ),
           ),
         ),
+      ),
     })
   }),
 )

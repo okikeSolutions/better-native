@@ -9,7 +9,7 @@ export const PublicCompileContract = Schema.Struct({
   kind: Schema.Literal("effect-no-requirements"),
   exportName: Schema.String.check(Schema.isPattern(/^[A-Za-z_$][A-Za-z0-9_$]*$/)),
 })
-export type PublicCompileContract = Schema.Schema.Type<typeof PublicCompileContract>
+export interface PublicCompileContract extends Schema.Schema.Type<typeof PublicCompileContract> {}
 
 /** Exhaustive reporter-facing result derived from one reviewed boolean gate. */
 export const gateResult = (passed: boolean): Domain.GateResult["result"] =>

@@ -34,7 +34,7 @@ export const PublicCompileResult = Schema.Struct({
   diagnostics: Schema.Array(CompileDiagnostic),
   truncated: Schema.Boolean,
 })
-export type PublicCompileResult = Schema.Schema.Type<typeof PublicCompileResult>
+export interface PublicCompileResult extends Schema.Schema.Type<typeof PublicCompileResult> {}
 
 /** Stable result used when the public compiler boundary is unavailable. */
 export const unavailable: PublicCompileResult = {

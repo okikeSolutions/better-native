@@ -32,7 +32,7 @@ export const layer = (
       const fs = yield* FileSystem.FileSystem
       const path = yield* Path.Path
       const products = yield* BuildProducts
-      const load: Service["load"] = (request) =>
+      const load: Service["load"] = Effect.fn("AppBuildImporter.load")((request) =>
         Effect.gen(function* () {
           const encoded = yield* fs.readFileString(request.recordPath)
           const parsed = yield* Effect.try({
@@ -100,7 +100,8 @@ export const layer = (
           Effect.mapError((cause) =>
             cause instanceof BuildImportError ? cause : new BuildImportError({ request, cause }),
           ),
-        )
+        ),
+      )
       return AppBuildImporter.of({ load })
     }),
   )

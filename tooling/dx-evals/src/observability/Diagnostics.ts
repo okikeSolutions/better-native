@@ -138,7 +138,7 @@ const publicOnly = (logger: Logger.Logger<unknown, unknown>) =>
   )
 
 const disabledService = Diagnostics.of({
-  recordProviderFailure: () => Effect.void,
+  recordProviderFailure: Effect.fn("Diagnostics.recordProviderFailure")(() => Effect.void),
 })
 
 /** No-op diagnostics used by deterministic commands and tests without a campaign run ID. */
@@ -195,10 +195,11 @@ export const layerForCampaign = (runId: Domain.RunId) =>
         Diagnostics,
         Diagnostics.of({
           filePath,
-          recordProviderFailure: (error) =>
+          recordProviderFailure: Effect.fn("Diagnostics.recordProviderFailure")((error) =>
             Effect.logError("Provider request failed").pipe(
               Effect.annotateLogs(providerFailureAnnotations(error)),
             ),
+          ),
         }),
       )
       return Layer.merge(loggerLayer, serviceLayer)

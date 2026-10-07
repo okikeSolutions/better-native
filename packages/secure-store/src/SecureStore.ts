@@ -251,15 +251,20 @@ export const live = Layer.succeed(
       "canUseBiometricAuthentication",
       ExpoSecureStore.canUseBiometricAuthentication,
     ),
-    deleteItem: (key, options) =>
+    deleteItem: Effect.fn("SecureStore.deleteItem")((key, options) =>
       asyncMethod("deleteItemAsync", () => ExpoSecureStore.deleteItemAsync(key, options), key),
-    getItem: (key, options) =>
+    ),
+    getItem: Effect.fn("SecureStore.getItem")((key, options) =>
       syncMethod("getItem", () => ExpoSecureStore.getItem(key, options), key),
-    getItemAsync: (key, options) =>
+    ),
+    getItemAsync: Effect.fn("SecureStore.getItemAsync")((key, options) =>
       asyncMethod("getItemAsync", () => ExpoSecureStore.getItemAsync(key, options), key),
-    setItem: (key, value, options) =>
+    ),
+    setItem: Effect.fn("SecureStore.setItem")((key, value, options) =>
       syncMethod("setItem", () => ExpoSecureStore.setItem(key, value, options), key),
-    setItemAsync: (key, value, options) =>
+    ),
+    setItemAsync: Effect.fn("SecureStore.setItemAsync")((key, value, options) =>
       asyncMethod("setItemAsync", () => ExpoSecureStore.setItemAsync(key, value, options), key),
+    ),
   }),
 )

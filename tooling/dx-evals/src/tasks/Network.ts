@@ -78,7 +78,7 @@ const Observation = Schema.Struct({
   value: Schema.optional(Schema.Json),
   failureCategory: Schema.optional(Schema.Literal("module-load")),
 })
-type Observation = Schema.Schema.Type<typeof Observation>
+interface Observation extends Schema.Schema.Type<typeof Observation> {}
 
 const decodeObservation = (
   value: unknown,

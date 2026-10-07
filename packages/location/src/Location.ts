@@ -920,7 +920,7 @@ export const live = Layer.succeed(
       "enableNetworkProviderAsync",
       ExpoLocation.enableNetworkProviderAsync,
     ),
-    currentPosition: (options) =>
+    currentPosition: Effect.fn("Location.currentPosition")((options) =>
       positionStream("getCurrentPositionAsync", options, 1).pipe(
         Stream.runHead,
         Effect.flatMap(
@@ -936,12 +936,14 @@ export const live = Layer.succeed(
           }),
         ),
       ),
-    lastKnownPosition: (options) =>
+    ),
+    lastKnownPosition: Effect.fn("Location.lastKnownPosition")((options) =>
       validated(
         "getLastKnownPositionAsync",
         native("getLastKnownPositionAsync", () => ExpoLocation.getLastKnownPositionAsync(options)),
         (value) => value === null || isPosition(value),
       ),
+    ),
     positions: (options, bufferSize) =>
       positionStream("watchPositionAsync", options, bufferSize ?? 16),
     heading: isWebRuntime()
@@ -962,9 +964,12 @@ export const live = Layer.succeed(
             new LocationUnavailable({ method: "watchHeadingAsync", cause: "unsupported on web" }),
           )
         : nativeHeadings(bufferSize),
-    geocode: (address) => native("geocodeAsync", () => ExpoLocation.geocodeAsync(address)),
-    reverseGeocode: (location) =>
+    geocode: Effect.fn("Location.geocode")((address) =>
+      native("geocodeAsync", () => ExpoLocation.geocodeAsync(address)),
+    ),
+    reverseGeocode: Effect.fn("Location.reverseGeocode")((location) =>
       native("reverseGeocodeAsync", () => ExpoLocation.reverseGeocodeAsync(location)),
+    ),
     foregroundPermission: validated(
       "getForegroundPermissionsAsync",
       native("getForegroundPermissionsAsync", ExpoLocation.getForegroundPermissionsAsync),
@@ -1021,24 +1026,30 @@ export const live = Layer.succeed(
           )
         : nativeMotionActivities(bufferSize),
     backgroundAvailable,
-    startLocationUpdates: (taskName, options) =>
+    startLocationUpdates: Effect.fn("Location.startLocationUpdates")((taskName, options) =>
       native("startLocationUpdatesAsync", () =>
         ExpoLocation.startLocationUpdatesAsync(taskName, options),
       ),
-    stopLocationUpdates: (taskName) =>
+    ),
+    stopLocationUpdates: Effect.fn("Location.stopLocationUpdates")((taskName) =>
       native("stopLocationUpdatesAsync", () => ExpoLocation.stopLocationUpdatesAsync(taskName)),
-    hasStartedLocationUpdates: (taskName) =>
+    ),
+    hasStartedLocationUpdates: Effect.fn("Location.hasStartedLocationUpdates")((taskName) =>
       native("hasStartedLocationUpdatesAsync", () =>
         ExpoLocation.hasStartedLocationUpdatesAsync(taskName),
       ),
-    startGeofencing: (taskName, regions) =>
+    ),
+    startGeofencing: Effect.fn("Location.startGeofencing")((taskName, regions) =>
       native("startGeofencingAsync", () =>
         ExpoLocation.startGeofencingAsync(taskName, [...(regions ?? [])]),
       ),
-    stopGeofencing: (taskName) =>
+    ),
+    stopGeofencing: Effect.fn("Location.stopGeofencing")((taskName) =>
       native("stopGeofencingAsync", () => ExpoLocation.stopGeofencingAsync(taskName)),
-    hasStartedGeofencing: (taskName) =>
+    ),
+    hasStartedGeofencing: Effect.fn("Location.hasStartedGeofencing")((taskName) =>
       native("hasStartedGeofencingAsync", () => ExpoLocation.hasStartedGeofencingAsync(taskName)),
+    ),
   }),
 )
 

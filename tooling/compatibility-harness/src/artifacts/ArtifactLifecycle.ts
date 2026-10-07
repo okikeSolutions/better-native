@@ -7,6 +7,7 @@ import * as Option from "effect/Option"
 import * as Path from "effect/Path"
 import * as PlatformError from "effect/PlatformError"
 import * as Schema from "effect/Schema"
+import * as Schedule from "effect/Schedule"
 import * as Scope from "effect/Scope"
 import { randomUUID } from "node:crypto"
 import { statfs } from "node:fs/promises"
@@ -227,7 +228,9 @@ export const layer = (
         return moved
       })
 
-      const acquireNativeBuild: Service["acquireNativeBuild"] = (label) => {
+      const acquireNativeBuild: Service["acquireNativeBuild"] = Effect.fn(
+        "ArtifactLifecycle.acquireNativeBuild",
+      )((label) => {
         const token = randomUUID()
         const owner: NativeBuildOwner = {
           schemaVersion: 1,
@@ -273,11 +276,11 @@ export const layer = (
 
         const acquire = Effect.gen(function* () {
           let waitingLogged = false
-          while (true) {
-            const result = yield* attempt
-            if (result === "acquired") break
-            if (result === "retry") continue
-            if (!waitingLogged) {
+          yield* Effect.gen(function* () {
+            const result = yield* attempt.pipe(
+              Effect.repeat({ until: (outcome) => outcome !== "retry" }),
+            )
+            if (result === "waiting" && !waitingLogged) {
               const current = yield* readNativeBuildOwner
               yield* Console.log(
                 current === null
@@ -286,8 +289,13 @@ export const layer = (
               )
               waitingLogged = true
             }
-            yield* Effect.sleep(nativeBuildPollMillis)
-          }
+            return result
+          }).pipe(
+            Effect.repeat({
+              until: (result) => result === "acquired",
+              schedule: Schedule.spaced(nativeBuildPollMillis),
+            }),
+          )
           yield* Console.log(`[native-build:${label}] acquired the machine-wide native build lock`)
         }).pipe(
           Effect.mapError(
@@ -313,9 +321,11 @@ export const layer = (
             )
           }).pipe(Effect.orDie),
         )
-      }
+      })
 
-      const acquireWorkspace: Service["acquireWorkspace"] = (workspace) => {
+      const acquireWorkspace: Service["acquireWorkspace"] = Effect.fn(
+        "ArtifactLifecycle.acquireWorkspace",
+      )((workspace) => {
         const name = path.basename(workspace)
         const lock = path.join(locksRoot, name)
         const token = randomUUID()
@@ -364,7 +374,7 @@ export const layer = (
             }
           }).pipe(Effect.orDie),
         )
-      }
+      })
 
       const cacheRoots = [
         {
@@ -389,7 +399,7 @@ export const layer = (
         },
       ]
 
-      const prune: Service["prune"] = (options) =>
+      const prune: Service["prune"] = Effect.fn("ArtifactLifecycle.prune")((options) =>
         Effect.gen(function* () {
           const now = options.nowMillis ?? Date.now()
           const budget = options.cacheBudgetBytes ?? defaultCacheBudgetBytes
@@ -764,7 +774,8 @@ export const layer = (
           Effect.mapError(
             (cause) => new ArtifactLifecycleError({ operation: "prune artifacts", cause }),
           ),
-        )
+        ),
+      )
 
       const pruneBeforeBuild = Effect.tryPromise({
         try: async () => {
@@ -819,7 +830,9 @@ export const layer = (
         ),
       )
 
-      const publishNativeProduct: Service["publishNativeProduct"] = (input) =>
+      const publishNativeProduct: Service["publishNativeProduct"] = Effect.fn(
+        "ArtifactLifecycle.publishNativeProduct",
+      )((input) =>
         Effect.gen(function* () {
           if (!isSafePathSegment(input.buildId) || path.basename(input.name) !== input.name) {
             return yield* new ArtifactLifecycleError({
@@ -850,7 +863,8 @@ export const layer = (
               ? cause
               : new ArtifactLifecycleError({ operation: "publish native product", cause }),
           ),
-        )
+        ),
+      )
 
       return ArtifactLifecycle.of({
         acquireWorkspace,

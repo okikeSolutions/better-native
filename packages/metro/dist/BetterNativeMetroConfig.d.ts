@@ -1,3 +1,4 @@
+import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -67,7 +68,7 @@ export interface ResolutionDirective {
 }
 declare const MetroConfigurationError_base: Schema.Class<MetroConfigurationError, Schema.TaggedStruct<"MetroConfigurationError", {
     readonly cause: Schema.Defect;
-}>, import("effect/Cause").YieldableError>;
+}>, Cause.YieldableError>;
 export declare class MetroConfigurationError extends MetroConfigurationError_base {
 }
 declare const ResolutionPolicy_base: Context.ServiceClass<ResolutionPolicy, "@better-native/metro/ResolutionPolicy", {

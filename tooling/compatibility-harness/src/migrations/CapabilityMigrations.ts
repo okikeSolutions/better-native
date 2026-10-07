@@ -42,7 +42,7 @@ export const Capability = Schema.Struct({
   requirements: Requirements,
   verification: Verification,
 })
-export type Capability = Schema.Schema.Type<typeof Capability>
+export interface Capability extends Schema.Schema.Type<typeof Capability> {}
 
 /** Resolves the capability source that supplies one platform's parity evidence. */
 export const compatibilitySourceFor = (
@@ -56,7 +56,7 @@ export const CapabilityLedger = Schema.Struct({
   schemaVersion: Schema.Literal(2),
   capabilities: Schema.Array(Capability),
 })
-export type CapabilityLedger = Schema.Schema.Type<typeof CapabilityLedger>
+export interface CapabilityLedger extends Schema.Schema.Type<typeof CapabilityLedger> {}
 
 export interface MigrationCheck {
   readonly name: string

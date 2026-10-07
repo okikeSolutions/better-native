@@ -74,6 +74,7 @@ __export(exports_BetterNativeMetroConfig, {
   withBetterNative: () => withBetterNative
 });
 module.exports = __toCommonJS(exports_BetterNativeMetroConfig);
+var Cause = __toESM(require("effect/Cause"), 1);
 var Context = __toESM(require("effect/Context"), 1);
 var Effect = __toESM(require("effect/Effect"), 1);
 var Layer = __toESM(require("effect/Layer"), 1);
@@ -281,7 +282,7 @@ var make = Effect.fn("BetterNativeMetroConfig.make")(function* (config) {
   const observer = yield* ResolutionObserver;
   const services = yield* Effect.context();
   const runSync = Effect.runSyncWith(services);
-  const observe = (event) => runSync(observer.observe(event).pipe(Effect.catchCause((cause) => Effect.logError("Resolution observer failed", { cause }))));
+  const observe = (event) => runSync(observer.observe(event).pipe(Effect.catchCauseIf((cause) => !Cause.hasInterrupts(cause), (cause) => Effect.logError("Resolution observer failed", { cause }))));
   const previous = config.resolver.resolveRequest;
   const configMode = policy.mode;
   const resolveRequest = (context, specifier, platform) => {

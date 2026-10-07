@@ -13,7 +13,8 @@ export const androidArchitecturesFor = (profile: BuildProfile): string | null =>
 const withoutOption = (args: ReadonlyArray<string>, option: string): Array<string> => {
   const result: Array<string> = []
   for (let index = 0; index < args.length; index += 1) {
-    const value = args[index]!
+    const value = args[index]
+    if (value === undefined) continue
     if (value === option) {
       index += 1
       continue

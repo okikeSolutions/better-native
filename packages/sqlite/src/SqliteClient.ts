@@ -6,7 +6,6 @@
 import * as Config from "effect/Config"
 import * as Context from "effect/Context"
 import * as Effect from "effect/Effect"
-import * as Fiber from "effect/Fiber"
 import { identity } from "effect/Function"
 import * as Layer from "effect/Layer"
 import * as Scope from "effect/Scope"
@@ -256,16 +255,15 @@ export const make = (
 
     const semaphore = yield* Semaphore.make(1)
     const acquirer = semaphore.withPermits(1)(Effect.succeed(connection))
-    const transactionAcquirer = Effect.uninterruptibleMask((restore) => {
-      const fiber = Fiber.getCurrent()!
-      const scope = Context.getUnsafe(fiber.context, Scope.Scope)
-      return Effect.as(
-        Effect.tap(restore(semaphore.take(1)), () =>
-          Scope.addFinalizer(scope, semaphore.release(1)),
-        ),
-        connection,
-      )
-    })
+    const transactionAcquirer = Effect.uninterruptibleMask((restore) =>
+      Effect.gen(function* () {
+        const scope = yield* Scope.Scope
+        yield* restore(semaphore.take(1)).pipe(
+          Effect.tap(() => Scope.addFinalizer(scope, semaphore.release(1))),
+        )
+        return connection
+      }),
+    )
 
     return Object.assign(
       (yield* Client.make({

@@ -81,7 +81,7 @@ const Observation = Schema.Struct({
   emitted: Domain.NonNegativeInteger,
   failureCategory: Schema.optional(Schema.Literal("module-load")),
 })
-type Observation = Schema.Schema.Type<typeof Observation>
+interface Observation extends Schema.Schema.Type<typeof Observation> {}
 
 const decodeObservation = (
   value: unknown,

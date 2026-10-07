@@ -3,6 +3,7 @@
  *
  * @since 0.0.0
  */
+import * as Cause from "effect/Cause"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
@@ -257,7 +258,10 @@ export const make =
         )
       if (schemaDirectory !== undefined && completed.length > 0) {
         yield* dumpSchema(`${schemaDirectory}/_schema.sql`, table).pipe(
-          Effect.catchCause((cause) => Effect.logInfo("Could not dump schema", cause)),
+          Effect.catchCauseIf(
+            (cause) => !Cause.hasInterrupts(cause),
+            (cause) => Effect.logInfo("Could not dump schema", cause),
+          ),
         )
       }
       return completed

@@ -227,7 +227,7 @@ const resolveSourceModule = (
 ): string => {
   const stem = path.normalize(path.join(path.dirname(sourceFile), specifier))
   const candidates = [`${stem}.ts`, `${stem}.tsx`, `${stem}/index.ts`, `${stem}/index.tsx`]
-  return candidates.find((candidate) => expoFiles.has(candidate)) ?? candidates[0]!
+  return candidates.find((candidate) => expoFiles.has(candidate)) ?? `${stem}.ts`
 }
 
 const mainSourceFile = (expoPackage: string, manifest: unknown): string | null => {

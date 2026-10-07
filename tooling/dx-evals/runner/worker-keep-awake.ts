@@ -118,12 +118,14 @@ try {
               observation: yield* WorkerSupport.toJsonOr(observation, fallbackJson),
             }
           }).pipe(
-            Effect.catchCause(() =>
-              Effect.succeed({
-                type: "error" as const,
-                nonce: request.nonce,
-                reason: "worker-handler-failure",
-              }),
+            Effect.catchCause((cause) =>
+              Cause.hasInterrupts(cause)
+                ? Effect.interrupt
+                : Effect.succeed({
+                    type: "error" as const,
+                    nonce: request.nonce,
+                    reason: "worker-handler-failure",
+                  }),
             ),
             Effect.flatMap((response) => runner.send(portId, response)),
           ),

@@ -304,7 +304,7 @@ export const ReplacementManifest = Schema.Struct({
   trackedSpecifiers: Schema.Array(Schema.String),
 })
 /** Decoded replacement manifest accepted by {@link ReplacementManifest}. */
-export type ReplacementManifest = Schema.Schema.Type<typeof ReplacementManifest>
+export interface ReplacementManifest extends Schema.Schema.Type<typeof ReplacementManifest> {}
 
 const platformVariant = (file: string): Platform | "native" | null => {
   const match = file.match(/\.(android|ios|native|web)\.[^.]+$/)

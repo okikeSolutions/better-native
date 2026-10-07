@@ -9,7 +9,7 @@ export const PublicCompileContract = Schema.Struct({
   kind: Schema.Literal("effect-no-requirements"),
   exportName: PublicExportName,
 })
-export type PublicCompileContract = Schema.Schema.Type<typeof PublicCompileContract>
+export interface PublicCompileContract extends Schema.Schema.Type<typeof PublicCompileContract> {}
 
 /** Request delivered over stdin so candidate code cannot recover grader inputs from argv. */
 export const SupervisorRequest = Schema.Struct({
@@ -19,7 +19,7 @@ export const SupervisorRequest = Schema.Struct({
   runnerArguments: Schema.Array(Schema.String),
   publicCompileContract: Schema.optional(PublicCompileContract),
 })
-export type SupervisorRequest = Schema.Schema.Type<typeof SupervisorRequest>
+export interface SupervisorRequest extends Schema.Schema.Type<typeof SupervisorRequest> {}
 
 const WorkerObservationResponse = Schema.Struct({
   type: Schema.Literal("observation"),
@@ -37,8 +37,8 @@ const WorkerErrorResponse = Schema.Struct({
 export const WorkerResponse = Schema.Union([WorkerObservationResponse, WorkerErrorResponse])
 export type WorkerResponse = Schema.Schema.Type<typeof WorkerResponse>
 
-export const decodeSupervisorRequest = Schema.decodeUnknownSync(SupervisorRequest)
-export const decodeWorkerResponse = Schema.decodeUnknownSync(WorkerResponse)
+export const decodeSupervisorRequest = Schema.decodeUnknownEffect(SupervisorRequest)
+export const decodeWorkerResponse = Schema.decodeUnknownEffect(WorkerResponse)
 
 export const readStdinJson = Effect.gen(function* () {
   const stdio = yield* Stdio.Stdio

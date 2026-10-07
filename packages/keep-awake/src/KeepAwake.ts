@@ -290,10 +290,12 @@ export const live = Layer.succeed(
   KeepAwake,
   KeepAwake.of({
     isAvailable: method("isAvailableAsync", ExpoKeepAwake.isAvailableAsync),
-    activate: (tag) =>
+    activate: Effect.fn("KeepAwake.activate")((tag) =>
       method("activateKeepAwakeAsync", () => ExpoKeepAwake.activateKeepAwakeAsync(tag)),
-    deactivate: (tag) =>
+    ),
+    deactivate: Effect.fn("KeepAwake.deactivate")((tag) =>
       method("deactivateKeepAwake", () => ExpoKeepAwake.deactivateKeepAwake(tag)),
+    ),
     events: makeEvents,
   }),
 )

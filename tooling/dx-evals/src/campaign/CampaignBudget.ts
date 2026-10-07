@@ -66,49 +66,49 @@ const makeLayer = (maximumCostUsd: number) =>
         })),
       )
       return CampaignBudget.of({
-        reserve: (runId, maximumTrialCostUsd) =>
-          Effect.gen(function* () {
-            const result = yield* Ref.modify<Map<string, number>, ReservationResult>(
-              reservations,
-              (current) => {
-                if (current.has(runId)) return [{ type: "duplicate" }, current]
-                const reservedCostUsd = [...current.values()].reduce(
-                  (total, value) => total + value,
-                  0,
-                )
-                const remainingCostUsd = maximumCostUsd - reservedCostUsd
-                if (maximumTrialCostUsd > remainingCostUsd) {
-                  return [{ type: "rejected", remainingCostUsd }, current]
-                }
-                const next = new Map(current)
-                next.set(runId, maximumTrialCostUsd)
-                return [{ type: "reserved" }, next]
-              },
-            )
-            return yield* Match.value(result).pipe(
-              Match.when({ type: "reserved" }, () => Effect.void),
-              Match.when({ type: "duplicate" }, () =>
-                Effect.fail(new CampaignRunIdAlreadyReserved({ runId })),
+        reserve: Effect.fn("CampaignBudget.reserve")(function* (runId, maximumTrialCostUsd) {
+          const result = yield* Ref.modify<Map<string, number>, ReservationResult>(
+            reservations,
+            (current) => {
+              if (current.has(runId)) return [{ type: "duplicate" }, current]
+              const reservedCostUsd = [...current.values()].reduce(
+                (total, value) => total + value,
+                0,
+              )
+              const remainingCostUsd = maximumCostUsd - reservedCostUsd
+              if (maximumTrialCostUsd > remainingCostUsd) {
+                return [{ type: "rejected", remainingCostUsd }, current]
+              }
+              const next = new Map(current)
+              next.set(runId, maximumTrialCostUsd)
+              return [{ type: "reserved" }, next]
+            },
+          )
+          return yield* Match.value(result).pipe(
+            Match.when({ type: "reserved" }, () => Effect.void),
+            Match.when({ type: "duplicate" }, () =>
+              Effect.fail(new CampaignRunIdAlreadyReserved({ runId })),
+            ),
+            Match.when({ type: "rejected" }, ({ remainingCostUsd }) =>
+              Effect.fail(
+                new CampaignCostLimitExceeded({
+                  runId,
+                  requestedCostUsd: maximumTrialCostUsd,
+                  remainingCostUsd,
+                }),
               ),
-              Match.when({ type: "rejected" }, ({ remainingCostUsd }) =>
-                Effect.fail(
-                  new CampaignCostLimitExceeded({
-                    runId,
-                    requestedCostUsd: maximumTrialCostUsd,
-                    remainingCostUsd,
-                  }),
-                ),
-              ),
-              Match.exhaustive,
-            )
-          }),
-        settle: (runId, actualCostUsd) =>
+            ),
+            Match.exhaustive,
+          )
+        }),
+        settle: Effect.fn("CampaignBudget.settle")((runId, actualCostUsd) =>
           Ref.update(reservations, (current) => {
             if (!current.has(runId)) return current
             const next = new Map(current)
             next.set(runId, actualCostUsd)
             return next
           }),
+        ),
         snapshot,
       })
     }),

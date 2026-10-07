@@ -324,7 +324,8 @@ export const validatePublicPackageSurface = (
       .map((target) => target.relativePath)
     const declarations = new Map<string, string>()
     while (queue.length > 0) {
-      const declarationPath = queue.shift()!
+      const declarationPath = queue.shift()
+      if (declarationPath === undefined) break
       if (declarations.has(declarationPath)) continue
       const content = yield* readText(declarationPath)
       declarations.set(declarationPath, content)
@@ -466,8 +467,8 @@ export const layer = Layer.effect(
     })
 
     return PackageArtifacts.of({
-      prepare: (spec) => Cache.get(cache, specKey(spec)),
-      install: (artifact, workspace) =>
+      prepare: Effect.fn("PackageArtifacts.prepare")((spec) => Cache.get(cache, specKey(spec))),
+      install: Effect.fn("PackageArtifacts.install")((artifact, workspace) =>
         Effect.gen(function* () {
           const installedRoot = path.join(
             workspace,
@@ -498,6 +499,7 @@ export const layer = Layer.effect(
           }
           return installedRoot
         }),
+      ),
     })
   }),
 )

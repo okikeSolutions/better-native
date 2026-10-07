@@ -34,12 +34,13 @@ export const layer: Layer.Layer<
     const crypto = yield* Crypto.Crypto
     const failure = (operation: string, target: string, cause: unknown): Error =>
       new Error(`failed to ${operation} build product ${target}: ${String(cause)}`, { cause })
-    const digest: Service["digest"] = (bytes) =>
+    const digest: Service["digest"] = Effect.fn("BuildProducts.digest")((bytes) =>
       crypto.digest("SHA-256", bytes).pipe(
         Effect.map((value) => ContentHash.make(Hex.encode(value))),
         Effect.mapError((cause) => failure("digest", "bytes", cause)),
-      )
-    const hash: Service["hash"] = (target) =>
+      ),
+    )
+    const hash: Service["hash"] = Effect.fn("BuildProducts.hash")((target) =>
       Effect.gen(function* () {
         const canonicalParent = yield* fs.realPath(path.dirname(target))
         const expectedRoot = path.join(canonicalParent, path.basename(target))
@@ -81,7 +82,8 @@ export const layer: Layer.Layer<
           })
         yield* visit(canonicalRoot)
         return yield* digest(new TextEncoder().encode(entries.join("\n")))
-      }).pipe(Effect.mapError((cause) => failure("hash", target, cause)))
+      }).pipe(Effect.mapError((cause) => failure("hash", target, cause))),
+    )
     return BuildProducts.of({ digest, hash })
   }),
 )

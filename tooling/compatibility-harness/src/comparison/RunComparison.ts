@@ -130,7 +130,9 @@ const successfulResolution = (event: ResolutionEventType): boolean =>
   )
 
 const packageName = (specifier: string): string =>
-  specifier.startsWith("@") ? specifier.split("/").slice(0, 2).join("/") : specifier.split("/")[0]!
+  specifier.startsWith("@")
+    ? specifier.split("/").slice(0, 2).join("/")
+    : (specifier.split("/")[0] ?? "")
 
 const capabilityTargets = (sourceIds: ReadonlyArray<TestSourceId>): ReadonlySet<string> =>
   new Set(

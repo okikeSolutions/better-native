@@ -343,61 +343,67 @@ export const browserLayer = Layer.effect(
           })
     })
     return BrowserDriver.of({
-      execute: (url, timeoutMillis, resultTestId, permissions = []) =>
-        Effect.suspend(() => {
-          const messages = makeBoundedConsoleCollector()
-          return Effect.tryPromise({
-            try: async () => {
-              const launched = await browser()
-              const context = await launched.newContext()
-              try {
-                if (permissions.length > 0) {
-                  await context.grantPermissions([...permissions], { origin: new URL(url).origin })
-                }
-                const page = await context.newPage()
-                page.on("console", (message) => messages.push(message.text()))
-                page.on("pageerror", (error) => messages.push(`page error: ${error.message}`))
-                const response = await page.goto(url, {
-                  waitUntil: "domcontentloaded",
-                  timeout: Math.min(timeoutMillis, browserReadinessTimeoutMillis),
-                })
-                if (response !== null && !response.ok()) {
-                  throw new Error(
-                    `web route returned HTTP ${response.status()} ${response.statusText()}`,
-                  )
-                }
-                const result = page.getByTestId(resultTestId)
-                const failure = page.getByTestId("compatibility_run_error")
-                const completed = await Promise.race([
-                  result.waitFor({ state: "visible", timeout: timeoutMillis }).then(() => "result"),
-                  failure
-                    .waitFor({ state: "visible", timeout: timeoutMillis })
-                    .then(() => "failure"),
-                ])
-                if (completed === "failure") {
-                  throw new Error(`compatibility app failed: ${await failure.textContent()}`)
-                }
-                const resultJson = await result.evaluate((element, byteLimit) => {
-                  const text = element.textContent ?? ""
-                  if (
-                    text.length > byteLimit ||
-                    new TextEncoder().encode(text).byteLength > byteLimit
-                  ) {
-                    throw new Error(`browser result exceeds ${byteLimit} bytes`)
+      execute: Effect.fn("BrowserDriver.execute")(
+        (url, timeoutMillis, resultTestId, permissions = []) =>
+          Effect.suspend(() => {
+            const messages = makeBoundedConsoleCollector()
+            return Effect.tryPromise({
+              try: async () => {
+                const launched = await browser()
+                const context = await launched.newContext()
+                try {
+                  if (permissions.length > 0) {
+                    await context.grantPermissions([...permissions], {
+                      origin: new URL(url).origin,
+                    })
                   }
-                  return text
-                }, maximumBrowserResultBytes)
-                return {
-                  resultJson: validateBrowserResultPayload(resultJson),
-                  console: messages.snapshot(),
+                  const page = await context.newPage()
+                  page.on("console", (message) => messages.push(message.text()))
+                  page.on("pageerror", (error) => messages.push(`page error: ${error.message}`))
+                  const response = await page.goto(url, {
+                    waitUntil: "domcontentloaded",
+                    timeout: Math.min(timeoutMillis, browserReadinessTimeoutMillis),
+                  })
+                  if (response !== null && !response.ok()) {
+                    throw new Error(
+                      `web route returned HTTP ${response.status()} ${response.statusText()}`,
+                    )
+                  }
+                  const result = page.getByTestId(resultTestId)
+                  const failure = page.getByTestId("compatibility_run_error")
+                  const completed = await Promise.race([
+                    result
+                      .waitFor({ state: "visible", timeout: timeoutMillis })
+                      .then(() => "result"),
+                    failure
+                      .waitFor({ state: "visible", timeout: timeoutMillis })
+                      .then(() => "failure"),
+                  ])
+                  if (completed === "failure") {
+                    throw new Error(`compatibility app failed: ${await failure.textContent()}`)
+                  }
+                  const resultJson = await result.evaluate((element, byteLimit) => {
+                    const text = element.textContent ?? ""
+                    if (
+                      text.length > byteLimit ||
+                      new TextEncoder().encode(text).byteLength > byteLimit
+                    ) {
+                      throw new Error(`browser result exceeds ${byteLimit} bytes`)
+                    }
+                    return text
+                  }, maximumBrowserResultBytes)
+                  return {
+                    resultJson: validateBrowserResultPayload(resultJson),
+                    console: messages.snapshot(),
+                  }
+                } finally {
+                  await context.close()
                 }
-              } finally {
-                await context.close()
-              }
-            },
-            catch: (cause) => new BrowserDriverError({ cause, console: messages.snapshot() }),
-          })
-        }),
+              },
+              catch: (cause) => new BrowserDriverError({ cause, console: messages.snapshot() }),
+            })
+          }),
+      ),
     })
   }),
 )
@@ -555,7 +561,7 @@ export const layer: Layer.Layer<
           ),
         )
       })
-    const runAll: Service["runAll"] = (requests) => {
+    const runAll: Service["runAll"] = Effect.fn("WebSupervisor.runAll")((requests) => {
       const first = requests[0]
       if (first === undefined) return Effect.succeed([])
       const incompatible = requests.find(
@@ -609,8 +615,8 @@ export const layer: Layer.Layer<
           return records
         }),
       )
-    }
-    const run: Service["run"] = (request) =>
+    })
+    const run: Service["run"] = Effect.fn("WebSupervisor.run")((request) =>
       runAll([request]).pipe(
         Effect.flatMap((records) => {
           const record = records[0]
@@ -618,8 +624,9 @@ export const layer: Layer.Layer<
             ? Effect.fail(webFailure("protocol", request, new Error("web run produced no record")))
             : Effect.succeed(record)
         }),
-      )
-    const probe: Service["probe"] = (request) =>
+      ),
+    )
+    const probe: Service["probe"] = Effect.fn("WebSupervisor.probe")((request) =>
       Effect.scoped(
         Effect.gen(function* () {
           const server = yield* processes
@@ -679,7 +686,8 @@ export const layer: Layer.Layer<
             }),
           )
         }),
-      )
+      ),
+    )
     return WebSupervisor.of({ run, runAll, probe })
   }),
 )

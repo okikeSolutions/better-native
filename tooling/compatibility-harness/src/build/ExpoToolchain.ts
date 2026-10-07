@@ -250,7 +250,7 @@ export const layer = (
           return undefined
         })
 
-      const prepare: Service["prepare"] = (request) =>
+      const prepare: Service["prepare"] = Effect.fn("ExpoToolchain.prepare")((request) =>
         Effect.gen(function* () {
           yield* validateRequest(request)
           const { upstream, nodeModules, record } = locations(request.expoRevision)
@@ -337,9 +337,10 @@ export const layer = (
               ? cause
               : new BuildPipelineError({ phase: "upstream", request, cause }),
           ),
-        )
+        ),
+      )
 
-      const load: Service["load"] = (request) =>
+      const load: Service["load"] = Effect.fn("ExpoToolchain.load")((request) =>
         Effect.gen(function* () {
           yield* validateRequest(request)
           const { upstream, nodeModules, record } = locations(request.expoRevision)
@@ -387,9 +388,10 @@ export const layer = (
               ? cause
               : new BuildPipelineError({ phase: "upstream", request, cause }),
           ),
-        )
+        ),
+      )
 
-      const ensure: Service["ensure"] = (request) =>
+      const ensure: Service["ensure"] = Effect.fn("ExpoToolchain.ensure")((request) =>
         validateRequest(request).pipe(
           Effect.andThen(fs.exists(locations(request.expoRevision).record)),
           Effect.flatMap((exists) =>
@@ -402,7 +404,8 @@ export const layer = (
               ? cause
               : new BuildPipelineError({ phase: "upstream", request, cause }),
           ),
-        )
+        ),
+      )
 
       return ExpoToolchain.of({ prepare, ensure, load })
     }),

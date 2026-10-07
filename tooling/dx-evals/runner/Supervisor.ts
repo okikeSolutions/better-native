@@ -38,11 +38,11 @@ export const supervise = (
       const message = yield* Deferred.await(response).pipe(
         Effect.raceFirst(Fiber.join(runnerFiber)),
       )
-      const decoded = yield* Effect.try({
-        try: () => decodeWorkerResponse(message),
-        catch: (cause) =>
-          new WorkerProtocolInvalid({ reason: "invalid-effect-worker-response", cause }),
-      })
+      const decoded = yield* decodeWorkerResponse(message).pipe(
+        Effect.mapError(
+          (cause) => new WorkerProtocolInvalid({ reason: "invalid-effect-worker-response", cause }),
+        ),
+      )
       if (decoded.nonce !== request.nonce) {
         return yield* new WorkerProtocolInvalid({ reason: "invalid-observation-nonce" })
       }

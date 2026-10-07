@@ -57,14 +57,17 @@ export type Quarantined = {
 
 export type Result = Compatible | Quarantined
 
-const baseResult = (profile: AgentProfiles.AgentProfile) => ({
-  model: profile.model,
-  configuredProvider: profile.providerPolicy.only[0]!,
-  tokenParameter: profile.tokenParameter,
-  maximumOutputTokens,
-  maximumProtocolTurns,
-  timeoutMilliseconds,
-})
+const baseResult = (profile: AgentProfiles.AgentProfile) => {
+  const [configuredProvider] = profile.providerPolicy.only
+  return {
+    model: profile.model,
+    configuredProvider,
+    tokenParameter: profile.tokenParameter,
+    maximumOutputTokens,
+    maximumProtocolTurns,
+    timeoutMilliseconds,
+  }
+}
 
 const quarantined = (
   profile: AgentProfiles.AgentProfile,

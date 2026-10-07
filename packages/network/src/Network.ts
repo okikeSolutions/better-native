@@ -53,7 +53,7 @@ export const NetworkState = Schema.Struct({
  * @category models
  * @since 0.0.0
  */
-export type NetworkState = Schema.Schema.Type<typeof NetworkState>
+export interface NetworkState extends Schema.Schema.Type<typeof NetworkState> {}
 
 /**
  * Event emitted when the network state changes.

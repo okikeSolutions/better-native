@@ -32,7 +32,7 @@ export const CampaignTrial = Schema.Struct({
   repetition: Domain.PositiveInteger,
 })
 /** Decoded campaign trial accepted by {@link CampaignTrial}. */
-export type CampaignTrial = Schema.Schema.Type<typeof CampaignTrial>
+export interface CampaignTrial extends Schema.Schema.Type<typeof CampaignTrial> {}
 
 /** Reviewed campaign whose ordering and trial count are part of the experiment. */
 export const Campaign = Schema.Struct({
@@ -43,7 +43,7 @@ export const Campaign = Schema.Struct({
   trials: Schema.NonEmptyArray(CampaignTrial),
 })
 /** Decoded campaign accepted by {@link Campaign}. */
-export type Campaign = Schema.Schema.Type<typeof Campaign>
+export interface Campaign extends Schema.Schema.Type<typeof Campaign> {}
 
 const rawCampaigns = [
   {

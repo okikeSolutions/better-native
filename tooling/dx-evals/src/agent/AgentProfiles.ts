@@ -16,7 +16,7 @@ export const ProviderPolicy = Schema.Struct({
   zeroDataRetention: Schema.Boolean,
 })
 /** Decoded provider-routing policy accepted by {@link ProviderPolicy}. */
-export type ProviderPolicy = Schema.Schema.Type<typeof ProviderPolicy>
+export interface ProviderPolicy extends Schema.Schema.Type<typeof ProviderPolicy> {}
 
 export const ReasoningEffort = Schema.Literals(["none", "minimal", "low", "medium", "high"])
 export type ReasoningEffort = Schema.Schema.Type<typeof ReasoningEffort>
@@ -49,7 +49,7 @@ export const AgentProfile = Schema.Struct({
   providerPolicy: ProviderPolicy,
 })
 /** Decoded agent profile accepted by {@link AgentProfile}. */
-export type AgentProfile = Schema.Schema.Type<typeof AgentProfile>
+export interface AgentProfile extends Schema.Schema.Type<typeof AgentProfile> {}
 
 // This is a runaway-loop circuit breaker, not the agent's working budget. Normal trials stop on
 // their reviewed duration, observed-token, or cost limits first.
@@ -240,12 +240,11 @@ export const getReviewedProfile = (profileId: Domain.AgentProfileId): AgentProfi
 export const layer = Layer.succeed(
   AgentProfiles,
   AgentProfiles.of({
-    get: (profileId) => {
+    get: Effect.fn("AgentProfiles.get")(function* (profileId: Domain.AgentProfileId) {
       const profile = registry.get(profileId)
-      return profile === undefined
-        ? Effect.fail(new AgentProfileNotFound({ profileId }))
-        : Effect.succeed(profile)
-    },
+      if (profile === undefined) return yield* new AgentProfileNotFound({ profileId })
+      return profile
+    }),
     list: Effect.succeed(profiles),
   }),
 )

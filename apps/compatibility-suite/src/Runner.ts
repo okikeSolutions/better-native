@@ -81,8 +81,8 @@ export const resultLogChunks = (runId: string, json: string): ReadonlyArray<stri
 }
 
 export type RunSelection = Schema.Schema.Type<typeof AnyRunSelection>
-export type RunSummary = Schema.Schema.Type<typeof RunSummary>
-export type CaseResult = Schema.Schema.Type<typeof CaseResult>
+export interface RunSummary extends Schema.Schema.Type<typeof RunSummary> {}
+export interface CaseResult extends Schema.Schema.Type<typeof CaseResult> {}
 
 export class RunSelectionError extends Schema.TaggedError<RunSelectionError>()(
   "RunSelectionError",
@@ -123,7 +123,7 @@ const JasmineDone = Schema.Struct({
     ),
   ),
 })
-type JasmineDone = Schema.Schema.Type<typeof JasmineDone>
+interface JasmineDone extends Schema.Schema.Type<typeof JasmineDone> {}
 
 const wrapSpec = (assertion: (...args: ReadonlyArray<unknown>) => unknown) => () => assertion()
 

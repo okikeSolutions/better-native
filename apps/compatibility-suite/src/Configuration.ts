@@ -6,7 +6,7 @@ export const BuildIdentity = Schema.Struct({
   buildId: Schema.NonEmptyString,
 })
 
-export type BuildIdentity = Schema.Schema.Type<typeof BuildIdentity>
+export interface BuildIdentity extends Schema.Schema.Type<typeof BuildIdentity> {}
 
 export class CompatibilityConfiguration extends Context.Service<
   CompatibilityConfiguration,

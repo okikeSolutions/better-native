@@ -207,7 +207,7 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
           }
           yield* evidence.writeJson("runs", request.id, "record.json", RunRecord, record)
         }).pipe(Effect.ignore)
-      const run: Service["run"] = (request) =>
+      const run: Service["run"] = Effect.fn("NativeSupervisor.run")((request) =>
         Effect.gen(function* () {
           const startedAtMillis = yield* Clock.currentTimeMillis
           const runId = RunId.make(request.id)
@@ -336,8 +336,9 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
               persistFailure(request, startedAtMillis, error, [flowArtifact.id]),
             ),
           )
-        })
-      const runBatch: Service["runBatch"] = (request) =>
+        }),
+      )
+      const runBatch: Service["runBatch"] = Effect.fn("NativeSupervisor.runBatch")((request) =>
         Effect.gen(function* () {
           const firstUnit = request.units[0]
           if (firstUnit === undefined) {
@@ -492,7 +493,8 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
               persistFailure(batchRequest, startedAtMillis, error, [flowArtifact.id]),
             ),
           )
-        })
+        }),
+      )
       return NativeSupervisor.of({ run, runBatch })
     }),
   )

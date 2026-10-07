@@ -26,14 +26,15 @@ export interface PodsCacheResult {
   readonly detail: string
 }
 
-interface PodsCacheRecord {
-  readonly schemaVersion: typeof podsCacheSchemaVersion
-  readonly architecture: string
-  readonly toolchainFingerprint: string
-  readonly nativeFingerprint: string
-  readonly inputsHash: string
-  readonly lockHash: string
-}
+const PodsCacheRecord = Schema.Struct({
+  schemaVersion: Schema.Literal(podsCacheSchemaVersion),
+  architecture: Schema.String,
+  toolchainFingerprint: Schema.String,
+  nativeFingerprint: Schema.String,
+  inputsHash: Schema.String,
+  lockHash: Schema.String,
+})
+interface PodsCacheRecord extends Schema.Schema.Type<typeof PodsCacheRecord> {}
 
 interface Service {
   readonly restore: (input: PodsCacheRequest) => Effect.Effect<PodsCacheResult, BuildPipelineError>
@@ -51,9 +52,6 @@ class PodsCacheIdentityError extends Schema.TaggedError<PodsCacheIdentityError>(
     cause: Schema.String,
   },
 ) {}
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value)
 
 /** Builds the versioned CocoaPods cache service. */
 export const layer = (
@@ -116,23 +114,13 @@ export const layer = (
       const decodeRecord = (text: string): PodsCacheRecord | null => {
         try {
           const value = JSON.parse(text) as unknown
-          if (
-            !isRecord(value) ||
-            value.schemaVersion !== podsCacheSchemaVersion ||
-            typeof value.architecture !== "string" ||
-            typeof value.toolchainFingerprint !== "string" ||
-            typeof value.nativeFingerprint !== "string" ||
-            typeof value.inputsHash !== "string" ||
-            typeof value.lockHash !== "string"
-          )
-            return null
-          return value as unknown as PodsCacheRecord
+          return Option.getOrNull(Schema.decodeUnknownOption(PodsCacheRecord)(value))
         } catch {
           return null
         }
       }
 
-      const restoreUnlocked: Service["restore"] = (input) =>
+      const restoreUnlocked: Service["restore"] = Effect.fn("PodsCache.restoreUnlocked")((input) =>
         Effect.gen(function* () {
           const hash = yield* inputsHash(input)
           const key = indexKey(input, hash)
@@ -179,9 +167,10 @@ export const layer = (
           Effect.mapError(
             (cause) => new BuildPipelineError({ phase: "build", request: input.request, cause }),
           ),
-        )
+        ),
+      )
 
-      const publishUnlocked: Service["publish"] = (input) =>
+      const publishUnlocked: Service["publish"] = Effect.fn("PodsCache.publishUnlocked")((input) =>
         Effect.gen(function* () {
           const hash = yield* inputsHash(input)
           const resultingLockHash = yield* lockHash(input.iosDirectory)
@@ -245,9 +234,10 @@ export const layer = (
           Effect.mapError(
             (cause) => new BuildPipelineError({ phase: "evidence", request: input.request, cause }),
           ),
-        )
+        ),
+      )
 
-      const restore: Service["restore"] = (input) =>
+      const restore: Service["restore"] = Effect.fn("PodsCache.restore")((input) =>
         withCacheLock(
           {
             hit: false,
@@ -255,8 +245,9 @@ export const layer = (
             detail: "CocoaPods cache is busy",
           },
           restoreUnlocked(input),
-        )
-      const publish: Service["publish"] = (input) =>
+        ),
+      )
+      const publish: Service["publish"] = Effect.fn("PodsCache.publish")((input) =>
         withCacheLock(
           {
             hit: false,
@@ -264,7 +255,8 @@ export const layer = (
             detail: "CocoaPods cache is busy; publication skipped",
           },
           publishUnlocked(input),
-        )
+        ),
+      )
 
       return PodsCache.of({ restore, publish })
     }),

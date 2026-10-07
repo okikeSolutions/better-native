@@ -171,7 +171,7 @@ const utf8Suffix = (text: string, byteLimit: number): BoundedLine => {
   const bytes = encoder.encode(text)
   if (bytes.byteLength <= byteLimit) return { text, omittedBytes: 0 }
   let start = bytes.byteLength - byteLimit
-  while (start < bytes.byteLength && (bytes[start]! & 0xc0) === 0x80) start += 1
+  while (start < bytes.byteLength && ((bytes[start] ?? 0) & 0xc0) === 0x80) start += 1
   return {
     text: decoder.decode(bytes.subarray(start)),
     omittedBytes: start,
@@ -366,15 +366,16 @@ const makeService = (backend: ProcessBackend): Service => {
         fail,
       }
     })
-  const start: Service["start"] = (spec) =>
+  const start: Service["start"] = Effect.fn("ProcessSupervisor.start")((spec) =>
     startInternal(spec).pipe(
       Effect.map(({ exitCode, observations, terminate }) => ({
         exitCode,
         observations,
         terminate,
       })),
-    )
-  const run: Service["run"] = (spec) =>
+    ),
+  )
+  const run: Service["run"] = Effect.fn("ProcessSupervisor.run")((spec) =>
     Effect.scoped(
       Effect.gen(function* () {
         const running = yield* startInternal(spec)
@@ -395,7 +396,8 @@ const makeService = (backend: ProcessBackend): Service => {
         yield* running.cleanupDescendants
         return { exitCode, observations: yield* running.observations }
       }),
-    )
+    ),
+  )
   return { start, run }
 }
 

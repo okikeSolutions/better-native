@@ -52,7 +52,7 @@ export const Upstreams = Schema.Struct({
 })
 
 /** Decoded upstream configuration accepted by {@link Upstreams}. */
-export type Upstreams = Schema.Schema.Type<typeof Upstreams>
+export interface Upstreams extends Schema.Schema.Type<typeof Upstreams> {}
 
 /** Repository access constrained to verified Better Native and Expo roots. */
 export interface Service {
@@ -233,18 +233,20 @@ export const layer = (
         expoRoot,
         effectRoot,
         upstreams,
-        readJson: (relativePath, schema) =>
+        readJson: Effect.fn("ExpoRepository.readJson")((relativePath, schema) =>
           resolveWithin(root, relativePath, "resolve repository JSON").pipe(
             Effect.flatMap((absolutePath) => decodeJson(absolutePath, schema)),
           ),
-        readExpoJson: (relativePath, schema) =>
+        ),
+        readExpoJson: Effect.fn("ExpoRepository.readExpoJson")((relativePath, schema) =>
           resolveExpoRoot.pipe(
             Effect.flatMap((canonicalExpoRoot) =>
               resolveWithin(canonicalExpoRoot, relativePath, "resolve Expo JSON"),
             ),
             Effect.flatMap((absolutePath) => decodeJson(absolutePath, schema)),
           ),
-        readExpoText: (relativePath) =>
+        ),
+        readExpoText: Effect.fn("ExpoRepository.readExpoText")((relativePath) =>
           resolveExpoRoot.pipe(
             Effect.flatMap((canonicalExpoRoot) =>
               resolveWithin(canonicalExpoRoot, relativePath, "resolve Expo source"),
@@ -255,6 +257,7 @@ export const layer = (
                 .pipe(Effect.mapError((cause) => failure("read Expo source", absolutePath, cause))),
             ),
           ),
+        ),
         expoFiles: resolveExpoRoot.pipe(
           Effect.flatMap((canonicalExpoRoot) =>
             childProcesses.string(ChildProcess.make("git", ["-C", canonicalExpoRoot, "ls-files"])),
@@ -267,12 +270,13 @@ export const layer = (
           ),
           Effect.mapError((cause) => failure("list Expo source", expoRoot, cause)),
         ),
-        hashString: (value) =>
+        hashString: Effect.fn("ExpoRepository.hashString")((value) =>
           crypto.digest("SHA-256", new TextEncoder().encode(value)).pipe(
             Effect.map(Hex.encode),
             Effect.mapError((cause) => failure("hash compatibility data", undefined, cause)),
           ),
-        writeArtifact: (relativePath, value) =>
+        ),
+        writeArtifact: Effect.fn("ExpoRepository.writeArtifact")((relativePath, value) =>
           Effect.gen(function* () {
             const artifactRoot = path.join(root, ".artifacts")
             const output = yield* resolveWithin(artifactRoot, relativePath, "resolve artifact path")
@@ -347,6 +351,7 @@ export const layer = (
               .pipe(Effect.mapError((cause) => failure("publish artifact", output, cause)))
             return output
           }),
+        ),
         verify,
       })
     }),

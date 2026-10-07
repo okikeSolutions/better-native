@@ -1,4 +1,5 @@
 // src/BetterNativeMetroConfig.ts
+import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -206,7 +207,7 @@ var make = Effect.fn("BetterNativeMetroConfig.make")(function* (config) {
   const observer = yield* ResolutionObserver;
   const services = yield* Effect.context();
   const runSync = Effect.runSyncWith(services);
-  const observe = (event) => runSync(observer.observe(event).pipe(Effect.catchCause((cause) => Effect.logError("Resolution observer failed", { cause }))));
+  const observe = (event) => runSync(observer.observe(event).pipe(Effect.catchCauseIf((cause) => !Cause.hasInterrupts(cause), (cause) => Effect.logError("Resolution observer failed", { cause }))));
   const previous = config.resolver.resolveRequest;
   const configMode = policy.mode;
   const resolveRequest = (context, specifier, platform) => {
