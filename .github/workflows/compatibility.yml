@@ -43,16 +43,27 @@ jobs:
   detect-platform-changes:
     runs-on: ubuntu-24.04
     outputs:
-      web: ${{ steps.compatibility.outputs.should_run_web }}
-      ios: ${{ steps.compatibility.outputs.should_run_ios }}
-      android: ${{ steps.compatibility.outputs.should_run_android }}
+      web: ${{ steps.manual.outputs.web || steps.compatibility.outputs.should_run_web }}
+      ios: ${{ steps.manual.outputs.ios || steps.compatibility.outputs.should_run_ios }}
+      android: ${{ steps.manual.outputs.android || steps.compatibility.outputs.should_run_android }}
     steps:
+      - name: Select requested platforms for manual runs
+        id: manual
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          PLATFORM: ${{ inputs.platform }}
+        run: |
+          echo "web=$([ "$PLATFORM" = all ] || [ "$PLATFORM" = web ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "ios=$([ "$PLATFORM" = all ] || [ "$PLATFORM" = ios ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "android=$([ "$PLATFORM" = all ] || [ "$PLATFORM" = android ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
       # A local composite action cannot be resolved until this checkout has made
       # its action.yml available. Pinned Expo uses the same bootstrap step.
       - name: Checkout
+        if: github.event_name != 'workflow_dispatch'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Detect build-relevant platform changes
         id: compatibility
+        if: github.event_name != 'workflow_dispatch'
         uses: ./.github/actions/detect-compatibility-change
         with:
           web-paths: >-

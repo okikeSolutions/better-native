@@ -87,6 +87,9 @@ describe("hosted compatibility workflow", () => {
       )
       assert.match(workflow, /cron: "0 3 \* \* 1"/)
       assert.match(workflow, /^  detect-platform-changes:$/m)
+      assert.match(workflow, /name: Select requested platforms for manual runs/)
+      assert.match(workflow, /if: github\.event_name == 'workflow_dispatch'/)
+      assert.match(workflow, /web: \$\{\{ steps\.manual\.outputs\.web \|\| steps\.compatibility\.outputs\.should_run_web \}\}/)
       assert.match(
         workflow,
         /detect-platform-changes:[\s\S]*?steps:[\s\S]*?uses: actions\/checkout@[\s\S]*?uses: \.\/\.github\/actions\/detect-compatibility-change/,
