@@ -10,7 +10,7 @@ const advisory = {
 
 const policy: ReadonlyArray<ReviewedException> = [
   {
-    owner: { lockKey: "reviewed-owner", identifier: "reviewed-owner@1.0.0" },
+    owners: [{ lockKey: "reviewed-owner", identifier: "reviewed-owner@1.0.0" }],
     dependency: { lockKey: "reviewed-owner/vulnerable", name: "vulnerable", version: "1.0.0" },
     advisories: ["GHSA-test-test-test"],
   },
@@ -42,6 +42,16 @@ describe("dependency audit policy", () => {
       },
     }
     assert.match(validate(report, changed, policy).join("\n"), /new-owner\/vulnerable/)
+  })
+
+  it("rejects an additional direct owner of a reviewed dependency", () => {
+    const changed: BunLock = {
+      packages: {
+        ...lock.packages,
+        "new-owner": ["new-owner@1.0.0", "", { dependencies: { vulnerable: "1.0.0" } }],
+      },
+    }
+    assert.match(validate(report, changed, policy).join("\n"), /direct owners.*new-owner/)
   })
 
   it("rejects unreviewed advisories and stale exceptions", () => {

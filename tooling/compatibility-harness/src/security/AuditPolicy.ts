@@ -21,7 +21,7 @@ export type AuditReport = Schema.Schema.Type<typeof AuditReport>
 
 /** Reviewed exception binding an advisory to an exact lockfile dependency path. */
 export interface ReviewedException {
-  readonly owner: { readonly lockKey: string; readonly identifier: string }
+  readonly owners: ReadonlyArray<{ readonly lockKey: string; readonly identifier: string }>
   readonly dependency: {
     readonly lockKey: string
     readonly name: string
@@ -41,12 +41,39 @@ export class SecurityAuditError extends Schema.TaggedError<SecurityAuditError>()
 const reviewed: ReadonlyArray<ReviewedException> = [
   {
     // Metro reads image dimensions from reviewed project assets during bundling. The affected
-    // image-size release has no patched successor, and this toolchain-only path is not shipped by
-    // a publishable Better Native runtime package. Keep the exception exact so a new path, version,
-    // owner, or resolved advisory fails closed.
-    owner: { lockKey: "metro", identifier: "metro@0.84.4" },
+    // Metro requires the vulnerable 1.x line; image-size 2.x is patched. This toolchain-only path
+    // is not shipped by a publishable Better Native runtime package. Keep the exception exact so
+    // a new path, version, owner, or resolved advisory fails closed.
+    owners: [{ lockKey: "metro", identifier: "metro@0.84.4" }],
     dependency: { lockKey: "image-size", name: "image-size", version: "1.2.1" },
     advisories: ["GHSA-5p2g-fcmc-qvqq", "GHSA-w3rx-r6r6-pgpr"],
+  },
+  {
+    // Micromatch receives repository-controlled glob patterns during bundling. The published
+    // braces 3.x line has no patched version for nested-pattern stack exhaustion.
+    owners: [{ lockKey: "micromatch", identifier: "micromatch@4.0.8" }],
+    dependency: { lockKey: "braces", name: "braces", version: "3.0.3" },
+    advisories: ["GHSA-vfj7-8cjw-p6xm"],
+  },
+  {
+    // Expo CLI and its code-signing helper use node-forge during development and build tooling.
+    // No patched release exists for this signature-verification advisory.
+    owners: [
+      { lockKey: "@expo/cli", identifier: "@expo/cli@57.0.11" },
+      {
+        lockKey: "@expo/code-signing-certificates",
+        identifier: "@expo/code-signing-certificates@0.0.6",
+      },
+    ],
+    dependency: { lockKey: "node-forge", name: "node-forge", version: "1.4.0" },
+    advisories: ["GHSA-86w9-cpqp-85rv"],
+  },
+  {
+    // The old argparse path is used by docgen's Markdown parser with repository-owned files.
+    // There is no patched sprintf-js 1.x release for unbounded precision specifiers.
+    owners: [{ lockKey: "argparse", identifier: "argparse@1.0.10" }],
+    dependency: { lockKey: "sprintf-js", name: "sprintf-js", version: "1.0.3" },
+    advisories: ["GHSA-hp3w-g68c-fv3c"],
   },
 ]
 
@@ -64,6 +91,11 @@ const dependencyNames = (lock: BunLock.BunLock, key: string): ReadonlySet<string
   if (!Schema.is(JsonObject)(dependencies)) return new Set()
   return new Set(Object.keys(dependencies))
 }
+
+const directOwnerKeys = (lock: BunLock.BunLock, dependencyName: string): ReadonlyArray<string> =>
+  Object.keys(lock.packages)
+    .filter((key) => dependencyNames(lock, key).has(dependencyName))
+    .toSorted()
 
 const installedVersion = (identifier: string, packageName: string): string | null => {
   const prefix = `${packageName}@`
@@ -92,10 +124,19 @@ export const validate = (
     advisories.map((advisory) => ({ packageName, advisory, id: advisoryId(advisory.url) })),
   )
   for (const exception of policy) {
-    const owner = entryIdentifier(lock, exception.owner.lockKey)
-    if (owner !== exception.owner.identifier) {
+    for (const reviewedOwner of exception.owners) {
+      const owner = entryIdentifier(lock, reviewedOwner.lockKey)
+      if (owner !== reviewedOwner.identifier) {
+        issues.push(
+          `stale owner ${reviewedOwner.lockKey}: expected ${reviewedOwner.identifier}, found ${owner ?? "missing"}`,
+        )
+      }
+    }
+    const actualOwners = directOwnerKeys(lock, exception.dependency.name)
+    const reviewedOwners = exception.owners.map(({ lockKey }) => lockKey).toSorted()
+    if (actualOwners.join("\0") !== reviewedOwners.join("\0")) {
       issues.push(
-        `stale owner ${exception.owner.lockKey}: expected ${exception.owner.identifier}, found ${owner ?? "missing"}`,
+        `direct owners for ${exception.dependency.name} changed: expected ${reviewedOwners.join(", ")}; found ${actualOwners.join(", ")}`,
       )
     }
     const expectedDependency = `${exception.dependency.name}@${exception.dependency.version}`
@@ -103,11 +144,6 @@ export const validate = (
     if (dependency !== expectedDependency) {
       issues.push(
         `stale dependency ${exception.dependency.lockKey}: expected ${expectedDependency}, found ${dependency ?? "missing"}`,
-      )
-    }
-    if (!dependencyNames(lock, exception.owner.lockKey).has(exception.dependency.name)) {
-      issues.push(
-        `reviewed owner ${exception.owner.lockKey} no longer declares ${exception.dependency.name}`,
       )
     }
     for (const id of exception.advisories) {
