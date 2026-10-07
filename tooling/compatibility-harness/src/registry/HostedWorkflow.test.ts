@@ -1,14 +1,14 @@
-import * as NodeServices from "@effect/platform-node/NodeServices"
-import { assert, describe, it } from "@effect/vitest"
-import * as Effect from "effect/Effect"
-import * as FileSystem from "effect/FileSystem"
-import { environmentKeys } from "../HarnessConfig.ts"
-import { provideLayer } from "../TestLayers.ts"
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import { assert, describe, it } from "@effect/vitest";
+import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
+import { environmentKeys } from "../HarnessConfig.ts";
+import { provideLayer } from "../TestLayers.ts";
 
 describe("hosted compatibility workflow", () => {
   it.effect("uses Expo-derived job ownership and profiles", () =>
     Effect.gen(function* () {
-      const fs = yield* FileSystem.FileSystem
+      const fs = yield* FileSystem.FileSystem;
       const [
         workflow,
         checkWorkflow,
@@ -37,7 +37,9 @@ describe("hosted compatibility workflow", () => {
         fs.readFileString(".github/actions/setup-expo-source/action.yml"),
         fs.readFileString(".github/actions/setup-device-test/action.yml"),
         fs.readFileString(".github/actions/setup-compare/action.yml"),
-        fs.readFileString(".github/actions/detect-compatibility-change/action.yml"),
+        fs.readFileString(
+          ".github/actions/detect-compatibility-change/action.yml",
+        ),
         fs.readFileString(".github/actions/setup-ccache/action.yml"),
         fs.readFileString(".github/actions/setup-expo-caches/action.yml"),
         fs.readFileString(".github/actions/setup-maestro/action.yml"),
@@ -45,203 +47,286 @@ describe("hosted compatibility workflow", () => {
         fs.readFileString("turbo.json"),
         fs.readFileString("package.json"),
         fs.readFileString("tooling/compatibility-harness/package.json"),
-        fs.readFileString("tooling/compatibility-harness/src/build/AppBuildExecutor.ts"),
+        fs.readFileString(
+          "tooling/compatibility-harness/src/build/AppBuildExecutor.ts",
+        ),
         fs.readFileString("apps/compatibility-suite/metro.config.cjs"),
         fs.readFileString(".github/workflows/cache-hygiene.yml"),
         fs.readFileString(".env.example"),
-      ])
-      assert.match(staticSetup, /node-version: 24/)
-      assert.match(staticSetup, /bun install --frozen-lockfile/)
-      assert.notMatch(staticSetup, /ignore-scripts/)
-      assert.notMatch(buildSetup, /node-version: 24/)
-      assert.match(buildSetup, /version: 10\.33\.0/)
-      assert.match(buildSetup, /setup-expo-source/)
-      assert.match(buildSetup, /pnpm store path/)
-      assert.match(buildSetup, /node-24-pnpm-10-expo/)
-      assert.match(expoSourceSetup, /fetch --depth=1 origin/)
-      assert.match(expoSourceSetup, /actual_revision=.*rev-parse HEAD/)
-      assert.match(deviceSetup, /setup-static/)
-      assert.match(compareSetup, /setup-static/)
-      assert.match(changeDetection, /tj-actions\/changed-files/)
-      assert.match(changeDetection, /should_run_web/)
-      assert.match(ccacheSetup, /CCACHE_COMPILERCHECK=content/)
-      assert.match(cacheSetup, /xcodebuild -version/)
-      assert.match(cacheSetup, /gradle\/actions\/setup-gradle/)
-      assert.notMatch(workflow, /TURBO_API/)
-      assert.match(workflow, /TURBO_TOKEN: \$\{\{ secrets\.TURBO_TOKEN \}\}/)
-      assert.match(workflow, /TURBO_TEAM: \$\{\{ vars\.TURBO_TEAM \}\}/)
-      assert.notMatch(workflow, /setup-project/)
-      assert.notMatch(workflow, /setup-native-build-cache/)
-      assert.match(checkWorkflow, /setup-build/)
-      assert.notMatch(checkWorkflow, /TURBO_API/)
-      assert.match(turboConfig, /"signature": true/)
-      assert.match(workflow, /version: 2\.6\.1/)
-      assert.match(workflow, /version: 2\.4\.0/)
+      ]);
+      assert.match(staticSetup, /node-version: 24/);
+      assert.match(staticSetup, /bun install --frozen-lockfile/);
+      assert.notMatch(staticSetup, /ignore-scripts/);
+      assert.notMatch(buildSetup, /node-version: 24/);
+      assert.match(buildSetup, /version: 10\.33\.0/);
+      assert.match(buildSetup, /setup-expo-source/);
+      assert.match(buildSetup, /pnpm store path/);
+      assert.match(buildSetup, /node-24-pnpm-10-expo/);
+      assert.match(expoSourceSetup, /fetch --depth=1 origin/);
+      assert.match(expoSourceSetup, /actual_revision=.*rev-parse HEAD/);
+      assert.match(deviceSetup, /setup-static/);
+      assert.match(compareSetup, /setup-static/);
+      assert.match(changeDetection, /tj-actions\/changed-files/);
+      assert.match(changeDetection, /should_run_web/);
+      assert.match(ccacheSetup, /CCACHE_COMPILERCHECK=content/);
+      assert.match(cacheSetup, /xcodebuild -version/);
+      assert.match(cacheSetup, /gradle\/actions\/setup-gradle/);
+      assert.notMatch(workflow, /TURBO_API/);
+      assert.match(workflow, /TURBO_TOKEN: \$\{\{ secrets\.TURBO_TOKEN \}\}/);
+      assert.match(workflow, /TURBO_TEAM: \$\{\{ vars\.TURBO_TEAM \}\}/);
+      assert.notMatch(workflow, /setup-project/);
+      assert.notMatch(workflow, /setup-native-build-cache/);
+      assert.match(checkWorkflow, /setup-build/);
+      assert.notMatch(checkWorkflow, /TURBO_API/);
+      assert.match(turboConfig, /"signature": true/);
+      assert.match(workflow, /version: 2\.6\.1/);
+      assert.match(workflow, /version: 2\.4\.0/);
       assert.match(
         maestroSetup,
         /2\.4\.0\).*aea22ce67ab6718997ec990c58652ede0c2be8f10ac4799039ca3dce3390d634/,
-      )
+      );
       assert.match(
         maestroSetup,
         /2\.6\.1\).*3440825f514f537c6a96bcf5de995780c2a4a7f83a43208fdc95d4f1fecfad3b/,
-      )
-      assert.match(workflow, /cron: "0 3 \* \* 1"/)
-      assert.match(workflow, /^  detect-platform-changes:$/m)
+      );
+      assert.match(workflow, /cron: "0 3 \* \* 1"/);
+      assert.match(workflow, /^  detect-platform-changes:$/m);
       assert.match(
         workflow,
         /detect-platform-changes:[\s\S]*?steps:[\s\S]*?uses: actions\/checkout@[\s\S]*?uses: \.\/\.github\/actions\/detect-compatibility-change/,
-      )
-      assert.match(workflow, /^  web-baseline:$/m)
-      assert.match(workflow, /^  web-pair:$/m)
-      assert.match(workflow, /^  web-compare:$/m)
-      assert.match(workflow, /^  ios-compare:$/m)
-      assert.match(workflow, /name: iOS device test \(\$\{\{ matrix\.shard-label \}\}\/2\)/)
-      assert.match(workflow, /SHARD_COUNT: 2/)
-      assert.strictEqual(workflow.match(/--shard-index "\$SHARD_INDEX"/g)?.length, 2)
-      assert.match(workflow, /compatibility-ios-run-evidence-.*-shard-\*/)
-      assert.match(workflow, /merge-multiple: true/)
+      );
+      assert.match(workflow, /^  web-baseline:$/m);
+      assert.match(workflow, /^  web-pair:$/m);
+      assert.match(workflow, /^  web-compare:$/m);
+      assert.match(workflow, /^  ios-compare:$/m);
+      assert.match(
+        workflow,
+        /name: iOS device test \(\$\{\{ matrix\.shard-label \}\}/,
+      );
+      assert.match(
+        workflow,
+        /SHARD_COUNT: \$\{\{ inputs\.source != '' && '1' \|\| '2' \}\}/,
+      );
+      assert.match(workflow, /include: \$\{\{ fromJSON\(inputs\.source != ''/);
       assert.strictEqual(
-        workflow.match(/Group (?:web|iOS|Android) evidence by build mode/g)?.length,
-        3,
-      )
-      assert.match(workflow, /--upstream \.artifacts\/compare\/upstream/)
-      assert.match(workflow, /--candidate \.artifacts\/compare\/candidate/)
-      assert.strictEqual(workflow.match(/--source "\$source"/g)?.length, 3)
-      assert.strictEqual(workflow.match(/--capabilities-only/g)?.length, 3)
-      assert.strictEqual(workflow.match(/\.verification\.parityPlatforms \| index\(/g)?.length, 3)
-      assert.strictEqual(workflow.match(/\.verification\.paritySources\[\]\?/g)?.length, 3)
+        workflow.match(/--shard-index "\$SHARD_INDEX"/g)?.length,
+        2,
+      );
+      assert.match(workflow, /compatibility-ios-run-evidence-.*-shard-\*/);
+      assert.match(workflow, /merge-multiple: true/);
       assert.strictEqual(
-        workflow.match(/cp -R "\$\(dirname "\$record"\)\/\." "\$destination\/"/g)?.length,
+        workflow.match(/Group (?:web|iOS|Android) evidence by build mode/g)
+          ?.length,
         3,
-      )
+      );
+      assert.match(workflow, /--upstream \.artifacts\/compare\/upstream/);
+      assert.match(workflow, /--candidate \.artifacts\/compare\/candidate/);
+      assert.strictEqual(workflow.match(/--source "\$source"/g)?.length, 3);
+      assert.strictEqual(workflow.match(/--capabilities-only/g)?.length, 3);
+      assert.strictEqual(
+        workflow.match(/\.verification\.parityPlatforms \| index\(/g)?.length,
+        3,
+      );
+      assert.strictEqual(
+        workflow.match(/\.verification\.paritySources\[\]\?/g)?.length,
+        3,
+      );
+      assert.strictEqual(
+        workflow.match(
+          /cp -R "\$\(dirname "\$record"\)\/\." "\$destination\/"/g,
+        )?.length,
+        3,
+      );
       assert.match(
         compatibilityMetro,
         /config\.cacheVersion = `\$\{config\.cacheVersion\}:\$\{buildId\}`/,
-      )
-      assert.match(workflow, /if \[ "\$DEVICE_STATE" != Shutdown \]; then/)
-      assert.notMatch(workflow, /simctl shutdown "\$DEVICE_ID" \|\| true/)
-      assert.match(workflow, /^  android-compare:$/m)
-      assert.match(workflow, /^  integration-profile:$/m)
+      );
+      assert.match(workflow, /if \[ "\$DEVICE_STATE" != Shutdown \]; then/);
+      assert.notMatch(workflow, /simctl shutdown "\$DEVICE_ID" \|\| true/);
+      assert.match(workflow, /^  android-compare:$/m);
+      assert.match(workflow, /^  integration-profile:$/m);
       assert.match(
         workflow,
         /integration-profile:[\s\S]*?needs: \[web-compare, ios-compare, android-compare\]/,
-      )
-      assert.match(workflow, /integration-profile:[\s\S]*?uses: \.\/\.github\/actions\/setup-build/)
-      assert.strictEqual(
-        workflow.match(/Download (?:web|iOS|Android) comparison verdict/g)?.length,
-        3,
-      )
-      assert.strictEqual(workflow.match(/job\.status == 'success' && 90 \|\| 7/g)?.length, 3)
-      assert.match(workflow, /bun run verify:capability "\$capability" --profile integration/)
-      assert.strictEqual(workflow.match(/supervise-web-pair/g)?.length, 1)
-      assert.match(workflow, /web-upstream-run-\*/)
-      assert.match(workflow, /web-\*-run-\*/)
-      assert.strictEqual(workflow.match(/supervise-build-pair/g)?.length, 2)
-      assert.notMatch(workflow, /supervise-build(?:-pair)?[^\n]*--source/)
-      assert.strictEqual(workflow.match(/supervise-native-pair/g)?.length, 2)
+      );
       assert.match(
         workflow,
-        /uses: \.\/\.github\/actions\/use-android-emulator[\s\S]*?script: \|\n\s+if \[ "\$COMPATIBILITY_MODE" = pair \]; then\n/,
-      )
-      assert.notMatch(workflow, /uses: reactivecircus\/android-emulator-runner@/)
-      assert.notMatch(workflow, /script: \|\n\s+set -euo pipefail/)
-      assert.match(androidEmulator, /99-kvm4all\.rules/)
-      assert.match(androidEmulator, /udevadm trigger --name-match=kvm/)
-      assert.match(androidEmulator, /id: compatibility-script/)
-      assert.match(androidEmulator, /COMPATIBILITY_SCRIPT: \$\{\{ inputs\.script \}\}/)
+        /integration-profile:[\s\S]*?uses: \.\/\.github\/actions\/setup-build/,
+      );
+      assert.strictEqual(
+        workflow.match(/Download (?:web|iOS|Android) comparison verdict/g)
+          ?.length,
+        3,
+      );
+      assert.strictEqual(
+        workflow.match(/job\.status == 'success' && 90 \|\| 7/g)?.length,
+        3,
+      );
+      assert.match(
+        workflow,
+        /bun run verify:capability "\$capability" --profile integration/,
+      );
+      assert.strictEqual(workflow.match(/supervise-web-pair/g)?.length, 1);
+      assert.match(workflow, /web-upstream-run-\*/);
+      assert.match(workflow, /web-\*-run-\*/);
+      assert.strictEqual(workflow.match(/supervise-build-pair/g)?.length, 2);
+      assert.match(
+        workflow,
+        /source_args=\(--source "better-native-capability#apps\/compatibility-suite\/src\/capabilities\/\$\{FOCUSED_SOURCE\}"\)/,
+      );
+      assert.strictEqual(
+        workflow.match(/"\$\{source_args\[@\]\}"/g)?.length,
+        8,
+      );
+      assert.strictEqual(workflow.match(/supervise-native-pair/g)?.length, 2);
+      assert.match(
+        workflow,
+        /uses: \.\/\.github\/actions\/use-android-emulator[\s\S]*?script: \|[\s\S]*?if \[ "\$COMPATIBILITY_MODE" = pair \]; then\n/,
+      );
+      assert.notMatch(
+        workflow,
+        /uses: reactivecircus\/android-emulator-runner@/,
+      );
+      assert.notMatch(workflow, /script: \|\n\s+set -euo pipefail/);
+      assert.match(androidEmulator, /99-kvm4all\.rules/);
+      assert.match(androidEmulator, /udevadm trigger --name-match=kvm/);
+      assert.match(androidEmulator, /id: compatibility-script/);
+      assert.match(
+        androidEmulator,
+        /COMPATIBILITY_SCRIPT: \$\{\{ inputs\.script \}\}/,
+      );
       assert.match(
         androidEmulator,
         /mktemp "\$\{RUNNER_TEMP:\?\}\/better-native-android\.XXXXXX\.sh"/,
-      )
+      );
       assert.strictEqual(
-        androidEmulator.match(/bash "\$\{\{ steps\.compatibility-script\.outputs\.path \}\}"/g)
+        androidEmulator.match(
+          /bash "\$\{\{ steps\.compatibility-script\.outputs\.path \}\}"/g,
+        )?.length,
+        3,
+      );
+      assert.strictEqual(
+        androidEmulator.match(/\$\{\{ inputs\.script \}\}/g)?.length,
+        1,
+      );
+      assert.notMatch(
+        androidEmulator,
+        /\[ ! -r \/dev\/kvm \] \|\| \[ ! -w \/dev\/kvm \]/,
+      );
+      assert.notMatch(
+        androidEmulator,
+        /KVM is unavailable to the GitHub Actions runner/,
+      );
+      assert.strictEqual(
+        androidEmulator.match(/reactivecircus\/android-emulator-runner@/g)
           ?.length,
         3,
-      )
-      assert.strictEqual(androidEmulator.match(/\$\{\{ inputs\.script \}\}/g)?.length, 1)
-      assert.notMatch(androidEmulator, /\[ ! -r \/dev\/kvm \] \|\| \[ ! -w \/dev\/kvm \]/)
-      assert.notMatch(androidEmulator, /KVM is unavailable to the GitHub Actions runner/)
+      );
       assert.strictEqual(
-        androidEmulator.match(/reactivecircus\/android-emulator-runner@/g)?.length,
+        androidEmulator.match(/profile: pixel_7_pro/g)?.length,
         3,
-      )
-      assert.strictEqual(androidEmulator.match(/profile: pixel_7_pro/g)?.length, 3)
+      );
       assert.strictEqual(
-        androidEmulator.match(/api-level: \$\{\{ inputs\.avd-api \}\}/g)?.length,
+        androidEmulator.match(/api-level: \$\{\{ inputs\.avd-api \}\}/g)
+          ?.length,
         3,
-      )
+      );
       assert.match(
         androidEmulator,
         /steps\.attempt-1\.outcome == 'failure' && hashFiles\('\.artifacts\/runs\/\*\*\/flow\.yaml'\) == ''/,
-      )
+      );
       assert.match(
         androidEmulator,
         /steps\.attempt-1\.outcome == 'failure' && hashFiles\('\.artifacts\/runs\/\*\*\/flow\.yaml'\) != ''/,
-      )
-      assert.strictEqual(workflow.match(/run: bun run compatibility:prepare/g)?.length, 4)
-      assert.notMatch(workflow, /run: bun run expo:prepare/)
+      );
+      assert.strictEqual(
+        workflow.match(/run: bun run compatibility:prepare/g)?.length,
+        4,
+      );
+      assert.notMatch(workflow, /run: bun run expo:prepare/);
       assert.match(
         rootPackage,
         /"compatibility:prepare": "turbo run \/\/#compatibility:dependencies/,
-      )
+      );
       const turboTasks = (
         JSON.parse(turboConfig) as {
-          readonly tasks: Readonly<Record<string, { readonly dependsOn?: ReadonlyArray<string> }>>
+          readonly tasks: Readonly<
+            Record<string, { readonly dependsOn?: ReadonlyArray<string> }>
+          >;
         }
-      ).tasks
+      ).tasks;
       assert.deepStrictEqual(
         turboTasks["@better-native/compatibility-suite#typecheck"]?.dependsOn,
         ["^typecheck", "^build"],
-      )
-      assert.deepStrictEqual(turboTasks["//#compatibility:dependencies"]?.dependsOn, [
-        "//#expo:toolchain",
-        "@better-native/network#build",
-        "@better-native/battery#build",
-        "@better-native/clipboard#build",
-        "@better-native/keep-awake#build",
-        "@better-native/secure-store#build",
-        "@better-native/sqlite#build",
-        "@better-native/task-manager#build",
-        "@better-native/background-task#build",
-        "@better-native/location#build",
-        "@better-native/notifications#build",
-        "@better-native/metro#build",
-      ])
-      assert.match(workflow, /Setup device-test profile/)
-      assert.match(workflow, /Setup compare profile/)
-      assert.match(workflow, /Prepare compatibility dependencies/)
-      assert.match(workflow, /source_id="\$BUILD_ID"/)
-      assert.match(workflow, /source_id="\$\{BUILD_ID\}-\$\{mode\}"/)
-      assert.match(cacheSetup, /native-v1-/)
-      assert.match(cacheSetup, /pods-v2-release-/)
-      assert.match(cacheSetup, /\.artifacts\/pods-cache\/v2/)
-      assert.notMatch(cacheSetup, /apps\/compatibility-suite\/\*\*/)
-      assert.match(cacheHygiene, /CACHE_BUDGET_BYTES: "8589934592"/)
-      assert.match(workflow, /BETTER_NATIVE_FORCE_COLD_BUILD:/)
-      assert.match(workflow, /BETTER_NATIVE_BUILD_PROFILE: performance/)
-      assert.match(workflow, /BETTER_NATIVE_IOS_DESTINATION=platform=iOS Simulator,id=/)
-      assert.match(appBuildExecutor, /"--build-cache",\s+"--no-configuration-cache"/)
-      assert.match(appBuildExecutor, /androidArchitecturesFor\(config\.buildProfile\)/)
+      );
+      assert.deepStrictEqual(
+        turboTasks["//#compatibility:dependencies"]?.dependsOn,
+        [
+          "//#expo:toolchain",
+          "@better-native/network#build",
+          "@better-native/battery#build",
+          "@better-native/clipboard#build",
+          "@better-native/keep-awake#build",
+          "@better-native/secure-store#build",
+          "@better-native/sqlite#build",
+          "@better-native/task-manager#build",
+          "@better-native/background-task#build",
+          "@better-native/location#build",
+          "@better-native/notifications#build",
+          "@better-native/metro#build",
+        ],
+      );
+      assert.match(workflow, /Setup device-test profile/);
+      assert.match(workflow, /Setup compare profile/);
+      assert.match(workflow, /Prepare compatibility dependencies/);
+      assert.match(workflow, /source_id="\$BUILD_ID"/);
+      assert.match(workflow, /source_id="\$\{BUILD_ID\}-\$\{mode\}"/);
+      assert.match(cacheSetup, /native-v1-/);
+      assert.match(cacheSetup, /pods-v2-release-/);
+      assert.match(cacheSetup, /\.artifacts\/pods-cache\/v2/);
+      assert.notMatch(cacheSetup, /apps\/compatibility-suite\/\*\*/);
+      assert.match(cacheHygiene, /CACHE_BUDGET_BYTES: "8589934592"/);
+      assert.match(workflow, /BETTER_NATIVE_FORCE_COLD_BUILD:/);
+      assert.match(workflow, /BETTER_NATIVE_BUILD_PROFILE: performance/);
+      assert.match(
+        workflow,
+        /BETTER_NATIVE_IOS_DESTINATION=platform=iOS Simulator,id=/,
+      );
+      assert.match(
+        appBuildExecutor,
+        /"--build-cache",\s+"--no-configuration-cache"/,
+      );
+      assert.match(
+        appBuildExecutor,
+        /androidArchitecturesFor\(config\.buildProfile\)/,
+      );
       for (const name of Object.values(environmentKeys)) {
-        assert.match(envExample, new RegExp(`^#? ?${name}=`, "m"), `${name} must be documented`)
+        assert.match(
+          envExample,
+          new RegExp(`^#? ?${name}=`, "m"),
+          `${name} must be documented`,
+        );
       }
-      assert.match(workflow, /Refusing unsafe archive entry/)
-      assert.match(workflow, /\$\{BUILD_ID\}-upstream\/record\.json/)
-      assert.notMatch(workflow, /COMPATIBILITY_MODE:\+-upstream/)
-      assert.match(rootPackage, /"compatibility-harness": "node --experimental-strip-types/)
-      assert.match(rootPackage, /"artifacts:prune":/)
-      assert.match(rootPackage, /"artifacts:clean":/)
+      assert.match(workflow, /Refusing unsafe archive entry/);
+      assert.match(workflow, /\$\{BUILD_ID\}-upstream\/record\.json/);
+      assert.notMatch(workflow, /COMPATIBILITY_MODE:\+-upstream/);
+      assert.match(
+        rootPackage,
+        /"compatibility-harness": "node --experimental-strip-types/,
+      );
+      assert.match(rootPackage, /"artifacts:prune":/);
+      assert.match(rootPackage, /"artifacts:clean":/);
       const rootManifest = JSON.parse(rootPackage) as {
-        readonly devDependencies: { readonly effect: string }
-      }
+        readonly devDependencies: { readonly effect: string };
+      };
       const harnessManifest = JSON.parse(harnessPackage) as {
-        readonly dependencies: { readonly "@effect/platform-node": string }
-      }
+        readonly dependencies: { readonly "@effect/platform-node": string };
+      };
       assert.strictEqual(
         harnessManifest.dependencies["@effect/platform-node"],
         rootManifest.devDependencies.effect,
-      )
-      assert.notMatch(harnessPackage, /@effect\/platform-bun/)
+      );
+      assert.notMatch(harnessPackage, /@effect\/platform-bun/);
     }).pipe(provideLayer(NodeServices.layer)),
-  )
-})
+  );
+});

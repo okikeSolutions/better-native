@@ -20,6 +20,10 @@ on:
         default: baseline
         type: choice
         options: [baseline, pair]
+      source:
+        description: Optional capability source filename for a focused native cycle
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -29,6 +33,7 @@ env:
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
   BETTER_NATIVE_BUILD_PROFILE: performance
   BETTER_NATIVE_FORCE_COLD_BUILD: ${{ github.event_name == 'schedule' && 'true' || 'false' }}
+  FOCUSED_SOURCE: ${{ inputs.source || '' }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -246,10 +251,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          source_args=()
+          if [ -n "$FOCUSED_SOURCE" ]; then
+            jq -e --arg name "$FOCUSED_SOURCE" '.capabilities[] | select(.compatibilitySource == $name)' compatibility/capabilities.json >/dev/null
+            source_args=(--source "better-native-capability#apps/compatibility-suite/src/capabilities/${FOCUSED_SOURCE}")
+          fi
           if [ "$COMPATIBILITY_MODE" = pair ]; then
-            bun run compatibility-harness supervise-build-pair --platform ios --build-id "$BUILD_ID" --timeout-ms 3600000
+            bun run compatibility-harness supervise-build-pair --platform ios --build-id "$BUILD_ID" --timeout-ms 3600000 "${source_args[@]}"
           else
-            bun run compatibility-harness supervise-build --mode upstream --platform ios --build-id "$BUILD_ID" --timeout-ms 3600000
+            bun run compatibility-harness supervise-build --mode upstream --platform ios --build-id "$BUILD_ID" --timeout-ms 3600000 "${source_args[@]}"
           fi
       - name: Package iOS build products
         env:
@@ -286,7 +296,7 @@ jobs:
           retention-days: ${{ job.status == 'success' && 3 || 7 }}
 
   ios-test:
-    name: iOS device test (${{ matrix.shard-label }}/2)
+    name: iOS device test (${{ matrix.shard-label }}/${{ inputs.source != '' && '1' || '2' }})
     needs: ios-build
     if: needs.ios-build.result == 'success'
     runs-on: macos-26
@@ -294,15 +304,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - shard-index: 0
-            shard-label: 1
-          - shard-index: 1
-            shard-label: 2
+        include: ${{ fromJSON(inputs.source != '' && '[{"shard-index":0,"shard-label":1}]' || '[{"shard-index":0,"shard-label":1},{"shard-index":1,"shard-label":2}]') }}
     env:
       COMPATIBILITY_MODE: ${{ github.event_name == 'schedule' && 'pair' || inputs.mode || 'baseline' }}
       BUILD_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}-ios
-      SHARD_COUNT: 2
+      SHARD_COUNT: ${{ inputs.source != '' && '1' || '2' }}
       SHARD_INDEX: ${{ matrix.shard-index }}
     steps:
       - name: Checkout
@@ -373,6 +379,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          source_args=()
+          if [ -n "$FOCUSED_SOURCE" ]; then
+            source_args=(--source "better-native-capability#apps/compatibility-suite/src/capabilities/${FOCUSED_SOURCE}")
+          fi
           if [ "$COMPATIBILITY_MODE" = pair ]; then
             upstream_record=".artifacts/builds/${BUILD_ID}-upstream/record.json"
           else
@@ -380,9 +390,9 @@ jobs:
           fi
           upstream_binary=".artifacts/imports/${BUILD_ID}/upstream/BetterNativeCompatibility.app"
           if [ "$COMPATIBILITY_MODE" = pair ]; then
-            bun run compatibility-harness supervise-native-pair --platform ios --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/imports/${BUILD_ID}/candidate/BetterNativeCompatibility.app" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID" --capabilities-only --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000
+            bun run compatibility-harness supervise-native-pair --platform ios --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/imports/${BUILD_ID}/candidate/BetterNativeCompatibility.app" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID" --capabilities-only --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000 "${source_args[@]}"
           else
-            bun run compatibility-harness supervise-native --platform ios --record "$upstream_record" --binary "$upstream_binary" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID-upstream" --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000
+            bun run compatibility-harness supervise-native --platform ios --record "$upstream_record" --binary "$upstream_binary" --device-id "$BETTER_NATIVE_DEVICE_ID" --run-id "$BUILD_ID-upstream" --shard-index "$SHARD_INDEX" --shard-count "$SHARD_COUNT" --timeout-ms 1200000 "${source_args[@]}"
           fi
       - name: Upload iOS run evidence
         if: always()
@@ -433,7 +443,7 @@ jobs:
               --upstream .artifacts/compare/upstream \
               --candidate .artifacts/compare/candidate \
               --source "$source"
-          done < <(jq -er '.capabilities[] | select(.verification.parityPlatforms | index("ios")) | ([.verification.paritySources[]? | select(.platform == "ios") | .source][0] // .compatibilitySource)' compatibility/capabilities.json)
+          done < <(if [ -n "$FOCUSED_SOURCE" ]; then printf '%s\n' "$FOCUSED_SOURCE"; else jq -er '.capabilities[] | select(.verification.parityPlatforms | index("ios")) | ([.verification.paritySources[]? | select(.platform == "ios") | .source][0] // .compatibilitySource)' compatibility/capabilities.json; fi)
       - name: Upload iOS comparison verdict
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -484,10 +494,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          source_args=()
+          if [ -n "$FOCUSED_SOURCE" ]; then
+            jq -e --arg name "$FOCUSED_SOURCE" '.capabilities[] | select(.compatibilitySource == $name)' compatibility/capabilities.json >/dev/null
+            source_args=(--source "better-native-capability#apps/compatibility-suite/src/capabilities/${FOCUSED_SOURCE}")
+          fi
           if [ "$COMPATIBILITY_MODE" = pair ]; then
-            bun run compatibility-harness supervise-build-pair --platform android --build-id "$BUILD_ID" --timeout-ms 2700000
+            bun run compatibility-harness supervise-build-pair --platform android --build-id "$BUILD_ID" --timeout-ms 2700000 "${source_args[@]}"
           else
-            bun run compatibility-harness supervise-build --mode upstream --platform android --build-id "$BUILD_ID" --timeout-ms 2700000
+            bun run compatibility-harness supervise-build --mode upstream --platform android --build-id "$BUILD_ID" --timeout-ms 2700000 "${source_args[@]}"
           fi
       - name: Package Android build products
         env:
@@ -562,6 +577,10 @@ jobs:
           avd-api: 36
           avd-name: compatibility-api-36
           script: |
+            source_args=()
+            if [ -n "$FOCUSED_SOURCE" ]; then
+              source_args=(--source "better-native-capability#apps/compatibility-suite/src/capabilities/${FOCUSED_SOURCE}")
+            fi
             if [ "$COMPATIBILITY_MODE" = pair ]; then
               upstream_record=".artifacts/builds/${BUILD_ID}-upstream/record.json"
             else
@@ -569,9 +588,9 @@ jobs:
             fi
             upstream_binary=".artifacts/products/${BUILD_ID}/upstream/app-release.apk"
             if [ "$COMPATIBILITY_MODE" = pair ]; then
-              bun run compatibility-harness supervise-native-pair --platform android --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/products/${BUILD_ID}/candidate/app-release.apk" --device-id emulator-5554 --run-id "$BUILD_ID" --capabilities-only --timeout-ms 1200000
+              bun run compatibility-harness supervise-native-pair --platform android --upstream-record "$upstream_record" --upstream-binary "$upstream_binary" --candidate-record ".artifacts/builds/${BUILD_ID}-candidate/record.json" --candidate-binary ".artifacts/products/${BUILD_ID}/candidate/app-release.apk" --device-id emulator-5554 --run-id "$BUILD_ID" --capabilities-only --timeout-ms 1200000 "${source_args[@]}"
             else
-              bun run compatibility-harness supervise-native --platform android --record "$upstream_record" --binary "$upstream_binary" --device-id emulator-5554 --run-id "$BUILD_ID-upstream" --timeout-ms 1200000
+              bun run compatibility-harness supervise-native --platform android --record "$upstream_record" --binary "$upstream_binary" --device-id emulator-5554 --run-id "$BUILD_ID-upstream" --timeout-ms 1200000 "${source_args[@]}"
             fi
       - name: Upload Android run evidence
         if: always()
@@ -621,7 +640,7 @@ jobs:
               --upstream .artifacts/compare/upstream \
               --candidate .artifacts/compare/candidate \
               --source "$source"
-          done < <(jq -er '.capabilities[] | select(.verification.parityPlatforms | index("android")) | ([.verification.paritySources[]? | select(.platform == "android") | .source][0] // .compatibilitySource)' compatibility/capabilities.json)
+          done < <(if [ -n "$FOCUSED_SOURCE" ]; then printf '%s\n' "$FOCUSED_SOURCE"; else jq -er '.capabilities[] | select(.verification.parityPlatforms | index("android")) | ([.verification.paritySources[]? | select(.platform == "android") | .source][0] // .compatibilitySource)' compatibility/capabilities.json; fi)
       - name: Upload Android comparison verdict
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

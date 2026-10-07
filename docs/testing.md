@@ -339,6 +339,13 @@ Omitting `--source` deliberately preserves the monolithic 85-dependency compatib
 that full shell for periodic full-suite CI, surface-wide smoke validation, or investigations whose
 native closure crosses capability boundaries—not for ordinary local package iteration.
 
+For a focused hosted native cycle, dispatch `Compatibility` with `mode=pair`, one platform, and
+`source` set to the capability filename from `compatibility/capabilities.json` (for example
+`SQLite.ts`). The build selects that capability before native autolinking, repacks the upstream and
+candidate JavaScript from one native Release shell, and runs only that source. iOS uses one test
+shard for a focused dispatch. Dispatch iOS and Android separately so only one platform build runs
+at a time. An empty `source` keeps the periodic full-suite behavior.
+
 Workspace preparation keeps native autolinking selective while materializing a separate recursive
 Metro dependency closure. Both the initial export and cached-artifact repack resolve exclusively
 through that closure, including dependencies imported by eager sources in the pinned Expo test app.
