@@ -107,12 +107,15 @@ export const checkSubmission = (
   submission: Submission.Submission,
 ): Effect.Effect<PublicCompileResult, never, Requirements> =>
   run(task, submission).pipe(
-    Effect.catch((error) =>
-      Match.value(error).pipe(
+    Effect.catch((error) => {
+      if (process.env.BETTER_NATIVE_DEBUG_COMPILE === "1") {
+        console.error("Compile infrastructure failure", error)
+      }
+      return Match.value(error).pipe(
         Match.when({ _tag: "IsolationFailure", reason: "timeout" }, () => Effect.succeed(timedOut)),
         Match.orElse(() => Effect.succeed(unavailable)),
-      ),
-    ),
+      )
+    }),
   )
 
 /** Captures the managed runtime services needed by repeated `check_submission` tool calls. */

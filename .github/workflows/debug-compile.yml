@@ -1,0 +1,20 @@
+name: Debug compile contracts
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-build
+      - uses: ./.github/actions/setup-dx-evals
+      - name: Test one compile contract
+        env:
+          BETTER_NATIVE_DEBUG_COMPILE: "1"
+        run: bun x vitest run --config vitest.integration.config.ts tooling/dx-evals/src/agent/compile-contracts/SqliteCompileContract.test.ts
