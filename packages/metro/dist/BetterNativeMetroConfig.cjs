@@ -18,13 +18,15 @@ var __toESM = (mod, isNodeMode, target) => {
       return cached;
   }
   target = mod != null ? __create(__getProtoOf(mod)) : {};
-  const to = isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target;
-  for (let key of __getOwnPropNames(mod))
-    if (!__hasOwnProp.call(to, key))
-      __defProp(to, key, {
-        get: __accessProp.bind(mod, key),
-        enumerable: true
-      });
+  const to = isNodeMode || !mod || !mod.__esModule || !__hasOwnProp.call(mod, "default") ? __defProp(target, "default", { value: mod, enumerable: true }) : target;
+  if (mod && typeof mod === "object" || typeof mod === "function") {
+    for (let key of __getOwnPropNames(mod))
+      if (!__hasOwnProp.call(to, key))
+        __defProp(to, key, {
+          get: __accessProp.bind(mod, key),
+          enumerable: true
+        });
+  }
   if (canCache)
     cache.set(mod, to);
   return to;
@@ -63,23 +65,25 @@ var __export = (target, all) => {
 // src/BetterNativeMetroConfig.ts
 var exports_BetterNativeMetroConfig = {};
 __export(exports_BetterNativeMetroConfig, {
-  withBetterNative: () => withBetterNative,
-  make: () => make,
-  layer: () => layer,
-  configure: () => configure,
-  ResolutionPolicy: () => ResolutionPolicy,
+  MetroConfigurationError: () => MetroConfigurationError,
   ResolutionObserver: () => ResolutionObserver,
-  MetroConfigurationError: () => MetroConfigurationError
+  ResolutionPolicy: () => ResolutionPolicy,
+  configure: () => configure,
+  layer: () => layer,
+  make: () => make,
+  withBetterNative: () => withBetterNative
 });
 module.exports = __toCommonJS(exports_BetterNativeMetroConfig);
-var Context = __toESM(require("effect/Context"));
-var Data = __toESM(require("effect/Data"));
-var Effect = __toESM(require("effect/Effect"));
-var Layer = __toESM(require("effect/Layer"));
-var Match = __toESM(require("effect/Match"));
-var Schema = __toESM(require("effect/Schema"));
+var Cause = __toESM(require("effect/Cause"), 1);
+var Context = __toESM(require("effect/Context"), 1);
+var Effect = __toESM(require("effect/Effect"), 1);
+var Layer = __toESM(require("effect/Layer"), 1);
+var Match = __toESM(require("effect/Match"), 1);
+var Schema = __toESM(require("effect/Schema"), 1);
 
-class MetroConfigurationError extends Data.TaggedError("MetroConfigurationError") {
+class MetroConfigurationError extends Schema.TaggedError()("MetroConfigurationError", {
+  cause: Schema.Defect()
+}) {
 }
 
 class ResolutionPolicy extends Context.Service()("@better-native/metro/ResolutionPolicy") {
@@ -191,20 +195,20 @@ var observerLayer = (options) => Layer.effect(ResolutionObserver)(Effect.try({
   catch: (cause) => new MetroConfigurationError({ cause })
 }));
 var layer = (options) => Layer.merge(policyLayer(options), observerLayer(options));
-var originPackage = (context2) => {
+var originPackage = (context) => {
   try {
-    return context2.getPackageForModule(context2.originModulePath)?.packageJson.name ?? null;
+    return context.getPackageForModule(context.originModulePath)?.packageJson.name ?? null;
   } catch {
     return null;
   }
 };
-var conditions = (context2, platform) => [
-  ...context2.unstable_conditionNames,
-  ...platform === null ? [] : context2.unstable_conditionsByPlatform[platform] ?? []
+var conditions = (context, platform) => [
+  ...context.unstable_conditionNames,
+  ...platform === null ? [] : context.unstable_conditionsByPlatform[platform] ?? []
 ];
-var environment = (context2) => {
-  const value2 = context2.customResolverOptions.environment;
-  return typeof value2 === "string" ? value2 : null;
+var environment = (context) => {
+  const value = context.customResolverOptions.environment;
+  return typeof value === "string" ? value : null;
 };
 var outcomeOf = (resolution) => {
   switch (resolution.type) {
@@ -227,7 +231,7 @@ var resolvedTargetOf = (outcome) => Match.value(outcome).pipe(Match.discriminato
   empty: () => null,
   failure: () => null
 }));
-var resolvedPackageOf = (context2, outcome) => {
+var resolvedPackageOf = (context, outcome) => {
   const target = Match.value(outcome).pipe(Match.discriminatorsExhaustive("kind")({
     "source-file": ({ filePath }) => filePath,
     "asset-files": ({ filePaths }) => filePaths[0],
@@ -241,7 +245,7 @@ var resolvedPackageOf = (context2, outcome) => {
   if (target === undefined)
     return null;
   try {
-    return context2.getPackageForModule(target)?.packageJson.name ?? null;
+    return context.getPackageForModule(target)?.packageJson.name ?? null;
   } catch {
     return null;
   }
@@ -277,20 +281,20 @@ var make = Effect.fn("BetterNativeMetroConfig.make")(function* (config) {
   const policy = yield* ResolutionPolicy;
   const observer = yield* ResolutionObserver;
   const services = yield* Effect.context();
-  const runSync2 = Effect.runSyncWith(services);
-  const observe = (event) => runSync2(observer.observe(event).pipe(Effect.catchCause((cause) => Effect.logError("Resolution observer failed", { cause }))));
+  const runSync = Effect.runSyncWith(services);
+  const observe = (event) => runSync(observer.observe(event).pipe(Effect.catchCauseIf((cause) => !Cause.hasInterrupts(cause), (cause) => Effect.logError("Resolution observer failed", { cause }))));
   const previous = config.resolver.resolveRequest;
   const configMode = policy.mode;
-  const resolveRequest = (context2, specifier, platform) => {
-    const directive = runSync2(policy.resolve({
+  const resolveRequest = (context, specifier, platform) => {
+    const directive = runSync(policy.resolve({
       mode: configMode,
       specifier,
-      originPackage: originPackage(context2)
+      originPackage: originPackage(context)
     }));
-    const next = previous ?? context2.resolveRequest;
+    const next = previous ?? context.resolveRequest;
     const resolutionContext = {
-      ...context2,
-      nodeModulesPaths: [policy.upstreamNodeModulesPath, ...context2.nodeModulesPaths]
+      ...context,
+      nodeModulesPaths: [policy.upstreamNodeModulesPath, ...context.nodeModulesPaths]
     };
     let resolution;
     try {
@@ -299,7 +303,7 @@ var make = Effect.fn("BetterNativeMetroConfig.make")(function* (config) {
       observe(makeEvent({
         buildId: policy.buildId,
         ownershipFingerprint: policy.ownershipFingerprint,
-        context: context2,
+        context,
         directive,
         mode: configMode,
         outcome: failureOf(cause),
@@ -312,7 +316,7 @@ var make = Effect.fn("BetterNativeMetroConfig.make")(function* (config) {
     observe(makeEvent({
       buildId: policy.buildId,
       ownershipFingerprint: policy.ownershipFingerprint,
-      context: context2,
+      context,
       directive,
       mode: configMode,
       outcome: outcomeOf(resolution),
@@ -328,5 +332,5 @@ var make = Effect.fn("BetterNativeMetroConfig.make")(function* (config) {
     resolver: { ...config.resolver, resolveRequest }
   };
 });
-var configure = (config, options) => Effect.scoped(Layer.build(layer(options)).pipe(Effect.flatMap((context2) => Effect.provide(make(config), context2))));
+var configure = (config, options) => Effect.scoped(Layer.build(layer(options)).pipe(Effect.flatMap((context) => Effect.provide(make(config), context))));
 var withBetterNative = (config, options) => Effect.runSync(configure(config, options));

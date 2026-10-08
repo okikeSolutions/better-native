@@ -9,7 +9,7 @@ const runtime = makeRunnerRuntime()
 try {
   const { observation, request } = await runtime.runPromise(
     Effect.gen(function* () {
-      const supervisorRequest = decodeSupervisorRequest(yield* readStdinJson)
+      const supervisorRequest = yield* decodeSupervisorRequest(yield* readStdinJson)
       const compileObservation = yield* Effect.sync(() => {
         const options: ts.CompilerOptions = {
           allowImportingTsExtensions: true,

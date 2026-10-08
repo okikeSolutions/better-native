@@ -19,7 +19,7 @@ export const Limits = Schema.Struct({
     expected: "virtual-workspace limits whose default list size does not exceed the path ceiling",
   }),
 )
-export type Limits = Schema.Schema.Type<typeof Limits>
+export interface Limits extends Schema.Schema.Type<typeof Limits> {}
 
 /** Reviewed virtual-workspace limits shared by schemas, handlers, tests, and evidence metadata. */
 export const defaultLimits = Schema.decodeUnknownSync(Limits)({
@@ -39,14 +39,14 @@ export const ListRequest = Schema.Struct({
   path: Schema.optional(Schema.NullOr(Schema.String)),
   limit: Schema.optional(Schema.NullOr(Schema.Number)),
 })
-export type ListRequest = Schema.Schema.Type<typeof ListRequest>
+export interface ListRequest extends Schema.Schema.Type<typeof ListRequest> {}
 
 export const FindRequest = Schema.Struct({
   pattern: Schema.String,
   path: Schema.optional(Schema.NullOr(Schema.String)),
   limit: Schema.optional(Schema.NullOr(Schema.Number)),
 })
-export type FindRequest = Schema.Schema.Type<typeof FindRequest>
+export interface FindRequest extends Schema.Schema.Type<typeof FindRequest> {}
 
 export const ReadRequest = Schema.Struct({
   path: Schema.String,
@@ -56,7 +56,7 @@ export const ReadRequest = Schema.Struct({
   offset: Schema.optional(Schema.NullOr(Schema.Number)),
   limit: Schema.optional(Schema.NullOr(Schema.Number)),
 })
-export type ReadRequest = Schema.Schema.Type<typeof ReadRequest>
+export interface ReadRequest extends Schema.Schema.Type<typeof ReadRequest> {}
 
 export const SearchRequest = Schema.Struct({
   pattern: Schema.String,
@@ -67,7 +67,7 @@ export const SearchRequest = Schema.Struct({
   context: Schema.optional(Schema.NullOr(Schema.Number)),
   limit: Schema.optional(Schema.NullOr(Schema.Number)),
 })
-export type SearchRequest = Schema.Schema.Type<typeof SearchRequest>
+export interface SearchRequest extends Schema.Schema.Type<typeof SearchRequest> {}
 
 const EditReplacement = Schema.Struct({
   oldText: Schema.String,
@@ -85,7 +85,7 @@ export const EditRequest = Schema.Struct({
   oldText: Schema.optional(Schema.String),
   newText: Schema.optional(Schema.String),
 })
-export type EditRequest = Schema.Schema.Type<typeof EditRequest>
+export interface EditRequest extends Schema.Schema.Type<typeof EditRequest> {}
 
 const editReplacements = (
   request: EditRequest,
@@ -97,7 +97,10 @@ const editReplacements = (
     ),
     Match.when(
       (candidate) => candidate.oldText !== undefined && candidate.newText !== undefined,
-      (candidate) => [{ oldText: candidate.oldText!, newText: candidate.newText! }],
+      (candidate) => {
+        const { oldText, newText } = candidate
+        return oldText === undefined || newText === undefined ? [] : [{ oldText, newText }]
+      },
     ),
     Match.orElse(() => []),
   )
@@ -144,7 +147,7 @@ export const SearchMatch = Schema.Struct({
   line: Schema.Int,
   content: Schema.String,
 })
-export type SearchMatch = Schema.Schema.Type<typeof SearchMatch>
+export interface SearchMatch extends Schema.Schema.Type<typeof SearchMatch> {}
 
 export const SearchResult = Schema.Union([
   Schema.Struct({
@@ -198,7 +201,7 @@ const globExpression = (pattern: string, maximumPatternCharacters: number): RegE
   if (pattern.length === 0 || pattern.length > maximumPatternCharacters) return undefined
   let source = "^"
   for (let index = 0; index < pattern.length; index += 1) {
-    const character = pattern[index]!
+    const character = pattern.charAt(index)
     source += Match.value(character).pipe(
       Match.when("*", () =>
         Match.value({ globstar: pattern[index + 1] === "*" }).pipe(
@@ -396,7 +399,10 @@ const selectedFiles = (
     Match.when(null, () => [...files.entries()]),
     Match.when(
       (path): path is string => path !== undefined && files.has(path),
-      (path) => [[path, files.get(path)!] as const],
+      (path) => {
+        const content = files.get(path)
+        return content === undefined ? [] : [[path, content] as const]
+      },
     ),
     Match.when(Match.string, (path) => {
       const prefix = Match.value(path.endsWith("/")).pipe(
@@ -471,17 +477,14 @@ export const search = (
   let truncated = false
   outer: for (const [path, content] of filteredCandidates) {
     const lines = content.split("\n")
-    for (let index = 0; index < lines.length; index += 1) {
+    for (const [index, line] of lines.entries()) {
       const searchable = Match.value(request.ignoreCase === true).pipe(
-        Match.when(true, () => lines[index]!.toLowerCase()),
-        Match.when(false, () => lines[index]!),
+        Match.when(true, () => line.toLowerCase()),
+        Match.when(false, () => line),
         Match.exhaustive,
       )
-      const matchesPattern = Match.value(request.literal === true).pipe(
-        Match.when(true, () => searchable.includes(needle)),
-        Match.when(false, () => expression!.test(lines[index]!)),
-        Match.exhaustive,
-      )
+      const matchesPattern =
+        expression === undefined ? searchable.includes(needle) : expression.test(line)
       if (!matchesPattern) continue
       if (matches.length >= limit) {
         truncated = true
@@ -492,8 +495,8 @@ export const search = (
       const rendered = lines
         .slice(first, last + 1)
         .map(
-          (line, relativeIndex) =>
-            `${first + relativeIndex + 1}: ${truncateCharacters(line, limits)}`,
+          (contextLine, relativeIndex) =>
+            `${first + relativeIndex + 1}: ${truncateCharacters(contextLine, limits)}`,
         )
         .join("\n")
       const match = {
@@ -547,7 +550,12 @@ export const edit = (
     })
   }
   const ordered = located.toSorted((left, right) => left.start - right.start)
-  if (ordered.some((entry, index) => index > 0 && entry.start < ordered[index - 1]!.end)) {
+  if (
+    ordered.some((entry, index) => {
+      const previous = ordered[index - 1]
+      return previous !== undefined && entry.start < previous.end
+    })
+  ) {
     return { ok: false, error: "overlapping-edits" }
   }
   let updated = content

@@ -58,7 +58,7 @@ describe("NativeRegistration", () => {
           }
         }
       }),
-    { fastCheck: { numRuns: 100 } },
+    { arbitrary: { runs: 100 } },
   )
 
   it.effect("accounts for generator templates without parsing them as JSON", () =>

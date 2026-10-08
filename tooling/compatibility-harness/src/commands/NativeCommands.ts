@@ -1,8 +1,8 @@
 import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
 import * as Option from "effect/Option"
-import * as Command from "effect/unstable/cli/Command"
-import * as Flag from "effect/unstable/cli/Flag"
+import * as Command from "effect/cli/Command"
+import * as Flag from "effect/cli/Flag"
 import { RunId, type BuildRecord, type RegistryMetadata } from "../Domain.ts"
 import { HarnessError } from "../HarnessError.ts"
 import * as AppRegistry from "../registry/AppRegistry.ts"
@@ -18,10 +18,11 @@ import {
   timeoutMillisFlag,
 } from "./Shared.ts"
 
-const recordPathFlag = Flag.string("record")
-const binaryPathFlag = Flag.string("binary")
-const nativeSourceFlag = Flag.string("source").pipe(Flag.optional)
-const physicalDeviceFlag = Flag.boolean("physical-device").pipe(Flag.withDefault(false))
+const recordPathFlag = Flag.String("record")
+const binaryPathFlag = Flag.String("binary")
+const nativeSourceFlag = Flag.String("source").pipe(Flag.optional)
+const physicalDeviceFlag = Flag.Boolean("physical-device").pipe(Flag.withDefault(false))
+const capabilitiesOnlyFlag = Flag.Boolean("capabilities-only").pipe(Flag.withDefault(false))
 
 /** Prevents a capability-scoped binary from running a source it did not compile. */
 export const validateCapabilityShell = (
@@ -46,11 +47,15 @@ const selectNativeUnits = (
   metadata: RegistryMetadata,
   platform: "ios" | "android",
   source: Option.Option<string>,
+  capabilitiesOnly: boolean,
   shardIndex: number,
   shardCount: number,
 ) =>
   Option.match(source, {
-    onNone: () => AppRegistry.appExecutionShards(metadata, platform, shardCount)[shardIndex] ?? [],
+    onNone: () =>
+      AppRegistry.appExecutionShards(metadata, platform, shardCount, {
+        selection: capabilitiesOnly ? "capabilities" : "curated",
+      })[shardIndex] ?? [],
     onSome: (sourceId) => {
       const unit = AppRegistry.appExecutionUnitForSource(metadata, platform, sourceId)
       return unit === null ? [] : [unit]
@@ -67,6 +72,7 @@ export const supervisedNative = Command.make(
     recordPath: recordPathFlag,
     binaryPath: binaryPathFlag,
     source: nativeSourceFlag,
+    capabilitiesOnly: capabilitiesOnlyFlag,
     deviceId: deviceIdFlag,
     physicalDevice: physicalDeviceFlag,
     runId: runIdFlag,
@@ -79,6 +85,7 @@ export const supervisedNative = Command.make(
     recordPath,
     binaryPath,
     source,
+    capabilitiesOnly,
     deviceId,
     physicalDevice,
     runId,
@@ -107,7 +114,14 @@ export const supervisedNative = Command.make(
     const builds = yield* AppBuildImporter
     const native = yield* NativeSupervisor
     const metadata = yield* AppRegistry.loadMetadata()
-    const units = selectNativeUnits(metadata, platform, source, shardIndex, shardCount)
+    const units = selectNativeUnits(
+      metadata,
+      platform,
+      source,
+      capabilitiesOnly,
+      shardIndex,
+      shardCount,
+    )
     if (units.length === 0) {
       return yield* new HarnessError({
         operation: "select native shard",
@@ -140,10 +154,10 @@ export const supervisedNative = Command.make(
   ),
 )
 
-const upstreamRecordPathFlag = Flag.string("upstream-record")
-const upstreamBinaryPathFlag = Flag.string("upstream-binary")
-const candidateRecordPathFlag = Flag.string("candidate-record")
-const candidateBinaryPathFlag = Flag.string("candidate-binary")
+const upstreamRecordPathFlag = Flag.String("upstream-record")
+const upstreamBinaryPathFlag = Flag.String("upstream-binary")
+const candidateRecordPathFlag = Flag.String("candidate-record")
+const candidateBinaryPathFlag = Flag.String("candidate-binary")
 
 /**
  * Runs paired upstream and candidate native shards.
@@ -157,6 +171,7 @@ export const supervisedNativePair = Command.make(
     candidateRecordPath: candidateRecordPathFlag,
     candidateBinaryPath: candidateBinaryPathFlag,
     source: nativeSourceFlag,
+    capabilitiesOnly: capabilitiesOnlyFlag,
     deviceId: deviceIdFlag,
     physicalDevice: physicalDeviceFlag,
     runId: runIdFlag,
@@ -171,6 +186,7 @@ export const supervisedNativePair = Command.make(
     candidateRecordPath,
     candidateBinaryPath,
     source,
+    capabilitiesOnly,
     deviceId,
     physicalDevice,
     runId,
@@ -199,7 +215,14 @@ export const supervisedNativePair = Command.make(
     const builds = yield* AppBuildImporter
     const native = yield* NativeSupervisor
     const metadata = yield* AppRegistry.loadMetadata()
-    const units = selectNativeUnits(metadata, platform, source, shardIndex, shardCount)
+    const units = selectNativeUnits(
+      metadata,
+      platform,
+      source,
+      capabilitiesOnly,
+      shardIndex,
+      shardCount,
+    )
     if (units.length === 0) {
       return yield* new HarnessError({
         operation: "select native shard",

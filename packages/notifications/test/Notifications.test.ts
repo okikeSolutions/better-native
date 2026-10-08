@@ -3,9 +3,12 @@ import * as Cause from "effect/Cause"
 import * as Effect from "effect/Effect"
 import * as ManagedRuntime from "effect/ManagedRuntime"
 import * as Stream from "effect/Stream"
-import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
-import * as AtomRegistry from "effect/unstable/reactivity/AtomRegistry"
-import type { NotificationsError } from "../src/Notifications.ts"
+import * as AsyncResult from "effect/reactivity/AsyncResult"
+import * as AtomRegistry from "effect/reactivity/AtomRegistry"
+import type {
+  Notifications as NotificationsService,
+  NotificationsError,
+} from "../src/Notifications.ts"
 
 /* oxlint-disable effecttsgo/strict-effect-provide -- test runtime entry points */
 
@@ -84,8 +87,8 @@ vi.mock("expo-task-manager", () => taskManagerMocks)
 const Notifications = await import("../src/Notifications.ts")
 const NotificationBackground = await import("../src/Background.ts")
 
-const run = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
-  Effect.runPromise(effect.pipe(Effect.provide(Notifications.live)) as Effect.Effect<A, E>)
+const run = <A, E>(effect: Effect.Effect<A, E, NotificationsService>) =>
+  Effect.runPromise(effect.pipe(Effect.provide(Notifications.live)))
 
 describe("@better-native/notifications", () => {
   beforeEach(() => vi.clearAllMocks())
@@ -198,9 +201,7 @@ describe("@better-native/notifications", () => {
 
     for (const [effect, mock, args] of cases) {
       mock.mockResolvedValueOnce(result)
-      await expect(run(effect as Effect.Effect<unknown, NotificationsError, never>)).resolves.toBe(
-        result,
-      )
+      await expect(run<unknown, NotificationsError>(effect)).resolves.toBe(result)
       expect(mock).toHaveBeenLastCalledWith(...args)
     }
   })
@@ -282,9 +283,7 @@ describe("@better-native/notifications", () => {
 
     for (const [effect, mock, args] of cases) {
       mock.mockResolvedValueOnce(result)
-      await expect(run(effect as Effect.Effect<unknown, NotificationsError, never>)).resolves.toBe(
-        result,
-      )
+      await expect(run<unknown, NotificationsError>(effect)).resolves.toBe(result)
       expect(mock).toHaveBeenLastCalledWith(...args)
     }
   })
@@ -444,13 +443,9 @@ describe("@better-native/notifications", () => {
       },
     )
 
-    const first = <A, E, R>(stream: Stream.Stream<A, E, R>) =>
+    const first = <A, E>(stream: Stream.Stream<A, E, NotificationsService>) =>
       Effect.runPromise(
-        stream.pipe(
-          Stream.take(1),
-          Stream.runHead,
-          Effect.provide(Notifications.live),
-        ) as Effect.Effect<unknown>,
+        stream.pipe(Stream.take(1), Stream.runHead, Effect.provide(Notifications.live)),
       )
     await expect(first(Notifications.addNotificationsDroppedListener)).resolves.toBeDefined()
     await expect(

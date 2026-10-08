@@ -42,6 +42,7 @@ runs:
       uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47.0.0
       with:
         fetch_depth: 1000
+        exclude_submodules: true
         files_yaml: |
           web: [ ${{ inputs.web-paths }}, ${{ inputs.shared-ignores }} ]
           ios: [ ${{ inputs.ios-paths }}, ${{ inputs.shared-ignores }} ]

@@ -190,10 +190,13 @@ describe("ArtifactLifecycle", () => {
       const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-lifecycle-pods-" })
       const current = `${root}/.artifacts/pods-cache/${podsCacheDirectory}/entries/current`
       const obsolete = `${root}/.artifacts/pods-cache/v2/entries/obsolete`
+      const obsoleteIndex = `${root}/.artifacts/pods-cache/v2/indexes/obsolete.json`
       yield* fs.makeDirectory(current, { recursive: true })
       yield* fs.makeDirectory(obsolete, { recursive: true })
+      yield* fs.makeDirectory(`${root}/.artifacts/pods-cache/v2/indexes`, { recursive: true })
       yield* fs.writeFile(`${current}/binary`, new Uint8Array(8_192))
       yield* fs.writeFile(`${obsolete}/binary`, new Uint8Array(8_192))
+      yield* fs.writeFileString(obsoleteIndex, "obsolete")
 
       const report = yield* Effect.gen(function* () {
         const lifecycle = yield* ArtifactLifecycle
@@ -204,11 +207,57 @@ describe("ArtifactLifecycle", () => {
       assert.strictEqual(report.cacheBytesAfter, 0)
       assert.strictEqual(report.entries.find(({ path }) => path === current)?.decision, "delete")
       assert.strictEqual(
-        report.entries.find(({ path }) => path === obsolete)?.reason,
+        report.entries.find(({ path }) => path === `${root}/.artifacts/pods-cache/v2/entries`)
+          ?.reason,
         "obsolete cache schema is no longer read",
       )
       assert.isFalse(yield* fs.exists(current))
       assert.isFalse(yield* fs.exists(obsolete))
+      assert.isFalse(yield* fs.exists(obsoleteIndex))
+    }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
+  )
+
+  it.effect("counts CocoaPods indexes and removes them with their entries", () =>
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem
+      const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-lifecycle-index-" })
+      const cache = `${root}/.artifacts/pods-cache/${podsCacheDirectory}`
+      const entry = `${cache}/entries/arm64-toolchain-lockhash`
+      const index = `${cache}/indexes/arm64-toolchain-inputhash.json`
+      const orphan = `${cache}/indexes/orphan.json`
+      yield* fs.makeDirectory(entry, { recursive: true })
+      yield* fs.makeDirectory(`${cache}/indexes`, { recursive: true })
+      yield* fs.writeFile(`${entry}/binary`, new Uint8Array(8_192))
+      yield* fs.writeFileString(
+        index,
+        JSON.stringify({
+          schemaVersion: 3,
+          architecture: "arm64",
+          toolchainFingerprint: "toolchain",
+          lockHash: "lockhash",
+        }),
+      )
+      yield* fs.writeFileString(orphan, "invalid")
+
+      const dryRun = yield* Effect.gen(function* () {
+        const lifecycle = yield* ArtifactLifecycle
+        return yield* lifecycle.prune({ dryRun: true, cacheBudgetBytes: 0 })
+      }).pipe(provideLayer(layer(root)))
+      const applied = yield* Effect.gen(function* () {
+        const lifecycle = yield* ArtifactLifecycle
+        return yield* lifecycle.prune({ dryRun: false, cacheBudgetBytes: 0 })
+      }).pipe(provideLayer(layer(root)))
+
+      assert.isAbove(dryRun.cacheBytesBefore, 0)
+      assert.strictEqual(applied.cacheBytesAfter, 0)
+      for (const target of [entry, index, orphan]) {
+        assert.strictEqual(dryRun.entries.find(({ path }) => path === target)?.decision, "delete")
+        assert.isFalse(yield* fs.exists(target))
+      }
+      assert.deepStrictEqual(
+        applied.entries.map(({ path, decision }) => [path, decision]),
+        dryRun.entries.map(({ path, decision }) => [path, decision]),
+      )
     }).pipe(Effect.scoped, provideLayer(NodeServices.layer)),
   )
 

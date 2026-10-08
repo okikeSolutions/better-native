@@ -1,13 +1,12 @@
 import { serveReportUi } from "@vitest-evals/report-ui"
 import * as Crypto from "effect/Crypto"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as ChildProcess from "effect/unstable/process/ChildProcess"
-import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
-import { HttpClient, HttpClientResponse } from "effect/unstable/http"
+import * as ChildProcess from "effect/process/ChildProcess"
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner"
+import { HttpClient, HttpClientResponse } from "effect/http"
 import * as Config from "../Config.ts"
 import * as Domain from "../Domain.ts"
 
@@ -75,10 +74,10 @@ const JsonReport = Schema.fromJsonString(
 )
 
 /** Failure raised when the deterministic report artifact or UI cannot be validated. */
-class ReportSmokeFailure extends Data.TaggedError("ReportSmokeFailure")<{
-  readonly operation: string
-  readonly cause?: unknown
-}> {}
+class ReportSmokeFailure extends Schema.TaggedError<ReportSmokeFailure>()("ReportSmokeFailure", {
+  operation: Schema.String,
+  cause: Schema.optional(Schema.Defect()),
+}) {}
 
 const fail = (operation: string, cause?: unknown) => new ReportSmokeFailure({ operation, cause })
 

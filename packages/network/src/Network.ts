@@ -1,11 +1,10 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Queue from "effect/Queue"
 import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as Atom from "effect/unstable/reactivity/Atom"
+import * as Atom from "effect/reactivity/Atom"
 import * as ExpoNetwork from "expo-network"
 
 /**
@@ -54,7 +53,7 @@ export const NetworkState = Schema.Struct({
  * @category models
  * @since 0.0.0
  */
-export type NetworkState = Schema.Schema.Type<typeof NetworkState>
+export interface NetworkState extends Schema.Schema.Type<typeof NetworkState> {}
 
 /**
  * Event emitted when the network state changes.
@@ -78,9 +77,12 @@ export type Subscription = ReturnType<typeof ExpoNetwork.addNetworkStateListener
  * @category errors
  * @since 0.0.0
  */
-export class NetworkUnavailable extends Data.TaggedError("NetworkUnavailable")<{
-  readonly method: string
-}> {}
+export class NetworkUnavailable extends Schema.TaggedError<NetworkUnavailable>()(
+  "NetworkUnavailable",
+  {
+    method: Schema.String,
+  },
+) {}
 
 /**
  * Tagged error for failed network native operations.
@@ -88,10 +90,10 @@ export class NetworkUnavailable extends Data.TaggedError("NetworkUnavailable")<{
  * @category errors
  * @since 0.0.0
  */
-export class NetworkFailure extends Data.TaggedError("NetworkFailure")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class NetworkFailure extends Schema.TaggedError<NetworkFailure>()("NetworkFailure", {
+  method: Schema.String,
+  cause: Schema.Defect(),
+}) {}
 
 /**
  * Network service contract used by the Effect-native API.

@@ -1,5 +1,5 @@
+import * as Cause from "effect/Cause"
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
@@ -71,9 +71,12 @@ export interface ResolutionDirective {
   readonly replacement: string | null
 }
 
-export class MetroConfigurationError extends Data.TaggedError("MetroConfigurationError")<{
-  readonly cause: unknown
-}> {}
+export class MetroConfigurationError extends Schema.TaggedError<MetroConfigurationError>()(
+  "MetroConfigurationError",
+  {
+    cause: Schema.Defect(),
+  },
+) {}
 
 export class ResolutionPolicy extends Context.Service<
   ResolutionPolicy,
@@ -349,11 +352,12 @@ export const make: (
     const runSync = Effect.runSyncWith(services)
     const observe = (event: ResolutionEvent): void =>
       runSync(
-        observer
-          .observe(event)
-          .pipe(
-            Effect.catchCause((cause) => Effect.logError("Resolution observer failed", { cause })),
+        observer.observe(event).pipe(
+          Effect.catchCauseIf(
+            (cause) => !Cause.hasInterrupts(cause),
+            (cause) => Effect.logError("Resolution observer failed", { cause }),
           ),
+        ),
       )
     const previous = config.resolver.resolveRequest
     const configMode = policy.mode

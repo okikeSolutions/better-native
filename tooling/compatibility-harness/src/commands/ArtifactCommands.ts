@@ -1,13 +1,13 @@
 import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
-import * as Command from "effect/unstable/cli/Command"
-import * as Flag from "effect/unstable/cli/Flag"
+import * as Command from "effect/cli/Command"
+import * as Flag from "effect/cli/Flag"
 import { ArtifactLifecycle, ArtifactLifecycleError } from "../artifacts/ArtifactLifecycle.ts"
 
 /** Reports or applies local artifact retention and the shared 3 GiB cache budget. */
 export const artifactsPrune = Command.make(
   "artifacts-prune",
-  { dryRun: Flag.boolean("dry-run").pipe(Flag.withDefault(false)) },
+  { dryRun: Flag.Boolean("dry-run").pipe(Flag.withDefault(false)) },
   Effect.fn("Command.artifactsPrune")(function* ({ dryRun }) {
     const lifecycle = yield* ArtifactLifecycle
     const report = yield* lifecycle.prune({ dryRun })
@@ -18,7 +18,7 @@ export const artifactsPrune = Command.make(
 /** Explicit emergency removal of all repository-owned artifacts. */
 export const artifactsClean = Command.make(
   "artifacts-clean",
-  { all: Flag.boolean("all").pipe(Flag.withDefault(false)) },
+  { all: Flag.Boolean("all").pipe(Flag.withDefault(false)) },
   Effect.fn("Command.artifactsClean")(function* ({ all }) {
     if (!all) {
       return yield* new ArtifactLifecycleError({

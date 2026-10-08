@@ -1,4 +1,3 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Match from "effect/Match"
@@ -58,10 +57,13 @@ export interface Summary {
 }
 
 /** Failure raised when a campaign report cannot be decoded into separated outcome dimensions. */
-export class CampaignSummaryInvalid extends Data.TaggedError("CampaignSummaryInvalid")<{
-  readonly reason: "read-report" | "decode-report"
-  readonly cause?: unknown
-}> {}
+export class CampaignSummaryInvalid extends Schema.TaggedError<CampaignSummaryInvalid>()(
+  "CampaignSummaryInvalid",
+  {
+    reason: Schema.Literals(["read-report", "decode-report"]),
+    cause: Schema.optional(Schema.Defect()),
+  },
+) {}
 
 const testExecution = (status: string): TrialSummary["testExecution"] =>
   Match.value(status).pipe(

@@ -1,14 +1,17 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Option from "effect/Option"
 import * as Path from "effect/Path"
+import * as Schema from "effect/Schema"
 import * as Config from "../Config.ts"
 
 /** Failure raised when the artifact root is redirected or cannot be secured. */
-export class ArtifactRootInvalid extends Data.TaggedError("ArtifactRootInvalid")<{
-  readonly reason: string
-}> {}
+export class ArtifactRootInvalid extends Schema.TaggedError<ArtifactRootInvalid>()(
+  "ArtifactRootInvalid",
+  {
+    reason: Schema.String,
+  },
+) {}
 
 const rejectSymbolicLink = (fs: FileSystem.FileSystem, target: string, reason: string) =>
   Effect.gen(function* () {

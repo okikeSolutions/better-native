@@ -3,8 +3,8 @@ import * as Cause from "effect/Cause"
 import * as Effect from "effect/Effect"
 import * as Fiber from "effect/Fiber"
 import * as Stream from "effect/Stream"
-import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
-import * as AtomRegistry from "effect/unstable/reactivity/AtomRegistry"
+import * as AsyncResult from "effect/reactivity/AsyncResult"
+import * as AtomRegistry from "effect/reactivity/AtomRegistry"
 import type {
   Location as LocationService,
   LocationFailure,
@@ -78,8 +78,8 @@ vi.mock("expo-location", () => ({
 
 const Location = await import("../src/Location.ts")
 
-const run = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
-  Effect.runPromise(effect.pipe(Effect.provide(Location.live)) as Effect.Effect<A, E>)
+const run = <A, E>(effect: Effect.Effect<A, E, LocationService>) =>
+  Effect.runPromise(effect.pipe(Effect.provide(Location.live)))
 
 describe("@better-native/location", () => {
   beforeEach(() => {

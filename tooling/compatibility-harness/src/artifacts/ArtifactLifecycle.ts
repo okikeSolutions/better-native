@@ -1,18 +1,23 @@
 import * as Context from "effect/Context"
 import * as Console from "effect/Console"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
 import * as Path from "effect/Path"
 import * as PlatformError from "effect/PlatformError"
+import * as Schema from "effect/Schema"
+import * as Schedule from "effect/Schedule"
 import * as Scope from "effect/Scope"
 import { randomUUID } from "node:crypto"
 import { statfs } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { isSafePathSegment } from "../Domain.ts"
-import { nativeArtifactCacheDirectory, podsCacheDirectory } from "./CacheLayout.ts"
+import {
+  nativeArtifactCacheDirectory,
+  podsCacheDirectory,
+  podsCacheSchemaVersion,
+} from "./CacheLayout.ts"
 
 const gibibyte = 1024 ** 3
 
@@ -27,10 +32,13 @@ export const bulkyRunRetentionMillis = 7 * 24 * 60 * 60 * 1_000
 /** Grace window protecting a lock directory while its owner record is being initialized. */
 export const lockInitializationGraceMillis = 60_000
 
-export class ArtifactLifecycleError extends Data.TaggedError("ArtifactLifecycleError")<{
-  readonly operation: string
-  readonly cause: unknown
-}> {}
+export class ArtifactLifecycleError extends Schema.TaggedError<ArtifactLifecycleError>()(
+  "ArtifactLifecycleError",
+  {
+    operation: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 export interface ArtifactPruneEntry {
   readonly path: string
@@ -220,7 +228,9 @@ export const layer = (
         return moved
       })
 
-      const acquireNativeBuild: Service["acquireNativeBuild"] = (label) => {
+      const acquireNativeBuild: Service["acquireNativeBuild"] = Effect.fn(
+        "ArtifactLifecycle.acquireNativeBuild",
+      )((label) => {
         const token = randomUUID()
         const owner: NativeBuildOwner = {
           schemaVersion: 1,
@@ -266,11 +276,11 @@ export const layer = (
 
         const acquire = Effect.gen(function* () {
           let waitingLogged = false
-          while (true) {
-            const result = yield* attempt
-            if (result === "acquired") break
-            if (result === "retry") continue
-            if (!waitingLogged) {
+          yield* Effect.gen(function* () {
+            const result = yield* attempt.pipe(
+              Effect.repeat({ until: (outcome) => outcome !== "retry" }),
+            )
+            if (result === "waiting" && !waitingLogged) {
               const current = yield* readNativeBuildOwner
               yield* Console.log(
                 current === null
@@ -279,8 +289,13 @@ export const layer = (
               )
               waitingLogged = true
             }
-            yield* Effect.sleep(nativeBuildPollMillis)
-          }
+            return result
+          }).pipe(
+            Effect.repeat({
+              until: (result) => result === "acquired",
+              schedule: Schedule.spaced(nativeBuildPollMillis),
+            }),
+          )
           yield* Console.log(`[native-build:${label}] acquired the machine-wide native build lock`)
         }).pipe(
           Effect.mapError(
@@ -306,9 +321,11 @@ export const layer = (
             )
           }).pipe(Effect.orDie),
         )
-      }
+      })
 
-      const acquireWorkspace: Service["acquireWorkspace"] = (workspace) => {
+      const acquireWorkspace: Service["acquireWorkspace"] = Effect.fn(
+        "ArtifactLifecycle.acquireWorkspace",
+      )((workspace) => {
         const name = path.basename(workspace)
         const lock = path.join(locksRoot, name)
         const token = randomUUID()
@@ -357,7 +374,7 @@ export const layer = (
             }
           }).pipe(Effect.orDie),
         )
-      }
+      })
 
       const cacheRoots = [
         {
@@ -367,7 +384,7 @@ export const layer = (
         },
         {
           kind: "pods-cache" as const,
-          root: path.join(artifactsRoot, "pods-cache", "v2", "entries"),
+          root: path.join(artifactsRoot, "pods-cache", "v2"),
           legacy: true,
         },
         {
@@ -382,7 +399,7 @@ export const layer = (
         },
       ]
 
-      const prune: Service["prune"] = (options) =>
+      const prune: Service["prune"] = Effect.fn("ArtifactLifecycle.prune")((options) =>
         Effect.gen(function* () {
           const now = options.nowMillis ?? Date.now()
           const budget = options.cacheBudgetBytes ?? defaultCacheBudgetBytes
@@ -551,6 +568,7 @@ export const layer = (
             sizeBytes: number
             lastUsedMillis: number
             legacy: boolean
+            linkedEntryPath?: string
           }> = []
           for (const cache of cacheRoots) {
             if (!(yield* fs.exists(cache.root))) continue
@@ -592,11 +610,85 @@ export const layer = (
               })
             }
           }
+          const indexesRoot = path.join(artifactsRoot, "pods-cache", podsCacheDirectory, "indexes")
+          if (yield* fs.exists(indexesRoot)) {
+            if (Option.isSome(yield* linkTarget(indexesRoot))) {
+              entries.push({
+                path: indexesRoot,
+                kind: "pods-cache",
+                decision: "protect",
+                reason: "linked cache root is never traversed",
+                sizeBytes: 0,
+                lastUsedMillis: now,
+              })
+            } else {
+              const entryPaths = new Set(cacheEntries.map(({ path: entryPath }) => entryPath))
+              for (const name of (yield* fs.readDirectory(indexesRoot)).toSorted()) {
+                const target = path.join(indexesRoot, name)
+                if (Option.isSome(yield* linkTarget(target))) {
+                  entries.push({
+                    path: target,
+                    kind: "pods-cache",
+                    decision: "protect",
+                    reason: "symbolic link is never traversed",
+                    sizeBytes: 0,
+                    lastUsedMillis: now,
+                  })
+                  continue
+                }
+                const info = yield* fs.stat(target)
+                let linkedEntryPath: string | undefined
+                if (info.type === "File" && name.endsWith(".json")) {
+                  const value = yield* fs
+                    .readFileString(target)
+                    .pipe(Effect.orElseSucceed(() => ""))
+                  const parsed = yield* Effect.try({
+                    try: () => JSON.parse(value) as unknown,
+                    catch: () => "invalid CocoaPods index",
+                  }).pipe(Effect.orElseSucceed(() => null))
+                  if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
+                    const record = parsed as Record<string, unknown>
+                    if (
+                      record.schemaVersion === podsCacheSchemaVersion &&
+                      typeof record.architecture === "string" &&
+                      typeof record.toolchainFingerprint === "string" &&
+                      typeof record.lockHash === "string"
+                    ) {
+                      const key = `${record.architecture}-${record.toolchainFingerprint}-${record.lockHash}`
+                      if (isSafePathSegment(key)) {
+                        const candidate = path.join(
+                          artifactsRoot,
+                          "pods-cache",
+                          podsCacheDirectory,
+                          "entries",
+                          key,
+                        )
+                        if (entryPaths.has(candidate)) linkedEntryPath = candidate
+                      }
+                    }
+                  }
+                }
+                cacheEntries.push({
+                  path: target,
+                  kind: "pods-cache",
+                  decision: linkedEntryPath === undefined ? "delete" : "keep",
+                  reason:
+                    linkedEntryPath === undefined
+                      ? "orphaned or malformed CocoaPods index"
+                      : "within persistent cache budget",
+                  sizeBytes: yield* physicalSize(target),
+                  lastUsedMillis: modificationMillis(info),
+                  legacy: linkedEntryPath === undefined,
+                  ...(linkedEntryPath === undefined ? {} : { linkedEntryPath }),
+                })
+              }
+            }
+          }
           const cacheBytesBefore = cacheEntries.reduce((sum, entry) => sum + entry.sizeBytes, 0)
           let cacheBytesAfter = cacheBytesBefore
           if (activeWorkspaces.size > 0) {
             entries.push(
-              ...cacheEntries.map(({ legacy: _legacy, ...entry }) => ({
+              ...cacheEntries.map(({ legacy: _legacy, linkedEntryPath: _linked, ...entry }) => ({
                 ...entry,
                 decision: "protect" as const,
                 reason: "cache protected while a build is active",
@@ -607,7 +699,7 @@ export const layer = (
               .filter(({ legacy }) => legacy)
               .reduce((sum, entry) => sum + entry.sizeBytes, 0)
             for (const entry of cacheEntries
-              .filter(({ legacy }) => !legacy)
+              .filter(({ legacy, linkedEntryPath }) => !legacy && linkedEntryPath === undefined)
               .toSorted(
                 (left, right) =>
                   left.lastUsedMillis - right.lastUsedMillis || left.path.localeCompare(right.path),
@@ -615,9 +707,21 @@ export const layer = (
               if (cacheBytesAfter <= budget) break
               entry.decision = "delete"
               entry.reason = "least-recently-used entry exceeds the persistent cache budget"
-              cacheBytesAfter -= entry.sizeBytes
+              const linkedIndexes = cacheEntries.filter(
+                ({ linkedEntryPath }) => linkedEntryPath === entry.path,
+              )
+              for (const index of linkedIndexes) {
+                index.decision = "delete"
+                index.reason = "referenced CocoaPods entry exceeds the persistent cache budget"
+              }
+              cacheBytesAfter -=
+                entry.sizeBytes + linkedIndexes.reduce((sum, index) => sum + index.sizeBytes, 0)
             }
-            entries.push(...cacheEntries.map(({ legacy: _legacy, ...entry }) => entry))
+            entries.push(
+              ...cacheEntries.map(
+                ({ legacy: _legacy, linkedEntryPath: _linked, ...entry }) => entry,
+              ),
+            )
           }
 
           const runsRoot = path.join(artifactsRoot, "runs")
@@ -670,7 +774,8 @@ export const layer = (
           Effect.mapError(
             (cause) => new ArtifactLifecycleError({ operation: "prune artifacts", cause }),
           ),
-        )
+        ),
+      )
 
       const pruneBeforeBuild = Effect.tryPromise({
         try: async () => {
@@ -725,7 +830,9 @@ export const layer = (
         ),
       )
 
-      const publishNativeProduct: Service["publishNativeProduct"] = (input) =>
+      const publishNativeProduct: Service["publishNativeProduct"] = Effect.fn(
+        "ArtifactLifecycle.publishNativeProduct",
+      )((input) =>
         Effect.gen(function* () {
           if (!isSafePathSegment(input.buildId) || path.basename(input.name) !== input.name) {
             return yield* new ArtifactLifecycleError({
@@ -756,7 +863,8 @@ export const layer = (
               ? cause
               : new ArtifactLifecycleError({ operation: "publish native product", cause }),
           ),
-        )
+        ),
+      )
 
       return ArtifactLifecycle.of({
         acquireWorkspace,

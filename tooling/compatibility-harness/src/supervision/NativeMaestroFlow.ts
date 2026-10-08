@@ -1,4 +1,4 @@
-import * as Encoding from "effect/Encoding"
+import * as Hex from "effect/encoding/Hex"
 import type { NativeBatchRequest, NativeRunRequest } from "./NativeSupervisor.ts"
 
 const yamlString = (value: string): string => JSON.stringify(value)
@@ -45,7 +45,7 @@ export const make = (request: NativeRunRequest): string => {
   ].join("\n")
 }
 
-const encodeSourceId = (sourceId: string): string => Encoding.encodeHex(sourceId)
+const encodeSourceId = (sourceId: string): string => Hex.encode(sourceId)
 
 /**
  * Generates a Maestro flow for one native source cohort.

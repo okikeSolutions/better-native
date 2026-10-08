@@ -1,9 +1,9 @@
 import * as Config from "effect/Config"
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
+import * as Schema from "effect/Schema"
 import * as OpenRouterClient from "@effect/ai-openrouter/OpenRouterClient"
 import * as OpenRouterLanguageModel from "@effect/ai-openrouter/OpenRouterLanguageModel"
 import * as AgentLoop from "./AgentLoop.ts"
@@ -24,7 +24,7 @@ export class OpenRouterAccess extends Context.Service<OpenRouterAccess, AccessSe
   "@better-native/dx-evals/OpenRouterAccess",
 ) {}
 
-const optionalApiKey = Config.option(Config.redacted("OPENROUTER_API_KEY"))
+const optionalApiKey = Config.option(Config.Redacted("OPENROUTER_API_KEY"))
 
 /** Optional credential-presence Layer used by deterministic and live runs alike. */
 export const accessLayer = Layer.effect(
@@ -45,7 +45,10 @@ export const clientLayer = OpenRouterClient.layerConfig({
 })
 
 /** Failure raised when paid execution was requested without controller credentials. */
-export class OpenRouterCredentialMissing extends Data.TaggedError("OpenRouterCredentialMissing") {}
+export class OpenRouterCredentialMissing extends Schema.TaggedError<OpenRouterCredentialMissing>()(
+  "OpenRouterCredentialMissing",
+  {},
+) {}
 
 /** Fails paid execution before subprocess startup when no controller credential is available. */
 export const requireCredential = OpenRouterAccess.pipe(
@@ -57,21 +60,28 @@ export const requireCredential = OpenRouterAccess.pipe(
 )
 
 /** Failure raised when a real adapter input omits its reviewed agent profile. */
-export class AgentProfileRequired extends Data.TaggedError("AgentProfileRequired") {}
+export class AgentProfileRequired extends Schema.TaggedError<AgentProfileRequired>()(
+  "AgentProfileRequired",
+  {},
+) {}
 
 /** Failure raised when the live key cannot prove the declared server-side spending ceiling. */
-export class OpenRouterSpendingLimitInvalid extends Data.TaggedError(
+export class OpenRouterSpendingLimitInvalid extends Schema.TaggedError<OpenRouterSpendingLimitInvalid>()(
   "OpenRouterSpendingLimitInvalid",
-)<{
-  readonly reason: "missing-limit" | "limit-too-high" | "insufficient-remaining"
-  readonly limit: number | null
-  readonly limitRemaining: number | null
-}> {}
+  {
+    reason: Schema.Literals(["missing-limit", "limit-too-high", "insufficient-remaining"]),
+    limit: Schema.NullOr(Schema.Number),
+    limitRemaining: Schema.NullOr(Schema.Number),
+  },
+) {}
 
 /** Failure raised when key-budget preflight cannot obtain authenticated key metadata. */
-export class OpenRouterKeyPreflightFailed extends Data.TaggedError("OpenRouterKeyPreflightFailed")<{
-  readonly cause: unknown
-}> {}
+export class OpenRouterKeyPreflightFailed extends Schema.TaggedError<OpenRouterKeyPreflightFailed>()(
+  "OpenRouterKeyPreflightFailed",
+  {
+    cause: Schema.Defect(),
+  },
+) {}
 
 /** Validates the reusable eval key and selected campaign allowance before any model request. */
 export const validateSpendingLimit = (

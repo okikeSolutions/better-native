@@ -197,7 +197,9 @@ export const layer = (
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem
       const path = yield* Path.Path
-      const pinNativePackages: Service["pinNativePackages"] = (request, workspace, packageNames) =>
+      const pinNativePackages: Service["pinNativePackages"] = Effect.fn(
+        "AppWorkspace.pinNativePackages",
+      )((request, workspace, packageNames) =>
         Effect.gen(function* () {
           const pinned = new Map(
             workspace.pinnedExpoPackages.map(({ name, source }) => [name, source] as const),
@@ -265,8 +267,9 @@ export const layer = (
               ? cause
               : new BuildPipelineError({ phase: "workspace", request, cause }),
           ),
-        )
-      const prepare: Service["prepare"] = (request, toolchain) =>
+        ),
+      )
+      const prepare: Service["prepare"] = Effect.fn("AppWorkspace.prepare")((request, toolchain) =>
         Effect.gen(function* () {
           if (!isSafePathSegment(request.id)) {
             return yield* new BuildPipelineError({
@@ -517,7 +520,8 @@ export const layer = (
               return null
             })
           while (queue.length > 0) {
-            const entry = queue.shift()!
+            const entry = queue.shift()
+            if (entry === undefined) break
             if (metroPackages.has(entry.name)) continue
             const resolved = yield* resolveDependency(entry.name, entry.owner, entry.source)
             if (resolved === null) {
@@ -645,7 +649,8 @@ export const layer = (
               ? cause
               : new BuildPipelineError({ phase: "workspace", request, cause }),
           ),
-        )
+        ),
+      )
       return AppWorkspace.of({ pinNativePackages, prepare })
     }),
   )

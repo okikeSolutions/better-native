@@ -1,4 +1,3 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Schema from "effect/Schema"
 import type { BuildId, BuildRecord, Mode, ProcessObservation } from "../Domain.ts"
@@ -48,12 +47,18 @@ export interface BuildImportRequest {
   readonly platform: "ios" | "android"
 }
 
+const isBuildRequest = (value: unknown): value is BuildRequest =>
+  typeof value === "object" && value !== null
+
 /** Failure raised during toolchain preparation, workspace creation, or building. */
-export class BuildPipelineError extends Data.TaggedError("BuildPipelineError")<{
-  readonly phase: "upstream" | "workspace" | "prebuild" | "build" | "evidence"
-  readonly request: BuildRequest
-  readonly cause: unknown
-}> {}
+export class BuildPipelineError extends Schema.TaggedError<BuildPipelineError>()(
+  "BuildPipelineError",
+  {
+    phase: Schema.Literals(["upstream", "workspace", "prebuild", "build", "evidence"]),
+    request: Schema.declare(isBuildRequest),
+    cause: Schema.Defect(),
+  },
+) {}
 
 /**
  * Stops a failed native repack from silently escalating into an expensive compile.
@@ -76,11 +81,14 @@ export const ensureNativeRebuildAllowed = (
       )
     : Effect.void
 
+const isBuildImportRequest = (value: unknown): value is BuildImportRequest =>
+  typeof value === "object" && value !== null
+
 /** Failure raised when an imported native product does not match its record. */
-export class BuildImportError extends Data.TaggedError("BuildImportError")<{
-  readonly request: BuildImportRequest
-  readonly cause: unknown
-}> {}
+export class BuildImportError extends Schema.TaggedError<BuildImportError>()("BuildImportError", {
+  request: Schema.declare(isBuildImportRequest),
+  cause: Schema.Defect(),
+}) {}
 
 /** Prepared pinned Expo installation reused by one or more builds. */
 export interface PinnedExpoToolchain {

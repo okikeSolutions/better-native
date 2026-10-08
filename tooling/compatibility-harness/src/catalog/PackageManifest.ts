@@ -21,7 +21,7 @@ export const PackageManifest = Schema.Struct({
 })
 
 /** Decoded package manifest accepted by {@link PackageManifest}. */
-export type PackageManifest = Schema.Schema.Type<typeof PackageManifest>
+export interface PackageManifest extends Schema.Schema.Type<typeof PackageManifest> {}
 
 /**
  * Returns whether a repository file is a package manifest.

@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import * as AiError from "effect/unstable/ai/AiError"
+import * as AiError from "effect/ai/AiError"
 import type * as Generated from "@effect/ai-openrouter/Generated"
 import * as AgentProfiles from "./AgentProfiles.ts"
 import * as Domain from "../Domain.ts"
@@ -81,7 +81,6 @@ describe("provider compatibility probe", () => {
       method: "read.handle",
       reason: new AiError.ToolParameterValidationError({
         toolName: "read",
-        toolParams: { path: "PRIVATE", offset: "PRIVATE-NUMBER" },
         description: "PRIVATE-DESCRIPTION",
       }),
     })
@@ -89,10 +88,7 @@ describe("provider compatibility probe", () => {
 
     assert.strictEqual(result.providerErrorType, "ToolParameterValidationError")
     assert.strictEqual(result.providerToolName, "read")
-    assert.deepStrictEqual(result.providerToolParameterShape, {
-      offset: "string",
-      path: "string",
-    })
+    assert.isUndefined(result.providerToolParameterShape)
     assert.isUndefined(result.providerErrorDescription)
     assert.notInclude(JSON.stringify(result), "PRIVATE")
   })

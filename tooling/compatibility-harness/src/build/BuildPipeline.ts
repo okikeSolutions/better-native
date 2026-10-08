@@ -60,49 +60,52 @@ const serviceLayer: Layer.Layer<
     const executor = yield* AppBuildExecutor
     const importer = yield* AppBuildImporter
     const toolchain = yield* ExpoToolchain
-    const build: Service["build"] = (request) =>
+    const build: Service["build"] = Effect.fn("BuildPipeline.build")((request) =>
       toolchain
         .load(request)
-        .pipe(Effect.flatMap((pinnedUpstream) => executor.execute(request, pinnedUpstream)))
-    const buildPair: Service["buildPair"] = ({ materializationId, upstream, candidate }) =>
-      Effect.gen(function* () {
-        const modesArePaired = Match.value({
-          upstream: upstream.mode,
-          candidate: candidate.mode,
-        }).pipe(
-          Match.when({ upstream: "upstream", candidate: "candidate" }, () => true),
-          Match.orElse(() => false),
-        )
-        if (!modesArePaired) {
-          return yield* new BuildPipelineError({
-            phase: "workspace",
-            request: upstream,
-            cause: "paired builds require upstream and candidate modes in that order",
-          })
-        }
-        if (
-          upstream.platform !== candidate.platform ||
-          upstream.expoRevision !== candidate.expoRevision ||
-          upstream.timeoutMillis !== candidate.timeoutMillis ||
-          upstream.probeSpecifier !== candidate.probeSpecifier ||
-          upstream.capabilitySource !== candidate.capabilitySource
-        ) {
-          return yield* new BuildPipelineError({
-            phase: "workspace",
-            request: upstream,
-            cause:
-              "paired builds must use the same platform, Expo revision, timeout, probe specifier, and capability source",
-          })
-        }
-        const materializationRequest: BuildRequest = {
-          ...upstream,
-          id: materializationId,
-        }
-        const pinnedUpstream = yield* toolchain.load(materializationRequest)
-        const upstreamOutput = yield* executor.execute(upstream, pinnedUpstream)
-        const candidateOutput = yield* executor.execute(candidate, pinnedUpstream)
-        return { upstream: upstreamOutput, candidate: candidateOutput }
-      })
+        .pipe(Effect.flatMap((pinnedUpstream) => executor.execute(request, pinnedUpstream))),
+    )
+    const buildPair: Service["buildPair"] = Effect.fn("BuildPipeline.buildPair")(
+      ({ materializationId, upstream, candidate }) =>
+        Effect.gen(function* () {
+          const modesArePaired = Match.value({
+            upstream: upstream.mode,
+            candidate: candidate.mode,
+          }).pipe(
+            Match.when({ upstream: "upstream", candidate: "candidate" }, () => true),
+            Match.orElse(() => false),
+          )
+          if (!modesArePaired) {
+            return yield* new BuildPipelineError({
+              phase: "workspace",
+              request: upstream,
+              cause: "paired builds require upstream and candidate modes in that order",
+            })
+          }
+          if (
+            upstream.platform !== candidate.platform ||
+            upstream.expoRevision !== candidate.expoRevision ||
+            upstream.timeoutMillis !== candidate.timeoutMillis ||
+            upstream.probeSpecifier !== candidate.probeSpecifier ||
+            upstream.capabilitySource !== candidate.capabilitySource
+          ) {
+            return yield* new BuildPipelineError({
+              phase: "workspace",
+              request: upstream,
+              cause:
+                "paired builds must use the same platform, Expo revision, timeout, probe specifier, and capability source",
+            })
+          }
+          const materializationRequest: BuildRequest = {
+            ...upstream,
+            id: materializationId,
+          }
+          const pinnedUpstream = yield* toolchain.load(materializationRequest)
+          const upstreamOutput = yield* executor.execute(upstream, pinnedUpstream)
+          const candidateOutput = yield* executor.execute(candidate, pinnedUpstream)
+          return { upstream: upstreamOutput, candidate: candidateOutput }
+        }),
+    )
     const load: Service["load"] = importer.load
     return BuildPipeline.of({ build, buildPair, load })
   }),

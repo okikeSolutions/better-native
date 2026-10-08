@@ -26,6 +26,7 @@ describe("hosted compatibility workflow", () => {
         rootPackage,
         harnessPackage,
         appBuildExecutor,
+        compatibilityMetro,
         cacheHygiene,
         envExample,
       ] = yield* Effect.all([
@@ -45,6 +46,7 @@ describe("hosted compatibility workflow", () => {
         fs.readFileString("package.json"),
         fs.readFileString("tooling/compatibility-harness/package.json"),
         fs.readFileString("tooling/compatibility-harness/src/build/AppBuildExecutor.ts"),
+        fs.readFileString("apps/compatibility-suite/metro.config.cjs"),
         fs.readFileString(".github/workflows/cache-hygiene.yml"),
         fs.readFileString(".env.example"),
       ])
@@ -71,9 +73,6 @@ describe("hosted compatibility workflow", () => {
       assert.notMatch(workflow, /setup-project/)
       assert.notMatch(workflow, /setup-native-build-cache/)
       assert.match(checkWorkflow, /setup-build/)
-      assert.match(checkWorkflow, /Setup DX eval prerequisites once/)
-      assert.strictEqual(checkWorkflow.match(/setup-dx-evals/g)?.length, 1)
-      assert.notMatch(checkWorkflow, /^  push:/m)
       assert.notMatch(checkWorkflow, /TURBO_API/)
       assert.match(turboConfig, /"signature": true/)
       assert.match(workflow, /version: 2\.6\.1/)
@@ -86,34 +85,79 @@ describe("hosted compatibility workflow", () => {
         maestroSetup,
         /2\.6\.1\).*3440825f514f537c6a96bcf5de995780c2a4a7f83a43208fdc95d4f1fecfad3b/,
       )
-      assert.match(workflow, /^  workflow_dispatch:$/m)
-      assert.notMatch(workflow, /^  (?:schedule|push|pull_request):/m)
-      assert.notMatch(workflow, /^  detect-platform-changes:$/m)
-      assert.match(workflow, /force-cold-build:/)
+      assert.match(workflow, /cron: "0 3 \* \* 1"/)
+      assert.match(workflow, /^  detect-platform-changes:$/m)
+      assert.match(workflow, /name: Select requested platforms for manual runs/)
+      assert.match(workflow, /if: github\.event_name == 'workflow_dispatch'/)
+      assert.match(
+        workflow,
+        /web: \$\{\{ steps\.manual\.outputs\.web \|\| steps\.compatibility\.outputs\.should_run_web \}\}/,
+      )
+      assert.match(
+        workflow,
+        /detect-platform-changes:[\s\S]*?steps:[\s\S]*?uses: actions\/checkout@[\s\S]*?uses: \.\/\.github\/actions\/detect-compatibility-change/,
+      )
       assert.match(workflow, /^  web-baseline:$/m)
       assert.match(workflow, /^  web-pair:$/m)
       assert.match(workflow, /^  web-compare:$/m)
       assert.match(workflow, /^  ios-compare:$/m)
-      assert.match(workflow, /name: iOS device test \(\$\{\{ matrix\.shard-label \}\}\/2\)/)
-      assert.match(workflow, /SHARD_COUNT: 2/)
+      assert.match(workflow, /name: iOS device test \(\$\{\{ matrix\.shard-label \}\}/)
+      assert.match(workflow, /SHARD_COUNT: \$\{\{ inputs\.source != '' && '1' \|\| '2' \}\}/)
+      assert.match(workflow, /include: \$\{\{ fromJSON\(inputs\.source != ''/)
       assert.strictEqual(workflow.match(/--shard-index "\$SHARD_INDEX"/g)?.length, 2)
       assert.match(workflow, /compatibility-ios-run-evidence-.*-shard-\*/)
       assert.match(workflow, /merge-multiple: true/)
-      assert.match(workflow, /Group iOS evidence by build mode/)
+      assert.strictEqual(
+        workflow.match(/Group (?:web|iOS|Android) evidence by build mode/g)?.length,
+        3,
+      )
       assert.match(workflow, /--upstream \.artifacts\/compare\/upstream/)
       assert.match(workflow, /--candidate \.artifacts\/compare\/candidate/)
+      assert.strictEqual(workflow.match(/--source "\$source"/g)?.length, 3)
+      assert.strictEqual(workflow.match(/--capabilities-only/g)?.length, 3)
+      assert.strictEqual(workflow.match(/\.verification\.parityPlatforms \| index\(/g)?.length, 3)
+      assert.strictEqual(workflow.match(/\.verification\.paritySources\[\]\?/g)?.length, 3)
+      assert.strictEqual(
+        workflow.match(/cp -R "\$\(dirname "\$record"\)\/\." "\$destination\/"/g)?.length,
+        3,
+      )
+      assert.match(
+        compatibilityMetro,
+        /config\.cacheVersion = `\$\{config\.cacheVersion\}:\$\{buildId\}`/,
+      )
       assert.match(workflow, /if \[ "\$DEVICE_STATE" != Shutdown \]; then/)
       assert.notMatch(workflow, /simctl shutdown "\$DEVICE_ID" \|\| true/)
       assert.match(workflow, /^  android-compare:$/m)
+      assert.match(workflow, /^  integration-profile:$/m)
+      assert.match(
+        workflow,
+        /integration-profile:[\s\S]*?needs: \[web-compare, ios-compare, android-compare\]/,
+      )
+      assert.match(workflow, /integration-profile:[\s\S]*?uses: \.\/\.github\/actions\/setup-build/)
+      assert.strictEqual(
+        workflow.match(/Download (?:web|iOS|Android) comparison verdict/g)?.length,
+        3,
+      )
+      assert.strictEqual(workflow.match(/job\.status == 'success' && 90 \|\| 7/g)?.length, 3)
+      assert.match(workflow, /bun run verify:capability "\$capability" --profile integration/)
       assert.strictEqual(workflow.match(/supervise-web-pair/g)?.length, 1)
       assert.match(workflow, /web-upstream-run-\*/)
       assert.match(workflow, /web-\*-run-\*/)
       assert.strictEqual(workflow.match(/supervise-build-pair/g)?.length, 2)
-      assert.notMatch(workflow, /supervise-build(?:-pair)?[^\n]*--source/)
+      assert.match(
+        workflow,
+        /run_compatibility_command\(\) \{[\s\S]*?"\$@" --source "better-native-capability#apps\/compatibility-suite\/src\/capabilities\/\$\{FOCUSED_SOURCE\}"/,
+      )
+      assert.strictEqual(
+        workflow.match(/run_compatibility_command bun run compatibility-harness/g)?.length,
+        8,
+      )
+      assert.strictEqual(workflow.match(/run_compatibility_command\(\) \{/g)?.length, 4)
+      assert.notMatch(workflow, /source_args/)
       assert.strictEqual(workflow.match(/supervise-native-pair/g)?.length, 2)
       assert.match(
         workflow,
-        /uses: \.\/\.github\/actions\/use-android-emulator[\s\S]*?script: \|\n\s+if \[ "\$COMPATIBILITY_MODE" = pair \]; then\n/,
+        /uses: \.\/\.github\/actions\/use-android-emulator[\s\S]*?script: \|[\s\S]*?if \[ "\$COMPATIBILITY_MODE" = pair \]; then\n/,
       )
       assert.notMatch(workflow, /uses: reactivecircus\/android-emulator-runner@/)
       assert.notMatch(workflow, /script: \|\n\s+set -euo pipefail/)

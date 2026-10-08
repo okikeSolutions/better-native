@@ -1,8 +1,8 @@
 import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
 import * as Option from "effect/Option"
-import * as Command from "effect/unstable/cli/Command"
-import * as Flag from "effect/unstable/cli/Flag"
+import * as Command from "effect/cli/Command"
+import * as Flag from "effect/cli/Flag"
 import { BuildId, RunId } from "../Domain.ts"
 import { ExpoRepository } from "../ExpoRepository.ts"
 import { HarnessError } from "../HarnessError.ts"
@@ -19,8 +19,9 @@ import {
   timeoutMillisFlag,
 } from "./Shared.ts"
 
-const webPort = Flag.integer("port").pipe(Flag.withDefault(8091))
-const webSource = Flag.string("source").pipe(Flag.optional)
+const webPort = Flag.Int("port").pipe(Flag.withDefault(8091))
+const webSource = Flag.String("source").pipe(Flag.optional)
+const capabilitiesOnlyFlag = Flag.Boolean("capabilities-only").pipe(Flag.withDefault(false))
 
 const selectWebUnits = (
   units: ReadonlyArray<ReturnType<typeof AppRegistry.appExecutionUnits>[number]>,
@@ -87,15 +88,30 @@ export const supervisedWeb = Command.make(
  */
 export const supervisedWebPair = Command.make(
   "supervise-web-pair",
-  { buildId: buildIdFlag, source: webSource, timeoutMillis: timeoutMillisFlag, port: webPort },
-  Effect.fn("Command.superviseWebPair")(function* ({ buildId, source, timeoutMillis, port }) {
+  {
+    buildId: buildIdFlag,
+    source: webSource,
+    capabilitiesOnly: capabilitiesOnlyFlag,
+    timeoutMillis: timeoutMillisFlag,
+    port: webPort,
+  },
+  Effect.fn("Command.superviseWebPair")(function* ({
+    buildId,
+    source,
+    capabilitiesOnly,
+    timeoutMillis,
+    port,
+  }) {
     const repository = yield* ExpoRepository
     const builds = yield* BuildPipeline
     const web = yield* WebSupervisor
     const corpus = yield* Suites.discover()
     const revision = yield* configuredCandidateRevision
     const metadata = yield* AppRegistry.loadMetadata()
-    const units = selectWebUnits(AppRegistry.appExecutionUnits(metadata, "web"), source)
+    const availableUnits = capabilitiesOnly
+      ? AppRegistry.capabilityExecutionUnits(metadata, "web")
+      : AppRegistry.appExecutionUnits(metadata, "web")
+    const units = selectWebUnits(availableUnits, source)
     if (units.length === 0) {
       return yield* new HarnessError({
         operation: "select web source",
@@ -156,7 +172,7 @@ export const supervisedWebPair = Command.make(
   ),
 )
 
-const probeSpecifier = Flag.string("specifier")
+const probeSpecifier = Flag.String("specifier")
 /**
  * Probes one opaque Expo export's web resolution and load behavior.
  */

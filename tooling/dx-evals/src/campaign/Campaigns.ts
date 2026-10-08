@@ -1,4 +1,3 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import * as Schema from "effect/Schema"
@@ -33,7 +32,7 @@ export const CampaignTrial = Schema.Struct({
   repetition: Domain.PositiveInteger,
 })
 /** Decoded campaign trial accepted by {@link CampaignTrial}. */
-export type CampaignTrial = Schema.Schema.Type<typeof CampaignTrial>
+export interface CampaignTrial extends Schema.Schema.Type<typeof CampaignTrial> {}
 
 /** Reviewed campaign whose ordering and trial count are part of the experiment. */
 export const Campaign = Schema.Struct({
@@ -44,7 +43,7 @@ export const Campaign = Schema.Struct({
   trials: Schema.NonEmptyArray(CampaignTrial),
 })
 /** Decoded campaign accepted by {@link Campaign}. */
-export type Campaign = Schema.Schema.Type<typeof Campaign>
+export interface Campaign extends Schema.Schema.Type<typeof Campaign> {}
 
 const rawCampaigns = [
   {
@@ -198,22 +197,28 @@ const campaigns = Schema.decodeUnknownSync(Schema.Array(Campaign))(rawCampaigns)
 const registry = new Map(campaigns.map((campaign) => [campaign.id, campaign]))
 
 /** Failure raised when a command selects a campaign outside the reviewed registry. */
-export class CampaignNotFound extends Data.TaggedError("CampaignNotFound")<{
-  readonly campaignId: Domain.CampaignId
-}> {}
+export class CampaignNotFound extends Schema.TaggedError<CampaignNotFound>()("CampaignNotFound", {
+  campaignId: Domain.CampaignId,
+}) {}
 
 /** Failure raised when a reviewed campaign references an unknown agent profile. */
-export class CampaignProfileInvalid extends Data.TaggedError("CampaignProfileInvalid")<{
-  readonly campaignId: Domain.CampaignId
-  readonly agentProfileId: Domain.AgentProfileId
-}> {}
+export class CampaignProfileInvalid extends Schema.TaggedError<CampaignProfileInvalid>()(
+  "CampaignProfileInvalid",
+  {
+    campaignId: Domain.CampaignId,
+    agentProfileId: Domain.AgentProfileId,
+  },
+) {}
 
 /** Failure raised when task and profile filters select no reviewed trials. */
-export class CampaignTaskSelectionEmpty extends Data.TaggedError("CampaignTaskSelectionEmpty")<{
-  readonly campaignId: Domain.CampaignId
-  readonly taskSelection: TaskSelection
-  readonly profileSelection: ProfileSelection
-}> {}
+export class CampaignTaskSelectionEmpty extends Schema.TaggedError<CampaignTaskSelectionEmpty>()(
+  "CampaignTaskSelectionEmpty",
+  {
+    campaignId: Domain.CampaignId,
+    taskSelection: TaskSelection,
+    profileSelection: ProfileSelection,
+  },
+) {}
 
 /** Default reviewed campaign executed by the unified CLI. */
 export const defaultCampaignId = Domain.CampaignId.make("checkpoint-5-diagnostic")

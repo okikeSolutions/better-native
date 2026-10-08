@@ -1,5 +1,4 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
@@ -40,11 +39,16 @@ export const NativeArtifactCacheRecord = Schema.Struct({
   iosSigningIdentity: Schema.optional(Schema.String),
 })
 /** Decoded cache metadata accepted by {@link NativeArtifactCacheRecord}. */
-export type NativeArtifactCacheRecord = Schema.Schema.Type<typeof NativeArtifactCacheRecord>
+export interface NativeArtifactCacheRecord extends Schema.Schema.Type<
+  typeof NativeArtifactCacheRecord
+> {}
 
-class NativeCacheMetadataError extends Data.TaggedError("NativeCacheMetadataError")<{
-  readonly cause: unknown
-}> {}
+class NativeCacheMetadataError extends Schema.TaggedError<NativeCacheMetadataError>()(
+  "NativeCacheMetadataError",
+  {
+    cause: Schema.Defect(),
+  },
+) {}
 
 /** Inputs used to locate or publish one native artifact cache entry. */
 export interface NativeCacheRequest {
@@ -268,12 +272,15 @@ export const layer = (
         ? "simulator"
         : "device"
       const iosSigningIdentity = `${config.iosDevelopmentTeam ?? "automatic"}|${config.iosCodeSignIdentity}`
-      const validateKeySeed: Service["validateKeySeed"] = (input) =>
+      const validateKeySeed: Service["validateKeySeed"] = Effect.fn(
+        "NativeArtifactCache.validateKeySeed",
+      )((input) =>
         Effect.try({
           try: () => nativeArtifactCacheKeySeed(input, process.arch, iosTarget, iosSigningIdentity),
           catch: (cause) =>
             new BuildPipelineError({ phase: "prebuild", request: input.request, cause }),
-        })
+        }),
+      )
       const locations = (input: NativeCacheRequest) => {
         const artifact = nativeArtifact(input.request.platform)
         if (artifact === null) return null
@@ -312,233 +319,251 @@ export const layer = (
                   Effect.ignore,
                 ),
         )
-      const restoreUnlocked: Service["restore"] = (input) =>
-        Effect.gen(function* () {
-          const location = locations(input)
-          if (location === null) {
-            return cacheMiss("web", "native cache is not applicable to web")
-          }
-          if (config.forceColdBuild) {
-            return cacheMiss(location.cacheKey, "cold-build policy bypassed native artifact reuse")
-          }
-          if (!(yield* fs.exists(location.record)) || !(yield* fs.exists(location.artifact))) {
-            return cacheMiss(location.cacheKey, "cache entry is missing")
-          }
-          const decoded = yield* fs.readFileString(location.record).pipe(
-            Effect.flatMap((text) =>
-              Effect.try({
-                try: () => JSON.parse(text) as unknown,
-                catch: (cause) => new NativeCacheMetadataError({ cause }),
-              }),
-            ),
-            Effect.flatMap(Schema.decodeUnknownEffect(NativeArtifactCacheRecord)),
-            Effect.option,
-          )
-          if (decoded._tag === "None") {
-            return cacheMiss(location.cacheKey, "cache metadata is malformed")
-          }
-          const record = decoded.value
-          const mismatch = nativeArtifactCacheMismatch(
-            record,
-            input,
-            process.arch,
-            iosTarget,
-            iosSigningIdentity,
-          )
-          if (mismatch !== null) {
-            return cacheMiss(location.cacheKey, `cache metadata mismatch: ${mismatch}`)
-          }
-          const actualHash = yield* products.hash(location.artifact)
-          if (actualHash !== record.artifactHash) {
-            return cacheMiss(location.cacheKey, "cached native artifact hash is invalid")
-          }
-          const accessedAt = new Date()
-          yield* fs.utimes(location.directory, accessedAt, accessedAt)
-          if (yield* fs.exists(input.output)) yield* fs.remove(input.output, { recursive: true })
-          yield* fs.makeDirectory(path.dirname(input.output), { recursive: true })
-          const resolutionEvidencePath = path.join(
-            input.appDirectory,
-            `.better-native-resolution-${input.request.id}.ndjson`,
-          )
-          if (yield* fs.exists(resolutionEvidencePath)) yield* fs.remove(resolutionEvidencePath)
-          const repack = yield* commands
-            .run(
-              input.request,
-              "build",
-              "native-repack.ndjson",
-              applyBuildProfile(config.buildProfile, "metro-wrapper", {
-                command: "node",
-                args: [
-                  path.join(path.dirname(repackModulePath), "..", "bin", "cli.js"),
-                  "--platform",
-                  input.request.platform,
-                  "--source-app",
-                  location.artifact,
-                  "--working-directory",
-                  path.join(input.appDirectory, ".native-repack"),
-                  "--output",
-                  input.output,
-                  "--js-bundle-only",
-                  input.appDirectory,
-                ],
-                cwd: input.appDirectory,
-                env: {
-                  ...buildProfileEnvironment(config.buildProfile),
-                  NODE_ENV: "production",
-                  BETTER_NATIVE_MODE: input.request.mode,
-                  BETTER_NATIVE_BUILD_ID: input.request.id,
-                  BETTER_NATIVE_RUN_ID: `build-${input.request.id}`,
-                  BETTER_NATIVE_UPSTREAM_NODE_MODULES: input.metroNodeModules,
-                  BETTER_NATIVE_PINNED_EXPO_ROOT: config.expoSourceRoot,
-                  EXPO_SOURCE_ROOT: config.expoSourceRoot,
-                  BETTER_NATIVE_RESOLUTION_EVIDENCE_PATH: resolutionEvidencePath,
-                  ANDROID_HOME: config.androidSdkRoot ?? undefined,
-                  ANDROID_SDK_ROOT: config.androidSdkRoot ?? undefined,
-                },
-                timeoutMillis: input.request.timeoutMillis,
-              }),
-            )
-            .pipe(Effect.option)
-          if (repack._tag === "None" || !(yield* fs.exists(input.output))) {
-            if (yield* fs.exists(input.output)) yield* fs.remove(input.output, { recursive: true })
-            return cacheMiss(location.cacheKey, "Expo repack failed", [], [], true)
-          }
-          const signing =
-            location.platform === "ios" && iosTarget === "device"
-              ? yield* commands
-                  .run(input.request, "build", "native-repack-signing.ndjson", {
-                    command: "codesign",
-                    args: [
-                      "--force",
-                      "--sign",
-                      config.iosCodeSignIdentity,
-                      "--preserve-metadata=identifier,entitlements,flags,runtime",
-                      "--timestamp=none",
-                      input.output,
-                    ],
-                    cwd: input.appDirectory,
-                    timeoutMillis: Math.min(input.request.timeoutMillis, 120_000),
-                  })
-                  .pipe(Effect.option)
-              : null
-          if (location.platform === "ios" && iosTarget === "device" && signing?._tag !== "Some") {
-            if (yield* fs.exists(input.output)) yield* fs.remove(input.output, { recursive: true })
-            return cacheMiss(location.cacheKey, "physical iOS repack signing failed", [], [], true)
-          }
-          const verification =
-            signing?._tag === "Some"
-              ? yield* commands
-                  .run(input.request, "build", "native-repack-signature-verification.ndjson", {
-                    command: "codesign",
-                    args: ["--verify", "--deep", "--strict", "--verbose=2", input.output],
-                    cwd: input.appDirectory,
-                    timeoutMillis: Math.min(input.request.timeoutMillis, 120_000),
-                  })
-                  .pipe(Effect.option)
-              : null
-          if (signing?._tag === "Some" && verification?._tag !== "Some") {
-            if (yield* fs.exists(input.output)) yield* fs.remove(input.output, { recursive: true })
-            return cacheMiss(
-              location.cacheKey,
-              "physical iOS repack signature verification failed",
-              [],
-              [],
-              true,
-            )
-          }
-          const resolutionArtifact = (yield* fs.exists(resolutionEvidencePath))
-            ? yield* fs.readFileString(resolutionEvidencePath).pipe(
-                Effect.flatMap((text) =>
-                  commands.persistObservations(
-                    input.request,
-                    "native-repack-resolutions.ndjson",
-                    text
-                      .split("\n")
-                      .filter((line) => line.length > 0)
-                      .map((lineText, sequence) => ({
-                        sequence,
-                        timestampMillis: 0,
-                        stream: "stdout" as const,
-                        text: lineText,
-                      })),
-                  ),
-                ),
+      const restoreUnlocked: Service["restore"] = Effect.fn("NativeArtifactCache.restore")(
+        (input) =>
+          Effect.gen(function* () {
+            const location = locations(input)
+            if (location === null) {
+              return cacheMiss("web", "native cache is not applicable to web")
+            }
+            if (config.forceColdBuild) {
+              return cacheMiss(
+                location.cacheKey,
+                "cold-build policy bypassed native artifact reuse",
               )
-            : null
-          return {
-            hit: true,
-            repackFailure: false,
-            key: location.cacheKey,
-            sourceBuildId: record.sourceBuildId,
-            artifactHash: record.artifactHash,
-            reason: "validated native artifact was repacked with the current JS bundle and assets",
-            artifacts: [
-              repack.value.artifact,
-              ...(signing?._tag === "Some" ? [signing.value.artifact] : []),
-              ...(verification?._tag === "Some" ? [verification.value.artifact] : []),
-              ...(resolutionArtifact === null ? [] : [resolutionArtifact]),
-            ],
-            phases: [
-              repack.value.phase,
-              ...(signing?._tag === "Some" ? [signing.value.phase] : []),
-              ...(verification?._tag === "Some" ? [verification.value.phase] : []),
-            ],
-          }
-        }).pipe(
-          Effect.mapError(
-            (cause) => new BuildPipelineError({ phase: "build", request: input.request, cause }),
+            }
+            if (!(yield* fs.exists(location.record)) || !(yield* fs.exists(location.artifact))) {
+              return cacheMiss(location.cacheKey, "cache entry is missing")
+            }
+            const decoded = yield* fs.readFileString(location.record).pipe(
+              Effect.flatMap((text) =>
+                Effect.try({
+                  try: () => JSON.parse(text) as unknown,
+                  catch: (cause) => new NativeCacheMetadataError({ cause }),
+                }),
+              ),
+              Effect.flatMap(Schema.decodeUnknownEffect(NativeArtifactCacheRecord)),
+              Effect.option,
+            )
+            if (decoded._tag === "None") {
+              return cacheMiss(location.cacheKey, "cache metadata is malformed")
+            }
+            const record = decoded.value
+            const mismatch = nativeArtifactCacheMismatch(
+              record,
+              input,
+              process.arch,
+              iosTarget,
+              iosSigningIdentity,
+            )
+            if (mismatch !== null) {
+              return cacheMiss(location.cacheKey, `cache metadata mismatch: ${mismatch}`)
+            }
+            const actualHash = yield* products.hash(location.artifact)
+            if (actualHash !== record.artifactHash) {
+              return cacheMiss(location.cacheKey, "cached native artifact hash is invalid")
+            }
+            const accessedAt = new Date()
+            yield* fs.utimes(location.directory, accessedAt, accessedAt)
+            if (yield* fs.exists(input.output)) yield* fs.remove(input.output, { recursive: true })
+            yield* fs.makeDirectory(path.dirname(input.output), { recursive: true })
+            const resolutionEvidencePath = path.join(
+              input.appDirectory,
+              `.better-native-resolution-${input.request.id}.ndjson`,
+            )
+            if (yield* fs.exists(resolutionEvidencePath)) yield* fs.remove(resolutionEvidencePath)
+            const repack = yield* commands
+              .run(
+                input.request,
+                "build",
+                "native-repack.ndjson",
+                applyBuildProfile(config.buildProfile, "metro-wrapper", {
+                  command: "node",
+                  args: [
+                    path.join(path.dirname(repackModulePath), "..", "bin", "cli.js"),
+                    "--platform",
+                    input.request.platform,
+                    "--source-app",
+                    location.artifact,
+                    "--working-directory",
+                    path.join(input.appDirectory, ".native-repack"),
+                    "--output",
+                    input.output,
+                    "--js-bundle-only",
+                    input.appDirectory,
+                  ],
+                  cwd: input.appDirectory,
+                  env: {
+                    ...buildProfileEnvironment(config.buildProfile),
+                    NODE_ENV: "production",
+                    BETTER_NATIVE_MODE: input.request.mode,
+                    BETTER_NATIVE_BUILD_ID: input.request.id,
+                    BETTER_NATIVE_RUN_ID: `build-${input.request.id}`,
+                    BETTER_NATIVE_UPSTREAM_NODE_MODULES: input.metroNodeModules,
+                    BETTER_NATIVE_PINNED_EXPO_ROOT: config.expoSourceRoot,
+                    EXPO_SOURCE_ROOT: config.expoSourceRoot,
+                    BETTER_NATIVE_RESOLUTION_EVIDENCE_PATH: resolutionEvidencePath,
+                    ANDROID_HOME: config.androidSdkRoot ?? undefined,
+                    ANDROID_SDK_ROOT: config.androidSdkRoot ?? undefined,
+                  },
+                  timeoutMillis: input.request.timeoutMillis,
+                }),
+              )
+              .pipe(Effect.option)
+            if (repack._tag === "None" || !(yield* fs.exists(input.output))) {
+              if (yield* fs.exists(input.output))
+                yield* fs.remove(input.output, { recursive: true })
+              return cacheMiss(location.cacheKey, "Expo repack failed", [], [], true)
+            }
+            const signing =
+              location.platform === "ios" && iosTarget === "device"
+                ? yield* commands
+                    .run(input.request, "build", "native-repack-signing.ndjson", {
+                      command: "codesign",
+                      args: [
+                        "--force",
+                        "--sign",
+                        config.iosCodeSignIdentity,
+                        "--preserve-metadata=identifier,entitlements,flags,runtime",
+                        "--timestamp=none",
+                        input.output,
+                      ],
+                      cwd: input.appDirectory,
+                      timeoutMillis: Math.min(input.request.timeoutMillis, 120_000),
+                    })
+                    .pipe(Effect.option)
+                : null
+            if (location.platform === "ios" && iosTarget === "device" && signing?._tag !== "Some") {
+              if (yield* fs.exists(input.output))
+                yield* fs.remove(input.output, { recursive: true })
+              return cacheMiss(
+                location.cacheKey,
+                "physical iOS repack signing failed",
+                [],
+                [],
+                true,
+              )
+            }
+            const verification =
+              signing?._tag === "Some"
+                ? yield* commands
+                    .run(input.request, "build", "native-repack-signature-verification.ndjson", {
+                      command: "codesign",
+                      args: ["--verify", "--deep", "--strict", "--verbose=2", input.output],
+                      cwd: input.appDirectory,
+                      timeoutMillis: Math.min(input.request.timeoutMillis, 120_000),
+                    })
+                    .pipe(Effect.option)
+                : null
+            if (signing?._tag === "Some" && verification?._tag !== "Some") {
+              if (yield* fs.exists(input.output))
+                yield* fs.remove(input.output, { recursive: true })
+              return cacheMiss(
+                location.cacheKey,
+                "physical iOS repack signature verification failed",
+                [],
+                [],
+                true,
+              )
+            }
+            const resolutionArtifact = (yield* fs.exists(resolutionEvidencePath))
+              ? yield* fs.readFileString(resolutionEvidencePath).pipe(
+                  Effect.flatMap((text) =>
+                    commands.persistObservations(
+                      input.request,
+                      "native-repack-resolutions.ndjson",
+                      text
+                        .split("\n")
+                        .filter((line) => line.length > 0)
+                        .map((lineText, sequence) => ({
+                          sequence,
+                          timestampMillis: 0,
+                          stream: "stdout" as const,
+                          text: lineText,
+                        })),
+                    ),
+                  ),
+                )
+              : null
+            return {
+              hit: true,
+              repackFailure: false,
+              key: location.cacheKey,
+              sourceBuildId: record.sourceBuildId,
+              artifactHash: record.artifactHash,
+              reason:
+                "validated native artifact was repacked with the current JS bundle and assets",
+              artifacts: [
+                repack.value.artifact,
+                ...(signing?._tag === "Some" ? [signing.value.artifact] : []),
+                ...(verification?._tag === "Some" ? [verification.value.artifact] : []),
+                ...(resolutionArtifact === null ? [] : [resolutionArtifact]),
+              ],
+              phases: [
+                repack.value.phase,
+                ...(signing?._tag === "Some" ? [signing.value.phase] : []),
+                ...(verification?._tag === "Some" ? [verification.value.phase] : []),
+              ],
+            }
+          }).pipe(
+            Effect.mapError(
+              (cause) => new BuildPipelineError({ phase: "build", request: input.request, cause }),
+            ),
           ),
-        )
-      const publishUnlocked: Service["publish"] = (input) =>
-        Effect.gen(function* () {
-          const location = locations(input)
-          if (location === null) return cacheMiss("web", "not applicable")
-          const artifactHash = yield* products.hash(input.output)
-          const temporary = `${location.directory}.tmp-${process.pid}`
-          if (yield* fs.exists(temporary)) yield* fs.remove(temporary, { recursive: true })
-          yield* fs.makeDirectory(temporary, { recursive: true })
-          const temporaryArtifact = path.join(temporary, path.basename(location.artifact))
-          yield* fs.copy(input.output, temporaryArtifact)
-          const encoded = yield* Schema.encodeEffect(NativeArtifactCacheRecord)({
-            schemaVersion: nativeArtifactCacheSchemaVersion,
-            platform: location.platform,
-            architecture: process.arch,
-            expoRevision: input.request.expoRevision,
-            nativeFingerprint: input.nativeFingerprint,
-            toolchainFingerprint: input.toolchainFingerprint,
-            sourceBuildId: BuildId.make(input.request.id),
-            artifactHash,
-            ...(input.request.platform === "ios" ? { iosTarget } : {}),
-            ...(input.request.platform === "ios" && iosTarget === "device"
-              ? { iosSigningIdentity }
-              : {}),
-          })
-          yield* fs.writeFileString(
-            path.join(temporary, "record.json"),
-            `${JSON.stringify(encoded, null, 2)}\n`,
-          )
-          if (yield* fs.exists(location.directory))
-            yield* fs.remove(location.directory, { recursive: true })
-          yield* fs.makeDirectory(path.dirname(location.directory), { recursive: true })
-          yield* fs.rename(temporary, location.directory)
-          const publishedAt = new Date()
-          yield* fs.utimes(location.directory, publishedAt, publishedAt)
-          return {
-            hit: false,
-            repackFailure: false,
-            key: location.cacheKey,
-            sourceBuildId: BuildId.make(input.request.id),
-            artifactHash,
-            reason: "full build published a validated native artifact",
-            artifacts: [],
-            phases: [],
-          }
-        }).pipe(
-          Effect.mapError(
-            (cause) => new BuildPipelineError({ phase: "evidence", request: input.request, cause }),
+      )
+      const publishUnlocked: Service["publish"] = Effect.fn("NativeArtifactCache.publish")(
+        (input) =>
+          Effect.gen(function* () {
+            const location = locations(input)
+            if (location === null) return cacheMiss("web", "not applicable")
+            const artifactHash = yield* products.hash(input.output)
+            const temporary = `${location.directory}.tmp-${process.pid}`
+            if (yield* fs.exists(temporary)) yield* fs.remove(temporary, { recursive: true })
+            yield* fs.makeDirectory(temporary, { recursive: true })
+            const temporaryArtifact = path.join(temporary, path.basename(location.artifact))
+            yield* fs.copy(input.output, temporaryArtifact)
+            const encoded = yield* Schema.encodeEffect(NativeArtifactCacheRecord)({
+              schemaVersion: nativeArtifactCacheSchemaVersion,
+              platform: location.platform,
+              architecture: process.arch,
+              expoRevision: input.request.expoRevision,
+              nativeFingerprint: input.nativeFingerprint,
+              toolchainFingerprint: input.toolchainFingerprint,
+              sourceBuildId: BuildId.make(input.request.id),
+              artifactHash,
+              ...(input.request.platform === "ios" ? { iosTarget } : {}),
+              ...(input.request.platform === "ios" && iosTarget === "device"
+                ? { iosSigningIdentity }
+                : {}),
+            })
+            yield* fs.writeFileString(
+              path.join(temporary, "record.json"),
+              `${JSON.stringify(encoded, null, 2)}\n`,
+            )
+            if (yield* fs.exists(location.directory))
+              yield* fs.remove(location.directory, { recursive: true })
+            yield* fs.makeDirectory(path.dirname(location.directory), { recursive: true })
+            yield* fs.rename(temporary, location.directory)
+            const publishedAt = new Date()
+            yield* fs.utimes(location.directory, publishedAt, publishedAt)
+            return {
+              hit: false,
+              repackFailure: false,
+              key: location.cacheKey,
+              sourceBuildId: BuildId.make(input.request.id),
+              artifactHash,
+              reason: "full build published a validated native artifact",
+              artifacts: [],
+              phases: [],
+            }
+          }).pipe(
+            Effect.mapError(
+              (cause) =>
+                new BuildPipelineError({ phase: "evidence", request: input.request, cause }),
+            ),
           ),
-        )
-      const restore: Service["restore"] = (input) => {
+      )
+      const restore: Service["restore"] = Effect.fn("NativeArtifactCache.restore")((input) => {
         const location = locations(input)
         return location === null
           ? restoreUnlocked(input)
@@ -547,8 +572,8 @@ export const layer = (
               cacheMiss(location.cacheKey, "cache entry is busy"),
               restoreUnlocked(input),
             )
-      }
-      const publish: Service["publish"] = (input) => {
+      })
+      const publish: Service["publish"] = Effect.fn("NativeArtifactCache.publish")((input) => {
         const location = locations(input)
         return location === null
           ? publishUnlocked(input)
@@ -557,7 +582,7 @@ export const layer = (
               cacheMiss(location.cacheKey, "cache entry is busy; publication skipped"),
               publishUnlocked(input),
             )
-      }
+      })
       return NativeArtifactCache.of({ validateKeySeed, restore, publish })
     }),
   )

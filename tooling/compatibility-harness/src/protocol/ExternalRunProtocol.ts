@@ -1,5 +1,5 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
+import * as Schema from "effect/Schema"
 import type { CaseResult, TestCaseId, TestSourceId } from "../Domain.ts"
 
 /** Static case denominator an external runner must cover. */
@@ -9,9 +9,12 @@ export interface ExpectedExternalRun {
 }
 
 /** Rejects incomplete or unsuccessful external-runner output. */
-export class ExternalRunProtocolError extends Data.TaggedError("ExternalRunProtocolError")<{
-  readonly reason: string
-}> {}
+export class ExternalRunProtocolError extends Schema.TaggedError<ExternalRunProtocolError>()(
+  "ExternalRunProtocolError",
+  {
+    reason: Schema.String,
+  },
+) {}
 
 /**
  * Validates external results against the discovered static case denominator.

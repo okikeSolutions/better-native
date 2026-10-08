@@ -41,13 +41,11 @@ from pinned Expo and rejects duplicate, stale, renamed, or missing targets.
 The harness must run from the Better Native repository root. It requires:
 
 - Bun `1.3.14` (the version recorded in the root `package.json`);
-- the `vendor/effect` submodule checked out at the revision in
-  `compatibility/upstreams.json`; and
+- the installed Effect package at the version in `compatibility/upstreams.json`; and
 - a non-symlinked Expo checkout at the exact pinned revision. By default it is
   expected at `../expo`; set `EXPO_SOURCE_ROOT` to use another location.
 
 ```sh
-git submodule update --init --recursive
 bun install
 
 # Clone Expo at the revision in compatibility/upstreams.json, then either:
@@ -358,8 +356,11 @@ Both commands normalize runner output before accepting it as evidence.
 `compare-runs` loads every `record.json` below the two supplied run roots. It
 rejects missing evidence, candidate regressions, unapproved divergences,
 incomplete source coverage, and candidate resolutions that do not match the
-generated replacement manifest. Add a behavioral exception only when it is
-intentional and reviewed, in `compatibility/expectations.json`.
+generated replacement manifest. A successful verdict is retained under
+`.artifacts/comparisons`; it requires one non-empty candidate revision and identical upstream and
+candidate device identity. The capability verification command reads these records for its
+`integration` and `promotion` profiles. Add a behavioral exception only when it is intentional and
+reviewed, in `compatibility/expectations.json`.
 
 Candidate routing is controlled by `compatibility/ownership.json`. After a
 legitimate Expo surface change, review the generated surface and update the

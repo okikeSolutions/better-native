@@ -1,10 +1,10 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Queue from "effect/Queue"
+import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as Atom from "effect/unstable/reactivity/Atom"
+import * as Atom from "effect/reactivity/Atom"
 import * as ExpoClipboard from "expo-clipboard"
 
 /**
@@ -114,10 +114,10 @@ export type Subscription = ExpoClipboard.Subscription
  * @category errors
  * @since 0.0.0
  */
-export class ClipboardFailure extends Data.TaggedError("ClipboardFailure")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class ClipboardFailure extends Schema.TaggedError<ClipboardFailure>()("ClipboardFailure", {
+  method: Schema.String,
+  cause: Schema.Defect(),
+}) {}
 
 /**
  * Clipboard operations exposed by the Effect-native interface.
@@ -274,20 +274,26 @@ const changes = Stream.callback<ClipboardEvent, ClipboardFailure>((queue) =>
 export const live = Layer.succeed(
   Clipboard,
   Clipboard.of({
-    getString: (options) =>
+    getString: Effect.fn("Clipboard.getString")((options) =>
       promiseMethod("getStringAsync", () => ExpoClipboard.getStringAsync(options)),
-    setString: (text, options) =>
+    ),
+    setString: Effect.fn("Clipboard.setString")((text, options) =>
       promiseMethod("setStringAsync", () => ExpoClipboard.setStringAsync(text, options)),
+    ),
     hasString: promiseMethod("hasStringAsync", ExpoClipboard.hasStringAsync),
     getUrl: promiseMethod("getUrlAsync", ExpoClipboard.getUrlAsync),
-    setUrl: (url) => promiseMethod("setUrlAsync", () => ExpoClipboard.setUrlAsync(url)),
+    setUrl: Effect.fn("Clipboard.setUrl")((url) =>
+      promiseMethod("setUrlAsync", () => ExpoClipboard.setUrlAsync(url)),
+    ),
     hasUrl: promiseMethod("hasUrlAsync", ExpoClipboard.hasUrlAsync),
-    getImage: (options) =>
+    getImage: Effect.fn("Clipboard.getImage")((options) =>
       promiseMethod("getImageAsync", () => ExpoClipboard.getImageAsync(options)),
-    setImage: (base64Image, options) =>
+    ),
+    setImage: Effect.fn("Clipboard.setImage")((base64Image, options) =>
       promiseMethod("setImageAsync", () =>
         (ExpoClipboard.setImageAsync as SetImageAsync)(base64Image, options),
       ),
+    ),
     hasImage: promiseMethod("hasImageAsync", ExpoClipboard.hasImageAsync),
     changes,
   }),

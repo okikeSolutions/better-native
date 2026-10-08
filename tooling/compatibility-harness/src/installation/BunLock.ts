@@ -11,7 +11,7 @@ export const BunLock = Schema.Struct({
 })
 
 /** Decoded lockfile accepted by {@link BunLock}. */
-export type BunLock = Schema.Schema.Type<typeof BunLock>
+export interface BunLock extends Schema.Schema.Type<typeof BunLock> {}
 
 const failure = (operation: string, path: string, cause: unknown): HarnessError =>
   new HarnessError({ operation, path, cause })

@@ -1,4 +1,3 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import * as Schema from "effect/Schema"
@@ -37,9 +36,12 @@ export interface SubmissionPolicy {
 }
 
 /** Rejection raised for an unsafe or out-of-contract submission. */
-export class SubmissionInvalid extends Data.TaggedError("SubmissionInvalid")<{
-  readonly reason: string
-}> {}
+export class SubmissionInvalid extends Schema.TaggedError<SubmissionInvalid>()(
+  "SubmissionInvalid",
+  {
+    reason: Schema.String,
+  },
+) {}
 
 const utf8Size = (value: string): number => new TextEncoder().encode(value).byteLength
 

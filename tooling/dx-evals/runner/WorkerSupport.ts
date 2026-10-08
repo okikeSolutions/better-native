@@ -1,9 +1,8 @@
-import * as Data from "effect/Data"
 import * as Context from "effect/Context"
 import * as Effect from "effect/Effect"
 import type * as Exit from "effect/Exit"
 import * as Match from "effect/Match"
-import type * as Schema from "effect/Schema"
+import * as Schema from "effect/Schema"
 import { isBuiltin, registerHooks } from "node:module"
 import * as WorkerThreads from "node:worker_threads"
 
@@ -18,15 +17,19 @@ export const getRecordProperty = (value: unknown, property: PropertyKey): unknow
   )
 
 /** Typed worker-boundary failure for module loading and JSON normalization. */
-export class WorkerExecutionFailure extends Data.TaggedError("WorkerExecutionFailure")<{
-  readonly operation:
-    | "import"
-    | "encode-observation"
-    | "invalid-request"
-    | "candidate-effect"
-    | "lockdown"
-  readonly cause?: unknown
-}> {}
+export class WorkerExecutionFailure extends Schema.TaggedError<WorkerExecutionFailure>()(
+  "WorkerExecutionFailure",
+  {
+    operation: Schema.Literals([
+      "import",
+      "encode-observation",
+      "invalid-request",
+      "candidate-effect",
+      "lockdown",
+    ]),
+    cause: Schema.optional(Schema.Defect()),
+  },
+) {}
 
 /**
  * Locks the Effect worker's trusted reply capability before any candidate module is imported.

@@ -41,9 +41,11 @@ const backgroundDefinition = NotificationBackground.defineBackgroundNotification
   () => Effect.succeed(Notifications.BackgroundNotificationTaskResult.NoData),
 )
 
-const run = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
+const run = <A, E>(
+  effect: Effect.Effect<A, E, Notifications.Notifications | TaskManager.TaskManager>,
+) =>
   // oxlint-disable-next-line effecttsgo/strict-effect-provide -- compatibility entry point
-  Effect.runPromise(effect.pipe(Effect.provide(AppLive)) as Effect.Effect<A, E>)
+  Effect.runPromise(effect.pipe(Effect.provide(AppLive)))
 
 const assertTypedFailure = (exit: Exit.Exit<unknown, unknown>, label: string): void => {
   if (exit._tag === "Success") return

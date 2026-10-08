@@ -14,7 +14,7 @@ const baseManifest = {
     expo: "57.0.9",
     "expo-clipboard": "57.0.1",
     "@better-native/clipboard": "0.0.1-alpha.1",
-    effect: "4.0.0-rc.112",
+    effect: "4.0.2",
   },
 }
 
@@ -30,7 +30,7 @@ const state = (overrides: Partial<Project.ProjectState> = {}): Project.ProjectSt
 const installedVersions: Readonly<Record<string, string>> = {
   "expo-clipboard": "57.0.1",
   "@better-native/clipboard": "0.0.1-alpha.1",
-  effect: "4.0.0-rc.112",
+  effect: "4.0.2",
 }
 
 const makeServices = (options?: {
@@ -114,7 +114,7 @@ describe("CLI application services", () => {
           "install",
           "expo-clipboard",
           "@better-native/clipboard@0.0.1-alpha.1",
-          "effect@4.0.0-rc.112",
+          "effect@4.0.2",
           "--npm",
         ],
         cwd: "/app",
@@ -162,7 +162,7 @@ describe("CLI application services", () => {
       { versions: { ...installedVersions, "@better-native/clipboard": "0.0.0" } },
       /expected 0.0.1-alpha.1/,
     ],
-    ["Effect version", { versions: { ...installedVersions, effect: "3.0.0" } }, /expected 4.0.0/],
+    ["Effect version", { versions: { ...installedVersions, effect: "3.0.0" } }, /expected 4.0.2/],
     [
       "missing provider version",
       { versions: { ...installedVersions, "expo-clipboard": undefined } },

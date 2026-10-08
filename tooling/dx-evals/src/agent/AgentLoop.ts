@@ -1,11 +1,13 @@
 import * as Duration from "effect/Duration"
 import * as Effect from "effect/Effect"
-import * as Prompt from "effect/unstable/ai/Prompt"
-import type * as AiError from "effect/unstable/ai/AiError"
-import * as LanguageModel from "effect/unstable/ai/LanguageModel"
+import * as Prompt from "effect/ai/Prompt"
+import * as AiError from "effect/ai/AiError"
+import type * as Response from "effect/ai/Response"
+import type * as Tool from "effect/ai/Tool"
+import * as LanguageModel from "effect/ai/LanguageModel"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
-import * as Toolkit from "effect/unstable/ai/Toolkit"
+import * as Toolkit from "effect/ai/Toolkit"
 import * as OpenRouterLanguageModel from "@effect/ai-openrouter/OpenRouterLanguageModel"
 import * as Ref from "effect/Ref"
 import * as Schema from "effect/Schema"
@@ -97,7 +99,12 @@ type ObservedUsage = Pick<
   | "providerFingerprint"
 > & { readonly costUsd?: number }
 
-const usageFromResponse = (response: LanguageModel.GenerateTextResponse<any>): ObservedUsage => {
+const usageFromResponse = <
+  Tools extends Record<string, Tool.Any>,
+  Mode extends Response.ToolParametersMode,
+>(
+  response: LanguageModel.GenerateTextResponse<Tools, Mode>,
+): ObservedUsage => {
   const finish = response.content.find((part) => part.type === "finish")
   const openrouter = finish?.metadata.openrouter
   const rawUsage = openrouter?.usage
@@ -152,34 +159,37 @@ const addUsage = (
     : { providerFingerprint: right.providerFingerprint }),
 })
 
-const responseTranscript = (
-  response: LanguageModel.GenerateTextResponse<Toolkit.Tools<typeof CodingTools.CodingToolkit>>,
+const responseTranscript = Effect.fn("DxEvals.AgentLoop.responseTranscript")(function* (
+  response: LanguageModel.GenerateTextResponse<
+    Toolkit.Tools<typeof CodingTools.CodingToolkit>,
+    "opaque"
+  >,
   turn: number,
-): ReadonlyArray<Domain.TranscriptEvent> => {
+) {
   const events: Array<Domain.TranscriptEvent> = []
   if (response.text.length > 0) {
     events.push({ type: "message", role: "assistant", content: response.text })
   }
-  response.toolCalls.forEach((toolCall, index) => {
+  for (const [index, toolCall] of response.toolCalls.entries()) {
     events.push({
       type: "tool_call",
       id: toToolCallId(toolCall.id, turn, index),
       name: toolCall.name,
-      arguments: Schema.decodeUnknownSync(Schema.Record(Schema.String, Schema.Json))(
+      arguments: yield* Schema.decodeUnknownEffect(Schema.Record(Schema.String, Schema.Json))(
         toolCall.params,
       ),
     })
-  })
-  response.toolResults.forEach((toolResult, index) => {
+  }
+  for (const [index, toolResult] of response.toolResults.entries()) {
     events.push({
       type: "tool_result",
       toolCallId: toToolCallId(toolResult.id, turn, index),
       name: toolResult.name,
-      content: Schema.decodeUnknownSync(Schema.Json)(toolResult.encodedResult),
+      content: yield* Schema.decodeUnknownEffect(Schema.Json)(toolResult.encodedResult),
     })
-  })
+  }
   return events
-}
+})
 
 const systemInstruction = SystemPrompt.defaultSystemPrompt
 
@@ -343,7 +353,18 @@ const runScoped = Effect.fn("DxEvals.AgentLoop.run")(function* (
       )
       const observed = usageFromResponse(response)
       const accumulated = yield* Ref.updateAndGet(usage, (current) => addUsage(current, observed))
-      yield* Ref.update(transcript, (events) => [...events, ...responseTranscript(response, turn)])
+      const responseEvents = yield* responseTranscript(response, turn).pipe(
+        Effect.mapError(() =>
+          AiError.make({
+            module: "AgentLoop",
+            method: "responseTranscript",
+            reason: new AiError.InvalidOutputError({
+              description: "Provider returned invalid transcript data",
+            }),
+          }),
+        ),
+      )
+      yield* Ref.update(transcript, (events) => [...events, ...responseEvents])
       const state = yield* Ref.get(workspace)
       const afterResponseExit = Match.value({
         tokenLimit:

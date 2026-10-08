@@ -4,8 +4,8 @@ import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import type * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as WorkerRunner from "effect/unstable/workers/WorkerRunner"
-import type { WorkerError } from "effect/unstable/workers/WorkerError"
+import * as WorkerRunner from "effect/workers/WorkerRunner"
+import type { WorkerError } from "effect/workers/WorkerError"
 import type { SupervisorRequest, WorkerResponse } from "./Protocol.ts"
 import { makeWorkerRuntime } from "./Runtime.ts"
 import * as WorkerSupport from "./WorkerSupport.ts"
@@ -90,9 +90,7 @@ try {
                         Stream.take(take),
                         Stream.runCollect,
                         Effect.mapError(WorkerSupport.candidateEffectFailure),
-                        Effect.updateContext(
-                          (_: Context.Context<never>): Context.Context<never> => Context.empty(),
-                        ),
+                        Effect.setContext(Context.empty()),
                       ),
                     )
                   : undefined
@@ -142,12 +140,14 @@ try {
               observation: yield* WorkerSupport.toJsonOr(observation, fallbackJson),
             }
           }).pipe(
-            Effect.catchCause(() =>
-              Effect.succeed({
-                type: "error" as const,
-                nonce: request.nonce,
-                reason: "worker-handler-failure",
-              }),
+            Effect.catchCause((cause) =>
+              Cause.hasInterrupts(cause)
+                ? Effect.interrupt
+                : Effect.succeed({
+                    type: "error" as const,
+                    nonce: request.nonce,
+                    reason: "worker-handler-failure",
+                  }),
             ),
             Effect.flatMap((response) => runner.send(portId, response)),
           ),

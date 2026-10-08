@@ -57,9 +57,11 @@ describe("verification lanes", () => {
       assert.ok(manifest.scripts?.["test:coverage"]?.includes("vitest.coverage.config.ts"))
       assert.ok(capability.verification.integrationSuites.includes("published"))
     }
-    assert.match(workflow, /eval-task:/)
-    assert.match(workflow, /bun run evals validate\n/)
-    assert.match(workflow, /bun run evals validate --task "\$EVAL_TASK"/)
+    assert.match(workflow, /jq -r '\.capabilities\[\]\.id' compatibility\/capabilities\.json/)
+    assert.match(workflow, /bun run evals validate --task "\$capability"/)
+    for (const suite of Object.keys(integrationSuites)) {
+      assert.match(workflow, new RegExp(`for suite in [^\\n]*\\b${suite}\\b`))
+    }
     assert.match(workflow, /name: Verification required/)
   })
 })

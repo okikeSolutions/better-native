@@ -1,6 +1,6 @@
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
-import * as Flag from "effect/unstable/cli/Flag"
+import * as Flag from "effect/cli/Flag"
 import { BuildId, RunId } from "../Domain.ts"
 import { HarnessConfig } from "../HarnessConfig.ts"
 import { HarnessError } from "../HarnessError.ts"
@@ -29,20 +29,20 @@ export const requireSuccessfulRun = (record: {
   )
 
 /** CLI flag selecting upstream or candidate build mode. */
-export const buildMode = Flag.choice("mode", ["upstream", "candidate"] as const)
+export const buildMode = Flag.Literals("mode", ["upstream", "candidate"] as const)
 /** CLI flag selecting the build platform. */
-export const buildPlatform = Flag.choice("platform", ["web", "ios", "android"] as const)
+export const buildPlatform = Flag.Literals("platform", ["web", "ios", "android"] as const)
 /** CLI flag validated as a safe build identifier. */
-export const buildIdFlag = Flag.string("build-id").pipe(Flag.withSchema(BuildId))
+export const buildIdFlag = Flag.String("build-id").pipe(Flag.withSchema(BuildId))
 /** CLI timeout flag with the harness default execution budget. */
-export const timeoutMillisFlag = Flag.integer("timeout-ms").pipe(Flag.withDefault(1_200_000))
+export const timeoutMillisFlag = Flag.Int("timeout-ms").pipe(Flag.withDefault(1_200_000))
 /** Optional supplemental source selecting a capability-scoped native shell. */
-export const capabilitySourceFlag = Flag.string("source").pipe(
+export const capabilitySourceFlag = Flag.String("source").pipe(
   Flag.withDescription("Build a reviewed capability-scoped native shell instead of the full suite"),
   Flag.optional,
 )
 /** Explicit opt-in to native compilation when a reusable shell fails to repack. */
-export const allowNativeRebuildFlag = Flag.boolean("allow-native-rebuild").pipe(
+export const allowNativeRebuildFlag = Flag.Boolean("allow-native-rebuild").pipe(
   Flag.withDescription(
     "Allow Gradle, CocoaPods, or Xcode compilation when a cached native artifact fails to repack",
   ),
@@ -73,12 +73,12 @@ export const candidateRevision = (mode: "upstream" | "candidate") =>
   )
 
 /** CLI flag restricting native commands to iOS or Android. */
-export const nativePlatform = Flag.choice("platform", ["ios", "android"] as const)
+export const nativePlatform = Flag.Literals("platform", ["ios", "android"] as const)
 /** CLI device or simulator identifier. */
-export const deviceIdFlag = Flag.string("device-id")
+export const deviceIdFlag = Flag.String("device-id")
 /** CLI flag validated as a safe run identifier. */
-export const runIdFlag = Flag.string("run-id").pipe(Flag.withSchema(RunId))
+export const runIdFlag = Flag.String("run-id").pipe(Flag.withSchema(RunId))
 /** Zero-based runner-plan shard index. */
-export const shardIndexFlag = Flag.integer("shard-index").pipe(Flag.withDefault(0))
+export const shardIndexFlag = Flag.Int("shard-index").pipe(Flag.withDefault(0))
 /** Total number of runner-plan shards. */
-export const shardCountFlag = Flag.integer("shard-count").pipe(Flag.withDefault(1))
+export const shardCountFlag = Flag.Int("shard-count").pipe(Flag.withDefault(1))

@@ -5,8 +5,8 @@ import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Path from "effect/Path"
-import * as ChildProcess from "effect/unstable/process/ChildProcess"
-import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
+import * as ChildProcess from "effect/process/ChildProcess"
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner"
 import * as Config from "../Config.ts"
 import * as Domain from "../Domain.ts"
 import * as Isolation from "./Isolation.ts"
@@ -23,10 +23,7 @@ export const makeConfig = (
   repositoryRoot,
   artifactsRoot: `${repositoryRoot}/.artifacts/evals`,
   effectPackageRoot: `${repositoryRoot}/node_modules/effect`,
-  effectRuntimePackages: [
-    { name: "fast-check", root: `${repositoryRoot}/node_modules/fast-check` },
-    { name: "pure-rand", root: `${repositoryRoot}/node_modules/pure-rand` },
-  ],
+  effectRuntimePackages: [],
   runnerRuntimePackages: [
     {
       name: "@effect/platform-node",

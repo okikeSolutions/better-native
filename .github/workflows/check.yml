@@ -1,14 +1,10 @@
 name: Check
 
 on:
+  push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
-    inputs:
-      eval-task:
-        description: Deterministic DX task to run, or all
-        required: false
-        default: all
-        type: string
 
 permissions:
   contents: read
@@ -23,15 +19,13 @@ env:
   TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
 
 jobs:
-  fast:
+  verification:
     name: Repository checks
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
 
       - name: Setup build profile
         uses: ./.github/actions/setup-build
@@ -39,46 +33,29 @@ jobs:
       - name: Run the local fast contract
         run: bun run check:fast
 
-      - name: Run pinned-Expo integration tests
-        env:
-          BETTER_NATIVE_INTEGRATION_SUITE: harness
-        run: bun run test:integration
-
-  process-boundaries:
-    name: Process-boundary checks
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
-    env:
-      EVAL_TASK: ${{ inputs.eval-task || 'all' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
-
-      - name: Setup static profile
-        uses: ./.github/actions/setup-static
-
-      - name: Setup DX eval prerequisites once
+      - name: Setup DX eval prerequisites
         uses: ./.github/actions/setup-dx-evals
 
-      - name: Run process-boundary integration suites
+      - name: Run selected integration suites
         shell: bash
         run: |
           set -euo pipefail
-          for suite in published compile-contracts isolation trials task-workspace; do
+          for suite in published harness compile-contracts isolation trials task-workspace; do
+            echo "::group::Integration: $suite"
             BETTER_NATIVE_INTEGRATION_SUITE="$suite" bun run test:integration
+            echo "::endgroup::"
           done
 
-      - name: Validate deterministic controls
+      - name: Validate every ledger capability's deterministic controls
         shell: bash
         run: |
           set -euo pipefail
-          if [ "$EVAL_TASK" = all ]; then
-            bun run evals validate
-          else
-            bun run evals validate --task "$EVAL_TASK"
-          fi
+          jq -er '.capabilities | length > 0' compatibility/capabilities.json > /dev/null
+          jq -r '.capabilities[].id' compatibility/capabilities.json | while IFS= read -r capability; do
+            echo "::group::DX controls: $capability"
+            bun run evals validate --task "$capability"
+            echo "::endgroup::"
+          done
 
       - name: Upload eval evidence
         if: always()
@@ -87,18 +64,16 @@ jobs:
           name: dx-controls-${{ github.run_id }}-${{ github.run_attempt }}
           path: .artifacts/evals
           if-no-files-found: warn
-          retention-days: 3
+          retention-days: 7
 
   required:
     name: Verification required
     if: always()
-    needs: [fast, process-boundaries]
+    needs: verification
     runs-on: ubuntu-24.04
     steps:
-      - name: Require every verification lane
+      - name: Require every selected verification lane
         env:
-          FAST_RESULT: ${{ needs.fast.result }}
-          PROCESS_RESULT: ${{ needs.process-boundaries.result }}
+          VERIFICATION_RESULT: ${{ needs.verification.result }}
         run: |
-          test "$FAST_RESULT" = success
-          test "$PROCESS_RESULT" = success
+          test "$VERIFICATION_RESULT" = success

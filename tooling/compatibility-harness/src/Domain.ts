@@ -693,6 +693,29 @@ export const Comparison = Schema.Struct({
   ]),
   detail: Schema.NullOr(Schema.String),
 })
+/** Successful differential verdict retained for later capability-profile evaluation. */
+export const ComparisonEvidenceRecord = Schema.Struct({
+  schemaVersion: Schema.Literal(1),
+  sourceIds: Schema.NonEmptyArray(TestSourceId),
+  platform: Platform,
+  device: DeviceRecord,
+  expoRevision: Schema.NonEmptyString,
+  candidateRevision: Schema.NonEmptyString,
+  upstreamBuildIds: Schema.NonEmptyArray(BuildId),
+  candidateBuildIds: Schema.NonEmptyArray(BuildId),
+  upstreamRunIds: Schema.NonEmptyArray(RunId),
+  candidateRunIds: Schema.NonEmptyArray(RunId),
+  /** Exact case denominator retained by new verdict writers. Optional for legacy replay. */
+  caseIds: Schema.optional(Schema.NonEmptyArray(TestCaseId)),
+  /** Build, attempt, and case artifacts referenced by the compared runs. */
+  artifactIds: Schema.optional(Schema.Array(ArtifactId)),
+  verdict: Schema.Struct({
+    cases: Schema.Int,
+    matches: Schema.Int,
+    expectedDivergences: Schema.Int,
+    issues: Schema.Array(Schema.String),
+  }),
+})
 /** Aggregate compatibility report over builds, runs, and comparisons. */
 export const Report = Schema.Struct({
   schemaVersion: Schema.Literal(1),
@@ -705,43 +728,47 @@ export const Report = Schema.Struct({
 })
 
 /** Decoded value accepted by {@link Catalog}. */
-export type Catalog = Schema.Schema.Type<typeof Catalog>
+export interface Catalog extends Schema.Schema.Type<typeof Catalog> {}
 /** Decoded value accepted by {@link Artifact}. */
-export type Artifact = Schema.Schema.Type<typeof Artifact>
+export interface Artifact extends Schema.Schema.Type<typeof Artifact> {}
 /** Decoded app summary accepted by {@link AppRunSummary}. */
-export type AppRunSummary = Schema.Schema.Type<typeof AppRunSummary>
+export interface AppRunSummary extends Schema.Schema.Type<typeof AppRunSummary> {}
 /** Decoded build attempt accepted by {@link BuildAttempt}. */
-export type BuildAttempt = Schema.Schema.Type<typeof BuildAttempt>
+export interface BuildAttempt extends Schema.Schema.Type<typeof BuildAttempt> {}
 /** Decoded safe build identifier accepted by {@link BuildId}. */
 export type BuildId = Schema.Schema.Type<typeof BuildId>
 /** Decoded build evidence accepted by {@link BuildRecord}. */
-export type BuildRecord = Schema.Schema.Type<typeof BuildRecord>
+export interface BuildRecord extends Schema.Schema.Type<typeof BuildRecord> {}
 /** Decoded case result accepted by {@link CaseResult}. */
-export type CaseResult = Schema.Schema.Type<typeof CaseResult>
+export interface CaseResult extends Schema.Schema.Type<typeof CaseResult> {}
+/** Decoded retained differential verdict accepted by {@link ComparisonEvidenceRecord}. */
+export interface ComparisonEvidenceRecord extends Schema.Schema.Type<
+  typeof ComparisonEvidenceRecord
+> {}
 /** Decoded catalog snapshot accepted by {@link CatalogSnapshot}. */
-export type CatalogSnapshot = Schema.Schema.Type<typeof CatalogSnapshot>
+export interface CatalogSnapshot extends Schema.Schema.Type<typeof CatalogSnapshot> {}
 /** Decoded content hash accepted by {@link ContentHash}. */
 export type ContentHash = Schema.Schema.Type<typeof ContentHash>
 /** Decoded test corpus accepted by {@link CorpusSnapshot}. */
-export type CorpusSnapshot = Schema.Schema.Type<typeof CorpusSnapshot>
+export interface CorpusSnapshot extends Schema.Schema.Type<typeof CorpusSnapshot> {}
 /** Decoded device record accepted by {@link DeviceRecord}. */
-export type DeviceRecord = Schema.Schema.Type<typeof DeviceRecord>
+export interface DeviceRecord extends Schema.Schema.Type<typeof DeviceRecord> {}
 /** Decoded discovery record accepted by {@link DiscoveryRecord}. */
-export type DiscoveryRecord = Schema.Schema.Type<typeof DiscoveryRecord>
+export interface DiscoveryRecord extends Schema.Schema.Type<typeof DiscoveryRecord> {}
 /** Decoded entrypoint accepted by {@link Entrypoint}. */
-export type Entrypoint = Schema.Schema.Type<typeof Entrypoint>
+export interface Entrypoint extends Schema.Schema.Type<typeof Entrypoint> {}
 /** Decoded wildcard expansion accepted by {@link ExpandedEntrypoint}. */
-export type ExpandedEntrypoint = Schema.Schema.Type<typeof ExpandedEntrypoint>
+export interface ExpandedEntrypoint extends Schema.Schema.Type<typeof ExpandedEntrypoint> {}
 /** Decoded export kind accepted by {@link ExportKind}. */
 export type ExportKind = Schema.Schema.Type<typeof ExportKind>
 /** Decoded export observation accepted by {@link ExportObservation}. */
-export type ExportObservation = Schema.Schema.Type<typeof ExportObservation>
+export interface ExportObservation extends Schema.Schema.Type<typeof ExportObservation> {}
 /** Decoded installation report accepted by {@link ExpoInstallation}. */
-export type ExpoInstallation = Schema.Schema.Type<typeof ExpoInstallation>
+export interface ExpoInstallation extends Schema.Schema.Type<typeof ExpoInstallation> {}
 /** Decoded expectations accepted by {@link Expectations}. */
-export type Expectations = Schema.Schema.Type<typeof Expectations>
+export interface Expectations extends Schema.Schema.Type<typeof Expectations> {}
 /** Decoded installed-package record accepted by {@link InstalledPackage}. */
-export type InstalledPackage = Schema.Schema.Type<typeof InstalledPackage>
+export interface InstalledPackage extends Schema.Schema.Type<typeof InstalledPackage> {}
 /** Decoded infrastructure outcome accepted by {@link InfrastructureOutcome}. */
 export type InfrastructureOutcome = Schema.Schema.Type<typeof InfrastructureOutcome>
 /** Decoded upstream/candidate mode accepted by {@link Mode}. */
@@ -749,60 +776,60 @@ export type Mode = Schema.Schema.Type<typeof Mode>
 /** Decoded native registration accepted by {@link NativeRegistration}. */
 export type NativeRegistration = Schema.Schema.Type<typeof NativeRegistration>
 /** Decoded ownership configuration accepted by {@link Ownership}. */
-export type Ownership = Schema.Schema.Type<typeof Ownership>
+export interface Ownership extends Schema.Schema.Type<typeof Ownership> {}
 /** Decoded ownership override accepted by {@link OwnershipOverride}. */
-export type OwnershipOverride = Schema.Schema.Type<typeof OwnershipOverride>
+export interface OwnershipOverride extends Schema.Schema.Type<typeof OwnershipOverride> {}
 /** Decoded ownership ledger accepted by {@link OwnershipLedger}. */
-export type OwnershipLedger = Schema.Schema.Type<typeof OwnershipLedger>
+export interface OwnershipLedger extends Schema.Schema.Type<typeof OwnershipLedger> {}
 /** Decoded package record accepted by {@link Package}. */
-export type Package = Schema.Schema.Type<typeof Package>
+export interface Package extends Schema.Schema.Type<typeof Package> {}
 /** Decoded platform value accepted by {@link Platform}. */
 export type Platform = Schema.Schema.Type<typeof Platform>
 /** Decoded package name accepted by {@link PackageName}. */
 export type PackageName = Schema.Schema.Type<typeof PackageName>
 /** Decoded registry resolution accepted by {@link PackageResolution}. */
-export type PackageResolution = Schema.Schema.Type<typeof PackageResolution>
+export interface PackageResolution extends Schema.Schema.Type<typeof PackageResolution> {}
 /** Decoded package role accepted by {@link PackageRole}. */
 export type PackageRole = Schema.Schema.Type<typeof PackageRole>
 /** Decoded process observation accepted by {@link ProcessObservation}. */
-export type ProcessObservation = Schema.Schema.Type<typeof ProcessObservation>
+export interface ProcessObservation extends Schema.Schema.Type<typeof ProcessObservation> {}
 /** Decoded registry metadata accepted by {@link RegistryMetadata}. */
-export type RegistryMetadata = Schema.Schema.Type<typeof RegistryMetadata>
+export interface RegistryMetadata extends Schema.Schema.Type<typeof RegistryMetadata> {}
 /** Decoded registry package accepted by {@link RegistryPackage}. */
-export type RegistryPackage = Schema.Schema.Type<typeof RegistryPackage>
+export interface RegistryPackage extends Schema.Schema.Type<typeof RegistryPackage> {}
 /** Decoded resolution branch accepted by {@link ResolutionBranch}. */
-export type ResolutionBranch = Schema.Schema.Type<typeof ResolutionBranch>
+export interface ResolutionBranch extends Schema.Schema.Type<typeof ResolutionBranch> {}
 /** Decoded resolution observation accepted by {@link ResolutionObservation}. */
-export type ResolutionObservation = Schema.Schema.Type<typeof ResolutionObservation>
+export interface ResolutionObservation extends Schema.Schema.Type<typeof ResolutionObservation> {}
 /** Decoded role evidence accepted by {@link RoleEvidence}. */
-export type RoleEvidence = Schema.Schema.Type<typeof RoleEvidence>
+export interface RoleEvidence extends Schema.Schema.Type<typeof RoleEvidence> {}
 /** Decoded runner value accepted by {@link Runner}. */
 export type Runner = Schema.Schema.Type<typeof Runner>
 /** Decoded safe run identifier accepted by {@link RunId}. */
 export type RunId = Schema.Schema.Type<typeof RunId>
 /** Decoded run attempt accepted by {@link RunAttempt}. */
-export type RunAttempt = Schema.Schema.Type<typeof RunAttempt>
+export interface RunAttempt extends Schema.Schema.Type<typeof RunAttempt> {}
 /** Decoded run plan accepted by {@link RunPlan}. */
-export type RunPlan = Schema.Schema.Type<typeof RunPlan>
+export interface RunPlan extends Schema.Schema.Type<typeof RunPlan> {}
 /** Decoded execution unit accepted by {@link ExecutionUnit}. */
-export type ExecutionUnit = Schema.Schema.Type<typeof ExecutionUnit>
+export interface ExecutionUnit extends Schema.Schema.Type<typeof ExecutionUnit> {}
 /** Decoded run evidence accepted by {@link RunRecord}. */
-export type RunRecord = Schema.Schema.Type<typeof RunRecord>
+export interface RunRecord extends Schema.Schema.Type<typeof RunRecord> {}
 /** Decoded runtime case observation accepted by {@link RuntimeCaseObservation}. */
-export type RuntimeCaseObservation = Schema.Schema.Type<typeof RuntimeCaseObservation>
+export interface RuntimeCaseObservation extends Schema.Schema.Type<typeof RuntimeCaseObservation> {}
 /** Decoded package subpath accepted by {@link Subpath}. */
 export type Subpath = Schema.Schema.Type<typeof Subpath>
 /** Decoded surface export accepted by {@link SurfaceExport}. */
-export type SurfaceExport = Schema.Schema.Type<typeof SurfaceExport>
+export interface SurfaceExport extends Schema.Schema.Type<typeof SurfaceExport> {}
 /** Decoded surface lock accepted by {@link SurfaceLock}. */
-export type SurfaceLock = Schema.Schema.Type<typeof SurfaceLock>
+export interface SurfaceLock extends Schema.Schema.Type<typeof SurfaceLock> {}
 /** Decoded surface snapshot accepted by {@link SurfaceSnapshot}. */
-export type SurfaceSnapshot = Schema.Schema.Type<typeof SurfaceSnapshot>
+export interface SurfaceSnapshot extends Schema.Schema.Type<typeof SurfaceSnapshot> {}
 /** Decoded test case accepted by {@link TestCase}. */
-export type TestCase = Schema.Schema.Type<typeof TestCase>
+export interface TestCase extends Schema.Schema.Type<typeof TestCase> {}
 /** Decoded test-case identifier accepted by {@link TestCaseId}. */
 export type TestCaseId = Schema.Schema.Type<typeof TestCaseId>
 /** Decoded test source accepted by {@link TestSource}. */
-export type TestSource = Schema.Schema.Type<typeof TestSource>
+export interface TestSource extends Schema.Schema.Type<typeof TestSource> {}
 /** Decoded test-source identifier accepted by {@link TestSourceId}. */
 export type TestSourceId = Schema.Schema.Type<typeof TestSourceId>

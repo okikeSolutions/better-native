@@ -39,18 +39,48 @@ The implementation may be incomplete. The compatibility denominator may not be i
 
 - `effect`: implemented by better-native;
 - `upstream`: delegated to the pinned Expo implementation;
-- `fallback`: better-native attempts an implementation and deliberately falls back;
+- `fallback`: better-native attempts an implementation and deliberately delegates at runtime;
 - `unsupported`: known and unavailable;
 - `intentional-divergence`: behavior differs under an explicit reviewed contract.
 
-Only `effect` counts as migrated.
+Ownership records runtime responsibility. It does not record verification maturity. Missing native
+or physical-device evidence is not a reason to label an Effect implementation `fallback` when it
+does not delegate at runtime.
+
+Evidence records what a defined verification method observed. Every record is limited to its tested
+behavior, platform, runtime, build, and environment. Repository configuration declares required
+evidence, while reports and retained records establish whether it exists. A missing obligation stays
+visible and limits the claims Better Native can make.
+
+Support status records the guarantee made to users:
+
+- `experimental`: the implementation may change and does not claim complete native parity;
+- `stable`: every applicable promotion obligation has current reviewed evidence.
+
+Support status is a maintainer decision constrained by evidence. Validation must reject `stable`
+when its promotion evidence is missing or stale. Only `effect` counts as implemented by Better
+Native, and a capability is migrated only when every intended entrypoint has reviewed `effect`
+ownership. Migration does not by itself imply stable support.
+
+This separation is established by
+[ADR 0001](./adr/0001-separate-ownership-evidence-and-support.md). The capability ledger records
+support status independently from ownership. Migration reporting rejects stable support unless a
+durable reviewed promotion input is registered alongside Effect ownership and complete host
+evidence. No such durable input exists yet, so every current capability remains experimental.
+Integration and promotion are evaluated separately by the capability verifier against retained
+differential verdicts.
 
 `compatibility/capabilities.json` declares the common and package-specific work required for each
 migration. Each record also owns its unit project, coverage scope, named CI integration suites, and
 parity platforms. `bun run migration-status` derives package, documentation, mapping, installation,
 compatibility-app, generated-resolution, verification-routing, and DX-eval status from repository
-files. The strict form fails when any declared integration is absent. Ownership remains authoritative
-for promotion, so a complete checklist with `fallback` ownership is implemented but not migrated.
+files. The strict form fails when any declared integration is absent or a stable claim lacks Effect
+ownership, complete host evidence, or durable reviewed promotion evidence. The host verification profile is available through
+`bun run verify:capability <id> --profile host`. The `integration` and `promotion` variants compose
+that host gate with immutable differential verdicts retained by `compare-runs`; the latter adds any
+declared physical-device obligations. `bun run replay:integration` is the evaluator-only path: it
+loads a completed integration artifact bundle, keeps the recorded subject revision distinct from
+the current evaluator checkout, and never consumes promotion-only physical-device evidence.
 
 ## Repository boundaries
 
@@ -68,7 +98,7 @@ compatibility/api-mappings.json Reviewed Expo-to-Effect semantic API mappings
 compatibility/surface-lock.json Reviewed lock for the complete discovered export denominator
 compatibility/expectations.json Case-level known upstream or candidate behavior
 compatibility/suites.json      Declarative upstream test discovery rules
-vendor/effect                  Pinned Effect source
+node_modules/effect            Installed, pinned Effect implementation
 ../expo                        External pinned Expo source and behavioral oracle
 .artifacts                     Disposable catalogs, reports, builds, logs, and screenshots
 ```
@@ -304,27 +334,25 @@ duplicate multi-gigabyte Pods trees for the same effective dependency graph.
 
 `bun run artifacts:prune --dry-run` reports every deletion, retention reason, protected path, and
 physical byte count. The non-dry command applies the identical deterministic plan, removes cache
-schemas that the current harness no longer reads, and bounds the combined current Pods/native cache
-to 3 GiB by least-recently-used access time. It retains lightweight run records and expires bulky
+schemas that the current harness no longer reads, and bounds current Pods entries, their indexes,
+and native artifacts to 3 GiB by least-recently-used access time. It retains lightweight run records and expires bulky
 run media after seven days. Pruning runs before a build below the 16 GiB free-space floor and after
 every successful native build. `bun run artifacts:clean --all` is the explicit emergency operation
 and refuses to run while active or linked workspaces are present.
 
 ## Hosted execution
 
-Compatibility execution is available as a manually dispatched GitHub Actions workflow. It does not
-run on pull requests, pushes, or a schedule because hosted runner usage is metered. Maintainers run
-the same commands locally by default and dispatch only the platform and mode needed for reviewed
-hosted evidence. Its topology is adapted directly from Expo:
+Compatibility execution is hosted by GitHub Actions. Developer machines are not the default native
+build or device-test environment. Its topology is adapted directly from Expo:
 
 ```mermaid
 flowchart TB
-  Dispatch["Manual platform and mode selection"]
+  Change["Detect platform changes"]
   Mode{"Baseline or pair?"}
-  Dispatch --> Mode
+  Change --> Mode
 
-  Baseline["Manual upstream baseline"]
-  Pair["Manual upstream + candidate pair"]
+  Baseline["Pull request / push<br/>upstream baseline"]
+  Pair["Weekly schedule / manual pair<br/>upstream + candidate"]
   Mode --> Baseline
   Mode --> Pair
 
@@ -351,19 +379,20 @@ used by the workflow jobs; `setup-static` is the common base rather than a stand
 job. Every profile pins Node 24 because the Effect compatibility harness uses `NodeRuntime` and
 `NodeServices`; Bun remains the workspace package manager and test/script orchestrator. Only the
 build profile installs pnpm and materializes pinned Expo. Device jobs consume immutable products;
-comparison jobs consume downloaded evidence and never install Expo or generate the catalog. A
-manual dispatch selects `web`, `ios`, `android`, or all platforms and chooses either an upstream
-baseline or a paired run. Candidate mode changes only Metro resolution. Cold builds require an
-explicit dispatch input, so routine verification can reuse validated native artifacts.
+comparison jobs consume downloaded evidence and never install Expo or generate the catalog. Pull
+requests and pushes run the upstream baseline for affected platforms. The weekly schedule and
+manual `pair` mode run upstream and candidate through the same build and device paths; candidate
+mode changes only Metro resolution. Differential verdicts are emitted in their own lightweight
+jobs.
 
 The copied Expo primitives retain platform change classification, ccache configuration, Gradle and
 React Native download cache boundaries, Xcode-version invalidation, runner cleanup, and the pinned
 Maestro versions. Release products and successful evidence are retained for three days; failures
 are retained for seven. ccache keys exclude JavaScript, tests, and generated compatibility data;
 Gradle runs with its build cache and without configuration cache; iOS compiles only the selected
-simulator architecture. A manually dispatched hygiene workflow bounds owned native caches to 8 GiB,
-below GitHub's default 10 GiB repository limit. Manual compatibility runs may restore and repack
-validated native artifacts. Maintainers periodically request a cold build to prove that the
+simulator architecture. A weekly hygiene workflow bounds owned native caches to 8 GiB, below
+GitHub's default 10 GiB repository limit. Pull requests may restore and repack validated native
+artifacts. The weekly scheduled compatibility run forces cold native builds, proving that the
 non-cached path remains healthy.
 
 ```mermaid
@@ -417,19 +446,28 @@ The compatibility suite is a production-bundleable Expo Router application gener
 ## Dependency security policy
 
 `bun run security:audit` rejects every new moderate-or-higher advisory. A reviewed exception is
-allowed only when it identifies the exact owner, locked dependency path, version, and advisory;
+allowed only when it identifies every direct owner, the locked dependency path, version, and advisory;
 the audit policy also fails if that path changes or the exception becomes stale. Exceptions are
 never allowed for publishable `@better-native/*` runtime packages.
 
-The sole reviewed exception is `image-size@1.2.1` through `metro@0.84.4` for
-`GHSA-5p2g-fcmc-qvqq` and `GHSA-w3rx-r6r6-pgpr`. Both denial-of-service advisories currently affect
-every published `image-size` version and have no patched release. Metro uses this dependency only
-while bundling reviewed project assets; it is not shipped by a publishable Better Native runtime
-package or exposed to remote image input in repository automation. The exception must be removed
-when Metro changes the dependency or a patched compatible release exists.
+Four toolchain-only dependency paths have reviewed exceptions:
 
-Root-level Bun overrides resolve other vulnerable Sentry, XML, URL-decoding, routing,
-image-processing, UUID, and React Server Component transitive packages to patched versions. `bun audit` may report only the
-exact reviewed exception; `bun run security:audit` rejects unreviewed findings and stale exceptions.
+- `image-size@1.2.1` through `metro@0.84.4` for `GHSA-5p2g-fcmc-qvqq` and
+  `GHSA-w3rx-r6r6-pgpr`. A patched 2.x release exists, but Metro requires 1.x. Metro reads reviewed
+  project assets during bundling, not remote image input.
+- `braces@3.0.3` through `micromatch@4.0.8` for `GHSA-vfj7-8cjw-p6xm`. No patched release exists;
+  bundling passes repository-controlled glob patterns.
+- `node-forge@1.4.0` through `@expo/cli@57.0.11` and `@expo/code-signing-certificates@0.0.6` for
+  `GHSA-86w9-cpqp-85rv`. No patched release exists. This code runs in Expo development and build
+  tooling, including certificate verification, so the exception does not claim the bug is unreachable.
+- `sprintf-js@1.0.3` through `argparse@1.0.10` for `GHSA-hp3w-g68c-fv3c`. No patched release exists;
+  docgen parses repository-owned Markdown files.
+
+These dependencies are absent from publishable Better Native runtime packages. Remove each exception
+when its dependency path disappears or a compatible patched release becomes available.
+
+Root-level Bun overrides and targeted lockfile updates resolve other vulnerable dependencies to
+patched versions. `bun audit` may report only the exact reviewed exceptions; `bun run security:audit`
+rejects unreviewed findings and stale exceptions.
 Every override remains subject to generated surface-lock, type, test, and compatibility validation
 so that a security update cannot silently change the pinned Expo contract.
