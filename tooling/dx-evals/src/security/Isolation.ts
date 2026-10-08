@@ -1,15 +1,15 @@
 import * as Context from "effect/Context"
 import * as Crypto from "effect/Crypto"
-import * as Data from "effect/Data"
 import * as Duration from "effect/Duration"
 import * as Effect from "effect/Effect"
 import * as Fiber from "effect/Fiber"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
 import type * as PlatformError from "effect/PlatformError"
+import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as ChildProcess from "effect/unstable/process/ChildProcess"
-import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
+import * as ChildProcess from "effect/process/ChildProcess"
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner"
 import * as Config from "../Config.ts"
 import * as Domain from "../Domain.ts"
 import type * as TaskModel from "../tasks/TaskModel.ts"
@@ -46,9 +46,9 @@ export interface IsolationRequest {
 }
 
 /** Failure raised when the isolation backend cannot produce a trustworthy observation. */
-export class IsolationFailure extends Data.TaggedError("IsolationFailure")<{
-  readonly reason: string
-}> {}
+export class IsolationFailure extends Schema.TaggedError<IsolationFailure>()("IsolationFailure", {
+  reason: Schema.String,
+}) {}
 
 /** Disposable execution backend for submitted code. */
 export interface Service {
@@ -199,7 +199,7 @@ export const layer: Layer.Layer<
         ),
     )
     return Isolation.of({
-      observe: (request) =>
+      observe: Effect.fn("Isolation.observe")((request) =>
         Effect.scoped(
           Effect.gen(function* () {
             yield* rootlessPreflight
@@ -306,6 +306,7 @@ export const layer: Layer.Layer<
             ),
           ),
         ),
+      ),
     })
   }),
 )

@@ -466,7 +466,7 @@ export const validateCoverageTarget = Effect.fn("Coverage.validateCoverageTarget
       (betterNativeExports.root.callable.has(targetExport) &&
         !targetType?.includes('import("effect/Effect").Effect<')) ||
       targetType?.includes('import("effect/Stream").Stream<') ||
-      targetType?.includes('import("effect/unstable/reactivity/Atom").Atom<')
+      targetType?.includes('import("effect/reactivity/Atom").Atom<')
     ) {
       return yield* new HarnessError({
         operation: "validate API coverage target category",
@@ -486,7 +486,7 @@ export const validateCoverageTarget = Effect.fn("Coverage.validateCoverageTarget
       !betterNativeExports.root.valueNames.has(atomExport) ||
       !betterNativeExports.root.types
         .get(atomExport)
-        ?.includes('import("effect/unstable/reactivity/Atom").Atom<')
+        ?.includes('import("effect/reactivity/Atom").Atom<')
     ) {
       return yield* new HarnessError({
         operation: "validate API coverage atom target",
@@ -559,10 +559,10 @@ const coverageEntries = Effect.fn("Coverage.coverageEntries")(function* (
           ...(mapping.status === "intentional-divergence"
             ? { reason: mapping.reason }
             : {
-                ...(mapping.deprecated === true
+                ...(mapping.deprecated === true && mapping.deprecationReason !== undefined
                   ? {
                       deprecated: true as const,
-                      deprecationReason: mapping.deprecationReason!,
+                      deprecationReason: mapping.deprecationReason,
                     }
                   : {}),
                 ...(mapping.atomTarget === undefined ? {} : { atomTarget: mapping.atomTarget }),

@@ -1,5 +1,5 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
+import * as Schema from "effect/Schema"
 import type { AppRunSummary, InfrastructureOutcome, Mode, TestSourceId } from "../Domain.ts"
 
 /** Identity and source scope that an app summary must close over. */
@@ -11,9 +11,9 @@ export interface ExpectedRun {
 }
 
 /** Rejects summaries that cannot be trusted as evidence for the requested run. */
-export class RunProtocolError extends Data.TaggedError("RunProtocolError")<{
-  readonly reason: string
-}> {}
+export class RunProtocolError extends Schema.TaggedError<RunProtocolError>()("RunProtocolError", {
+  reason: Schema.String,
+}) {}
 
 /**
  * Finds duplicate identifiers while preserving deterministic error ordering.

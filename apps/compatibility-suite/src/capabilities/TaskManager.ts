@@ -19,9 +19,9 @@ const taskName = "better-native-task-manager-capability"
 
 TaskManager.defineTask(taskName, runtime, ({ data }) => Effect.succeed(data))
 
-const run = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
+const run = <A, E>(effect: Effect.Effect<A, E, TaskManager.TaskManager>) =>
   // oxlint-disable-next-line effecttsgo/strict-effect-provide -- compatibility capability entry point
-  Effect.runPromise(effect.pipe(Effect.provide(TaskManager.live)) as Effect.Effect<A, E>)
+  Effect.runPromise(effect.pipe(Effect.provide(TaskManager.live)))
 
 export function test({ describe, it }: JasmineApi): void {
   describe(name, () => {

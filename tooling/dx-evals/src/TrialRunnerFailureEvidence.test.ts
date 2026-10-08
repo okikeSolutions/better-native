@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import * as AiError from "effect/unstable/ai/AiError"
+import * as AiError from "effect/ai/AiError"
 import * as Domain from "./Domain.ts"
 import * as Isolation from "./security/Isolation.ts"
 import {
@@ -81,11 +81,6 @@ describe("sanitized failure evidence", () => {
       method: "generate",
       reason: new AiError.ToolParameterValidationError({
         toolName: "read",
-        toolParams: {
-          path: "PRIVATE-PATH",
-          offset: null,
-          limit: 10,
-        },
         description: "PRIVATE-PROVIDER-BODY",
       }),
     })
@@ -95,11 +90,6 @@ describe("sanitized failure evidence", () => {
       failureCategory: "provider-protocol",
       providerErrorType: "ToolParameterValidationError",
       providerToolName: "read",
-      providerToolParameterShape: {
-        limit: "number",
-        offset: "null",
-        path: "string",
-      },
     })
     assert.notInclude(JSON.stringify(annotations), "PRIVATE")
   })

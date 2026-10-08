@@ -1,6 +1,5 @@
 import * as Clock from "effect/Clock"
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
@@ -42,12 +41,18 @@ export interface NativeBatchRequest {
   readonly timeoutMillis: number
 }
 
+const isNativeRunRequest = (value: unknown): value is NativeRunRequest =>
+  typeof value === "object" && value !== null
+
 /** Failure raised while building, launching, validating, or recording a native run. */
-export class NativeSupervisorError extends Data.TaggedError("NativeSupervisorError")<{
-  readonly phase: "device" | "crash" | "protocol" | "timeout" | "runner" | "evidence"
-  readonly request: NativeRunRequest
-  readonly cause: unknown
-}> {}
+export class NativeSupervisorError extends Schema.TaggedError<NativeSupervisorError>()(
+  "NativeSupervisorError",
+  {
+    phase: Schema.Literals(["device", "crash", "protocol", "timeout", "runner", "evidence"]),
+    request: Schema.declare(isNativeRunRequest),
+    cause: Schema.Defect(),
+  },
+) {}
 
 /** Native supervisor operations that produce immutable run records. */
 export interface Service {
@@ -202,7 +207,7 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
           }
           yield* evidence.writeJson("runs", request.id, "record.json", RunRecord, record)
         }).pipe(Effect.ignore)
-      const run: Service["run"] = (request) =>
+      const run: Service["run"] = Effect.fn("NativeSupervisor.run")((request) =>
         Effect.gen(function* () {
           const startedAtMillis = yield* Clock.currentTimeMillis
           const runId = RunId.make(request.id)
@@ -331,8 +336,9 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
               persistFailure(request, startedAtMillis, error, [flowArtifact.id]),
             ),
           )
-        })
-      const runBatch: Service["runBatch"] = (request) =>
+        }),
+      )
+      const runBatch: Service["runBatch"] = Effect.fn("NativeSupervisor.runBatch")((request) =>
         Effect.gen(function* () {
           const firstUnit = request.units[0]
           if (firstUnit === undefined) {
@@ -487,7 +493,8 @@ export const layer: Layer.Layer<NativeSupervisor, never, PlatformDrivers | Evide
               persistFailure(batchRequest, startedAtMillis, error, [flowArtifact.id]),
             ),
           )
-        })
+        }),
+      )
       return NativeSupervisor.of({ run, runBatch })
     }),
   )

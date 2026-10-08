@@ -98,7 +98,7 @@ compatibility/api-mappings.json Reviewed Expo-to-Effect semantic API mappings
 compatibility/surface-lock.json Reviewed lock for the complete discovered export denominator
 compatibility/expectations.json Case-level known upstream or candidate behavior
 compatibility/suites.json      Declarative upstream test discovery rules
-vendor/effect                  Pinned Effect source
+node_modules/effect            Installed, pinned Effect implementation
 ../expo                        External pinned Expo source and behavioral oracle
 .artifacts                     Disposable catalogs, reports, builds, logs, and screenshots
 ```
@@ -333,11 +333,12 @@ hash, and every completed `pod install` still requires `Podfile.lock` to equal
 duplicate multi-gigabyte Pods trees for the same effective dependency graph.
 
 `bun run artifacts:prune --dry-run` reports every deletion, retention reason, protected path, and
-physical byte count. The non-dry command applies the identical deterministic plan, bounds the
-combined local Pods/native cache to 8 GiB by least-recently-used access time, retains lightweight
-run records, and expires bulky run media after seven days. It runs before a build below the 16 GiB
-free-space floor and after every successful native build. `bun run artifacts:clean --all` is the
-explicit emergency operation and refuses to run while active or linked workspaces are present.
+physical byte count. The non-dry command applies the identical deterministic plan, removes cache
+schemas that the current harness no longer reads, and bounds current Pods entries, their indexes,
+and native artifacts to 8 GiB by least-recently-used access time. It retains lightweight run records and expires bulky
+run media after seven days. Pruning runs before a build below the 16 GiB free-space floor and after
+every successful native build. `bun run artifacts:clean --all` is the explicit emergency operation
+and refuses to run while active or linked workspaces are present.
 
 ## Hosted execution
 
@@ -445,19 +446,28 @@ The compatibility suite is a production-bundleable Expo Router application gener
 ## Dependency security policy
 
 `bun run security:audit` rejects every new moderate-or-higher advisory. A reviewed exception is
-allowed only when it identifies the exact owner, locked dependency path, version, and advisory;
+allowed only when it identifies every direct owner, the locked dependency path, version, and advisory;
 the audit policy also fails if that path changes or the exception becomes stale. Exceptions are
 never allowed for publishable `@better-native/*` runtime packages.
 
-The sole reviewed exception is `image-size@1.2.1` through `metro@0.84.4` for
-`GHSA-5p2g-fcmc-qvqq` and `GHSA-w3rx-r6r6-pgpr`. Both denial-of-service advisories currently affect
-every published `image-size` version and have no patched release. Metro uses this dependency only
-while bundling reviewed project assets; it is not shipped by a publishable Better Native runtime
-package or exposed to remote image input in repository automation. The exception must be removed
-when Metro changes the dependency or a patched compatible release exists.
+Four toolchain-only dependency paths have reviewed exceptions:
 
-Root-level Bun overrides resolve other vulnerable Sentry, XML, URL-decoding, routing,
-image-processing, UUID, and React Server Component transitive packages to patched versions. `bun audit` may report only the
-exact reviewed exception; `bun run security:audit` rejects unreviewed findings and stale exceptions.
+- `image-size@1.2.1` through `metro@0.84.4` for `GHSA-5p2g-fcmc-qvqq` and
+  `GHSA-w3rx-r6r6-pgpr`. A patched 2.x release exists, but Metro requires 1.x. Metro reads reviewed
+  project assets during bundling, not remote image input.
+- `braces@3.0.3` through `micromatch@4.0.8` for `GHSA-vfj7-8cjw-p6xm`. No patched release exists;
+  bundling passes repository-controlled glob patterns.
+- `node-forge@1.4.0` through `@expo/cli@57.0.11` and `@expo/code-signing-certificates@0.0.6` for
+  `GHSA-86w9-cpqp-85rv`. No patched release exists. This code runs in Expo development and build
+  tooling, including certificate verification, so the exception does not claim the bug is unreachable.
+- `sprintf-js@1.0.3` through `argparse@1.0.10` for `GHSA-hp3w-g68c-fv3c`. No patched release exists;
+  docgen parses repository-owned Markdown files.
+
+These dependencies are absent from publishable Better Native runtime packages. Remove each exception
+when its dependency path disappears or a compatible patched release becomes available.
+
+Root-level Bun overrides and targeted lockfile updates resolve other vulnerable dependencies to
+patched versions. `bun audit` may report only the exact reviewed exceptions; `bun run security:audit`
+rejects unreviewed findings and stale exceptions.
 Every override remains subject to generated surface-lock, type, test, and compatibility validation
 so that a security update cannot silently change the pinned Expo contract.

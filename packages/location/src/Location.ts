@@ -1,12 +1,12 @@
 import * as Cause from "effect/Cause"
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
 import * as Queue from "effect/Queue"
+import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as Atom from "effect/unstable/reactivity/Atom"
+import * as Atom from "effect/reactivity/Atom"
 import * as ExpoLocation from "expo-location"
 import type { TaskDefinition } from "@better-native/task-manager"
 
@@ -361,10 +361,13 @@ export interface SensorStreamOptions {
  * @category errors
  * @since 0.0.0
  */
-export class LocationUnavailable extends Data.TaggedError("LocationUnavailable")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class LocationUnavailable extends Schema.TaggedError<LocationUnavailable>()(
+  "LocationUnavailable",
+  {
+    method: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 /**
  * Typed failure for rejected Location operations and watcher errors.
@@ -372,10 +375,10 @@ export class LocationUnavailable extends Data.TaggedError("LocationUnavailable")
  * @category errors
  * @since 0.0.0
  */
-export class LocationFailure extends Data.TaggedError("LocationFailure")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class LocationFailure extends Schema.TaggedError<LocationFailure>()("LocationFailure", {
+  method: Schema.String,
+  cause: Schema.Defect(),
+}) {}
 
 type ErrorType = LocationUnavailable | LocationFailure
 
@@ -917,7 +920,7 @@ export const live = Layer.succeed(
       "enableNetworkProviderAsync",
       ExpoLocation.enableNetworkProviderAsync,
     ),
-    currentPosition: (options) =>
+    currentPosition: Effect.fn("Location.currentPosition")((options) =>
       positionStream("getCurrentPositionAsync", options, 1).pipe(
         Stream.runHead,
         Effect.flatMap(
@@ -933,12 +936,14 @@ export const live = Layer.succeed(
           }),
         ),
       ),
-    lastKnownPosition: (options) =>
+    ),
+    lastKnownPosition: Effect.fn("Location.lastKnownPosition")((options) =>
       validated(
         "getLastKnownPositionAsync",
         native("getLastKnownPositionAsync", () => ExpoLocation.getLastKnownPositionAsync(options)),
         (value) => value === null || isPosition(value),
       ),
+    ),
     positions: (options, bufferSize) =>
       positionStream("watchPositionAsync", options, bufferSize ?? 16),
     heading: isWebRuntime()
@@ -959,9 +964,12 @@ export const live = Layer.succeed(
             new LocationUnavailable({ method: "watchHeadingAsync", cause: "unsupported on web" }),
           )
         : nativeHeadings(bufferSize),
-    geocode: (address) => native("geocodeAsync", () => ExpoLocation.geocodeAsync(address)),
-    reverseGeocode: (location) =>
+    geocode: Effect.fn("Location.geocode")((address) =>
+      native("geocodeAsync", () => ExpoLocation.geocodeAsync(address)),
+    ),
+    reverseGeocode: Effect.fn("Location.reverseGeocode")((location) =>
       native("reverseGeocodeAsync", () => ExpoLocation.reverseGeocodeAsync(location)),
+    ),
     foregroundPermission: validated(
       "getForegroundPermissionsAsync",
       native("getForegroundPermissionsAsync", ExpoLocation.getForegroundPermissionsAsync),
@@ -1018,24 +1026,30 @@ export const live = Layer.succeed(
           )
         : nativeMotionActivities(bufferSize),
     backgroundAvailable,
-    startLocationUpdates: (taskName, options) =>
+    startLocationUpdates: Effect.fn("Location.startLocationUpdates")((taskName, options) =>
       native("startLocationUpdatesAsync", () =>
         ExpoLocation.startLocationUpdatesAsync(taskName, options),
       ),
-    stopLocationUpdates: (taskName) =>
+    ),
+    stopLocationUpdates: Effect.fn("Location.stopLocationUpdates")((taskName) =>
       native("stopLocationUpdatesAsync", () => ExpoLocation.stopLocationUpdatesAsync(taskName)),
-    hasStartedLocationUpdates: (taskName) =>
+    ),
+    hasStartedLocationUpdates: Effect.fn("Location.hasStartedLocationUpdates")((taskName) =>
       native("hasStartedLocationUpdatesAsync", () =>
         ExpoLocation.hasStartedLocationUpdatesAsync(taskName),
       ),
-    startGeofencing: (taskName, regions) =>
+    ),
+    startGeofencing: Effect.fn("Location.startGeofencing")((taskName, regions) =>
       native("startGeofencingAsync", () =>
         ExpoLocation.startGeofencingAsync(taskName, [...(regions ?? [])]),
       ),
-    stopGeofencing: (taskName) =>
+    ),
+    stopGeofencing: Effect.fn("Location.stopGeofencing")((taskName) =>
       native("stopGeofencingAsync", () => ExpoLocation.stopGeofencingAsync(taskName)),
-    hasStartedGeofencing: (taskName) =>
+    ),
+    hasStartedGeofencing: Effect.fn("Location.hasStartedGeofencing")((taskName) =>
       native("hasStartedGeofencingAsync", () => ExpoLocation.hasStartedGeofencingAsync(taskName)),
+    ),
   }),
 )
 

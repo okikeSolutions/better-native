@@ -50,7 +50,9 @@ export const layer: Layer.Layer<BuildCommand, never, ProcessSupervisor | Evidenc
       const processes = yield* ProcessSupervisor
       const evidence = yield* EvidenceStore
 
-      const persistObservations: Service["persistObservations"] = (request, name, observations) =>
+      const persistObservations: Service["persistObservations"] = Effect.fn(
+        "BuildCommand.persistObservations",
+      )((request, name, observations) =>
         evidence
           .writeBytes(
             "builds",
@@ -65,9 +67,10 @@ export const layer: Layer.Layer<BuildCommand, never, ProcessSupervisor | Evidenc
             Effect.mapError(
               (cause) => new BuildPipelineError({ phase: "evidence", request, cause }),
             ),
-          )
+          ),
+      )
 
-      const run: Service["run"] = (request, phase, name, spec) =>
+      const run: Service["run"] = Effect.fn("BuildCommand.run")((request, phase, name, spec) =>
         Effect.gen(function* () {
           const startedAtMillis = yield* Clock.currentTimeMillis
           yield* Console.log(
@@ -117,7 +120,8 @@ export const layer: Layer.Layer<BuildCommand, never, ProcessSupervisor | Evidenc
               ? cause
               : new BuildPipelineError({ phase, request, cause }),
           ),
-        )
+        ),
+      )
 
       return BuildCommand.of({ persistObservations, run })
     }),

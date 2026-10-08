@@ -28,9 +28,6 @@ export default defineConfig({
     sequence: {
       concurrent: false,
     },
-    experimental: {
-      fsModuleCache: true,
-    },
     reporters: ["vitest-evals/reporter", "json"],
     outputFile: {
       json: `.artifacts/evals/${runId}/outputFile.json`,

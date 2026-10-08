@@ -1,8 +1,7 @@
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import * as Schema from "effect/Schema"
-import * as AiError from "effect/unstable/ai/AiError"
+import * as AiError from "effect/ai/AiError"
 import * as AgentAdapters from "./agent/AgentAdapters.ts"
 import * as Config from "./Config.ts"
 import * as Domain from "./Domain.ts"
@@ -12,15 +11,21 @@ import * as Diagnostics from "./observability/Diagnostics.ts"
 import * as TaskWorkspace from "./tasks/TaskWorkspace.ts"
 
 /** Typed failure raised when a caller supplies a malformed trial input. */
-export class TrialInputInvalid extends Data.TaggedError("TrialInputInvalid")<{
-  readonly cause: Schema.SchemaError
-}> {}
+export class TrialInputInvalid extends Schema.TaggedError<TrialInputInvalid>()(
+  "TrialInputInvalid",
+  {
+    cause: Schema.instanceOf(Schema.SchemaError),
+  },
+) {}
 
 /** Typed failure raised when a trial does not select the pinned task revision. */
-export class TrialTaskMismatch extends Data.TaggedError("TrialTaskMismatch")<{
-  readonly taskId: Domain.TaskId
-  readonly taskVersion: Domain.TaskVersion
-}> {}
+export class TrialTaskMismatch extends Schema.TaggedError<TrialTaskMismatch>()(
+  "TrialTaskMismatch",
+  {
+    taskId: Domain.TaskId,
+    taskVersion: Domain.TaskVersion,
+  },
+) {}
 
 export const gateFailureEvidence = (
   gates: ReadonlyArray<Domain.GateResult>,
@@ -73,13 +78,6 @@ export const infrastructureFailureEvidence = (error: unknown): Domain.FailureEvi
     })),
   )
 
-const jsonType = (value: unknown): string =>
-  Match.value({ isNull: value === null, isArray: Array.isArray(value) }).pipe(
-    Match.when({ isNull: true }, () => "null"),
-    Match.when({ isArray: true }, () => "array"),
-    Match.orElse(() => typeof value),
-  )
-
 /** Value-free local diagnostics for debugging reportable infrastructure failures. */
 export const infrastructureFailureLogAnnotations = (
   error: AiError.AiError | Isolation.IsolationFailure,
@@ -89,19 +87,7 @@ export const infrastructureFailureLogAnnotations = (
       failureCategory: "provider-protocol",
       providerErrorType: failure.reason._tag,
       ...(failure.reason._tag === "ToolParameterValidationError"
-        ? {
-            providerToolName: failure.reason.toolName,
-            providerToolParameterShape:
-              typeof failure.reason.toolParams === "object" &&
-              failure.reason.toolParams !== null &&
-              !Array.isArray(failure.reason.toolParams)
-                ? Object.fromEntries(
-                    Object.entries(failure.reason.toolParams)
-                      .sort(([left], [right]) => left.localeCompare(right))
-                      .map(([key, value]) => [key, jsonType(value)]),
-                  )
-                : {},
-          }
+        ? { providerToolName: failure.reason.toolName }
         : {}),
     })),
     Match.when(Match.instanceOf(Isolation.IsolationFailure), (failure) => ({

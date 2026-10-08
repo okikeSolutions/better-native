@@ -41,13 +41,11 @@ from pinned Expo and rejects duplicate, stale, renamed, or missing targets.
 The harness must run from the Better Native repository root. It requires:
 
 - Bun `1.3.14` (the version recorded in the root `package.json`);
-- the `vendor/effect` submodule checked out at the revision in
-  `compatibility/upstreams.json`; and
+- the installed Effect package at the version in `compatibility/upstreams.json`; and
 - a non-symlinked Expo checkout at the exact pinned revision. By default it is
   expected at `../expo`; set `EXPO_SOURCE_ROOT` to use another location.
 
 ```sh
-git submodule update --init --recursive
 bun install
 
 # Clone Expo at the revision in compatibility/upstreams.json, then either:

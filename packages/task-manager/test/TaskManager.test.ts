@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import * as Cause from "effect/Cause"
 import * as Effect from "effect/Effect"
 import * as ManagedRuntime from "effect/ManagedRuntime"
+import type { TaskManager as TaskManagerService } from "../src/TaskManager.ts"
 
 /* oxlint-disable effecttsgo/strict-effect-provide -- test runtime entry points */
 
@@ -20,8 +21,8 @@ vi.mock("expo-task-manager", () => mocks)
 
 const TaskManager = await import("../src/TaskManager.ts")
 
-const run = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
-  Effect.runPromise(effect.pipe(Effect.provide(TaskManager.live)) as Effect.Effect<A, E>)
+const run = <A, E>(effect: Effect.Effect<A, E, TaskManagerService>) =>
+  Effect.runPromise(effect.pipe(Effect.provide(TaskManager.live)))
 
 describe("@better-native/task-manager", () => {
   beforeEach(() => vi.clearAllMocks())

@@ -23,9 +23,11 @@ const taskName = "better-native-background-task-capability"
 /** Eager by design: the operating system may launch this bundle without mounting a route. */
 const definition = BackgroundTask.defineTask(taskName, runtime, () => Effect.void)
 
-const run = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
+const run = <A, E>(
+  effect: Effect.Effect<A, E, BackgroundTask.BackgroundTask | TaskManager.TaskManager>,
+) =>
   // oxlint-disable-next-line effecttsgo/strict-effect-provide -- compatibility capability entry point
-  Effect.runPromise(effect.pipe(Effect.provide(AppLive)) as Effect.Effect<A, E>)
+  Effect.runPromise(effect.pipe(Effect.provide(AppLive)))
 
 export function test({ describe, it }: JasmineApi): void {
   describe(name, () => {

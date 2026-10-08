@@ -56,9 +56,5 @@ export const sharedTestConfig = {
   sequence: {
     concurrent: false,
   },
-  experimental: {
-    // Focused migration runs repeatedly load a large Effect module graph.
-    fsModuleCache: true,
-  },
   maxWorkers: Math.min(4, Math.max(1, Math.floor(availableParallelism() / 2))),
 } satisfies InlineConfig

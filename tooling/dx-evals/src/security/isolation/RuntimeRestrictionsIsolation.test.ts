@@ -11,7 +11,7 @@ describe("runtime restriction isolation", () => {
     )
     return observeSource(`
 import * as Effect from "effect/Effect"
-import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner"
 
 export const candidate = Effect.as(ChildProcessSpawner.ChildProcessSpawner, "service-leaked")
 `).pipe(

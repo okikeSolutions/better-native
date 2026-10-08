@@ -6,10 +6,10 @@ import * as Effect from "effect/Effect"
 import * as Fiber from "effect/Fiber"
 import * as Layer from "effect/Layer"
 import * as Stream from "effect/Stream"
-import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
-import * as AtomRegistry from "effect/unstable/reactivity/AtomRegistry"
-import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { SqlError } from "effect/unstable/sql/SqlError"
+import * as AsyncResult from "effect/reactivity/AsyncResult"
+import * as AtomRegistry from "effect/reactivity/AtomRegistry"
+import * as SqlClient from "effect/sql/SqlClient"
+import { SqlError } from "effect/sql/SqlError"
 
 const mocks = vi.hoisted(() => ({
   addDatabaseChangeListener: vi.fn(),
@@ -60,7 +60,7 @@ const makeDatabase = () => ({
   closeAsync: vi.fn(async () => undefined),
   getAllAsync: vi.fn(async () => [{ id: 1, user_name: "Ada" }]),
   getEachAsync: vi.fn(() =>
-    (async function* () {
+    (async function* (): AsyncGenerator<Record<string, unknown>> {
       yield { id: 1 }
       yield { id: 2 }
     })(),
@@ -402,6 +402,12 @@ describe("@better-native/sqlite", () => {
 
   it("supports values, values-unprepared, unprepared rows, and transformed streams", async () => {
     const database = makeDatabase()
+    database.getEachAsync.mockImplementationOnce(() =>
+      (async function* () {
+        yield { user_name: "Ada" }
+        yield { user_name: "Grace" }
+      })(),
+    )
     mocks.openDatabaseAsync.mockResolvedValueOnce(database)
 
     const result = await Effect.runPromise(
@@ -429,7 +435,7 @@ describe("@better-native/sqlite", () => {
     expect(result.values).toEqual([[1, "Ada"]])
     expect(result.valuesUnprepared).toEqual([[1, "Ada"]])
     expect(result.rows).toEqual([{ id: 1, userName: "Ada" }])
-    expect(result.streamed).toEqual([{ id: 1 }, { id: 2 }])
+    expect(result.streamed).toEqual([{ userName: "Ada" }, { userName: "Grace" }])
     expect(database.prepareAsync).toHaveBeenCalledTimes(2)
   })
 

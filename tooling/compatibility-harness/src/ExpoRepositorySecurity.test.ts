@@ -25,7 +25,6 @@ describe("ExpoRepository path boundaries", () => {
       const fs = yield* FileSystem.FileSystem
       const root = yield* fs.makeTempDirectoryScoped({ prefix: "better-native-local-only-" })
       yield* fs.makeDirectory(`${root}/compatibility`, { recursive: true })
-      yield* fs.makeDirectory(`${root}/vendor/effect`, { recursive: true })
       yield* fs.writeFileString(
         `${root}/compatibility/upstreams.json`,
         JSON.stringify({
@@ -33,7 +32,7 @@ describe("ExpoRepository path boundaries", () => {
           effect: {
             repository: "https://example.invalid/effect.git",
             revision: "2".repeat(40),
-            path: "vendor/effect",
+            version: "4.0.2",
           },
           expo: {
             repository: "https://example.invalid/expo.git",
@@ -71,7 +70,7 @@ describe("ExpoRepository path boundaries", () => {
     }).pipe(provideLayer(repositoryLayer(process.cwd()))),
   )
 
-  it.effect("rejects unsafe upstream revisions and paths during decoding", () =>
+  it.effect("rejects unsafe upstream revisions during decoding", () =>
     Effect.gen(function* () {
       for (const invalid of [
         {
@@ -88,7 +87,7 @@ describe("ExpoRepository path boundaries", () => {
           effect: {
             repository: "https://example.invalid/effect.git",
             revision: "2".repeat(40),
-            path: "vendor/effect",
+            version: "4.0.2",
           },
           expo: invalid,
         }).pipe(Effect.result)
@@ -106,7 +105,6 @@ describe("ExpoRepository path boundaries", () => {
       })
       yield* fs.makeDirectory(`${root}/compatibility`, { recursive: true })
       yield* fs.makeDirectory(`${root}/expo-source`, { recursive: true })
-      yield* fs.makeDirectory(`${root}/vendor/effect`, { recursive: true })
       yield* fs.writeFileString(
         `${root}/compatibility/upstreams.json`,
         JSON.stringify({
@@ -114,7 +112,7 @@ describe("ExpoRepository path boundaries", () => {
           effect: {
             repository: "https://example.invalid/effect.git",
             revision: "2".repeat(40),
-            path: "vendor/effect",
+            version: "4.0.2",
           },
           expo: {
             repository: "https://example.invalid/expo.git",

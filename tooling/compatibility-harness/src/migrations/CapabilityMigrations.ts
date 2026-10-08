@@ -42,7 +42,7 @@ export const Capability = Schema.Struct({
   requirements: Requirements,
   verification: Verification,
 })
-export type Capability = Schema.Schema.Type<typeof Capability>
+export interface Capability extends Schema.Schema.Type<typeof Capability> {}
 
 /** Resolves the capability source that supplies one platform's parity evidence. */
 export const compatibilitySourceFor = (
@@ -56,7 +56,7 @@ export const CapabilityLedger = Schema.Struct({
   schemaVersion: Schema.Literal(2),
   capabilities: Schema.Array(Capability),
 })
-export type CapabilityLedger = Schema.Schema.Type<typeof CapabilityLedger>
+export interface CapabilityLedger extends Schema.Schema.Type<typeof CapabilityLedger> {}
 
 export interface MigrationCheck {
   readonly name: string
@@ -300,15 +300,13 @@ export const inspect = Effect.fn("CapabilityMigrations.inspect")(function* (
               return contains(integrationConfig, "PublishedCapabilityPackages.test.ts")
             case "eval-controls":
               return Effect.all([
-                contains(checkWorkflow, "[.capabilities[].id]"),
-                contains(checkWorkflow, "fromJSON(needs.plan.outputs.capabilities)"),
-                contains(checkWorkflow, "bun run evals validate --task"),
-                contains(turboConfig, `${capability.candidatePackage}#build`),
-              ]).pipe(
-                Effect.map(
-                  ([derived, matrix, command, build]) => derived && matrix && command && build,
+                contains(
+                  checkWorkflow,
+                  "jq -r '.capabilities[].id' compatibility/capabilities.json",
                 ),
-              )
+                contains(checkWorkflow, 'bun run evals validate --task "$capability"'),
+                contains(turboConfig, `${capability.candidatePackage}#build`),
+              ]).pipe(Effect.map(([derived, command, build]) => derived && command && build))
             case "compile-contracts":
               return exists(
                 resolve(

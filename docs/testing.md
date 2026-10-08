@@ -85,8 +85,10 @@ bun run test:integration
 BETTER_NATIVE_INTEGRATION_SUITE=compile-contracts bun run test:integration
 ```
 
-CI runs all named integration suites as separate matrix jobs and derives the per-capability eval
-matrix directly from `compatibility/capabilities.json`. The host unit suite also excludes Vitest
+CI selects each named integration suite and each ledger capability in one sequential verification
+job. It reads capability IDs directly from `compatibility/capabilities.json`, so each fixture remains
+selectable without repeating workspace installation, Expo setup, and Podman setup in separate jobs.
+The host unit suite also excludes Vitest
 Evals task controls. Run the secretless reference, no-op, and broken controls through their
 dedicated configuration with:
 
@@ -115,10 +117,15 @@ bun run typecheck
 bun run check:effect
 ```
 
+`oxlint` keeps Effect's type and service diagnostics enabled. Its `unstable-api-usage` rule is
+disabled because the pinned Effect v4 release marks required SQL, reactivity, platform, and test
+modules unstable; that annotation does not identify a replacement API for these integrations.
+
 Artifact lifecycle host tests prove that active workspace locks protect both workspaces and shared
 caches, dry-run and applied pruning choose identical deterministic targets, failed-workspace
-retention expires after 24 hours, sparse files are measured by physical allocation, and CocoaPods
-entries deduplicate upstream/candidate workspaces when their effective inputs and lockfile agree.
+retention expires after 24 hours, and sparse files are measured by physical allocation. The current
+CocoaPods schema must count toward the shared budget, obsolete schemas are deleted, and equal
+effective inputs and lockfiles deduplicate upstream/candidate workspaces.
 These tests do not replace a native build; native verification additionally proves that the product
 is published before its workspace and DerivedData are removed.
 
@@ -331,6 +338,13 @@ bun run compatibility-harness supervise-build-pair \
 Omitting `--source` deliberately preserves the monolithic 85-dependency compatibility app. Use
 that full shell for periodic full-suite CI, surface-wide smoke validation, or investigations whose
 native closure crosses capability boundaries—not for ordinary local package iteration.
+
+For a focused hosted native cycle, dispatch `Compatibility` with `mode=pair`, one platform, and
+`source` set to the capability filename from `compatibility/capabilities.json` (for example
+`SQLite.ts`). The build selects that capability before native autolinking, repacks the upstream and
+candidate JavaScript from one native Release shell, and runs only that source. iOS uses one test
+shard for a focused dispatch. Dispatch iOS and Android separately so only one platform build runs
+at a time. An empty `source` keeps the periodic full-suite behavior.
 
 Workspace preparation keeps native autolinking selective while materializing a separate recursive
 Metro dependency closure. Both the initial export and cached-artifact repack resolve exclusively

@@ -78,7 +78,7 @@ const Observation = Schema.Struct({
   value: Schema.optional(Schema.Json),
   failureCategory: Schema.optional(Schema.Literal("module-load")),
 })
-type Observation = Schema.Schema.Type<typeof Observation>
+interface Observation extends Schema.Schema.Type<typeof Observation> {}
 
 const decodeObservation = (
   value: unknown,
@@ -160,7 +160,7 @@ export const verifySubmission = (task: TaskData, untrustedSubmission: Submission
       })
       const candidateSource =
         submission.entries.find((entry) => entry.path === task.definition.entrypoint)?.content ??
-        task.fixtureFiles[0]!.content
+        task.fixtureFiles[0].content
       const workspace = yield* Workspace.materializeCandidate(task, submission)
       const isolation = yield* Isolation.Isolation
       const results = yield* Effect.forEach(

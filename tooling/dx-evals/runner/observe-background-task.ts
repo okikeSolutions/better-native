@@ -7,7 +7,7 @@ const runtime = makeSupervisorRuntime("./worker-background-task.ts")
 try {
   const { observation, request } = await runtime.runPromise(
     Effect.gen(function* () {
-      const decodedRequest = decodeSupervisorRequest(yield* readStdinJson)
+      const decodedRequest = yield* decodeSupervisorRequest(yield* readStdinJson)
       return {
         request: decodedRequest,
         observation: yield* supervise(decodedRequest),

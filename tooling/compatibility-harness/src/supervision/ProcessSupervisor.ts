@@ -1,17 +1,17 @@
 import { existsSync } from "node:fs"
 import * as Clock from "effect/Clock"
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Exit from "effect/Exit"
 import * as Fiber from "effect/Fiber"
 import * as Layer from "effect/Layer"
 import * as Ref from "effect/Ref"
 import type * as Scope from "effect/Scope"
+import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
-import * as ChildProcess from "effect/unstable/process/ChildProcess"
-import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
-import type { ProcessObservation } from "../Domain.ts"
+import * as ChildProcess from "effect/process/ChildProcess"
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner"
+import { ProcessObservation } from "../Domain.ts"
 
 /** Bounded child-process launch specification. */
 export interface ProcessSpec {
@@ -51,13 +51,16 @@ export const processInvocation = (
       }
     : { command: spec.command, args: spec.args ?? [] }
 
+const isProcessSpec = (value: unknown): value is ProcessSpec =>
+  typeof value === "object" && value !== null
+
 /** Failure raised when a child process cannot be spawned, drained, or terminated. */
-export class ProcessFailure extends Data.TaggedError("ProcessFailure")<{
-  readonly reason: "spawn" | "stream" | "exit" | "timeout"
-  readonly spec: ProcessSpec
-  readonly observations: ReadonlyArray<ProcessObservation>
-  readonly cause: unknown
-}> {}
+export class ProcessFailure extends Schema.TaggedError<ProcessFailure>()("ProcessFailure", {
+  reason: Schema.Literals(["spawn", "stream", "exit", "timeout"]),
+  spec: Schema.declare(isProcessSpec),
+  observations: Schema.Array(ProcessObservation),
+  cause: Schema.Defect(),
+}) {}
 
 /** Backend process handle exposed to the supervisor lifecycle. */
 export interface ProcessHandle {
@@ -168,7 +171,7 @@ const utf8Suffix = (text: string, byteLimit: number): BoundedLine => {
   const bytes = encoder.encode(text)
   if (bytes.byteLength <= byteLimit) return { text, omittedBytes: 0 }
   let start = bytes.byteLength - byteLimit
-  while (start < bytes.byteLength && (bytes[start]! & 0xc0) === 0x80) start += 1
+  while (start < bytes.byteLength && ((bytes[start] ?? 0) & 0xc0) === 0x80) start += 1
   return {
     text: decoder.decode(bytes.subarray(start)),
     omittedBytes: start,
@@ -363,15 +366,16 @@ const makeService = (backend: ProcessBackend): Service => {
         fail,
       }
     })
-  const start: Service["start"] = (spec) =>
+  const start: Service["start"] = Effect.fn("ProcessSupervisor.start")((spec) =>
     startInternal(spec).pipe(
       Effect.map(({ exitCode, observations, terminate }) => ({
         exitCode,
         observations,
         terminate,
       })),
-    )
-  const run: Service["run"] = (spec) =>
+    ),
+  )
+  const run: Service["run"] = Effect.fn("ProcessSupervisor.run")((spec) =>
     Effect.scoped(
       Effect.gen(function* () {
         const running = yield* startInternal(spec)
@@ -392,7 +396,8 @@ const makeService = (backend: ProcessBackend): Service => {
         yield* running.cleanupDescendants
         return { exitCode, observations: yield* running.observations }
       }),
-    )
+    ),
+  )
   return { start, run }
 }
 

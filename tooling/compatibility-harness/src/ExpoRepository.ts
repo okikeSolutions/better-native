@@ -1,13 +1,13 @@
 import * as Context from "effect/Context"
 import * as Crypto from "effect/Crypto"
 import * as Effect from "effect/Effect"
-import * as Encoding from "effect/Encoding"
+import * as Hex from "effect/encoding/Hex"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Path from "effect/Path"
 import * as Schema from "effect/Schema"
-import * as ChildProcess from "effect/unstable/process/ChildProcess"
-import * as ChildProcessSpawner from "effect/unstable/process/ChildProcessSpawner"
+import * as ChildProcess from "effect/process/ChildProcess"
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner"
 import { HarnessConfig } from "./HarnessConfig.ts"
 import { HarnessError } from "./HarnessError.ts"
 
@@ -20,23 +20,10 @@ export const GitRevision = Schema.String.pipe(
   ),
 )
 
-const RepositoryRelativePath = Schema.String.pipe(
-  Schema.check(
-    Schema.makeFilter(
-      (value) =>
-        value.length > 0 &&
-        !value.includes("\0") &&
-        !/^(?:[A-Za-z]:)?[\\/]/.test(value) &&
-        !value.split(/[\\/]/).some((segment) => segment === ".."),
-      { expected: "a non-empty repository-relative path without parent traversal" },
-    ),
-  ),
-)
-
-const Upstream = Schema.Struct({
+const EffectUpstream = Schema.Struct({
   repository: Schema.String,
   revision: GitRevision,
-  path: RepositoryRelativePath,
+  version: Schema.String,
 })
 
 const ExternalUpstream = Schema.Struct({
@@ -47,18 +34,17 @@ const ExternalUpstream = Schema.Struct({
 /** Versioned configuration for the pinned Effect and Expo source revisions. */
 export const Upstreams = Schema.Struct({
   schemaVersion: Schema.Literal(1),
-  effect: Upstream,
+  effect: EffectUpstream,
   expo: ExternalUpstream,
 })
 
 /** Decoded upstream configuration accepted by {@link Upstreams}. */
-export type Upstreams = Schema.Schema.Type<typeof Upstreams>
+export interface Upstreams extends Schema.Schema.Type<typeof Upstreams> {}
 
 /** Repository access constrained to verified Better Native and Expo roots. */
 export interface Service {
   readonly root: string
   readonly expoRoot: string
-  readonly effectRoot: string
   readonly upstreams: Upstreams
   readonly readJson: <S extends Schema.ConstraintDecoder<unknown>>(
     relativePath: string,
@@ -167,28 +153,6 @@ export const layer = (
         path.join(root, "compatibility/upstreams.json"),
         Upstreams,
       )
-      const resolveUpstream = (configuredPath: string, name: string) =>
-        resolveWithin(root, configuredPath, `resolve ${name} upstream`).pipe(
-          Effect.flatMap((target) =>
-            fs.realPath(target).pipe(
-              Effect.mapError((cause) => failure(`resolve ${name} upstream`, target, cause)),
-              Effect.flatMap((canonical) =>
-                canonical ===
-                  path.resolve(canonicalRoot, path.relative(path.resolve(root), target)) &&
-                (canonical === canonicalRoot || canonical.startsWith(`${canonicalRoot}${path.sep}`))
-                  ? Effect.succeed(canonical)
-                  : Effect.fail(
-                      failure(
-                        `resolve ${name} upstream`,
-                        target,
-                        `configured upstream must be a real directory inside the repository; resolved to ${canonical}`,
-                      ),
-                    ),
-              ),
-            ),
-          ),
-        )
-      const effectRoot = yield* resolveUpstream(upstreams.effect.path, "Effect")
       const expoRoot = path.resolve(expoSourceRoot ?? config.expoSourceRoot)
       const resolveExpoRoot = fs
         .realPath(expoRoot)
@@ -212,18 +176,31 @@ export const layer = (
 
       const verify = Effect.gen(function* () {
         const canonicalExpoRoot = yield* resolveExpoRoot
-        for (const [name, directory, expected] of [
-          ["Expo", canonicalExpoRoot, upstreams.expo.revision],
-          ["Effect", effectRoot, upstreams.effect.revision],
-        ] as const) {
-          const actual = yield* revision(directory)
-          if (actual !== expected) {
-            return yield* failure(
-              "verify upstream revision",
-              directory,
-              `${name} is ${actual}; expected ${expected}`,
-            )
-          }
+        const actualExpoRevision = yield* revision(canonicalExpoRoot)
+        if (actualExpoRevision !== upstreams.expo.revision) {
+          return yield* failure(
+            "verify upstream revision",
+            canonicalExpoRoot,
+            `Expo is ${actualExpoRevision}; expected ${upstreams.expo.revision}`,
+          )
+        }
+        const installedEffect = yield* decodeJson(
+          path.join(root, "node_modules/effect/package.json"),
+          Schema.Struct({ version: Schema.String }),
+        )
+        const declaredEffect = yield* decodeJson(
+          path.join(root, "package.json"),
+          Schema.Struct({ devDependencies: Schema.Struct({ effect: Schema.String }) }),
+        )
+        if (
+          installedEffect.version !== upstreams.effect.version ||
+          declaredEffect.devDependencies.effect !== upstreams.effect.version
+        ) {
+          return yield* failure(
+            "verify Effect version",
+            root,
+            `Effect is installed at ${installedEffect.version} and declared at ${declaredEffect.devDependencies.effect}; expected ${upstreams.effect.version}`,
+          )
         }
         return undefined
       })
@@ -231,20 +208,21 @@ export const layer = (
       return ExpoRepository.of({
         root,
         expoRoot,
-        effectRoot,
         upstreams,
-        readJson: (relativePath, schema) =>
+        readJson: Effect.fn("ExpoRepository.readJson")((relativePath, schema) =>
           resolveWithin(root, relativePath, "resolve repository JSON").pipe(
             Effect.flatMap((absolutePath) => decodeJson(absolutePath, schema)),
           ),
-        readExpoJson: (relativePath, schema) =>
+        ),
+        readExpoJson: Effect.fn("ExpoRepository.readExpoJson")((relativePath, schema) =>
           resolveExpoRoot.pipe(
             Effect.flatMap((canonicalExpoRoot) =>
               resolveWithin(canonicalExpoRoot, relativePath, "resolve Expo JSON"),
             ),
             Effect.flatMap((absolutePath) => decodeJson(absolutePath, schema)),
           ),
-        readExpoText: (relativePath) =>
+        ),
+        readExpoText: Effect.fn("ExpoRepository.readExpoText")((relativePath) =>
           resolveExpoRoot.pipe(
             Effect.flatMap((canonicalExpoRoot) =>
               resolveWithin(canonicalExpoRoot, relativePath, "resolve Expo source"),
@@ -255,6 +233,7 @@ export const layer = (
                 .pipe(Effect.mapError((cause) => failure("read Expo source", absolutePath, cause))),
             ),
           ),
+        ),
         expoFiles: resolveExpoRoot.pipe(
           Effect.flatMap((canonicalExpoRoot) =>
             childProcesses.string(ChildProcess.make("git", ["-C", canonicalExpoRoot, "ls-files"])),
@@ -267,12 +246,13 @@ export const layer = (
           ),
           Effect.mapError((cause) => failure("list Expo source", expoRoot, cause)),
         ),
-        hashString: (value) =>
+        hashString: Effect.fn("ExpoRepository.hashString")((value) =>
           crypto.digest("SHA-256", new TextEncoder().encode(value)).pipe(
-            Effect.map(Encoding.encodeHex),
+            Effect.map(Hex.encode),
             Effect.mapError((cause) => failure("hash compatibility data", undefined, cause)),
           ),
-        writeArtifact: (relativePath, value) =>
+        ),
+        writeArtifact: Effect.fn("ExpoRepository.writeArtifact")((relativePath, value) =>
           Effect.gen(function* () {
             const artifactRoot = path.join(root, ".artifacts")
             const output = yield* resolveWithin(artifactRoot, relativePath, "resolve artifact path")
@@ -347,6 +327,7 @@ export const layer = (
               .pipe(Effect.mapError((cause) => failure("publish artifact", output, cause)))
             return output
           }),
+        ),
         verify,
       })
     }),

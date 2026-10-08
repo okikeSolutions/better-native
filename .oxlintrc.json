@@ -9,6 +9,7 @@
   },
   "plugins": ["effecttsgo"],
   "rules": {
+    "effecttsgo/unstable-api-usage": "off",
     "no-nested-ternary": "error",
     "no-throw-literal": "error",
     "no-underscore-dangle": [

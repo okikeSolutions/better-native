@@ -317,12 +317,12 @@ describe("published capability packages", () => {
       assert.deepStrictEqual(manifest.files, ["build", "LICENSE", "README.md"])
       assert.strictEqual(manifest.scripts.prepack, "bun run build")
       assert.isUndefined(manifest.dependencies)
-      assert.strictEqual(manifest.devDependencies.effect, "4.0.0-rc.112")
+      assert.strictEqual(manifest.devDependencies.effect, "4.0.2")
       assert.deepStrictEqual(manifest.peerDependencies, {
         ...(capability.taskManagerWrapper
           ? { "@better-native/task-manager": "0.0.1-alpha.1" }
           : {}),
-        effect: "4.0.0-rc.112",
+        effect: "4.0.2",
         [capability.provider]: ">=57.0.0 <58.0.0",
         ...(capability.taskManagerProvider ? { "expo-task-manager": ">=57.0.0 <58.0.0" } : {}),
       })
@@ -428,7 +428,7 @@ describe("published capability packages", () => {
           ...(capability.taskManagerWrapper
             ? { "@better-native/task-manager": "0.0.1-alpha.1" }
             : {}),
-          effect: "4.0.0-rc.112",
+          effect: "4.0.2",
           [capability.provider]: ">=57.0.0 <58.0.0",
           ...(capability.taskManagerProvider ? { "expo-task-manager": ">=57.0.0 <58.0.0" } : {}),
         })

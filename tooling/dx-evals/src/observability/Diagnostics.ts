@@ -1,6 +1,5 @@
 import * as Config from "effect/Config"
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
@@ -10,7 +9,7 @@ import * as Option from "effect/Option"
 import * as Path from "effect/Path"
 import * as References from "effect/References"
 import * as Schema from "effect/Schema"
-import * as AiError from "effect/unstable/ai/AiError"
+import * as AiError from "effect/ai/AiError"
 import * as Domain from "../Domain.ts"
 import * as ArtifactStore from "../evidence/ArtifactStore.ts"
 
@@ -20,9 +19,12 @@ export const maximumProviderResponseBodyBytes = 64 * 1_024
 const privateVisibility = "private-diagnostic"
 
 /** Failure raised when the private diagnostic sink cannot be opened safely. */
-export class DiagnosticSinkInvalid extends Data.TaggedError("DiagnosticSinkInvalid")<{
-  readonly reason: string
-}> {}
+export class DiagnosticSinkInvalid extends Schema.TaggedError<DiagnosticSinkInvalid>()(
+  "DiagnosticSinkInvalid",
+  {
+    reason: Schema.String,
+  },
+) {}
 
 export interface Service {
   readonly filePath?: string
@@ -136,7 +138,7 @@ const publicOnly = (logger: Logger.Logger<unknown, unknown>) =>
   )
 
 const disabledService = Diagnostics.of({
-  recordProviderFailure: () => Effect.void,
+  recordProviderFailure: Effect.fn("Diagnostics.recordProviderFailure")(() => Effect.void),
 })
 
 /** No-op diagnostics used by deterministic commands and tests without a campaign run ID. */
@@ -193,17 +195,18 @@ export const layerForCampaign = (runId: Domain.RunId) =>
         Diagnostics,
         Diagnostics.of({
           filePath,
-          recordProviderFailure: (error) =>
+          recordProviderFailure: Effect.fn("Diagnostics.recordProviderFailure")((error) =>
             Effect.logError("Provider request failed").pipe(
               Effect.annotateLogs(providerFailureAnnotations(error)),
             ),
+          ),
         }),
       )
       return Layer.merge(loggerLayer, serviceLayer)
     }),
   )
 
-const campaignRunId = Config.option(Config.string("BETTER_NATIVE_EVAL_RUN_ID"))
+const campaignRunId = Config.option(Config.String("BETTER_NATIVE_EVAL_RUN_ID"))
 
 /** Enables private campaign diagnostics only when the controller supplies a run identity. */
 export const layer = Layer.unwrap(

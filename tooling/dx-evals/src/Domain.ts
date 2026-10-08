@@ -127,7 +127,7 @@ export const FailureEvidence = Schema.Struct({
   gateId: Schema.optional(GateId),
 })
 /** Decoded failure evidence accepted by {@link FailureEvidence}. */
-export type FailureEvidence = Schema.Schema.Type<typeof FailureEvidence>
+export interface FailureEvidence extends Schema.Schema.Type<typeof FailureEvidence> {}
 
 /** Version-independent result for one required or diagnostic eval gate. */
 export const GateResult = Schema.Struct({
@@ -138,7 +138,7 @@ export const GateResult = Schema.Struct({
   failureCategory: Schema.optional(FailureCategory),
 })
 /** Decoded gate result accepted by {@link GateResult}. */
-export type GateResult = Schema.Schema.Type<typeof GateResult>
+export interface GateResult extends Schema.Schema.Type<typeof GateResult> {}
 
 /** Canonical user, system, or assistant message in a trial transcript. */
 export const TranscriptMessageEvent = Schema.Struct({
@@ -196,7 +196,7 @@ export const UsageSummary = Schema.Struct({
   providerFingerprint: Schema.optional(Schema.String),
 })
 /** Decoded usage summary accepted by {@link UsageSummary}. */
-export type UsageSummary = Schema.Schema.Type<typeof UsageSummary>
+export interface UsageSummary extends Schema.Schema.Type<typeof UsageSummary> {}
 
 /** Versioned input supplied to exactly one eval harness invocation. */
 export const TrialInput = Schema.Struct({
@@ -208,7 +208,7 @@ export const TrialInput = Schema.Struct({
   agentProfileId: Schema.optional(AgentProfileId),
 })
 /** Decoded trial input accepted by {@link TrialInput}. */
-export type TrialInput = Schema.Schema.Type<typeof TrialInput>
+export interface TrialInput extends Schema.Schema.Type<typeof TrialInput> {}
 /** Unbranded representation accepted at the external harness boundary. */
 export type TrialInputEncoded = Schema.Codec.Encoded<typeof TrialInput>
 
@@ -248,7 +248,7 @@ export const TrialOutcome = Schema.Struct({
   publicEvidence: PublicEvidence,
 })
 /** Decoded trial outcome accepted by {@link TrialOutcome}. */
-export type TrialOutcome = Schema.Schema.Type<typeof TrialOutcome>
+export interface TrialOutcome extends Schema.Schema.Type<typeof TrialOutcome> {}
 
 /** Effectful decoder for untrusted trial input. */
 export const decodeTrialInput = Schema.decodeUnknownEffect(TrialInput)

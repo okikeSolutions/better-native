@@ -2,8 +2,8 @@ import * as Console from "effect/Console"
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import * as Option from "effect/Option"
-import * as Command from "effect/unstable/cli/Command"
-import * as Flag from "effect/unstable/cli/Flag"
+import * as Command from "effect/cli/Command"
+import * as Flag from "effect/cli/Flag"
 import { ExpoRepository } from "../ExpoRepository.ts"
 import {
   ComparisonEvidenceRecord,
@@ -26,9 +26,9 @@ import {
 import * as RunComparison from "../comparison/RunComparison.ts"
 import { shardCountFlag, shardIndexFlag, timeoutMillisFlag } from "./Shared.ts"
 
-const upstreamEvidenceFlag = Flag.string("upstream")
-const candidateEvidenceFlag = Flag.string("candidate")
-const comparisonSourceFlag = Flag.string("source").pipe(Flag.optional)
+const upstreamEvidenceFlag = Flag.String("upstream")
+const candidateEvidenceFlag = Flag.String("candidate")
+const comparisonSourceFlag = Flag.String("source").pipe(Flag.optional)
 
 const distinct = <A>(values: ReadonlyArray<A>): ReadonlyArray<A> => [...new Set(values)]
 const nonEmpty = <A>(values: ReadonlyArray<A>): readonly [A, ...Array<A>] | undefined => {
@@ -86,9 +86,11 @@ const retainSuccessfulComparison = Effect.fn("Command.retainSuccessfulComparison
     })
   }
   const device = upstream[0]?.device ?? candidate[0]?.device
-  const firstCandidateRun = candidate[0]?.plan.id
+  const firstCandidate = candidate[0]
+  const firstCandidateRun = firstCandidate?.plan.id
   if (
     device === undefined ||
+    firstCandidate === undefined ||
     firstCandidateRun === undefined ||
     upstreamBuildIds === undefined ||
     candidateBuildIds === undefined ||
@@ -106,7 +108,7 @@ const retainSuccessfulComparison = Effect.fn("Command.retainSuccessfulComparison
     sourceIds: retainedSources,
     platform: summary.platform,
     device,
-    expoRevision: candidate[0]!.build.expoRevision,
+    expoRevision: firstCandidate.build.expoRevision,
     candidateRevision: candidateRevisions[0],
     upstreamBuildIds,
     candidateBuildIds,
@@ -218,7 +220,7 @@ export const compareRuns = Command.make(
   ),
 )
 
-const externalPlan = Flag.string("plan")
+const externalPlan = Flag.String("plan")
 /**
  * Executes one reviewed external-runner request.
  */
@@ -281,8 +283,8 @@ export const supervisedExternal = Command.make(
   ),
 )
 
-const runnerFamily = Flag.string("runner").pipe(Flag.withDefault("all"))
-const runnerReport = Flag.string("report")
+const runnerFamily = Flag.String("runner").pipe(Flag.withDefault("all"))
+const runnerReport = Flag.String("report")
 /**
  * Executes a shard of generated external runner plans.
  */

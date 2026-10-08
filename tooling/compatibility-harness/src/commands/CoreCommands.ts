@@ -1,5 +1,5 @@
-import * as Command from "effect/unstable/cli/Command"
-import * as Flag from "effect/unstable/cli/Flag"
+import * as Command from "effect/cli/Command"
+import * as Flag from "effect/cli/Flag"
 import * as Compatibility from "../Compatibility.ts"
 import * as Coverage from "../Coverage.ts"
 import * as AuditPolicy from "../security/AuditPolicy.ts"
@@ -40,7 +40,7 @@ export const doctor = Command.make("doctor", {}, Compatibility.doctor).pipe(
 /**
  * Selects machine-readable coverage output for the coverage command.
  */
-export const coverageJson = Flag.boolean("json").pipe(
+export const coverageJson = Flag.Boolean("json").pipe(
   Flag.withDescription("Print machine-readable coverage JSON"),
   Flag.withDefault(false),
 )

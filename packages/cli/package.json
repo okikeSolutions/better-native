@@ -38,8 +38,8 @@
     "test:coverage": "BETTER_NATIVE_COVERAGE_PACKAGE=cli vitest run --config ../../vitest.coverage.config.ts --coverage packages/cli/"
   },
   "devDependencies": {
-    "@effect/platform-node": "4.0.0-rc.112",
-    "effect": "4.0.0-rc.112"
+    "@effect/platform-node": "4.0.2",
+    "effect": "4.0.2"
   },
   "engines": {
     "node": ">=20.19.4"

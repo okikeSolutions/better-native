@@ -1,7 +1,7 @@
 import { useLocalSearchParams } from "expo-router"
 import { type ReactNode, useEffect, useState } from "react"
 import { ScrollView, StyleSheet, Text, View } from "react-native"
-import * as Encoding from "effect/Encoding"
+import * as Hex from "effect/encoding/Hex"
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import * as Result from "effect/Result"
@@ -21,10 +21,7 @@ const selectionFor = (
     const sourceIds = sources
       .split(",")
       .map((encoded) =>
-        Result.getOrThrowWith(
-          Encoding.decodeHexString(encoded),
-          () => new Error("invalid source list"),
-        ),
+        Result.getOrThrowWith(Hex.decodeString(encoded), () => new Error("invalid source list")),
       )
     return { schemaVersion: 1, runId, sourceIds }
   }

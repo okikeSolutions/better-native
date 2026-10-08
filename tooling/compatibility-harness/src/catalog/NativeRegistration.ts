@@ -62,7 +62,7 @@ const RawConfig = Schema.Struct({
 })
 
 type NativeModule = Schema.Schema.Type<typeof NativeModule>
-type RawConfig = Schema.Schema.Type<typeof RawConfig>
+interface RawConfig extends Schema.Schema.Type<typeof RawConfig> {}
 
 const moduleClass = (module: NativeModule): string =>
   typeof module === "string" ? module : module.class

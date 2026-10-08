@@ -87,6 +87,12 @@ describe("hosted compatibility workflow", () => {
       )
       assert.match(workflow, /cron: "0 3 \* \* 1"/)
       assert.match(workflow, /^  detect-platform-changes:$/m)
+      assert.match(workflow, /name: Select requested platforms for manual runs/)
+      assert.match(workflow, /if: github\.event_name == 'workflow_dispatch'/)
+      assert.match(
+        workflow,
+        /web: \$\{\{ steps\.manual\.outputs\.web \|\| steps\.compatibility\.outputs\.should_run_web \}\}/,
+      )
       assert.match(
         workflow,
         /detect-platform-changes:[\s\S]*?steps:[\s\S]*?uses: actions\/checkout@[\s\S]*?uses: \.\/\.github\/actions\/detect-compatibility-change/,
@@ -95,8 +101,9 @@ describe("hosted compatibility workflow", () => {
       assert.match(workflow, /^  web-pair:$/m)
       assert.match(workflow, /^  web-compare:$/m)
       assert.match(workflow, /^  ios-compare:$/m)
-      assert.match(workflow, /name: iOS device test \(\$\{\{ matrix\.shard-label \}\}\/2\)/)
-      assert.match(workflow, /SHARD_COUNT: 2/)
+      assert.match(workflow, /name: iOS device test \(\$\{\{ matrix\.shard-label \}\}/)
+      assert.match(workflow, /SHARD_COUNT: \$\{\{ inputs\.source != '' && '1' \|\| '2' \}\}/)
+      assert.match(workflow, /include: \$\{\{ fromJSON\(inputs\.source != ''/)
       assert.strictEqual(workflow.match(/--shard-index "\$SHARD_INDEX"/g)?.length, 2)
       assert.match(workflow, /compatibility-ios-run-evidence-.*-shard-\*/)
       assert.match(workflow, /merge-multiple: true/)
@@ -137,11 +144,20 @@ describe("hosted compatibility workflow", () => {
       assert.match(workflow, /web-upstream-run-\*/)
       assert.match(workflow, /web-\*-run-\*/)
       assert.strictEqual(workflow.match(/supervise-build-pair/g)?.length, 2)
-      assert.notMatch(workflow, /supervise-build(?:-pair)?[^\n]*--source/)
+      assert.match(
+        workflow,
+        /run_compatibility_command\(\) \{[\s\S]*?"\$@" --source "better-native-capability#apps\/compatibility-suite\/src\/capabilities\/\$\{FOCUSED_SOURCE\}"/,
+      )
+      assert.strictEqual(
+        workflow.match(/run_compatibility_command bun run compatibility-harness/g)?.length,
+        8,
+      )
+      assert.strictEqual(workflow.match(/run_compatibility_command\(\) \{/g)?.length, 4)
+      assert.notMatch(workflow, /source_args/)
       assert.strictEqual(workflow.match(/supervise-native-pair/g)?.length, 2)
       assert.match(
         workflow,
-        /uses: \.\/\.github\/actions\/use-android-emulator[\s\S]*?script: \|\n\s+if \[ "\$COMPATIBILITY_MODE" = pair \]; then\n/,
+        /uses: \.\/\.github\/actions\/use-android-emulator[\s\S]*?script: \|[\s\S]*?if \[ "\$COMPATIBILITY_MODE" = pair \]; then\n/,
       )
       assert.notMatch(workflow, /uses: reactivecircus\/android-emulator-runner@/)
       assert.notMatch(workflow, /script: \|\n\s+set -euo pipefail/)

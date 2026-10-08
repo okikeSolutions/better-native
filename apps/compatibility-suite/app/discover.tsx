@@ -14,7 +14,7 @@ const ProbeResult = Schema.Struct({
   detail: Schema.NullOr(Schema.String),
 })
 
-type ProbeResult = Schema.Schema.Type<typeof ProbeResult>
+interface ProbeResult extends Schema.Schema.Type<typeof ProbeResult> {}
 
 const inspect = (value: unknown): ReadonlyArray<string> => {
   if ((typeof value !== "object" && typeof value !== "function") || value === null) return []
@@ -54,9 +54,8 @@ export default function Discover() {
         }
       }
     }
-    const decoded = Schema.decodeUnknownSync(ProbeResult)(next)
-    console.log(`BETTER_NATIVE_EXPORT_V1=${JSON.stringify(decoded)}`)
-    setResult(decoded)
+    console.log(`BETTER_NATIVE_EXPORT_V1=${JSON.stringify(next)}`)
+    setResult(next)
   }, [specifier])
   return (
     <ScrollView contentContainerStyle={styles.container} testID="compatibility_discovery">

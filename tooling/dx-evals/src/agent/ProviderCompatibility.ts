@@ -4,7 +4,7 @@ import * as Layer from "effect/Layer"
 import * as Match from "effect/Match"
 import * as Option from "effect/Option"
 import * as Schema from "effect/Schema"
-import type * as AiError from "effect/unstable/ai/AiError"
+import type * as AiError from "effect/ai/AiError"
 import type * as Generated from "@effect/ai-openrouter/Generated"
 import * as OpenRouterClient from "@effect/ai-openrouter/OpenRouterClient"
 import * as AgentLoop from "./AgentLoop.ts"
@@ -57,35 +57,17 @@ export type Quarantined = {
 
 export type Result = Compatible | Quarantined
 
-const jsonType = (value: unknown): string =>
-  Match.value({ isNull: value === null, isArray: Array.isArray(value) }).pipe(
-    Match.when({ isNull: true }, () => "null"),
-    Match.when({ isArray: true }, () => "array"),
-    Match.orElse(() => typeof value),
-  )
-
-const parameterShape = (value: unknown): Readonly<Record<string, string>> | undefined =>
-  typeof value === "object" && value !== null && !Array.isArray(value)
-    ? Object.fromEntries(
-        Object.entries(value)
-          .sort(([left], [right]) => left.localeCompare(right))
-          .map(([key, entry]) => [key, jsonType(entry)]),
-      )
-    : undefined
-
-const parameterShapeField = (value: unknown) => {
-  const shape = parameterShape(value)
-  return shape === undefined ? {} : { providerToolParameterShape: shape }
+const baseResult = (profile: AgentProfiles.AgentProfile) => {
+  const [configuredProvider] = profile.providerPolicy.only
+  return {
+    model: profile.model,
+    configuredProvider,
+    tokenParameter: profile.tokenParameter,
+    maximumOutputTokens,
+    maximumProtocolTurns,
+    timeoutMilliseconds,
+  }
 }
-
-const baseResult = (profile: AgentProfiles.AgentProfile) => ({
-  model: profile.model,
-  configuredProvider: profile.providerPolicy.only[0]!,
-  tokenParameter: profile.tokenParameter,
-  maximumOutputTokens,
-  maximumProtocolTurns,
-  timeoutMilliseconds,
-})
 
 const quarantined = (
   profile: AgentProfiles.AgentProfile,
@@ -133,10 +115,7 @@ export const classifyFailure = (
   ),
   providerErrorType: error.reason._tag,
   ...(error.reason._tag === "ToolParameterValidationError"
-    ? {
-        providerToolName: error.reason.toolName,
-        ...parameterShapeField(error.reason.toolParams),
-      }
+    ? { providerToolName: error.reason.toolName }
     : {}),
   ...(error.reason._tag === "InvalidRequestError" && error.reason.description !== undefined
     ? { providerErrorDescription: error.reason.description.slice(0, 256) }

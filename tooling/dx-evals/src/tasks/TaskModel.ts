@@ -9,7 +9,7 @@ export const PublicCompileContract = Schema.Struct({
   kind: Schema.Literal("effect-no-requirements"),
   exportName: Schema.String.check(Schema.isPattern(/^[A-Za-z_$][A-Za-z0-9_$]*$/)),
 })
-export type PublicCompileContract = Schema.Schema.Type<typeof PublicCompileContract>
+export interface PublicCompileContract extends Schema.Schema.Type<typeof PublicCompileContract> {}
 
 /** Exhaustive reporter-facing result derived from one reviewed boolean gate. */
 export const gateResult = (passed: boolean): Domain.GateResult["result"] =>
@@ -73,7 +73,7 @@ export interface TaskBase<D extends TaskDefinition = TaskDefinition> {
   readonly taskType: string
   readonly root: string
   readonly instruction: string
-  readonly fixtureFiles: ReadonlyArray<FixtureFile>
+  readonly fixtureFiles: readonly [FixtureFile, ...FixtureFile[]]
   readonly definition: D
   readonly publicPackages: ReadonlyArray<string>
   readonly packedPackage: PackedPackageSpec | null
@@ -115,7 +115,7 @@ export type TaskRequirements =
   | import("effect/FileSystem").FileSystem
   | import("effect/Crypto").Crypto
   | import("effect/Path").Path
-  | import("effect/unstable/process/ChildProcessSpawner").ChildProcessSpawner
+  | import("effect/process/ChildProcessSpawner").ChildProcessSpawner
   | import("../security/Isolation.ts").Isolation
   | import("./PackageArtifact.ts").PackageArtifacts
 

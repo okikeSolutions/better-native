@@ -71,7 +71,7 @@ export class HarnessConfig extends Context.Service<HarnessConfig, Service>()(
 ) {}
 
 const optionalString = (name: string) =>
-  Config.string(name).pipe(
+  Config.String(name).pipe(
     Config.option,
     Config.map(
       Option.flatMap((value) => {
@@ -82,7 +82,7 @@ const optionalString = (name: string) =>
   )
 
 const optionalRedacted = (name: string) =>
-  Config.redacted(name).pipe(
+  Config.Redacted(name).pipe(
     Config.option,
     Config.map(
       Option.flatMap((value) => {
@@ -155,11 +155,11 @@ export const layer = (root: string) =>
     Effect.gen(function* () {
       const path = yield* Path.Path
       const values = yield* Config.all({
-        expoSourceRoot: Config.string(environmentKeys.expoSourceRoot).pipe(
+        expoSourceRoot: Config.String(environmentKeys.expoSourceRoot).pipe(
           Config.withDefault(path.join(root, "..", "expo")),
         ),
-        ci: Config.boolean(environmentKeys.ci).pipe(Config.withDefault(false)),
-        buildProfile: Config.literals(["polite", "performance"], environmentKeys.buildProfile).pipe(
+        ci: Config.Boolean(environmentKeys.ci).pipe(Config.withDefault(false)),
+        buildProfile: Config.Literals(["polite", "performance"], environmentKeys.buildProfile).pipe(
           Config.option,
         ),
         githubSha: optionalString(environmentKeys.githubSha),
@@ -168,25 +168,25 @@ export const layer = (root: string) =>
         ccacheDirectory: optionalString(environmentKeys.ccacheDirectory),
         javaHome17: optionalString(environmentKeys.javaHome17),
         javaHome: optionalString(environmentKeys.javaHome),
-        executablePath: Config.string("PATH").pipe(Config.withDefault("")),
+        executablePath: Config.String("PATH").pipe(Config.withDefault("")),
         androidSdkRoot: optionalString(environmentKeys.androidSdkRoot),
         androidHome: optionalString(environmentKeys.androidHome),
-        iosDestination: Config.string(environmentKeys.iosDestination).pipe(
+        iosDestination: Config.String(environmentKeys.iosDestination).pipe(
           Config.withDefault("generic/platform=iOS Simulator"),
         ),
         iosDevelopmentTeam: optionalString(environmentKeys.iosDevelopmentTeam),
-        iosCodeSignIdentity: Config.string(environmentKeys.iosCodeSignIdentity).pipe(
+        iosCodeSignIdentity: Config.String(environmentKeys.iosCodeSignIdentity).pipe(
           Config.withDefault("Apple Development"),
         ),
-        forceColdBuild: Config.boolean(environmentKeys.forceColdBuild).pipe(
+        forceColdBuild: Config.Boolean(environmentKeys.forceColdBuild).pipe(
           Config.withDefault(false),
         ),
-        pnpmStoreCacheHit: Config.boolean(environmentKeys.pnpmStoreCacheHit).pipe(Config.option),
+        pnpmStoreCacheHit: Config.Boolean(environmentKeys.pnpmStoreCacheHit).pipe(Config.option),
         pnpmStoreCacheKey: optionalString(environmentKeys.pnpmStoreCacheKey),
-        ccacheCacheHit: Config.boolean(environmentKeys.ccacheCacheHit).pipe(Config.option),
+        ccacheCacheHit: Config.Boolean(environmentKeys.ccacheCacheHit).pipe(Config.option),
         ccacheCacheKey: optionalString(environmentKeys.ccacheCacheKey),
         gradleCacheKey: optionalString(environmentKeys.gradleCacheKey),
-        podsCacheHit: Config.boolean(environmentKeys.podsCacheHit).pipe(Config.option),
+        podsCacheHit: Config.Boolean(environmentKeys.podsCacheHit).pipe(Config.option),
         podsCacheKey: optionalString(environmentKeys.podsCacheKey),
       })
       return HarnessConfig.of({

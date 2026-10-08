@@ -2,8 +2,8 @@ import { Location } from "@better-native/location"
 import * as Effect from "effect/Effect"
 import * as Cause from "effect/Cause"
 import * as ExpoLocation from "expo-location"
-import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
-import * as AtomRegistry from "effect/unstable/reactivity/AtomRegistry"
+import * as AsyncResult from "effect/reactivity/AsyncResult"
+import * as AtomRegistry from "effect/reactivity/AtomRegistry"
 
 export const name = "Location Effect capability"
 
@@ -26,9 +26,9 @@ const canonical = (value: unknown): unknown => {
   )
 }
 
-const run = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
+const run = <A, E>(effect: Effect.Effect<A, E, Location.Location>) =>
   // oxlint-disable-next-line effecttsgo/strict-effect-provide -- compatibility capability entry point
-  Effect.runPromise(effect.pipe(Effect.provide(Location.live)) as Effect.Effect<A, E>)
+  Effect.runPromise(effect.pipe(Effect.provide(Location.live)))
 
 export function test({ describe, it }: JasmineApi): void {
   describe(name, () => {

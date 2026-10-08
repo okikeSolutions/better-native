@@ -1,8 +1,7 @@
 import * as Context from "effect/Context"
 import * as Crypto from "effect/Crypto"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
-import * as Encoding from "effect/Encoding"
+import * as Hex from "effect/encoding/Hex"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Path from "effect/Path"
@@ -10,11 +9,11 @@ import * as Schema from "effect/Schema"
 import { ArtifactId, ContentHash, isSafePathSegment, type Artifact } from "../Domain.ts"
 
 /** Describes a failed evidence read, write, hash, or path validation. */
-export class EvidenceError extends Data.TaggedError("EvidenceError")<{
-  readonly operation: string
-  readonly path: string
-  readonly cause: unknown
-}> {}
+export class EvidenceError extends Schema.TaggedError<EvidenceError>()("EvidenceError", {
+  operation: Schema.String,
+  path: Schema.String,
+  cause: Schema.Defect(),
+}) {}
 
 /** Immutable artifact store shared by build and run supervisors. */
 export interface Service {
@@ -63,7 +62,7 @@ export const layer = (
         new EvidenceError({ operation, path: target, cause })
       const hash = (bytes: Uint8Array) =>
         crypto.digest("SHA-256", bytes).pipe(
-          Effect.map((digest) => ContentHash.make(Encoding.encodeHex(digest))),
+          Effect.map((digest) => ContentHash.make(Hex.encode(digest))),
           Effect.mapError((cause) => fail("hash evidence", root, cause)),
         )
       /**
@@ -89,70 +88,76 @@ export const layer = (
             cause instanceof EvidenceError ? cause : fail(operation, target, cause),
           ),
         )
-      const writeBytes: Service["writeBytes"] = (collection, recordId, name, mediaType, bytes) =>
-        Effect.gen(function* () {
-          if (!isSafePathSegment(recordId) || !isSafePathSegment(name)) {
-            return yield* fail(
-              "validate evidence path",
-              `${collection}/${recordId}/${name}`,
-              "record ID and artifact name must be safe path segments",
-            )
-          }
-          const directory = path.join(root, ".artifacts", collection, recordId)
-          const target = path.join(directory, name)
-          yield* fs
-            .makeDirectory(directory, { recursive: true })
-            .pipe(Effect.mapError((cause) => fail("create evidence directory", directory, cause)))
-          yield* ensureCanonical("validate evidence directory", directory)
-          const contentHash = yield* hash(bytes)
-          if (
-            yield* fs
-              .exists(target)
-              .pipe(Effect.mapError((cause) => fail("inspect evidence", target, cause)))
-          ) {
-            yield* ensureCanonical("validate evidence target", target)
-            const existing = yield* fs
-              .readFile(target)
-              .pipe(Effect.mapError((cause) => fail("read existing evidence", target, cause)))
-            const existingHash = yield* hash(existing)
-            if (existingHash !== contentHash) {
+      const writeBytes: Service["writeBytes"] = Effect.fn("EvidenceStore.writeBytes")(
+        (collection, recordId, name, mediaType, bytes) =>
+          Effect.gen(function* () {
+            if (!isSafePathSegment(recordId) || !isSafePathSegment(name)) {
               return yield* fail(
-                "preserve immutable evidence",
-                target,
-                `existing hash ${existingHash} differs from ${contentHash}`,
+                "validate evidence path",
+                `${collection}/${recordId}/${name}`,
+                "record ID and artifact name must be safe path segments",
               )
             }
-          } else {
-            const temporary = yield* fs
-              .makeTempFile({ directory, prefix: `.${name}.`, suffix: ".tmp" })
-              .pipe(Effect.mapError((cause) => fail("create temporary evidence", target, cause)))
+            const directory = path.join(root, ".artifacts", collection, recordId)
+            const target = path.join(directory, name)
             yield* fs
-              .writeFile(temporary, bytes)
-              .pipe(Effect.mapError((cause) => fail("write temporary evidence", temporary, cause)))
-            yield* fs
-              .rename(temporary, target)
-              .pipe(Effect.mapError((cause) => fail("publish evidence", target, cause)))
-          }
-          return {
-            id: ArtifactId.make(`${collection}/${recordId}/${name}@${contentHash}`),
-            path: path.relative(root, target),
-            mediaType,
-            size: bytes.byteLength,
-            hash: contentHash,
-          }
-        })
+              .makeDirectory(directory, { recursive: true })
+              .pipe(Effect.mapError((cause) => fail("create evidence directory", directory, cause)))
+            yield* ensureCanonical("validate evidence directory", directory)
+            const contentHash = yield* hash(bytes)
+            if (
+              yield* fs
+                .exists(target)
+                .pipe(Effect.mapError((cause) => fail("inspect evidence", target, cause)))
+            ) {
+              yield* ensureCanonical("validate evidence target", target)
+              const existing = yield* fs
+                .readFile(target)
+                .pipe(Effect.mapError((cause) => fail("read existing evidence", target, cause)))
+              const existingHash = yield* hash(existing)
+              if (existingHash !== contentHash) {
+                return yield* fail(
+                  "preserve immutable evidence",
+                  target,
+                  `existing hash ${existingHash} differs from ${contentHash}`,
+                )
+              }
+            } else {
+              const temporary = yield* fs
+                .makeTempFile({ directory, prefix: `.${name}.`, suffix: ".tmp" })
+                .pipe(Effect.mapError((cause) => fail("create temporary evidence", target, cause)))
+              yield* fs
+                .writeFile(temporary, bytes)
+                .pipe(
+                  Effect.mapError((cause) => fail("write temporary evidence", temporary, cause)),
+                )
+              yield* fs
+                .rename(temporary, target)
+                .pipe(Effect.mapError((cause) => fail("publish evidence", target, cause)))
+            }
+            return {
+              id: ArtifactId.make(`${collection}/${recordId}/${name}@${contentHash}`),
+              path: path.relative(root, target),
+              mediaType,
+              size: bytes.byteLength,
+              hash: contentHash,
+            }
+          }),
+      )
       return EvidenceStore.of({
         writeBytes,
-        writeJson: (collection, recordId, name, schema, value) =>
-          Schema.encodeEffect(schema)(value).pipe(
-            Effect.map((encoded) =>
-              new TextEncoder().encode(`${JSON.stringify(encoded, null, 2)}\n`),
+        writeJson: Effect.fn("EvidenceStore.writeJson")(
+          (collection, recordId, name, schema, value) =>
+            Schema.encodeEffect(schema)(value).pipe(
+              Effect.map((encoded) =>
+                new TextEncoder().encode(`${JSON.stringify(encoded, null, 2)}\n`),
+              ),
+              Effect.mapError((cause) => fail("encode evidence", name, cause)),
+              Effect.flatMap((bytes) =>
+                writeBytes(collection, recordId, name, "application/json", bytes),
+              ),
             ),
-            Effect.mapError((cause) => fail("encode evidence", name, cause)),
-            Effect.flatMap((bytes) =>
-              writeBytes(collection, recordId, name, "application/json", bytes),
-            ),
-          ),
+        ),
       })
     }),
   )

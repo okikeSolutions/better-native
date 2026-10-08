@@ -1,11 +1,11 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import type * as ManagedRuntime from "effect/ManagedRuntime"
 import * as Option from "effect/Option"
 import * as Queue from "effect/Queue"
 import type * as Scope from "effect/Scope"
+import * as Schema from "effect/Schema"
 import * as Stream from "effect/Stream"
 import { TaskManager, type TaskBody, type TaskDefinition } from "@better-native/task-manager"
 import * as ExpoBackgroundTask from "expo-background-task"
@@ -90,10 +90,13 @@ export type RegistrationOutcome = "registered" | "alreadyRegistered" | "restrict
  * @category errors
  * @since 0.0.0
  */
-export class BackgroundTaskFailure extends Data.TaggedError("BackgroundTaskFailure")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class BackgroundTaskFailure extends Schema.TaggedError<BackgroundTaskFailure>()(
+  "BackgroundTaskFailure",
+  {
+    method: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 /**
  * Typed failure when a native-only BackgroundTask method is unavailable.
@@ -101,10 +104,13 @@ export class BackgroundTaskFailure extends Data.TaggedError("BackgroundTaskFailu
  * @category errors
  * @since 0.0.0
  */
-export class BackgroundTaskUnavailable extends Data.TaggedError("BackgroundTaskUnavailable")<{
-  readonly method: string
-  readonly cause: unknown
-}> {}
+export class BackgroundTaskUnavailable extends Schema.TaggedError<BackgroundTaskUnavailable>()(
+  "BackgroundTaskUnavailable",
+  {
+    method: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 /**
  * Effect-native BackgroundTask service.
@@ -316,10 +322,12 @@ export const live = Layer.succeed(
   BackgroundTask,
   BackgroundTask.of({
     status: native("getStatusAsync", ExpoBackgroundTask.getStatusAsync),
-    register: (name, options) =>
+    register: Effect.fn("BackgroundTask.register")((name, options) =>
       native("registerTaskAsync", () => ExpoBackgroundTask.registerTaskAsync(name, options)),
-    unregister: (name) =>
+    ),
+    unregister: Effect.fn("BackgroundTask.unregister")((name) =>
       native("unregisterTaskAsync", () => ExpoBackgroundTask.unregisterTaskAsync(name)),
+    ),
     triggerForTesting: native(
       "triggerTaskWorkerForTestingAsync",
       ExpoBackgroundTask.triggerTaskWorkerForTestingAsync,

@@ -17,7 +17,7 @@ platform permission prompts, supported content types, and paste-button requireme
 Install the native provider, this package, and Effect together:
 
 ```sh
-npx expo install expo-clipboard @better-native/clipboard@alpha effect@4.0.0-rc.112
+npx expo install expo-clipboard @better-native/clipboard@alpha effect@4.0.2
 ```
 
 Rebuild the native application after adding `expo-clipboard`.

@@ -1,11 +1,12 @@
 import { randomUUID } from "node:crypto"
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as FileSystem from "effect/FileSystem"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
 import * as Path from "effect/Path"
+import * as Schema from "effect/Schema"
+import { podsCacheDirectory, podsCacheSchemaVersion } from "../artifacts/CacheLayout.ts"
 import { isSafePathSegment } from "../Domain.ts"
 import { BuildPipelineError, type BuildRequest } from "./BuildModel.ts"
 import { BuildProducts } from "./BuildProducts.ts"
@@ -25,14 +26,15 @@ export interface PodsCacheResult {
   readonly detail: string
 }
 
-interface PodsCacheRecord {
-  readonly schemaVersion: 3
-  readonly architecture: string
-  readonly toolchainFingerprint: string
-  readonly nativeFingerprint: string
-  readonly inputsHash: string
-  readonly lockHash: string
-}
+const PodsCacheRecord = Schema.Struct({
+  schemaVersion: Schema.Literal(podsCacheSchemaVersion),
+  architecture: Schema.String,
+  toolchainFingerprint: Schema.String,
+  nativeFingerprint: Schema.String,
+  inputsHash: Schema.String,
+  lockHash: Schema.String,
+})
+interface PodsCacheRecord extends Schema.Schema.Type<typeof PodsCacheRecord> {}
 
 interface Service {
   readonly restore: (input: PodsCacheRequest) => Effect.Effect<PodsCacheResult, BuildPipelineError>
@@ -44,12 +46,12 @@ export class PodsCache extends Context.Service<PodsCache, Service>()(
   "@better-native/compatibility-harness/PodsCache",
 ) {}
 
-class PodsCacheIdentityError extends Data.TaggedError("PodsCacheIdentityError")<{
-  readonly cause: string
-}> {}
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value)
+class PodsCacheIdentityError extends Schema.TaggedError<PodsCacheIdentityError>()(
+  "PodsCacheIdentityError",
+  {
+    cause: Schema.String,
+  },
+) {}
 
 /** Builds the versioned CocoaPods cache service. */
 export const layer = (
@@ -61,7 +63,7 @@ export const layer = (
       const fs = yield* FileSystem.FileSystem
       const path = yield* Path.Path
       const products = yield* BuildProducts
-      const cacheRoot = path.join(root, ".artifacts", "pods-cache", "v3")
+      const cacheRoot = path.join(root, ".artifacts", "pods-cache", podsCacheDirectory)
       const entriesRoot = path.join(cacheRoot, "entries")
       const indexesRoot = path.join(cacheRoot, "indexes")
       const cacheLock = `${cacheRoot}.lock`
@@ -112,23 +114,13 @@ export const layer = (
       const decodeRecord = (text: string): PodsCacheRecord | null => {
         try {
           const value = JSON.parse(text) as unknown
-          if (
-            !isRecord(value) ||
-            value.schemaVersion !== 3 ||
-            typeof value.architecture !== "string" ||
-            typeof value.toolchainFingerprint !== "string" ||
-            typeof value.nativeFingerprint !== "string" ||
-            typeof value.inputsHash !== "string" ||
-            typeof value.lockHash !== "string"
-          )
-            return null
-          return value as unknown as PodsCacheRecord
+          return Option.getOrNull(Schema.decodeUnknownOption(PodsCacheRecord)(value))
         } catch {
           return null
         }
       }
 
-      const restoreUnlocked: Service["restore"] = (input) =>
+      const restoreUnlocked: Service["restore"] = Effect.fn("PodsCache.restoreUnlocked")((input) =>
         Effect.gen(function* () {
           const hash = yield* inputsHash(input)
           const key = indexKey(input, hash)
@@ -175,9 +167,10 @@ export const layer = (
           Effect.mapError(
             (cause) => new BuildPipelineError({ phase: "build", request: input.request, cause }),
           ),
-        )
+        ),
+      )
 
-      const publishUnlocked: Service["publish"] = (input) =>
+      const publishUnlocked: Service["publish"] = Effect.fn("PodsCache.publishUnlocked")((input) =>
         Effect.gen(function* () {
           const hash = yield* inputsHash(input)
           const resultingLockHash = yield* lockHash(input.iosDirectory)
@@ -186,7 +179,7 @@ export const layer = (
           if (!isSafePathSegment(key) || !isSafePathSegment(entryKey))
             return yield* new PodsCacheIdentityError({ cause: "invalid CocoaPods cache identity" })
           const record: PodsCacheRecord = {
-            schemaVersion: 3,
+            schemaVersion: podsCacheSchemaVersion,
             architecture: input.architecture,
             toolchainFingerprint: input.toolchainFingerprint,
             nativeFingerprint: input.nativeFingerprint,
@@ -241,9 +234,10 @@ export const layer = (
           Effect.mapError(
             (cause) => new BuildPipelineError({ phase: "evidence", request: input.request, cause }),
           ),
-        )
+        ),
+      )
 
-      const restore: Service["restore"] = (input) =>
+      const restore: Service["restore"] = Effect.fn("PodsCache.restore")((input) =>
         withCacheLock(
           {
             hit: false,
@@ -251,8 +245,9 @@ export const layer = (
             detail: "CocoaPods cache is busy",
           },
           restoreUnlocked(input),
-        )
-      const publish: Service["publish"] = (input) =>
+        ),
+      )
+      const publish: Service["publish"] = Effect.fn("PodsCache.publish")((input) =>
         withCacheLock(
           {
             hit: false,
@@ -260,7 +255,8 @@ export const layer = (
             detail: "CocoaPods cache is busy; publication skipped",
           },
           publishUnlocked(input),
-        )
+        ),
+      )
 
       return PodsCache.of({ restore, publish })
     }),

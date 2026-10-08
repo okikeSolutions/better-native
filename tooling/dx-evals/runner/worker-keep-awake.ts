@@ -3,8 +3,8 @@ import * as Effect from "effect/Effect"
 import type * as Exit from "effect/Exit"
 import * as Fiber from "effect/Fiber"
 import type * as Schema from "effect/Schema"
-import * as WorkerRunner from "effect/unstable/workers/WorkerRunner"
-import type { WorkerError } from "effect/unstable/workers/WorkerError"
+import * as WorkerRunner from "effect/workers/WorkerRunner"
+import type { WorkerError } from "effect/workers/WorkerError"
 import type { SupervisorRequest, WorkerResponse } from "./Protocol.ts"
 import { makeWorkerRuntime } from "./Runtime.ts"
 import * as WorkerSupport from "./WorkerSupport.ts"
@@ -118,12 +118,14 @@ try {
               observation: yield* WorkerSupport.toJsonOr(observation, fallbackJson),
             }
           }).pipe(
-            Effect.catchCause(() =>
-              Effect.succeed({
-                type: "error" as const,
-                nonce: request.nonce,
-                reason: "worker-handler-failure",
-              }),
+            Effect.catchCause((cause) =>
+              Cause.hasInterrupts(cause)
+                ? Effect.interrupt
+                : Effect.succeed({
+                    type: "error" as const,
+                    nonce: request.nonce,
+                    reason: "worker-handler-failure",
+                  }),
             ),
             Effect.flatMap((response) => runner.send(portId, response)),
           ),

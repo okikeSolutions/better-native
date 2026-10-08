@@ -1,7 +1,7 @@
 import * as Context from "effect/Context"
-import * as Data from "effect/Data"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
+import * as Schema from "effect/Schema"
 import * as ExpoSecureStore from "expo-secure-store"
 
 /**
@@ -93,11 +93,14 @@ export const WHEN_UNLOCKED_THIS_DEVICE_ONLY = ExpoSecureStore.WHEN_UNLOCKED_THIS
  * @category errors
  * @since 0.0.0
  */
-export class SecureStoreFailure extends Data.TaggedError("SecureStoreFailure")<{
-  readonly method: string
-  readonly key?: string
-  readonly cause: unknown
-}> {}
+export class SecureStoreFailure extends Schema.TaggedError<SecureStoreFailure>()(
+  "SecureStoreFailure",
+  {
+    method: Schema.String,
+    key: Schema.optional(Schema.String),
+    cause: Schema.Defect(),
+  },
+) {}
 
 /**
  * SecureStore service contract used by the Effect-native API.
@@ -248,15 +251,20 @@ export const live = Layer.succeed(
       "canUseBiometricAuthentication",
       ExpoSecureStore.canUseBiometricAuthentication,
     ),
-    deleteItem: (key, options) =>
+    deleteItem: Effect.fn("SecureStore.deleteItem")((key, options) =>
       asyncMethod("deleteItemAsync", () => ExpoSecureStore.deleteItemAsync(key, options), key),
-    getItem: (key, options) =>
+    ),
+    getItem: Effect.fn("SecureStore.getItem")((key, options) =>
       syncMethod("getItem", () => ExpoSecureStore.getItem(key, options), key),
-    getItemAsync: (key, options) =>
+    ),
+    getItemAsync: Effect.fn("SecureStore.getItemAsync")((key, options) =>
       asyncMethod("getItemAsync", () => ExpoSecureStore.getItemAsync(key, options), key),
-    setItem: (key, value, options) =>
+    ),
+    setItem: Effect.fn("SecureStore.setItem")((key, value, options) =>
       syncMethod("setItem", () => ExpoSecureStore.setItem(key, value, options), key),
-    setItemAsync: (key, value, options) =>
+    ),
+    setItemAsync: Effect.fn("SecureStore.setItemAsync")((key, value, options) =>
       asyncMethod("setItemAsync", () => ExpoSecureStore.setItemAsync(key, value, options), key),
+    ),
   }),
 )
