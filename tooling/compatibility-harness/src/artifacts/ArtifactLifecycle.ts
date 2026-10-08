@@ -22,7 +22,7 @@ import {
 const gibibyte = 1024 ** 3
 
 /** Local persistent-cache ceiling shared by CocoaPods and native binaries. */
-export const defaultCacheBudgetBytes = 8 * gibibyte
+export const defaultCacheBudgetBytes = 3 * gibibyte
 /** Free-space floor that triggers pruning before a new build starts. */
 export const defaultLowDiskBytes = 16 * gibibyte
 /** Failed workspace retention window. */
