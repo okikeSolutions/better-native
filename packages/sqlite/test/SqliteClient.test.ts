@@ -402,6 +402,12 @@ describe("@better-native/sqlite", () => {
 
   it("supports values, values-unprepared, unprepared rows, and transformed streams", async () => {
     const database = makeDatabase()
+    database.getEachAsync.mockImplementationOnce(() =>
+      (async function* () {
+        yield { user_name: "Ada" }
+        yield { user_name: "Grace" }
+      })(),
+    )
     mocks.openDatabaseAsync.mockResolvedValueOnce(database)
 
     const result = await Effect.runPromise(
@@ -429,7 +435,7 @@ describe("@better-native/sqlite", () => {
     expect(result.values).toEqual([[1, "Ada"]])
     expect(result.valuesUnprepared).toEqual([[1, "Ada"]])
     expect(result.rows).toEqual([{ id: 1, userName: "Ada" }])
-    expect(result.streamed).toEqual([{ id: 1 }, { id: 2 }])
+    expect(result.streamed).toEqual([{ userName: "Ada" }, { userName: "Grace" }])
     expect(database.prepareAsync).toHaveBeenCalledTimes(2)
   })
 

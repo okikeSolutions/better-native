@@ -146,9 +146,14 @@ describe("hosted compatibility workflow", () => {
       assert.strictEqual(workflow.match(/supervise-build-pair/g)?.length, 2)
       assert.match(
         workflow,
-        /source_args=\(--source "better-native-capability#apps\/compatibility-suite\/src\/capabilities\/\$\{FOCUSED_SOURCE\}"\)/,
+        /run_compatibility_command\(\) \{[\s\S]*?"\$@" --source "better-native-capability#apps\/compatibility-suite\/src\/capabilities\/\$\{FOCUSED_SOURCE\}"/,
       )
-      assert.strictEqual(workflow.match(/"\$\{source_args\[@\]\}"/g)?.length, 8)
+      assert.strictEqual(
+        workflow.match(/run_compatibility_command bun run compatibility-harness/g)?.length,
+        8,
+      )
+      assert.strictEqual(workflow.match(/run_compatibility_command\(\) \{/g)?.length, 4)
+      assert.notMatch(workflow, /source_args/)
       assert.strictEqual(workflow.match(/supervise-native-pair/g)?.length, 2)
       assert.match(
         workflow,
