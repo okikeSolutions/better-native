@@ -60,7 +60,7 @@ const makeDatabase = () => ({
   closeAsync: vi.fn(async () => undefined),
   getAllAsync: vi.fn(async () => [{ id: 1, user_name: "Ada" }]),
   getEachAsync: vi.fn(() =>
-    (async function* () {
+    (async function* (): AsyncGenerator<Record<string, unknown>> {
       yield { id: 1 }
       yield { id: 2 }
     })(),
